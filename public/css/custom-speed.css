@@ -1,0 +1,15 @@
+/* Para todas as div's principais que irão "abrigar" o conteúdo das páginas */
+.speed-content-main {
+	margin-top: 1%;
+}
+
+.mdi-48 {
+	font-size: 48px;
+}
+
+
+/* TESTES | Vai destacar a div atual para testar posicionamento */
+.destacar {
+	border: 1px solid black;
+	background-color: darkgrey;
+}
