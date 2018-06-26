@@ -402,17 +402,13 @@
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
                             <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/credenciamento') }}" aria-expanded="false"><i class="mdi mdi-account-outline"></i><span class="hide-menu">Credenciamento </span></a>    
+                                <a class="waves-effect waves-dark" href="{{ url('/bpmn') }}" aria-expanded="false"><i class="mdi mdi-account-outline"></i><span class="hide-menu">BPMN 2.0 </span></a>    
                             </li>
                             <li>
-                                <!-- <a class="waves-effect waves-dark" href="{{ url('/relatorios') }}" aria-expanded="false"><i class="mdi mdi-file-multiple"></i><span class="hide-menu">Relatórios </span></a>     -->
-                                <a class="waves-effect waves-dark" href="{{ url('/relatorios') }}" aria-expanded="false"><i class="mdi mdi-library-books"></i><span class="hide-menu">Relatórios </span></a>    
+                                <a class="waves-effect waves-dark" href="{{ url('/documentacao') }}" aria-expanded="false"><i class="mdi mdi-library-books"></i><span class="hide-menu">Documentação </span></a>    
                             </li>
                             <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/integracoes') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">Integrações </span></a>    
-                            </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/auditoria') }}" aria-expanded="false"><i class="mdi mdi-file-check"></i><span class="hide-menu">Auditoria </span></a>    
+                                <a class="waves-effect waves-dark" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">Formulários </span></a>    
                             </li>
                         </ul>
                     </nav>

@@ -20,48 +20,36 @@ Route::group(['middleware' => ['auth']], function() {
 		return Redirect::to('/login');
 	});
 
-	// Route::get('/home', 'VinculacoesController@index');
     Route::get('/home', 'HomeController@index')->name('home');
 
     /*
-	* CREDENCIAMENTO
+	* BPMN 2.0
 	*/
-	Route::group(['prefix' => 'credenciamento'], function() {
-		Route::get('',	       		['as' => 'credenciamento', 	        	'uses' => 'Credenciamento\CredenciamentoController@index']);
+	Route::group(['prefix' => 'bpmn'], function() {
+		Route::get('',	       		['as' => 'bpmn', 	        		'uses' => 'BPMN\BPMNController@index']);
 		// Route::post('store', 		['as' => 'cargos.store', 		'uses' => 'CargosController@store']);
 		// Route::get('{id}/delete', 	['as' => 'cargos.delete', 		'uses' => 'CargosController@delete']);
-		// Route::get('{id}/edit', 	['as' => 'cargos.edit', 		'uses' => 'CargosController@edit']);
+		// Route::get('{id}/edit', 	['as' => 'cargos.edit', 			'uses' => 'CargosController@edit']);
 		// Route::post('update', 		['as' => 'cargos.update', 		'uses' => 'CargosController@update']);
     });
     
     /*
-	* RELATÓRIOS
+	* DOCUMENTAÇÃO
 	*/
-	Route::group(['prefix' => 'relatorios'], function() {
-		Route::get('',	       		['as' => 'relatorios', 	        	    'uses' => 'Relatorios\RelatoriosController@index']);
+	Route::group(['prefix' => 'documentacao'], function() {
+		Route::get('',	       		['as' => 'documentacao', 	       	'uses' => 'Documentacao\DocumentacaoController@index']);
     });
     
     /*
-	* INTEGRAÇÕES
+	* FORMULÁRIOS
 	*/
-	Route::group(['prefix' => 'integracoes'], function() {
-		Route::get('',	       		['as' => 'integracoes', 	        	'uses' => 'Integracoes\IntegracoesController@index']);
+	Route::group(['prefix' => 'formularios'], function() {
+		Route::get('',	       		['as' => 'formularios', 	        	'uses' => 'Formularios\FormulariosController@index']);
 	});
-    
-    /*
-	* AUDITORIA
-	*/
-	Route::group(['prefix' => 'auditoria'], function() {
-		Route::get('',	       		['as' => 'auditoria', 	        	    'uses' => 'Auditoria\AuditoriaController@index']);
-	});
-
-
-
+	
+	
 
     
-    // Registration Routes...
-    Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-    Route::post('register', 'Auth\RegisterController@register');
 	
 	// Password Reset Routes...
 	Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
@@ -71,6 +59,9 @@ Route::group(['middleware' => ['auth']], function() {
     
 });
 
+// Registration Routes...
+Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+Route::post('register', 'Auth\RegisterController@register');
 
 // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
