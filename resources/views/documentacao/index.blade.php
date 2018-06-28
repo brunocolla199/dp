@@ -36,7 +36,25 @@
                     <div class="card">
                         <div class="card-body">
                             
-                            <h3>Documentação</h3>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs nav-fill customtab" role="tablist">
+                                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#gerarDocs" role="tab"><span class="hidden-xs-down">GERAR DOCUMENTOS</span></a> </li>
+                                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#visualizarDocs" role="tab"><span class="hidden-xs-down">VISUALIZAR DOCUMENTOS</span></a> </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="gerarDocs" role="tabpanel">
+                                    <div class="p-20">
+                                        => 2 colunas (Cada uma com 3 linhas) <br>
+                                        => 1 linha total abaixo <br>
+                                        => 2 botões grandes (Importar Documentos  &&  Criar Documentos)
+                                    </div>
+                                </div>
+                                <div class="tab-pane  p-20" id="visualizarDocs" role="tabpanel">
+                                    => 2 Linhas de filtros <br>
+                                    => 1 tabela abaixo <br>
+                                </div>
+                            </div>
 
                         </div>
                     </div>

@@ -7,6 +7,12 @@
 	font-size: 48px;
 }
 
+.custom-border-pink {
+	margin-top: 12%;
+    border-right: 3px solid #e91e63;
+    height: 70%;
+}
+
 
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
