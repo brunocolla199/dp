@@ -15,6 +15,10 @@ class CreatePresencaUsuarioTable extends Migration
     {
         Schema::create('presenca_usuario', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('lista_presenca_id')->unsigned();
+            $table->foreign('lista_presenca_id')->references('id')->on('lista_presenca');
+            $table->integer('usuario_id')->unsigned();
+            $table->foreign('usuario_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

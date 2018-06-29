@@ -15,6 +15,10 @@ class CreatePermissaoSetorTable extends Migration
     {
         Schema::create('permissao_setor', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('setor_id')->unsigned();
+            $table->foreign('setor_id')->references('id')->on('setor');
+            $table->integer('permissao_id')->unsigned();
+            $table->foreign('permissao_id')->references('id')->on('permissao');
             $table->timestamps();
         });
     }

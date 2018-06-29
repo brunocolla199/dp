@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateListaPresencaTable extends Migration
+class CreateTipoDocumentoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateListaPresencaTable extends Migration
      */
     public function up()
     {
-        Schema::create('lista_presenca', function (Blueprint $table) {
+        Schema::create('tipo_documento', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('data');
-            $table->text('descricao');
-            $table->integer('documento_id')->unsigned();
-            $table->foreign('documento_id')->references('id')->on('documento');
+            $table->string('nome', 80);
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateListaPresencaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lista_presenca');
+        Schema::dropIfExists('tipo_documento');
     }
 }

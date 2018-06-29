@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="tab-pane  p-20" id="visualizarDocs" role="tabpanel">
                                     => 2 Linhas de filtros <br>
-                                    => 1 tabela abaixo <br>
+                                    => 1 tabela abaixo <br> 
                                 </div>
                             </div>
 
