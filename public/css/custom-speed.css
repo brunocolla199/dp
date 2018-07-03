@@ -3,14 +3,39 @@
 	margin-top: 1%;
 }
 
+/* Fonte em Negrito */
+.font-bold label {
+	font-weight: bold;
+}
+
+.font-bold span {
+	font-weight: bold;
+}
+
+/* Margin customizados em porcentagem */
+.margin-right-1percent {
+	margin-right: 1%;
+}
+
+.margin-top-1percent {
+	margin-top: 1%;
+}
+
+/* Classe para aumentar o tamanho dos ícones do font-awesome */
 .mdi-48 {
 	font-size: 48px;
 }
 
+/* Borda para separar logo do formulário - Página de login */
 .custom-border-pink {
 	margin-top: 12%;
     border-right: 3px solid #e91e63;
     height: 70%;
+}
+
+/* Imagem de background para select customizado - like a Material Pro */
+.custom-select {
+	background: url(../images/custom-select2.png) right 0.75rem center no-repeat; 
 }
 
 
