@@ -16,6 +16,7 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    
 
     <!-- Custom CSS -->
     <link href="{{ asset('css/style-material-pro-main.css') }}" rel="stylesheet">
@@ -26,17 +27,22 @@
 
 
     <!-- Others -->
+    <!-- Moments with locales -->
+    <script src="{{ asset('plugins/moment/min/moment-with-locales.min.js') }}"></script>
+    
     <!-- chartist CSS -->
-    <link href="{{ asset('plugins/chartist-js/dist/chartist.min.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('plugins/chartist-js/dist/chartist.min.css') }}" rel="stylesheet">
     <link href="{{ asset('plugins/chartist-js/dist/chartist-init.css') }}" rel="stylesheet">
     <link href="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css') }}" rel="stylesheet">
-    <link href="{{ asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet"> -->
+
     <!--This page css - Morris CSS -->
     <link href="{{ asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
     <!-- Vector CSS -->
     <link href="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet" />
-
-
+    
+    <!-- SweetAlert CSS -->
+    <link href="{{ asset('plugins/sweetalert/sweetalert.css') }}" rel="stylesheet" />
 
     <!-- Styles | Este é o estilo padrão/principal criado pelo próprio Laravel -->
     <!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> -->
@@ -345,8 +351,8 @@
                                 <!-- Language -->
                                 <!-- ============================================================== -->
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="flag-icon flag-icon-us"></i></a>
-                                    <div class="dropdown-menu dropdown-menu-right scale-up"> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-in"></i> India</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-fr"></i> French</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-cn"></i> China</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-de"></i> Dutch</a> </div>
+                                    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="flag-icon flag-icon-br"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-right scale-up"> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-br"></i> Português (Brasil)</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-us"></i> Inglês</a> </div>
                                 </li>
                             </ul>
                         </div>
@@ -367,9 +373,6 @@
             <!-- End Topbar header -->
             <!-- ============================================================== -->
         @endif
-
-
-
 
 
 
@@ -400,13 +403,19 @@
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
                             <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/bpmn') }}" aria-expanded="false"><i class="mdi mdi-account-outline"></i><span class="hide-menu">BPMN 2.0 </span></a>    
+                                <a class="waves-effect waves-dark" href="{{ url('/bpmn') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">BPMN 2.0 </span></a>    
                             </li>
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/documentacao') }}" aria-expanded="false"><i class="mdi mdi-library-books"></i><span class="hide-menu">Documentação </span></a>    
                             </li>
                             <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">Formulários </span></a>    
+                                <a class="waves-effect waves-dark" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-document"></i><span class="hide-menu">Formulários </span></a>    
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/teste') }}" aria-expanded="false"><i class="mdi mdi-air-conditioner"></i><span class="hide-menu">Teste - Form.io </span></a>    
                             </li>
                         </ul>
                     </nav>
@@ -456,10 +465,6 @@
 
 
 
-
-
-
-
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->
@@ -482,27 +487,59 @@
     <!--Custom JavaScript -->
     <script src="{{ asset('js/custom.min.js') }}"></script>
     
+
+
+    <link href="{{ asset('plugins/bootstrap-switch/bootstrap-switch.min.css') }}"  rel="stylesheet">
+    <script src="{{ asset('plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
+    <script type="text/javascript">
+        $(".bt-switch input[type='checkbox'], .bt-switch input[type='radio']").bootstrapSwitch();
+        var radioswitch = function() {
+            var bt = function() {
+                $(".radio-switch").on("switch-change", function() {
+                    $(".radio-switch").bootstrapSwitch("toggleRadioState")
+                }), $(".radio-switch").on("switch-change", function() {
+                    $(".radio-switch").bootstrapSwitch("toggleRadioStateAllowUncheck")
+                }), $(".radio-switch").on("switch-change", function() {
+                    $(".radio-switch").bootstrapSwitch("toggleRadioStateAllowUncheck", !1)
+                })
+            };
+            return {
+                init: function() {
+                    bt()
+                }
+            }
+        }();
+        $(document).ready(function() {
+            radioswitch.init()
+        });
+    </script>
+
     
 
     <!-- ============================================================== -->
     <!-- This page plugins -->
     <!-- ============================================================== -->
     <!-- chartist chart -->
-    <script src="{{ asset('plugins/chartist-js/dist/chartist.min.js') }}"></script>
-    <script src="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js') }}"></script>
+    <!-- <script src="{{ asset('plugins/chartist-js/dist/chartist.min.js') }}"></script>
+    <script src="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js') }}"></script> -->
+
     <!--c3 JavaScript -->
     <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
     <script src="{{ asset('plugins/c3-master/c3.min.js') }}"></script>
+    
     <!-- Vector map JavaScript -->
     <script src="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
     <script src="{{ asset('plugins/vectormap/jquery-jvectormap-us-aea-en.js') }}"></script>
-    <script src="{{ asset('js/dashboard2.js') }}"></script>
+    <!-- <script src="{{ asset('js/dashboard2.js') }}"></script> -->
+
     <!-- ============================================================== -->
     <!-- Style switcher -->
     <!-- ============================================================== -->
     <script src="{{ asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
     
-    
+    <!-- SweetAlert JS -->
+    <script src="{{ asset('plugins/sweetalert/sweetalert.min.js') }}"></script>    
+    <script src="{{ asset('plugins/sweetalert/jquery.sweet-alert.custom.js') }}"></script>    
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->
     <!-- <script src="{{ asset('js/app.js') }}"></script> -->

@@ -46,10 +46,16 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::group(['prefix' => 'formularios'], function() {
 		Route::get('',	       		['as' => 'formularios', 	        	'uses' => 'Formularios\FormulariosController@index']);
 	});
+
+	/*
+	* CONFIGURAÇÕES
+	*/
+	Route::group(['prefix' => 'configuracoes'], function() {
+		Route::get('',	       		['as' => 'configuracoes', 	        	'uses' => 'Configuracoes\ConfiguracoesController@index']);
+	});
 	
 	
 
-    
 	
 	// Password Reset Routes...
 	Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
@@ -62,6 +68,10 @@ Route::group(['middleware' => ['auth']], function() {
 // Registration Routes...
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+
+Route::get('/teste', 'HomeController@teste');
+
+
 
 // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');

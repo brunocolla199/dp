@@ -25,12 +25,31 @@
     //Warning Message
     $('#sa-warning').click(function(){
         swal({   
-            title: "Are you sure?",   
-            text: "You will not be able to recover this imaginary file!",   
+            title: "Você tem certeza?",   
+            text: "Todos os dados deste registro serão perdidos!",   
             type: "warning",   
             showCancelButton: true,   
             confirmButtonColor: "#DD6B55",   
-            confirmButtonText: "Yes, delete it!",   
+            confirmButtonText: "Sim, eu tenho certeza!",   
+            cancelButtonColor: "#DD6B55",   
+            cancelButtonText: "Cancelar",   
+            closeOnConfirm: false 
+        }, function(){   
+            swal("Deleted!", "Your imaginary file has been deleted.", "success"); 
+        });
+    });
+
+    //Warning Message 2
+    $('.sa-warning').click(function(){
+        swal({   
+            title: "Você tem certeza?",   
+            text: "Todos os dados deste registro serão perdidos!",   
+            type: "warning",   
+            showCancelButton: true,   
+            confirmButtonColor: "#DD6B55",   
+            confirmButtonText: "Sim, eu tenho certeza!",   
+            cancelButtonColor: "#DD6B55",   
+            cancelButtonText: "Cancelar",   
             closeOnConfirm: false 
         }, function(){   
             swal("Deleted!", "Your imaginary file has been deleted.", "success"); 

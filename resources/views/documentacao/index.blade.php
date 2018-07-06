@@ -2,13 +2,16 @@
 
 @section('content')
     <!-- O que fazer nesta situação? -->
-    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}"  rel="stylesheet">
-    <link href="{{ asset('plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}"  rel="stylesheet">
-
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+    
+    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}"  rel="stylesheet">
     <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+    
+    <link href="{{ asset('plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}"  rel="stylesheet">
     <script src="{{ asset('plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+    
 
+    
 
 
     <!-- Page wrapper  -->
@@ -25,10 +28,10 @@
             <!-- ============================================================== -->
             <div class="row page-titles">
                 <div class="col-md-5 col-8 align-self-center">
-                    <h3 class="text-themecolor m-b-0 m-t-0">Credenciamento</h3>
+                    <h3 class="text-themecolor m-b-0 m-t-0">Documentação</h3>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Credenciamento</li>
+                        <li class="breadcrumb-item active">Documentação</li>
                     </ol>
                 </div>
             </div>
@@ -68,7 +71,7 @@
                                                                 {!! Form::label('tipo_documento', 'TIPO DE DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('tipo_documento', ['Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('tipo_documento', $tipoDocumentos, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -126,7 +129,7 @@
                                                                 {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::text('validadeDocumento', '2017-06-04', ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                                {!! Form::text('validadeDocumento', date('d-m-Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -147,6 +150,26 @@
                                                 </div>
 
                                                 <!-- Linha 5 -->
+                                                <div class="row ">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('grupoInteresse', 'GRUPO DE INTERESSE:') !!}
+                                                                <span class="text-muted" style="font-weight: normal"> Escolha abaixo se este grupo de interesse é <code>um usuário</code> ou <code>um setor</code>. </span>
+                                                            </div>
+                                                            <div class="row col-md-12">
+                                                                <div class="col-md-4 bt-switch">
+                                                                    <input type="checkbox" checked data-size="normal" data-on-text="Usuário" data-off-text="Setor" data-on-color="info" data-off-color="success"/>
+                                                                </div>
+                                                                <div class="col-md-8">
+                                                                    {!! Form::select('grupoDivulgacao', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                </div> 
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Linha 6 -->
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
@@ -290,7 +313,7 @@
 
             <script>
                 // Material Date picker   
-                $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, lang: 'pt-br',  cancelText: 'Cancelar', okText: 'Definir' });
+                $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/MMMM/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
 
                 // Date Picker
                 jQuery('.mydatepicker, #datepicker').datepicker();
