@@ -20,7 +20,15 @@ Route::group(['middleware' => ['auth']], function() {
 		return Redirect::to('/login');
 	});
 
-    Route::get('/home', 'HomeController@index')->name('home');
+	Route::get('/home', 'HomeController@index')->name('home');
+	
+
+	/*
+	* Rotas para requisições AJAX
+	*/
+	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  'uses' => 'AjaxController@getUsers']);
+	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  'uses' => 'AjaxController@getSectors']);
+
 
     /*
 	* BPMN 2.0
@@ -54,8 +62,10 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('',	       		['as' => 'configuracoes', 	        	'uses' => 'Configuracoes\ConfiguracoesController@index']);
 	});
 	
-	
 
+	// Registration Routes...
+	Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+	Route::post('register', 'Auth\RegisterController@register');
 	
 	// Password Reset Routes...
 	Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
@@ -65,9 +75,6 @@ Route::group(['middleware' => ['auth']], function() {
     
 });
 
-// Registration Routes...
-Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-Route::post('register', 'Auth\RegisterController@register');
 
 Route::get('/teste', 'HomeController@teste');
 
