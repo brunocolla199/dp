@@ -10,7 +10,11 @@ class Setor extends Model
     protected $table = 'setor';
 
     protected $fillable = [
-        'id', 'nome', 'descricao'
+        'id', 'nome', 'sigla', 'descricao', 'tipo_setor_id'
     ];
+
+    public function getNomeSiglaAttribute() {
+        return $this->nome.';'.$this->sigla;  
+    }
 
 }

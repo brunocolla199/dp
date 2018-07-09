@@ -16,7 +16,10 @@ class CreateSetorTable extends Migration
         Schema::create('setor', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome', 80);
+            $table->string('sigla', 5);
             $table->text('descricao');
+            $table->integer('tipo_setor_id')->unsigned();
+            $table->foreign('tipo_setor_id')->references('id')->on('tipo_setor');
             $table->timestamps();
         });
     }

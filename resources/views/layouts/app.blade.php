@@ -17,27 +17,22 @@
     <!-- Bootstrap Core CSS -->
     <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     
-
     <!-- Custom CSS -->
     <link href="{{ asset('css/style-material-pro-main.css') }}" rel="stylesheet">
     <link href="{{ asset('css/custom-speed.css') }}" rel="stylesheet">
+
     <!-- You can change the theme colors from here -->
     <link href="{{ asset('css/colors/blue.css') }}" id="theme" rel="stylesheet">
 
 
 
     <!-- Others -->
-    <!-- Moments with locales -->
-    <script src="{{ asset('plugins/moment/min/moment-with-locales.min.js') }}"></script>
-    
-    <!-- chartist CSS -->
-    <!-- <link href="{{ asset('plugins/chartist-js/dist/chartist.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('plugins/chartist-js/dist/chartist-init.css') }}" rel="stylesheet">
-    <link href="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css') }}" rel="stylesheet">
-    <link href="{{ asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet"> -->
+    <!-- Toast CSS -->
+    <link rel="stylesheet" href="{{ asset('plugins/toast-master/css/jquery.toast.css') }}">
 
     <!--This page css - Morris CSS -->
     <link href="{{ asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
+    
     <!-- Vector CSS -->
     <link href="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet" />
     
@@ -46,8 +41,11 @@
 
     <!-- Styles | Este é o estilo padrão/principal criado pelo próprio Laravel -->
     <!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> -->
-</head>
 
+
+    <!-- Moments with locales [Tive que deixar aqui para reconhecer o script antes de carregar o conteúdo da página] -->
+    <script src="{{ asset('plugins/moment/min/moment-with-locales.min.js') }}"></script>
+</head>
 
 <body>
     <!-- ============================================================== -->
@@ -448,8 +446,6 @@
 
 
 
-
-
     </div>
     <!-- ============================================================== -->
     <!-- End Wrapper -->
@@ -469,26 +465,30 @@
     <!-- All Jquery -->
     <!-- ============================================================== -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+    
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{{ asset('plugins/bootstrap/js/popper.min.js') }}"></script>
     <script src="{{ asset('plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    
     <!-- slimscrollbar scrollbar JavaScript -->
     <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
+    
     <!--Wave Effects -->
     <script src="{{ asset('js/waves.js') }}"></script>
+    
     <!--Menu sidebar -->
     <script src="{{ asset('js/sidebarmenu.js') }}"></script>
+    
     <!--stickey kit -->
     <script src="{{ asset('plugins/sticky-kit-master/dist/sticky-kit.min.js') }}"></script>
     <script src="{{ asset('plugins/sparkline/jquery.sparkline.min.js') }}"></script>
+
     
-
-
     <!--Custom JavaScript -->
     <script src="{{ asset('js/custom.min.js') }}"></script>
     
 
-
+    <!-- Bootstrap Switch -->
     <link href="{{ asset('plugins/bootstrap-switch/bootstrap-switch.min.css') }}"  rel="stylesheet">
     <script src="{{ asset('plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
     <script type="text/javascript">
@@ -514,15 +514,6 @@
         });
     </script>
 
-    
-
-    <!-- ============================================================== -->
-    <!-- This page plugins -->
-    <!-- ============================================================== -->
-    <!-- chartist chart -->
-    <!-- <script src="{{ asset('plugins/chartist-js/dist/chartist.min.js') }}"></script>
-    <script src="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js') }}"></script> -->
-
     <!--c3 JavaScript -->
     <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
     <script src="{{ asset('plugins/c3-master/c3.min.js') }}"></script>
@@ -530,16 +521,20 @@
     <!-- Vector map JavaScript -->
     <script src="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
     <script src="{{ asset('plugins/vectormap/jquery-jvectormap-us-aea-en.js') }}"></script>
-    <!-- <script src="{{ asset('js/dashboard2.js') }}"></script> -->
 
-    <!-- ============================================================== -->
     <!-- Style switcher -->
-    <!-- ============================================================== -->
     <script src="{{ asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
     
     <!-- SweetAlert JS -->
     <script src="{{ asset('plugins/sweetalert/sweetalert.min.js') }}"></script>    
-    <script src="{{ asset('plugins/sweetalert/jquery.sweet-alert.custom.js') }}"></script>    
+    <script src="{{ asset('plugins/sweetalert/sweetalert.min.js') }}"></script>    
+
+    <!-- Toast JS -->
+    <script src="{{ asset('plugins/toast-master/js/jquery.toast.js') }}"></script>    
+    <script src="{{ asset('js/toastr.js') }}"></script>    
+    
+    <!-- Speed Custom JS -->
+    <script src="{{ asset('js/utils-speed.js') }}"></script>    
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->
     <!-- <script src="{{ asset('js/app.js') }}"></script> -->

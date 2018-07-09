@@ -71,7 +71,7 @@
                                                                 {!! Form::label('tipo_documento', 'TIPO DE DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('tipo_documento', $tipoDocumentos, '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('tipo_documento', $tipoDocumentos, '-- Selecione --', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -81,7 +81,7 @@
                                                                 {!! Form::label('aprovador', 'APROVADOR:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('aprovador', ['Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('aprovador', $aprovadores, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -95,17 +95,17 @@
                                                                 {!! Form::label('areaTreinamento', 'ÁREA DE TREINAMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('areaTreinamento', ['Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('areaTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('grupoInteresse', 'GRUPO DE INTERESSE:') !!}
+                                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('grupoInteresse', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -113,13 +113,37 @@
 
                                                 <!-- Linha 3 -->
                                                 <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-12 control-label font-bold">
+                                                            {!! Form::label('grupoInteresse', 'GRUPO DE INTERESSE:') !!}
+                                                            <span class="text-muted" style="font-weight: normal"> Escolha abaixo se este grupo de interesse é <code>um usuário</code> ou <code>um setor</code>. </span>
+                                                        </div>    
+                                                    </div>
+                                                    <div class="col-md-6 bt-switch">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12">
+                                                                <input id="ckb_tipo_area_interesse" name="tipo_area_interesse" type="checkbox" checked data-size="normal" data-on-text="Usuário" data-off-text="Setor" data-on-color="info" data-off-color="success"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 ">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('grupoInteresse', $usuariosInteresse, '', ['class' => 'form-control  custom-select', 'id' => 'grupoInteresse']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Linha 4 -->
+                                                <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                                                {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('grupoDivulgacao', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::text('tituloDocumento', null, ['class' => 'form-control']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -135,41 +159,7 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Linha 4 -->
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::text('tituloDocumento', null, ['class' => 'form-control']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
                                                 <!-- Linha 5 -->
-                                                <div class="row ">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-12 control-label font-bold">
-                                                                {!! Form::label('grupoInteresse', 'GRUPO DE INTERESSE:') !!}
-                                                                <span class="text-muted" style="font-weight: normal"> Escolha abaixo se este grupo de interesse é <code>um usuário</code> ou <code>um setor</code>. </span>
-                                                            </div>
-                                                            <div class="row col-md-12">
-                                                                <div class="col-md-4 bt-switch">
-                                                                    <input type="checkbox" checked data-size="normal" data-on-text="Usuário" data-off-text="Setor" data-on-color="info" data-off-color="success"/>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    {!! Form::select('grupoDivulgacao', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
-                                                                </div> 
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Linha 6 -->
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
@@ -312,6 +302,8 @@
             <!-- ============================================================== -->
 
             <script>
+                var tipoAreaInteresse = "usuario";
+
                 // Material Date picker   
                 $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/MMMM/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
 
@@ -320,6 +312,74 @@
                 jQuery('#datepicker-autoclose').datepicker({
                     autoclose: true,
                     todayHighlight: true
+                });
+
+                /*
+                *   QUANDO CARREGAR A PÁGINA
+                */
+                $(document).ready(function(){
+                    for(var i=0; i<10; i++) {
+                        $.toast({
+                            heading: '<b>IT - 012 - V2</b>',
+                            text: 'O documento código IT-012-V2 vence em <b>20/04/2018</b>.',
+                            position: 'top-right',
+                            bgColor: '#03739a',  // Background color of the toast
+                            textColor: '#eeeeee',  // Text color of the toast
+                            textAlign: 'left', 
+                            allowToastClose: true,
+                            hideAfter: 500, // false
+                            stack: 6
+                        });
+                    }
+
+                    // Get bootstrap switch value => [STATE] true = usuario | false = setor
+                    $('input[name="tipo_area_interesse"]').on('switchChange.bootstrapSwitch', function(event, state) {
+                        var route = (state) ? " {{ URL::route('retornarUsuarios') }} " : " {{ URL::route('retornarSetores') }} ";
+                        tipoAreaInteresse  = (state) ? "usuario" : "setor";
+                        $("#tituloDocumento").val("");
+                        
+                        $.ajax({
+				    		type: 'GET',
+				    		url: route,
+				    		dataType: 'JSON',
+				    		success: function (data) {
+                                $("#grupoInteresse option").remove();
+
+                                var cont = 0;
+                                $.each(data.response, function( index, value ){
+                                    $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
+
+                                    if(cont == 0 && tipoAreaInteresse == "setor") {
+                                        cont++;
+
+                                        var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), value.split(';')[0]);
+                                        $("#tituloDocumento").val(valorFinal);
+                                    }
+                                });
+				            }, error: function (err) {
+				            	console.log(err);
+				            }
+                        });                         
+                    });
+
+
+                    // Pega o valor selecionado no select de área de interesse
+                    $('#grupoInteresse').on('change', function (e) {
+                        if(tipoAreaInteresse == "setor") {
+                            var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), $( "#grupoInteresse option:selected" ).text());
+                            $("#tituloDocumento").val(valorFinal);
+                        }
+                    });
+
+                    // Pega o valor selecionado no select de tipo de documento
+                    $('#tipo_documento').on('change', function (e) {
+                        if(tipoAreaInteresse == "setor") {
+                            var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), $( "#grupoInteresse option:selected" ).text());
+                            $("#tituloDocumento").val(valorFinal);
+                        }
+                    });
+
+
                 });
             </script>
 
