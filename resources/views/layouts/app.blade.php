@@ -56,7 +56,14 @@
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
     </div> -->
 
-
+    <!-- Overlay Screen -->
+    <div id="div-overlay-define-documento" class="overlay">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="overlay-content">
+            <a href="#" id="message-overlay">ENVIANDO SEU ARQUIVO...</a>
+            <a href="#"><i class="fa fa-send" id="icon-overlay"></i></a>
+        </div>
+    </div>
 
 
 
@@ -388,7 +395,7 @@
                         <!-- User profile image -->
                         <div class="profile-img"> <img src="{{ asset('images/users/profile.png') }}"  alt="user" /> </div>
                         <!-- User profile text-->
-                        <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Olá, <b>Mariane!</b></a>
+                        <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Olá, <b>{{ Auth::user()->name }}!</b></a>
                             <div class="dropdown-menu animated flipInY">
                                 <a href="#" class="dropdown-item"><i class="ti-user"></i> Meu Perfil</a>
                                 <a href="#" class="dropdown-item"><i class="ti-settings"></i> Configurações</a>
@@ -534,7 +541,53 @@
     <script src="{{ asset('js/toastr.js') }}"></script>    
     
     <!-- Speed Custom JS -->
-    <script src="{{ asset('js/utils-speed.js') }}"></script>    
+    <script src="{{ asset('js/utils-speed.js') }}"></script>     
+
+
+    <!-- jQuery file upload -->
+    <script src="{{ asset('plugins/dropify/dist/js/dropify.min.js') }}"></script>   
+    <script>
+        $(document).ready(function() {
+            // Basic
+            $('.dropify').dropify();
+
+            // Translated
+            $('.dropify-fr').dropify({
+                messages: {
+                    default: 'Glissez-déposez un fichier ici ou cliquez',
+                    replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
+                    remove: 'Supprimer',
+                    error: 'Désolé, le fichier trop volumineux'
+                }
+            });
+
+            // Used events
+            var drEvent = $('#input-file-events').dropify();
+
+            drEvent.on('dropify.beforeClear', function(event, element) {
+                return confirm("Você realmente deseja deletar \"" + element.file.name + "\" ?");
+            });
+
+            drEvent.on('dropify.afterClear', function(event, element) {
+                alert('Arquivo deletado');
+            });
+
+            drEvent.on('dropify.errors', function(event, element) {
+                console.log('Has Errors');
+            });
+
+            var drDestroy = $('#input-file-to-destroy').dropify();
+            drDestroy = drDestroy.data('dropify')
+            $('#toggleDropify').on('click', function(e) {
+                e.preventDefault();
+                if (drDestroy.isDropified()) {
+                    drDestroy.destroy();
+                } else {
+                    drDestroy.init();
+                }
+            })
+        });
+    </script>
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->
     <!-- <script src="{{ asset('js/app.js') }}"></script> -->

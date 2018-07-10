@@ -62,7 +62,7 @@
                                 <div class="tab-pane active" id="gerarDocs" role="tabpanel">
                                     <div class="p-20">
                                         <div class="col-md-12">
-                                            {!! Form::open(['route' => 'home', 'class' => 'form-horizontal']) !!}
+                                            {!! Form::open(['route' => 'documentacao.validate-data', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
                                                 <!-- Linha 1 -->
                                                 <div class="row">
                                                     <div class="col-md-6">
@@ -153,7 +153,7 @@
                                                                 {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::text('validadeDocumento', date('d-m-Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                                {!! Form::text('validadeDocumento', date('d/m/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -161,14 +161,26 @@
 
                                                 <!-- Linha 5 -->
                                                 <div class="row">
+                                                    <div class="col-md-12 mb-4">
+                                                        @if ($errors->any())
+                                                            <div class="alert alert-danger">
+                                                                <ul>
+                                                                    @foreach ($errors->all() as $error)
+                                                                        <li>{{ $error }}</li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">IMPORTAR DOCUMENTO</button>
+                                                            <button type="button" id="importDocument" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">IMPORTAR DOCUMENTO</button>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR DOCUMENTO</button>
+                                                            <button type="button" id="createDocument" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR DOCUMENTO</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -305,7 +317,7 @@
                 var tipoAreaInteresse = "usuario";
 
                 // Material Date picker   
-                $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/MMMM/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
+                $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
 
                 // Date Picker
                 jQuery('.mydatepicker, #datepicker').datepicker();
@@ -318,16 +330,17 @@
                 *   QUANDO CARREGAR A PÁGINA
                 */
                 $(document).ready(function(){
+                    var arr = ["IT - 012 - V2", "DP - 12 - V1", "IT - 07 - V2", "IT - 05 - V2", "PG-09-V2", "DG-01-V3", "IT - 012 - V2", "DP - 12 - V1", "IT - 07 - V2", "IT - 05 - V2"];
                     for(var i=0; i<10; i++) {
                         $.toast({
-                            heading: '<b>IT - 012 - V2</b>',
-                            text: 'O documento código IT-012-V2 vence em <b>20/04/2018</b>.',
+                            heading: '<b>' + arr[i] + '</b>',
+                            text: 'O documento código '+ arr[i] +' vence em <b>20/04/2018</b>.',
                             position: 'top-right',
                             bgColor: '#03739a',  // Background color of the toast
                             textColor: '#eeeeee',  // Text color of the toast
                             textAlign: 'left', 
                             allowToastClose: true,
-                            hideAfter: 500, // false
+                            hideAfter: 3000, // false
                             stack: 6
                         });
                     }
@@ -347,7 +360,8 @@
 
                                 var cont = 0;
                                 $.each(data.response, function( index, value ){
-                                    $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
+                                    // $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
+                                    $("#grupoInteresse").append('<option value="' + value.split(';')[0] + '">' + value.split(';')[0]  + '</option>');
 
                                     if(cont == 0 && tipoAreaInteresse == "setor") {
                                         cont++;
@@ -377,6 +391,18 @@
                             var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), $( "#grupoInteresse option:selected" ).text());
                             $("#tituloDocumento").val(valorFinal);
                         }
+                    });
+
+                    // Envia o form conforme o botão que foi clicado
+                    $("#importDocument").click(function(){
+                        var input = $("<input>").attr("type", "hidden").attr("name", "action").val("import");
+                        $('#form-generate-document').append($(input));
+                        $('#form-generate-document').submit();
+                    });
+                    $("#createDocument").click(function(){
+                        var input = $("<input>").attr("type", "hidden").attr("name", "action").val("create");
+                        $('#form-generate-document').append($(input));
+                        $('#form-generate-document').submit();
                     });
 
 

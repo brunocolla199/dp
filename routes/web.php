@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth']], function() {
 	*/
 	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  'uses' => 'AjaxController@getUsers']);
 	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  'uses' => 'AjaxController@getSectors']);
+	Route::post('ajax/documentos/inserirDocumento', 	['as' => 'inserirDocumento', 	  'uses' => 'AjaxController@insertDocument']);
 
 
     /*
@@ -45,7 +46,9 @@ Route::group(['middleware' => ['auth']], function() {
 	* DOCUMENTAÇÃO
 	*/
 	Route::group(['prefix' => 'documentacao'], function() {
-		Route::get('',	       		['as' => 'documentacao', 	       	'uses' => 'Documentacao\DocumentacaoController@index']);
+		Route::get('',	       					['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
+		Route::post('validate-data',       		['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
+		Route::post('save-attached-document',   ['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
     });
     
     /*
