@@ -30,7 +30,7 @@ class DadosNovoDocumentoRequest extends FormRequest
             'grupoDivulgacao'     => 'required',
             'grupoInteresse'      => 'required',
             'tituloDocumento'     => 'required',
-            'validadeDocumento'   => 'required|date_format:d/m/Y',
+            'validadeDocumento'   => 'required|date_format:d/n/Y', // n = Numeric representation of a month, without leading zeros -> 1 through 12
             'action'              => 'required|max:7|min:5'
         ];
     }

@@ -15,10 +15,18 @@
 
         function closeNav() {
             document.getElementById("div-overlay-define-documento").style.width = "0%";
+            window.location.href = " {{ URL::route('documentacao') }} ";
         }
     </script>
 
 
+@if (isset($overlay_sucesso))
+    <script>
+        openNav();
+        $("#message-overlay").text('DOCUMENTO ENCAMINHADO AO SETOR DE QUALIDADE PARA AVALIAÇÃO');
+        $("#icon-overlay").removeClass('fa-send').addClass('fa-check');
+    </script>
+@else
 
     <!-- Page wrapper  -->
     <!-- ============================================================== -->
@@ -63,7 +71,7 @@
                                     <p class="pull-left"><b>TÍTULO DO DOCUMENTO: </b>{{ $tituloDocumento }}  </p>
                                 </div>
                                 <div class="col-md-4">
-                                    <p><b>APROVADOR: </b>{{ $aprovador }}  </p>
+                                    <p><b>APROVADOR: </b>{{ $view_aprovador }}  </p>
                                 </div>
                                 <div class="col-md-4">
                                     <p><b>VALIDADE DO DOCUMENTO: </b>{{ $validadeDocumento }}  </p>
@@ -71,18 +79,18 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>ÁREA DE INTERESSE: </b>{{ $grupoInteresse }}  </p>
+                                    <p class="pull-left"><b>ÁREA DE INTERESSE: </b>{{ $view_grupoInteresse }}  </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>TIPO DE DOCUMENTO: </b>{{ $tipo_documento }}  </p>
+                                    <p class="pull-left"><b>TIPO DE DOCUMENTO: </b>{{ $view_tipo_documento }}  </p>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE TREINAMENTO: </b>{{ $areaTreinamento }}  </p>
+                                    <p class="pull-left"><b>GRUPO DE TREINAMENTO: </b>{{ $view_areaTreinamento }}  </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $grupoDivulgacao }}  </p>
+                                    <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $view_grupoDivulgacao }}  </p>
                                 </div>
                             </div>
                         </div>
@@ -106,18 +114,41 @@
                             <div class="row">
                                 <div class="col-lg-12 col-md-12">
                                     
-                                    {!! Form::open(['route' => 'documentacao.validate-data', 'id' => 'form-upload-document', 'enctype' => 'multipart/form-data']) !!}
+                                    <div class="col-md-12 mb-4">
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul>
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    
+                                    {!! Form::open(['route' => 'documentacao.save-attached-document', 'method' => 'POST', 'id' => 'form-upload-document', 'enctype' => 'multipart/form-data']) !!}
+                                        {{ csrf_field() }}
 
                                         <div class="card">
                                             <div class="card-body">
                                                 <h4 class="card-title"> Upload de documentos </h4>
                                                 <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
-                                                <input type="file" id="input-file-now" class="dropify" />
+                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now']) !!}
+                                                
+                                                {!! Form::hidden('tipo_documento', $tipo_documento) !!}
+                                                {!! Form::hidden('aprovador', $aprovador) !!}
+                                                {!! Form::hidden('areaTreinamento', $areaTreinamento) !!}
+                                                {!! Form::hidden('grupoDivulgacao', $grupoDivulgacao) !!}
+                                                {!! Form::hidden('grupoInteresse', $grupoInteresse) !!}
+                                                {!! Form::hidden('tipo_grupoInteresse', $tipo_grupoInteresse) !!}
+                                                {!! Form::hidden('tituloDocumento', $tituloDocumento) !!}
+                                                {!! Form::hidden('validadeDocumento', $validadeDocumento) !!}
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12">
                                             <div class="col-md-offset-6 col-md-3 pull-right">
-                                                {!! Form::button('Salvar Documento', ['class' => 'btn btn-lg btn-success', 'onclick' => 'openNav()', 'id' => 'btn-save-document']) !!}
+                                                {!! Form::submit('Salvar Documento', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
                                             </div>
                                         </div>
 
@@ -140,43 +171,6 @@
             <!-- ============================================================== -->
 
 
-            <script>
-                $(document).ready(function(){
-
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-
-                    $("#btn-save-document").click(function(){
-                        // var obj = {'file' : $("#input-file-now").val() };
-                        
-                        var formData = new FormData( $("#form-upload-document") );
-                        var obj = {'data' : formData };
-
-                        $.ajax({
-				    		type: 'POST',
-				    		url: " {{ URL::route('inserirDocumento') }} ",
-                            dataType: 'JSON',
-                            data: obj,
-				    		success: function (data) {
-                                console.log(data.response);
-                                $("#message-overlay").text('DOCUMENTO ENCAMINHADO AO SETOR DE QUALIDADE PARA AVALIAÇÃO');
-                                $("#icon-overlay").removeClass('fa-send').addClass('fa-check');
-				            }, error: function (err) {
-				            	console.log(err);
-                            }
-                        });  
-
-
-                    });
-
-                });
-            </script>
-
-
-
         </div>
         <!-- ============================================================== -->
         <!-- End Container fluid -->
@@ -185,5 +179,8 @@
     <!-- ============================================================== -->
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
+
+
+@endif
 
 @endsection

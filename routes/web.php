@@ -26,9 +26,8 @@ Route::group(['middleware' => ['auth']], function() {
 	/*
 	* Rotas para requisições AJAX
 	*/
-	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  'uses' => 'AjaxController@getUsers']);
-	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  'uses' => 'AjaxController@getSectors']);
-	Route::post('ajax/documentos/inserirDocumento', 	['as' => 'inserirDocumento', 	  'uses' => 'AjaxController@insertDocument']);
+	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  		'uses' => 'AjaxController@getUsers']);
+	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  		'uses' => 'AjaxController@getSectors']);
 
 
     /*

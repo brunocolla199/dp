@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    Aqui serão colocados os gráficos. Os mesmos ainda não estão presentes em virtude de não existirem dados suficientes para alimentá-los.
                 </div>
             </div>
         </div>

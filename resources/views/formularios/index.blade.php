@@ -85,7 +85,11 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">IMPORTAR FORMULÁRIO</button>
+                                                            <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" disabled>IMPORTAR FORMULÁRIO</button>
+                                                            <span> 
+                                                                <small>Botão desabilitado em virtude da necessidade de disponibilizar um download específico, pois os formulários serão um tipo específico de documento 
+                                                                        e, por isso, não será suportado qualquer formato.</small> 
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">

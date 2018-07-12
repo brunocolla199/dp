@@ -10,7 +10,7 @@ class TipoDocumento extends Model
     protected $table = 'tipo_documento';
 
     protected $fillable = [
-        'id', 'nome'
+        'id', 'nome_tipo'
     ];
 
 }

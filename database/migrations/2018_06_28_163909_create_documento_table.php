@@ -17,7 +17,6 @@ class CreateDocumentoTable extends Migration
             $table->increments('id');
             $table->string('nome', 80);
             $table->string('extensao', 10);
-            $table->string('caminho', 100);
             $table->integer('tipo_documento_id')->unsigned();
             $table->foreign('tipo_documento_id')->references('id')->on('tipo_documento');
             $table->timestamps();

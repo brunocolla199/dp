@@ -257,45 +257,41 @@
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Título do Docmento</th>
-                                                            <th>Código</th>
+                                                            <th>Título do Documento</th>
+                                                            <th>Tipo do Documento</th>
                                                             <th>Status</th>
                                                             <th>Validade</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><a href="javascript:void(0)">IT - Qualidade - Recebimento Mensal</a></td>
-                                                            <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                            <td>$45.00</td>
+                                                            <td><a href="javascript:void(0)">IT-QUA-05</a></td>
+                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> Instrução de Trabalho </td>
                                                             <td>
-                                                                <div class="label label-table label-success">Pago</div>
+                                                                <p class="text-success font-weight-bold">Finalizado</p>
                                                             </td>
+                                                            <td>01/01/2019</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><a href="javascript:void(0)">IT - Almoxarifado - Recebimento Mensal</a></td>
-                                                            <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 12, 2017</span> </td>
-                                                            <td>$245.30</td>
+                                                            <td><a href="javascript:void(0)">PG-123</a></td>
+                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> Procedimentos de Gestão </td>
                                                             <td>
-                                                                <div class="label label-table label-danger">Em Aberto 2</div>
+                                                                <div class="label label-table label-danger">Necessita Lista de Presença</div>
                                                             </td>
+                                                            <td>01/01/2019</td>
                                                         </tr>
+
+                                                        @foreach($documentos as $documento)
                                                         <tr>
-                                                            <td><a href="javascript:void(0)">Order #98458</a></td>
-                                                            <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 18, 2017</span> </td>
-                                                            <td>$38.00</td>
+                                                            <td><a href="javascript:void(0)">{{ $documento->nome }}</a></td>
+                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $documento->nome_tipo }} </td>
                                                             <td>
-                                                                <div class="label label-table label-info">Em Aberto 1</div>
+                                                                <p class="text-muted font-weight-bold"> {{ $documento->etapa }} </p>
                                                             </td>
+                                                            <td>{{ date("d/m/Y", strtotime($documento->validade)) }}</td>
                                                         </tr>
-                                                        <tr>
-                                                            <td><a href="javascript:void(0)">Order #32658</a></td>
-                                                            <td><span class="text-muted"><i class="fa fa-clock-o"></i> Apr 28, 2017</span> </td>
-                                                            <td>$77.99</td>
-                                                            <td>
-                                                                <div class="label label-table label-success">Pago</div>
-                                                            </td>
-                                                        </tr>
+                                                        @endforeach
+
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -340,7 +336,7 @@
                             textColor: '#eeeeee',  // Text color of the toast
                             textAlign: 'left', 
                             allowToastClose: true,
-                            hideAfter: 3000, // false
+                            hideAfter: 10000, // false
                             stack: 6
                         });
                     }
@@ -360,8 +356,7 @@
 
                                 var cont = 0;
                                 $.each(data.response, function( index, value ){
-                                    // $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
-                                    $("#grupoInteresse").append('<option value="' + value.split(';')[0] + '">' + value.split(';')[0]  + '</option>');
+                                    $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
 
                                     if(cont == 0 && tipoAreaInteresse == "setor") {
                                         cont++;

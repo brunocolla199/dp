@@ -22,10 +22,4 @@ class AjaxController extends Controller
     }
 
 
-
-    public function insertDocument(Request $request) {
-        sleep(3);
-        return response()->json(['response' => $request]);
-    }
-
 }

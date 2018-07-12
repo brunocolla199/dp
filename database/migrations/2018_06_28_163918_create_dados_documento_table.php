@@ -16,12 +16,18 @@ class CreateDadosDocumentoTable extends Migration
         Schema::create('dados_documento', function (Blueprint $table) {
             $table->increments('id');
             $table->date('validade');
-            $table->text('grupo_treinamento');
-            $table->text('grupo_divulgacao');
             $table->double('versao', 8, 2);
+            $table->boolean('status');
             $table->text('observacao');
-            $table->integer('setor_id')->unsigned(); // No DiaPortable, esta coluna está apresentada como 'id_aprovador' e 'id_area_interesse', mas eu achei mais prudente deixar o nome da tabela, não um possível valor da mesma
-            $table->foreign('setor_id')->references('id')->on('setor'); // No DiaPortable, esta coluna está apresentada como 'id_aprovador' e 'id_area_interesse', mas eu achei mais prudente deixar o nome da tabela, não um possível valor da mesma
+            $table->integer('tipo_grupo_interesse')->unsigned();  // 1 = Usuário; 2 = Setor
+            $table->integer('grupo_interesse_id')->unsigned();
+            $table->foreign('grupo_interesse_id')->references('id')->on('setor');
+            $table->integer('grupo_treinamento_id')->unsigned();
+            $table->foreign('grupo_treinamento_id')->references('id')->on('setor');
+            $table->integer('grupo_divulgacao_id')->unsigned();
+            $table->foreign('grupo_divulgacao_id')->references('id')->on('setor');
+            $table->integer('aprovador_id')->unsigned();
+            $table->foreign('aprovador_id')->references('id')->on('users');
             $table->integer('documento_id')->unsigned();
             $table->foreign('documento_id')->references('id')->on('documento');
             $table->timestamps();
