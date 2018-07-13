@@ -22,19 +22,19 @@ class SetorTableSeeder extends Seeder
         $qualidade->save();
         
         $grupoDeTreinamento1               = new Setor();
-        $grupoDeTreinamento1->nome         = "Grupo de Treinamento 1 - Exemplo";
+        $grupoDeTreinamento1->nome         = "Treinamento 1 - Exemplo";
         $grupoDeTreinamento1->descricao    = "Primeiro grupo de treinamento do sistema, criado para realizar testes.";
         $grupoDeTreinamento1->sigla        = "";
         $grupoDeTreinamento1->tipo_setor_id= Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO;
         $grupoDeTreinamento1->save();
         
         $grupoDeDivulgacao1               = new Setor();
-        $grupoDeDivulgacao1->nome         = "Grupo de Divulgação 1 - Exemplo";
+        $grupoDeDivulgacao1->nome         = "Divulgação 1 - Exemplo";
         $grupoDeDivulgacao1->sigla        = "";
         $grupoDeDivulgacao1->descricao    = "Primeiro grupo de divulgação do sistema, criado para realizar testes.";
         $grupoDeDivulgacao1->tipo_setor_id= Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO;
         $grupoDeDivulgacao1->save();
-        
+                
 
         /*
         * Setores "Normais" da empresa

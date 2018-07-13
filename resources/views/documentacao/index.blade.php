@@ -30,7 +30,7 @@
                 <div class="col-md-5 col-8 align-self-center">
                     <h3 class="text-themecolor m-b-0 m-t-0">Documentação</h3>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active">Documentação</li>
                     </ol>
                 </div>
@@ -81,7 +81,7 @@
                                                                 {!! Form::label('aprovador', 'APROVADOR:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('aprovador', $aprovadores, '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('aprovador', ['Aqui devemos decidir', 'se o melhor é criar', 'um novo "setor" especial chamado Aprovadores', 'ou se colocamos um permissionamento no usuário', '(Questão de Gerência e diretoria'], '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -111,8 +111,34 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Linha 3 -->
+                                                <!-- Linha 3 --> 
                                                 <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('setor_dono_doc', 'Setor (dono do documento):') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('setor_dono_doc', $setores, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-8 control-label font-bold">
+                                                                {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('validadeDocumento', date('d/m/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Linha 4 -->
+                                                <div class="row">
+                                                    <small>Aqui temos que ver como vai ficar, tendo em vista que ela solicitou que mais de um setor e um ou mais usuários possam ser escolhidos (muda BD, inclusive).</small>
+
                                                     <div class="col-md-12">
                                                         <div class="col-md-12 control-label font-bold">
                                                             {!! Form::label('grupoInteresse', 'GRUPO DE INTERESSE:') !!}
@@ -122,7 +148,7 @@
                                                     <div class="col-md-6 bt-switch">
                                                         <div class="form-group">
                                                             <div class="col-md-12">
-                                                                <input id="ckb_tipo_area_interesse" name="tipo_area_interesse" type="checkbox" checked data-size="normal" data-on-text="Usuário" data-off-text="Setor" data-on-color="info" data-off-color="success"/>
+                                                                <input id="ckb_tipo_area_interesse" name="tipo_area_interesse" type="checkbox" checked data-size="large" data-on-text="Usuário" data-off-text="Setor" data-on-color="info" data-off-color="success"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -135,25 +161,15 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Linha 4 -->
+                                                <!-- Linha 5 -->
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
                                                                 {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
                                                                 {!! Form::text('tituloDocumento', null, ['class' => 'form-control']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div class="col-md-8 control-label font-bold">
-                                                                {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::text('validadeDocumento', date('d/m/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -258,32 +274,25 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Título do Documento</th>
+                                                            <th>Código</th>
                                                             <th>Tipo do Documento</th>
                                                             <th>Status</th>
                                                             <th>Validade</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td><a href="javascript:void(0)">IT-QUA-05</a></td>
-                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> Instrução de Trabalho </td>
-                                                            <td>
-                                                                <p class="text-success font-weight-bold">Finalizado</p>
-                                                            </td>
-                                                            <td>01/01/2019</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><a href="javascript:void(0)">PG-123</a></td>
-                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> Procedimentos de Gestão </td>
-                                                            <td>
-                                                                <div class="label label-table label-danger">Necessita Lista de Presença</div>
-                                                            </td>
-                                                            <td>01/01/2019</td>
-                                                        </tr>
 
                                                         @foreach($documentos as $documento)
                                                         <tr>
-                                                            <td><a href="javascript:void(0)">{{ $documento->nome }}</a></td>
+                                                            {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                {{ Form::hidden('document_id', $documento->id) }}
+                                                                <td>
+                                                                    {!! Form::submit($documento->nome, ['class' => 'a-href-submit']) !!}
+                                                                </td>
+                                                            {{ Form::close() }}
+
+                                                            <td> {{ $documento->codigo }} </td>
+
                                                             <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $documento->nome_tipo }} </td>
                                                             <td>
                                                                 <p class="text-muted font-weight-bold"> {{ $documento->etapa }} </p>
@@ -336,7 +345,7 @@
                             textColor: '#eeeeee',  // Text color of the toast
                             textAlign: 'left', 
                             allowToastClose: true,
-                            hideAfter: 10000, // false
+                            hideAfter: 200, // false
                             stack: 6
                         });
                     }
@@ -357,35 +366,11 @@
                                 var cont = 0;
                                 $.each(data.response, function( index, value ){
                                     $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
-
-                                    if(cont == 0 && tipoAreaInteresse == "setor") {
-                                        cont++;
-
-                                        var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), value.split(';')[0]);
-                                        $("#tituloDocumento").val(valorFinal);
-                                    }
                                 });
 				            }, error: function (err) {
 				            	console.log(err);
 				            }
                         });                         
-                    });
-
-
-                    // Pega o valor selecionado no select de área de interesse
-                    $('#grupoInteresse').on('change', function (e) {
-                        if(tipoAreaInteresse == "setor") {
-                            var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), $( "#grupoInteresse option:selected" ).text());
-                            $("#tituloDocumento").val(valorFinal);
-                        }
-                    });
-
-                    // Pega o valor selecionado no select de tipo de documento
-                    $('#tipo_documento').on('change', function (e) {
-                        if(tipoAreaInteresse == "setor") {
-                            var valorFinal = buildDocumentCod($( "#tipo_documento option:selected" ).text(), $( "#grupoInteresse option:selected" ).text());
-                            $("#tituloDocumento").val(valorFinal);
-                        }
                     });
 
                     // Envia o form conforme o botão que foi clicado

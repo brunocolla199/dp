@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TipoDocumento extends Model
+class Configuracao extends Model
 {
     
-    protected $table = 'tipo_documento';
+    protected $table = "configuracao";
 
     protected $fillable = [
-        'id', 'nome_tipo', 'sigla'
+        'numero_padrao_codigo'
     ];
 
 }

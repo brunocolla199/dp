@@ -44,8 +44,8 @@
                 <div class="col-md-5 col-8 align-self-center">
                     <h3 class="text-themecolor m-b-0 m-t-0">Definição de Documento</h3>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">Documentação</a></li>
+                        <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ URL::route('documentacao') }}">Documentação</a></li>
                         <li class="breadcrumb-item active">Definição de Documento</li>
                     </ol>
                 </div>
@@ -67,14 +67,22 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <p class="pull-left"><b>TÍTULO DO DOCUMENTO: </b>{{ $tituloDocumento }}  </p>
                                 </div>
-                                <div class="col-md-4">
-                                    <p><b>APROVADOR: </b>{{ $view_aprovador }}  </p>
+                                <div class="col-md-3">
+                                    <p><b>CÓDIGO: </b>{{ $codigoDocumento }}  </p>
                                 </div>
                                 <div class="col-md-4">
                                     <p><b>VALIDADE DO DOCUMENTO: </b>{{ $validadeDocumento }}  </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>SETOR DO DOCUMENTO: </b>{{ $view_setorDono }}  </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>APROVADOR: </b>{{ $view_aprovador }}  </p>
                                 </div>
                             </div>
                             <div class="row">
@@ -137,12 +145,14 @@
                                                 {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now']) !!}
                                                 
                                                 {!! Form::hidden('tipo_documento', $tipo_documento) !!}
-                                                {!! Form::hidden('aprovador', $aprovador) !!}
+                                                {!! Form::hidden('id_aprovador', $aprovador) !!}
                                                 {!! Form::hidden('areaTreinamento', $areaTreinamento) !!}
                                                 {!! Form::hidden('grupoDivulgacao', $grupoDivulgacao) !!}
                                                 {!! Form::hidden('grupoInteresse', $grupoInteresse) !!}
                                                 {!! Form::hidden('tipo_grupoInteresse', $tipo_grupoInteresse) !!}
+                                                {!! Form::hidden('setor_dono_doc', $setorDono) !!}
                                                 {!! Form::hidden('tituloDocumento', $tituloDocumento) !!}
+                                                {!! Form::hidden('codigoDocumento', $codigoDocumento) !!}
                                                 {!! Form::hidden('validadeDocumento', $validadeDocumento) !!}
                                             </div>
                                         </div>

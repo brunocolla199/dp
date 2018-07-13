@@ -231,6 +231,9 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
 
+        // Classe customizada de constantes Speed - colocada aqui para permitir o uso nas views
+        'Constants' => App\Classes\Constants::class,
+
     ],
 
 ];

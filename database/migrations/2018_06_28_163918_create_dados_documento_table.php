@@ -22,6 +22,8 @@ class CreateDadosDocumentoTable extends Migration
             $table->integer('tipo_grupo_interesse')->unsigned();  // 1 = Usuário; 2 = Setor
             $table->integer('grupo_interesse_id')->unsigned();
             $table->foreign('grupo_interesse_id')->references('id')->on('setor');
+            $table->integer('setor_id')->unsigned();
+            $table->foreign('setor_id')->references('id')->on('setor');
             $table->integer('grupo_treinamento_id')->unsigned();
             $table->foreign('grupo_treinamento_id')->references('id')->on('setor');
             $table->integer('grupo_divulgacao_id')->unsigned();
