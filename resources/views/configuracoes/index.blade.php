@@ -93,7 +93,7 @@
                                                                 <tr>
                                                                     <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
                                                                     <td>
-                                                                        @if(  $setor->tipo_setor_id == Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO  )
+                                                                        @if( // $setor->tipo_setor_id == Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO  )
                                                                             <i class="fa fa-gavel"></i>
                                                                         @elseif(  $setor->tipo_setor_id == Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO  )
                                                                             <i class="fa fa-bullhorn"></i>

@@ -26,5 +26,10 @@ class TipoDocumentoTableSeeder extends Seeder
         $tp_doc3->nome_tipo  = "Diretrizes de Gestão";
         $tp_doc3->sigla = "DG";
         $tp_doc3->save();
+        
+        $tp_doc4        = new TipoDocumento();
+        $tp_doc4->nome_tipo  = "Formulários";
+        $tp_doc4->sigla = "FR";
+        $tp_doc4->save();
     }
 }

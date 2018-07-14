@@ -14,6 +14,9 @@ class SetorTableSeeder extends Seeder
     public function run()
     {
         
+        /*
+        * Qualidade - O setor mais importante da empre
+        */
         $qualidade               = new Setor();
         $qualidade->nome         = "Qualidade";
         $qualidade->sigla        = "QUA";
@@ -21,24 +24,31 @@ class SetorTableSeeder extends Seeder
         $qualidade->tipo_setor_id= Constants::$ID_TIPO_SETOR_SETOR_NORMAL;
         $qualidade->save();
         
-        $grupoDeTreinamento1               = new Setor();
-        $grupoDeTreinamento1->nome         = "Treinamento 1 - Exemplo";
-        $grupoDeTreinamento1->descricao    = "Primeiro grupo de treinamento do sistema, criado para realizar testes.";
-        $grupoDeTreinamento1->sigla        = "";
-        $grupoDeTreinamento1->tipo_setor_id= Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO;
-        $grupoDeTreinamento1->save();
-        
-        $grupoDeDivulgacao1               = new Setor();
-        $grupoDeDivulgacao1->nome         = "Divulgação 1 - Exemplo";
-        $grupoDeDivulgacao1->sigla        = "";
-        $grupoDeDivulgacao1->descricao    = "Primeiro grupo de divulgação do sistema, criado para realizar testes.";
-        $grupoDeDivulgacao1->tipo_setor_id= Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO;
-        $grupoDeDivulgacao1->save();
-                
 
+        
+        /*
+        * Diretoria e Gerência - 'Setores' especiais que informarão quais usuários podem ser aprovadores 
+        */
+        $diretoria              = new Setor();
+        $diretoria->nome        = "Diretoria";
+        $diretoria->sigla       = "DIR";
+        $diretoria->descricao   = "Responsável em dirigir, planejar, organizar e controlar as atividades de diversas áreas da empresa.";
+        $diretoria->tipo_setor_id = Constants::$ID_TIPO_SETOR_DIRETORIA;
+        $diretoria->save();
+        
+        $gerencia               = new Setor();
+        $gerencia->nome         = "Gerência";
+        $gerencia->sigla        = "GER";
+        $gerencia->descricao    = "Responsável por gerenciar diversas atividades da empresa.";
+        $gerencia->tipo_setor_id= Constants::$ID_TIPO_SETOR_GERENCIA;
+        $gerencia->save();   
+
+
+        
         /*
         * Setores "Normais" da empresa
         */
+
         $administrativo                 = new Setor();
         $administrativo->nome           = "Administrativo";
         $administrativo->sigla          = "ADM";
@@ -87,13 +97,6 @@ class SetorTableSeeder extends Seeder
         $controladoria->descricao   = "Responsável pela organização, avaliação e armazenamento das informações da empresa.";
         $controladoria->tipo_setor_id = Constants::$ID_TIPO_SETOR_SETOR_NORMAL;
         $controladoria->save();
-        
-        $diretoria              = new Setor();
-        $diretoria->nome        = "Diretoria";
-        $diretoria->sigla       = "DIR";
-        $diretoria->descricao   = "Responsável em dirigir, planejar, organizar e controlar as atividades de diversas áreas da empresa.";
-        $diretoria->tipo_setor_id = Constants::$ID_TIPO_SETOR_SETOR_NORMAL;
-        $diretoria->save();
         
         $financeiro              = new Setor();
         $financeiro->nome        = "Financeiro";

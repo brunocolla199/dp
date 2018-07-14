@@ -17,13 +17,13 @@ class TipoSetorTableSeeder extends Seeder
         $setor->nome = "Setor da Empresa";
         $setor->save();
         
-        $grupoDeTreinamento       = new TipoSetor();
-        $grupoDeTreinamento->nome = "Grupo de Treinamento";
-        $grupoDeTreinamento->save();
+        $diretoria       = new TipoSetor();
+        $diretoria->nome = "Diretoria";
+        $diretoria->save();
         
-        $grupoDeDivulgacao       = new TipoSetor();
-        $grupoDeDivulgacao->nome = "Grupo de Divulgação";
-        $grupoDeDivulgacao->save();
+        $gerencia       = new TipoSetor();
+        $gerencia->nome = "Gerência";
+        $gerencia->save();
 
     }
 }
