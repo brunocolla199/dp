@@ -18,10 +18,10 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('username', 50)->unique();
             $table->string('email')->unique();
-            $table->integer('setor_id')->unsigned();
-            $table->foreign('setor_id')->references('id')->on('setor');
             $table->string('password');
             $table->rememberToken();
+            $table->integer('setor_id')->unsigned();
+            $table->foreign('setor_id')->references('id')->on('setor');
             $table->timestamps();
         });
     }
