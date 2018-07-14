@@ -7,7 +7,6 @@
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('plugins/dropify/dist/css/dropify.min.css') }}">
 
-
     <script>
         function openNav() {
             document.getElementById("div-overlay-define-documento").style.width = "100%";
@@ -18,6 +17,7 @@
             window.location.href = " {{ URL::route('documentacao') }} ";
         }
     </script>
+
 
 
 @if (isset($overlay_sucesso))
@@ -167,9 +167,27 @@
                                 </div>
                             </div>
                             @else
-                            <div class="row">
-                                <h3>CKEditor aqui!!</h3>
+                            <!-- <div>
+                                <div class="row">
+                                    <h3> Novo Documento: </h3>
+                                </div>
+
+                                <div class="row">
+                                    <textarea id="ckeditor"></textarea>
+                                </div>
+                            </div> -->
+
+
+                            <h1>Document editor</h1>
+
+                            <!-- The toolbar will be rendered in this container. -->
+                            <div id="toolbar-container"></div>
+
+                            <!-- This container will become the editable. -->
+                            <div id="editor" style="height:500px;">
+                                <p>This is the initial editor content.</p>
                             </div>
+
                             @endif
 
                         </div>
@@ -193,4 +211,23 @@
 
 @endif
 
+
+@endsection
+
+
+@section('footer')
+
+    <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
+    <script>
+        DecoupledEditor
+            .create( document.querySelector( '#editor' ) )
+            .then( editor => {
+                const toolbarContainer = document.querySelector( '#toolbar-container' );
+
+                toolbarContainer.appendChild( editor.ui.view.toolbar.element );
+            } )
+            .catch( error => {
+                console.error( error );
+            } );
+    </script>
 @endsection
