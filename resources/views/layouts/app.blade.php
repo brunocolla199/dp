@@ -361,5 +361,8 @@
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->
     <!-- <script src="{{ asset('js/app.js') }}"></script> -->
+
+     @yield('footer')
+
 </body>
 </html>
