@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Documentacao;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\GrupoTreinamento;
+use App\GrupoDivulgacao;
 use App\TipoDocumento;
 use App\Documento;
 use App\DadosDocumento;
@@ -30,8 +32,8 @@ class DocumentacaoController extends Controller
 
         $tipoDocumentos    = TipoDocumento::orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
-        $gruposTreinamento = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO)->orderBy('nome')->get()->pluck('nome', 'id');
-        $gruposDivulgacao  = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO)->orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
         $usuariosInteresse = User::orderBy('name')->get()->pluck('name', 'id');
 
         $documentos  = DB::table('documento')
