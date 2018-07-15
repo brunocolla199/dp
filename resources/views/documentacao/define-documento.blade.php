@@ -18,8 +18,6 @@
         }
     </script>
 
-
-
 @if (isset($overlay_sucesso))
     <script>
         openNav();
@@ -178,15 +176,48 @@
                             </div> -->
 
 
-                            <h1>Document editor</h1>
+                            <h3>Novo Documento:</h3>
 
                             <!-- The toolbar will be rendered in this container. -->
-                            <div id="toolbar-container"></div>
+                            <!-- <div id="toolbar-container"></div> -->
 
                             <!-- This container will become the editable. -->
-                            <div id="editor" style="height:500px;">
-                                <p>This is the initial editor content.</p>
+                            <!-- <div id="editor" style="height:500px;">
+                                <p>Documento Inicial.</p>
+                            </div>  -->
+                        
+
+                            
+                            <div class="document-editor" >
+                                <div class="document-editor__toolbar"></div>
+                                <div class="document-editor__editable-container">
+                                    <div class="document-editor__editable">
+                                        <p>Novo documento...</p>
+                                    </div>
+                                </div>
                             </div>
+
+                            {!! Form::open(['route' => 'documentacao.save-new-document', 'method' => 'POST', 'id' => 'form-upload-new-document', 'enctype' => 'multipart/form-data']) !!}
+                                {{ csrf_field() }}
+                                {!! Form::hidden('tipo_documento', $tipo_documento) !!}
+                                {!! Form::hidden('id_aprovador', $aprovador) !!}
+                                {!! Form::hidden('areaTreinamento', $areaTreinamento) !!}
+                                {!! Form::hidden('grupoDivulgacao', $grupoDivulgacao) !!}
+                                {!! Form::hidden('grupoInteresse', $grupoInteresse) !!}
+                                {!! Form::hidden('tipo_grupoInteresse', $tipo_grupoInteresse) !!}
+                                {!! Form::hidden('setor_dono_doc', $setorDono) !!}
+                                {!! Form::hidden('tituloDocumento', $tituloDocumento) !!}
+                                {!! Form::hidden('codigoDocumento', $codigoDocumento) !!}
+                                {!! Form::hidden('validadeDocumento', $validadeDocumento) !!}
+                            {!! Form::close() !!}
+      
+
+                            <div class="pull-right">
+                                <br>
+                                <input type="button" id="btn-save-new-document" class="btn btn-lg btn-success" value="Salvar Documento">
+                            </div>
+
+
 
                             @endif
 
@@ -219,15 +250,23 @@
 
     <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
     <script>
-        DecoupledEditor
-            .create( document.querySelector( '#editor' ) )
-            .then( editor => {
-                const toolbarContainer = document.querySelector( '#toolbar-container' );
+        
+        var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), {}).then( editor => {
+            const toolbarContainer = document.querySelector( '.document-editor__toolbar' );
+            toolbarContainer.appendChild( editor.ui.view.toolbar.element );
+            window.editor = editor;
+        }).catch( err => {
+            console.error( err );
+        });
 
-                toolbarContainer.appendChild( editor.ui.view.toolbar.element );
-            } )
-            .catch( error => {
-                console.error( error );
-            } );
+        $("#btn-save-new-document").click(function(){
+            var docData = editor.getData();
+
+            $("#form-upload-new-document").append("<input type='hidden' name='docData' value='"+docData+"' >")
+            $("#form-upload-new-document").submit();
+            console.log(docData);
+        });
+
+
     </script>
 @endsection
