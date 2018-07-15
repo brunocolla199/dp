@@ -48,8 +48,10 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('',	       					['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
 		Route::post('validate-data',       		['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
 		Route::post('save-attached-document',   ['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
+		Route::post('save-new-document',        ['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
 		Route::post('view-document',   			['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
-    });
+	});
+	
     
     /*
 	* FORMULÁRIOS
@@ -62,12 +64,13 @@ Route::group(['middleware' => ['auth']], function() {
 	* CONFIGURAÇÕES
 	*/
 	Route::group(['prefix' => 'configuracoes'], function() {
-		Route::get('',	       					['as' => 'configuracoes', 	        					'uses' => 'Configuracoes\ConfiguracoesController@index']);
-		Route::post('save/number-default',	    ['as' => 'configuracoes.save.number-default', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefault']);
-		Route::post('save/new-grouping',	    ['as' => 'configuracoes.save.new-grouping', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNewGrouping']);
-		Route::post('edit/sector',	    		['as' => 'configuracoes.edit.sector', 	        		'uses' => 'Configuracoes\ConfiguracoesController@editSector']);
-		Route::post('edit/training-group', 		['as' => 'configuracoes.edit.training-group',      		'uses' => 'Configuracoes\ConfiguracoesController@editTrainingGroup']);
-		Route::post('edit/disclosure-group', 	['as' => 'configuracoes.edit.disclosure-group',      	'uses' => 'Configuracoes\ConfiguracoesController@editDisclosureGroup']);
+		Route::get('',	       							['as' => 'configuracoes', 	        					'uses' => 'Configuracoes\ConfiguracoesController@index']);
+		Route::post('save/number-default',	    		['as' => 'configuracoes.save.number-default', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefault']);
+		Route::post('save/new-grouping',	    		['as' => 'configuracoes.save.new-grouping', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNewGrouping']);
+		Route::post('edit/sector',	    				['as' => 'configuracoes.edit.sector', 	        		'uses' => 'Configuracoes\ConfiguracoesController@editSector']);
+		Route::post('edit/training-group', 				['as' => 'configuracoes.edit.training-group',      		'uses' => 'Configuracoes\ConfiguracoesController@editTrainingGroup']);
+		Route::post('edit/disclosure-group', 			['as' => 'configuracoes.edit.disclosure-group',      	'uses' => 'Configuracoes\ConfiguracoesController@editDisclosureGroup']);
+		Route::get('link/{id}/users_training-group', 	['as' => 'users_training-group',     'uses' => 'Configuracoes\ConfiguracoesController@linkUsersTrainingGroup']);
 	});
 	
 
