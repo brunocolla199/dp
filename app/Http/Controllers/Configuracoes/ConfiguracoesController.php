@@ -12,6 +12,7 @@ use App\Classes\Constants;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\NumberDefaultRequest;
 use App\Http\Requests\NewGroupingRequest;
+use App\Http\Requests\EditSectorRequest;
 use Illuminate\Support\Facades\View;
 
 class ConfiguracoesController extends Controller
@@ -89,6 +90,37 @@ class ConfiguracoesController extends Controller
         }
 
         return redirect()->route('configuracoes')->with(['new_grouping_sucesso' => 'valor']);
+    }
+
+
+    public function editSector(EditSectorRequest $request) {
+        $setor = Setor::where('id', '=', $request->id_do_setor)->get();
+        $setor[0]->nome = $request->nome_do_setor;
+        $setor[0]->sigla = $request->sigla_do_setor;
+        $setor[0]->descricao = $request->descrição_do_setor;
+        $setor[0]->save();
+
+        return redirect()->route('configuracoes')->with(['edit_sector_success' => 'valor']);
+    }
+
+
+    public function editTrainingGroup(Request $request) {
+        $grupoT = GrupoTreinamento::where('id', '=', $request->id_do_grupo_de_treinamento)->get();
+        $grupoT[0]->nome = $request->nome_do_grupo_de_treinamento;
+        $grupoT[0]->descricao = $request->descrição_do_grupo_de_treinamento;
+        $grupoT[0]->save();
+
+        return redirect()->route('configuracoes')->with(['edit_training-group_success' => 'valor']);
+    }
+
+
+    public function editDisclosureGroup(Request $request) {
+        $grupoD = GrupoDivulgacao::where('id', '=', $request->id_do_grupo_de_divulgação)->get();
+        $grupoD[0]->nome = $request->nome_do_grupo_de_divulgação;
+        $grupoD[0]->descricao = $request->descrição_do_grupo_de_divulgação;
+        $grupoD[0]->save();
+
+        return redirect()->route('configuracoes')->with(['edit_disclosure-group_success' => 'valor']);
     }
 
 }

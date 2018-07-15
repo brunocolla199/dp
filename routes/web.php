@@ -65,6 +65,9 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('',	       					['as' => 'configuracoes', 	        					'uses' => 'Configuracoes\ConfiguracoesController@index']);
 		Route::post('save/number-default',	    ['as' => 'configuracoes.save.number-default', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefault']);
 		Route::post('save/new-grouping',	    ['as' => 'configuracoes.save.new-grouping', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNewGrouping']);
+		Route::post('edit/sector',	    		['as' => 'configuracoes.edit.sector', 	        		'uses' => 'Configuracoes\ConfiguracoesController@editSector']);
+		Route::post('edit/training-group', 		['as' => 'configuracoes.edit.training-group',      		'uses' => 'Configuracoes\ConfiguracoesController@editTrainingGroup']);
+		Route::post('edit/disclosure-group', 	['as' => 'configuracoes.edit.disclosure-group',      	'uses' => 'Configuracoes\ConfiguracoesController@editDisclosureGroup']);
 	});
 	
 

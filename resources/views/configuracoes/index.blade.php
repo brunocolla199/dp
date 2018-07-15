@@ -8,6 +8,12 @@
 		<input type="hidden" name="status" id="status" value="padrao_sucesso">
     @elseif (session('new_grouping_sucesso'))
 		<input type="hidden" name="status" id="status" value="new_grouping_sucesso">
+    @elseif (session('edit_sector_success'))
+		<input type="hidden" name="status" id="status" value="edit_sector_success">
+    @elseif (session('edit_training-group_success'))
+		<input type="hidden" name="status" id="status" value="edit_training-group_success">
+    @elseif (session('edit_disclosure-group_success'))
+		<input type="hidden" name="status" id="status" value="edit_disclosure-group_success">
     @endif
 
     <script>
@@ -18,6 +24,12 @@
                 showToast('Sucesso!', 'O número padrão para geração do código do documento foi atualizado.', 'success');
             } else if(status == "new_grouping_sucesso") {
                 showToast('Sucesso!', 'Novo agrupamento criado com sucesso.', 'success');
+            } else if(status == "edit_sector_success") {
+                showToast('Sucesso!', 'Setor editado com sucesso.', 'success');
+            } else if(status == "edit_training-group_success") {
+                showToast('Sucesso!', 'Grupo de Treinamento editado com sucesso.', 'success');
+            } else if(status == "edit_disclosure-group_success") {
+                showToast('Sucesso!', 'Grupo de Divulgação editado com sucesso.', 'success');
             }
         });
     </script>
@@ -101,8 +113,9 @@
                                                                                 <td>{{ $setor->sigla }}</td>
                                                                                 <td>{{ $setor->descricao }}</td>
                                                                                 <td class="text-nowrap">
-                                                                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
+                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                    <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -133,8 +146,9 @@
                                                                                 <td><a href="javascript:void(0)">{{ $grupoT->nome }}</a></td> 
                                                                                 <td>{{ $grupoT->descricao }}</td>
                                                                                 <td class="text-nowrap">
-                                                                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
+                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                    <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -164,8 +178,9 @@
                                                                                 <td><a href="javascript:void(0)">{{ $grupoD->nome }}</a></td> 
                                                                                 <td>{{ $grupoD->descricao }}</td>
                                                                                 <td class="text-nowrap">
-                                                                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
+                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                    <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -310,36 +325,173 @@
             <!-- ============================================================== -->
 
 
-            <!-- modal para editar grupo -->
-            <div id="edit-group-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <!-- modal para editar setor -->
+            <div id="edit-sector-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h4 class="modal-title">Modal Content is Responsive</h4>
+                            <h4 class="modal-title">Alterando informações do setor</h4>
                         </div>
-                        <div class="modal-body">
-                            <form>
+                        {!! Form::open(['route' => 'configuracoes.edit.sector', 'class' => 'form-horizontal']) !!}
+                            <div class="modal-body">
+                                <div class="col-md-12 mb-4">
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {!! Form::hidden('id_do_setor', '', ['id' => 'id_do_setor']) !!}
                                 <div class="form-group">
-                                    <label for="recipient-name" class="control-label">Recipient:</label>
-                                    <input type="text" class="form-control" id="recipient-name">
+                                    {!! Form::label('nome_do_setor', 'NOME DO SETOR:') !!}
+                                    {!! Form::text('nome_do_setor', null, ['class' => 'form-control', 'id' => 'nome_do_setor']) !!}
                                 </div>
                                 <div class="form-group">
-                                    <label for="message-text" class="control-label">Message:</label>
-                                    <textarea class="form-control" id="message-text"></textarea>
+                                    {!! Form::label('sigla_do_setor', 'SIGLA DO SETOR:') !!}
+                                    {!! Form::text('sigla_do_setor', null, ['class' => 'form-control', 'id' => 'sigla_do_setor']) !!}
                                 </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-danger waves-effect waves-light">Save changes</button>
-                        </div>
+                                <div class="form-group">
+                                    {!! Form::label('descrição_do_setor', 'DESCRIÇÃO DO SETOR:') !!}
+                                    {!! Form::textarea('descrição_do_setor', null, ['class' => 'form-control', 'id' => 'descrição_do_setor']) !!}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
+                            </div>
+                        {!! Form::close() !!}
                     </div>
                 </div>
             </div>
-            <!-- /.modal para editar grupo -->
+            <!-- /.modal para editar setor -->
 
-            <script>
+
+            <!-- modal para editar grupo de treinamento -->
+            <div id="edit-training-group-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title">Alterando informações do grupo de treinamento</h4>
+                        </div>
+                        {!! Form::open(['route' => 'configuracoes.edit.training-group', 'class' => 'form-horizontal']) !!}
+                            <div class="modal-body">
+                                <div class="col-md-12 mb-4">
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {!! Form::hidden('id_do_grupo_de_treinamento', '', ['id' => 'id_do_grupo_de_treinamento']) !!}
+                                <div class="form-group">
+                                    {!! Form::label('nome_do_grupo_de_treinamento', 'NOME DO GRUPO DE TREINAMENTO:') !!}
+                                    {!! Form::text('nome_do_grupo_de_treinamento', null, ['class' => 'form-control', 'id' => 'nome_do_grupo_de_treinamento']) !!}
+                                </div>
+                                <div class="form-group">
+                                    {!! Form::label('descrição_do_grupo_de_treinamento', 'DESCRIÇÃO DO GRUPO DE TREINAMENTO:') !!}
+                                    {!! Form::textarea('descrição_do_grupo_de_treinamento', null, ['class' => 'form-control', 'id' => 'descrição_do_grupo_de_treinamento']) !!}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
+                            </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal para editar grupo de treinamento -->
+
+
+            <!-- modal para editar grupo de divulgação -->
+            <div id="edit-disclosure-group-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title">Alterando informações do grupo de divulgação</h4>
+                        </div>
+                        {!! Form::open(['route' => 'configuracoes.edit.disclosure-group', 'class' => 'form-horizontal']) !!}
+                            <div class="modal-body">
+                                <div class="col-md-12 mb-4">
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {!! Form::hidden('id_do_grupo_de_divulgação', '', ['id' => 'id_do_grupo_de_divulgação']) !!}
+                                <div class="form-group">
+                                    {!! Form::label('nome_do_grupo_de_divulgação', 'NOME DO GRUPO DE DIVULGAÇÃO:') !!}
+                                    {!! Form::text('nome_do_grupo_de_divulgação', null, ['class' => 'form-control', 'id' => 'nome_do_grupo_de_divulgação']) !!}
+                                </div>
+                                <div class="form-group">
+                                    {!! Form::label('descrição_do_grupo_de_divulgação', 'DESCRIÇÃO DO GRUPO DE DIVULGAÇÃO:') !!}
+                                    {!! Form::textarea('descrição_do_grupo_de_divulgação', null, ['class' => 'form-control', 'id' => 'descrição_do_grupo_de_divulgação']) !!}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
+                            </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal para editar grupo de divulgação -->
+
+
+            <script type="text/javascript" language="javascript">
+                // Click para abrir modal de editar setor
+                $(document).on("click", ".open-edit-sector-modal", function () {
+                    var id = $(this).data('id');
+                    var nome = $(this).data('nome');
+                    var sigla = $(this).data('sigla');
+                    var descricao = $(this).data('desc');
+                    $("#id_do_setor").val(id);
+                    $("#nome_do_setor").val(nome);
+                    $("#sigla_do_setor").val(sigla);
+                    $("#descrição_do_setor").val(descricao);
+                });
+
+                // Click para abrir modal de editar grupo de treinamento
+                $(document).on("click", ".open-edit-training-group", function () {
+                    var id = $(this).data('id');
+                    var nome = $(this).data('nome');
+                    var descricao = $(this).data('desc');
+                    $("#id_do_grupo_de_treinamento").val(id);
+                    $("#nome_do_grupo_de_treinamento").val(nome);
+                    $("#descrição_do_grupo_de_treinamento").val(descricao);
+                });
+
+                // Click para abrir modal de editar grupo de divulgação
+                $(document).on("click", ".open-edit-disclosure-group", function () {
+                    var id = $(this).data('id');
+                    var nome = $(this).data('nome');
+                    var descricao = $(this).data('desc');
+                    $("#id_do_grupo_de_divulgação").val(id);
+                    $("#nome_do_grupo_de_divulgação").val(nome);
+                    $("#descrição_do_grupo_de_divulgação").val(descricao);
+                });
+
+                // Destacando a subtab
                 $("a.speed-subtabs").click(function(){
                     $("a.speed-subtabs").each(function(index){
                         $(this).removeClass('speed-subtab-custom');
