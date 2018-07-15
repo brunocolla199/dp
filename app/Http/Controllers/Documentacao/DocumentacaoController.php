@@ -30,8 +30,8 @@ class DocumentacaoController extends Controller
 
         $tipoDocumentos    = TipoDocumento::orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
-        // $gruposTreinamento = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO)->orderBy('nome')->get()->pluck('nome', 'id');
-        // $gruposDivulgacao  = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO)->orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposTreinamento = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO)->orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposDivulgacao  = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO)->orderBy('nome')->get()->pluck('nome', 'id');
         $usuariosInteresse = User::orderBy('name')->get()->pluck('name', 'id');
 
         $documentos  = DB::table('documento')
@@ -158,6 +158,87 @@ class DocumentacaoController extends Controller
 
          //}
         
+        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
+    }
+
+
+
+    public function saveNewDocument(Request $request) { 
+        
+        $novoDocumento = $request->all();
+        $titulo   = $novoDocumento['tituloDocumento'];
+        $codigo   = $novoDocumento['codigoDocumento'];
+        $extensao = 'docx';
+
+        //Criando Header Padrão Arquivo Word
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+
+        $section = $phpWord->addSection(['marginTop'=>0]);
+        $header = $section->createHeader();
+        $header->addImage(public_path() . '/images/dpword_header_bg.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
+
+		// Estilos da Tabela & Cabeçalho
+        $tableCellStyle 		= array('valign' => 'center');
+        $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
+        $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
+
+        // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
+        $table_style = new \PhpOffice\PhpWord\Style\Table;
+        $table_style->setBorderSize(0);
+        $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
+        $table_style->setWidth(3000);
+        $table_style->setAlignment('right');
+
+        $table = $header->addTable($table_style);
+        $table->addRow();
+        $table->addCell(151, $tableCellStyle)->addText('Documento Tipo:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
+        $table->addRow();
+        $table->addCell(151, $tableCellStyle)->addText($titulo, $tableFontStyle);
+        $table->addRow();
+        $table->addCell(151, $tableCellStyle)->addText('Código:'.$codigo, $tableFontStyle);
+        $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
+        $table->addCell(151, $tableCellStyle)->addText('Data:'.date('d/m/Y'), $tableFontStyle);
+
+        // \PhpOffice\PhpWord\Shared\Html::addHtml($section, $this->getNewDocumentHeader($novoDocumento));
+        \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $novoDocumento['docData']));
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($titulo.'.docx');
+
+        //Salvando local
+        $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$titulo.'.docx');
+        
+        File::move($titulo.'.docx', $full_path_dest);
+        
+        $documento = new Documento();
+        $documento->nome                 = $titulo;
+        $documento->codigo               = $codigo;
+        $documento->extensao             = $extensao;
+        $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
+        $documento->save();
+        
+        // Quando tiver tempo, verificar se deu certo a inserção do documento
+        $dados_documento = new DadosDocumento();
+        $dados_documento->validade              = $novoDocumento['validadeDocumento'];
+        $dados_documento->versao                = 1.0;
+        $dados_documento->status                = true;
+        $dados_documento->observacao            = "Documento Novo";
+        $dados_documento->tipo_grupo_interesse  = $novoDocumento['tipo_grupoInteresse'];
+        $dados_documento->grupo_interesse_id    = $novoDocumento['grupoInteresse'];
+        $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
+        $dados_documento->grupo_treinamento_id  = $novoDocumento['areaTreinamento'];
+        $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
+        $dados_documento->aprovador_id          = $novoDocumento['id_aprovador'];
+        $dados_documento->documento_id          = $documento->id; // id que acabou de ser inserido no 'save' acima
+        $dados_documento->save();
+
+        
+        // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
+        $workflow = new Workflow();
+        $workflow->etapa        = Constants::$ETAPA_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
+        $workflow->observacao   = "";
+        $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
+        $workflow->save();
+
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
     }
 
