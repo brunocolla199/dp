@@ -49,3 +49,16 @@ function buildDocumentCod(tipoDocumento, setor) {
     var valorFinal = siglaDoc + siglaSetor;
     return valorFinal;
 }
+
+
+function showToast(h, t, i) {
+    $.toast({
+        heading: h,
+        text: t,
+        position: 'top-right',
+        loaderBg:'#ff6849',
+        icon: i,
+        hideAfter: 3500, 
+        stack: 6
+    });
+}

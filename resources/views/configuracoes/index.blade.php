@@ -6,6 +6,8 @@
 
     @if (session('padrao_sucesso'))
 		<input type="hidden" name="status" id="status" value="padrao_sucesso">
+    @elseif (session('new_grouping_sucesso'))
+		<input type="hidden" name="status" id="status" value="new_grouping_sucesso">
     @endif
 
     <script>
@@ -13,15 +15,9 @@
             // Verifica se acabou de gravar uma nova solicitação
             var status = $("#status").val();
             if(status == "padrao_sucesso") {
-                $.toast({
-                    heading: 'Sucesso!',
-                    text: 'O número padrão para geração do código do documento foi, atualizado.',
-                    position: 'top-right',
-                    loaderBg:'#ff6849',
-                    icon: 'success',
-                    hideAfter: 3500, 
-                    stack: 6
-                });
+                showToast('Sucesso!', 'O número padrão para geração do código do documento foi atualizado.', 'success');
+            } else if(status == "new_grouping_sucesso") {
+                showToast('Sucesso!', 'Novo agrupamento criado com sucesso.', 'success');
             }
         });
     </script>
@@ -60,88 +56,193 @@
                     <div class="card">
                         <div class="card-body">
                             
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs nav-fill customtab" role="tablist">
-                                <li class="nav-item"> <a class="nav-link font-bold active" data-toggle="tab" href="#setores" role="tab"><h3 class="hidden-xs-down">SETORES</h3></a> </li>
-                                <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#novoSetor" role="tab"><h3 class="hidden-xs-down">NOVO SETOR</h3></a> </li>
+                             <!-- Nav tabs -->
+                             <ul class="nav nav-tabs nav-fill customtab" role="tablist">
+                                <li class="nav-item"> <a class="nav-link font-bold active" data-toggle="tab" href="#agrupamentos" role="tab"><h3 class="hidden-xs-down">AGRUPAMENTOS</h3></a> </li>
+                                <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#novoAgrupamento" role="tab"><h3 class="hidden-xs-down">NOVO AGRUPAMENTO</h3></a> </li>
                                 <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#padroes" role="tab"><h3 class="hidden-xs-down">PADRÕES</h3></a> </li>
                             </ul>
                             <!-- Tab panes -->
                             <div class="tab-content">
 
                                 <!-- 
-                                    /* TAB - Setores */ 
+                                    /* TAB - Agrupamentos */ 
                                 -->
-                                <div class="tab-pane active" id="setores" role="tabpanel">
+                                <div class="tab-pane active" id="agrupamentos" role="tabpanel">
                                     <div class="p-20">
-                                        <div class="col-md-12">
-                                            
+                                        
+                                        <!-- Nav tabs -->
+                                        <ul class="nav nav-tabs nav-fill customtab" role="tablist">
+                                            <li class="nav-item"> <a class="nav-link speed-subtabs ovo" style="cursor: pointer" data-toggle="collapse" data-target="#setores-empresa" aria-expanded="false" aria-controls="setores-empresa" role="tab"> <i class="fa fa-sitemap"></i> <span class="hidden-xs-down"> SETORES DA EMPRESA</span></a> </li>
+                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-treinamento" aria-expanded="false" aria-controls="grupos-treinamento" role="tab"> <i class="fa fa-gavel"></i>   <span class="hidden-xs-down"> GRUPOS DE TREINAMENTO</span></a> </li>
+                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-divulgacao" aria-expanded="false" aria-controls="grupos-divulgacao" role="tab">  <i class="fa fa-bullhorn"></i>      <span class="hidden-xs-down"> GRUPOS DE DIVULGAÇÃO</span></a> </li>
+                                        </ul>
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div class="collapse" id="setores-empresa" role="tabpanel">
+                                                <div class="p-20">
+                                                    <div class="row">                                                        
 
-                                            <div class="row mt-5 margin-top-1percent">
-                                                <div class="table-responsive">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Nome do Setor</th>
-                                                                <th>Tipo do Setor</th>
-                                                                <th>Descrição</th>
-                                                                <th>Ações</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($setores as $setor)
-                                                                <tr>
-                                                                    <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
-                                                                    <td>
-                                                                        @if( // $setor->tipo_setor_id == Constants::$ID_TIPO_SETOR_GRUPO_DE_TREINAMENTO  )
-                                                                            <i class="fa fa-gavel"></i>
-                                                                        @elseif(  $setor->tipo_setor_id == Constants::$ID_TIPO_SETOR_GRUPO_DE_DIVULGACAO  )
-                                                                            <i class="fa fa-bullhorn"></i>
-                                                                        @else
-                                                                            <i class="fa fa-sitemap"></i>
-                                                                        @endif
+                                                        <div class="row mt-5 margin-top-1percent">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Nome do Setor</th>
+                                                                            <th>Sigla</th>
+                                                                            <th>Descrição</th>
+                                                                            <th>Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach($setoresEmpresa as $setor)
+                                                                            <tr>
+                                                                                <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
+                                                                                <td>{{ $setor->sigla }}</td>
+                                                                                <td>{{ $setor->descricao }}</td>
+                                                                                <td class="text-nowrap">
+                                                                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
 
-                                                                        {{ $setor->nome_tipo }}
-                                                                    </td>
-                                                                    <td>{{ $setor->descricao }}</td>
-                                                                    <td class="text-nowrap">
-                                                                        <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                        <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
+                                                    </div>
                                                 </div>
                                             </div>
-
-
+                                            <div class="collapse" id="grupos-treinamento" role="tabpanel">
+                                                <div class="p-20">
+                                                    <div class="row">
+                                                        <div class="row mt-5 margin-top-1percent">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Nome do Grupo</th>
+                                                                            <th>Descrição</th>
+                                                                            <th>Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach($gruposTreinamento as $grupoT)
+                                                                            <tr>
+                                                                                <td><a href="javascript:void(0)">{{ $grupoT->nome }}</a></td> 
+                                                                                <td>{{ $grupoT->descricao }}</td>
+                                                                                <td class="text-nowrap">
+                                                                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="collapse" id="grupos-divulgacao" role="tabpanel">
+                                                <div class="p-20">
+                                                    <div class="row">
+                                                        <div class="row mt-5 margin-top-1percent">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Nome do Grupo</th>
+                                                                            <th>Descrição</th>
+                                                                            <th>Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach($gruposDivulgacao as $grupoD)
+                                                                            <tr>
+                                                                                <td><a href="javascript:void(0)">{{ $grupoD->nome }}</a></td> 
+                                                                                <td>{{ $grupoD->descricao }}</td>
+                                                                                <td class="text-nowrap">
+                                                                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div> 
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
                                     </div>
                                 </div>
 
 
                                 <!-- 
-                                    /* TAB - Novo Setor */ 
+                                    /* TAB - Novo Agrupamento */ 
                                 -->
-                                <div class="tab-pane  p-20" id="novoSetor" role="tabpanel">
+                                <div class="tab-pane  p-20" id="novoAgrupamento" role="tabpanel">
                                     <div class="col-md-12">
-                                          
-
-                                        <div class="row mt-5 margin-top-1percent">
-                                           <h3><i class="fa fa-spin fa-cog"></i> Making... <br></h3>
-                                           
-                                           <div class="row">
-                                                <h4>aqui deverá ter:</h4>
-                                                <ul>
-                                                    <li> 1 campo para nome do setor </li>
-                                                    <li>1 select para o tipo
-                                                        <ul><li> se for setor normal da empresa, habilita campo para que seja informada a sigla do setor </li></ul>
-                                                    </li> 
-                                                    <li> decidir se é mais interessante deixar a funcionalidade de vincular usuários a esse setor aqui ou na edição de setor</li>
-                                                </ul>
-                                           </div>
+                                        <div class="col-md-12 mb-4">
+                                            @if ($errors->any())
+                                                <div class="alert alert-danger">
+                                                    <ul>
+                                                        @foreach ($errors->all() as $error)
+                                                            <li>{{ $error }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
                                         </div>
+                                          
+                                        {!! Form::open(['route' => 'configuracoes.save.new-grouping', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('nome_do_agrupamento', 'NOME DO AGRUPAMENTO:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('nome_do_agrupamento', null, ['class' => 'form-control']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('tipo_do_agrupamento', 'TIPO DO AGRUPAMENTO:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::select('tipo_do_agrupamento', ['Setor', 'Grupo de Treinamento', 'Grupo de Divulgação'], '', ['class' => 'form-control  custom-select']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('descrição', 'DESCRIÇÃO DO AGRUPAMENTO:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::textarea('descrição', null, ['class' => 'form-control']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 col-lg-12">
+                                                    <div class="col-md-offset-6 col-md-3 pull-right">
+                                                        {!! Form::submit('Salvar Agrupamento', ['class' => 'btn btn-lg btn-success']) !!}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {!! Form::close() !!}
+
                                     </div> 
                                 </div>
 
@@ -237,6 +338,15 @@
                 </div>
             </div>
             <!-- /.modal para editar grupo -->
+
+            <script>
+                $("a.speed-subtabs").click(function(){
+                    $("a.speed-subtabs").each(function(index){
+                        $(this).removeClass('speed-subtab-custom');
+                    });
+                    $(this).addClass('speed-subtab-custom');
+                });
+            </script>
 
         </div>
         <!-- ============================================================== -->

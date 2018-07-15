@@ -4,6 +4,15 @@ namespace App\Classes;
 
 class Constants {
 
+    // Tipos de Agrupamentos [SELECT]
+    public static $ID_TIPO_AGRUPAMENTO_SETOR                = 0;
+    
+    public static $ID_TIPO_AGRUPAMENTO_GRUPO_TREINAMENTO    = 1;
+    
+    public static $ID_TIPO_AGRUPAMENTO_GRUPO_DIVULGACAO     = 2;
+
+
+
     // Tipos de Setores
     public static $ID_TIPO_SETOR_SETOR_NORMAL   = 1;
     

@@ -64,6 +64,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::group(['prefix' => 'configuracoes'], function() {
 		Route::get('',	       					['as' => 'configuracoes', 	        					'uses' => 'Configuracoes\ConfiguracoesController@index']);
 		Route::post('save/number-default',	    ['as' => 'configuracoes.save.number-default', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefault']);
+		Route::post('save/new-grouping',	    ['as' => 'configuracoes.save.new-grouping', 	        'uses' => 'Configuracoes\ConfiguracoesController@saveNewGrouping']);
 	});
 	
 

@@ -113,6 +113,12 @@
     font-size:inherit;
 }
 
+/* Customizando estilo da tab */
+.speed-subtab-custom {
+    font-weight: bold;
+    color: cornflowerblue!important;
+}
+
 
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
