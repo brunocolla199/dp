@@ -43,7 +43,7 @@ class UsersTableSeeder extends Seeder
         $gerente1->name     = "Usuário Gerência I";
         $gerente1->username = "gerente1";
         $gerente1->email    = "gerente1@speedsoftware.com.br";
-        $gerente1->setor_id = 1;
+        $gerente1->setor_id = 3;
         $gerente1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $gerente1->save();
 
@@ -51,7 +51,7 @@ class UsersTableSeeder extends Seeder
         $gerente2->name     = "Usuário Gerência II";
         $gerente2->username = "gerente2";
         $gerente2->email    = "gerente2@speedsoftware.com.br";
-        $gerente2->setor_id = 1;
+        $gerente2->setor_id = 3;
         $gerente2->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $gerente2->save();
                 
