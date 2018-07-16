@@ -111,7 +111,8 @@
                             
                             <!-- Light Logo text -->    
                             <!-- <img src="{{ asset('images/logo-light-text.png') }}" class="light-logo" alt="homepage" /></span> </a> -->
-                            <img src="{{ asset('images/dp-logo-text.png') }}" alt="homepage" class="light-logo" /></span> </a>
+                            <!-- <img src="{{ asset('images/dp-logo-text.png') }}" alt="homepage" class="light-logo" /></span> </a> -->
+                            <img src="{{ asset('images/dp-logo-text-white.png') }}" alt="homepage" class="light-logo" /></span> </a>
                     </div>
                     <!-- ============================================================== -->
                     <!-- End Logo -->
