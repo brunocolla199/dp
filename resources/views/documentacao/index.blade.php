@@ -352,7 +352,7 @@
                             textColor: '#eeeeee',  // Text color of the toast
                             textAlign: 'left', 
                             allowToastClose: true,
-                            hideAfter: 200, // false
+                            hideAfter: 4500, // false
                             stack: 6
                         });
                     }
