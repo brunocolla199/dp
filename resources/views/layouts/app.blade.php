@@ -38,6 +38,12 @@
     
     <!-- SweetAlert CSS -->
     <link href="{{ asset('plugins/sweetalert/sweetalert.css') }}" rel="stylesheet" />
+    
+    <!-- MultiSelect CSS -->
+    <link rel="stylesheet" href="{{ asset('plugins/multiselect/css/multi-select.css') }}">
+    
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{{ asset('plugins/select2/dist/css/select2.min.css') }}">
 
     <!-- Styles | Este é o estilo padrão/principal criado pelo próprio Laravel -->
     <!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> -->
@@ -190,7 +196,7 @@
                                 <a class="waves-effect waves-dark" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
                             </li>
                             <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/teste') }}" aria-expanded="false"><i class="mdi mdi-air-conditioner"></i><span class="hide-menu">Teste - Form.io </span></a>    
+                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="mdi mdi-air-conditioner"></i><span class="hide-menu">Form.io </span></a>    
                             </li>
                         </ul>
                     </nav>
@@ -357,6 +363,46 @@
                 }
             })
         });
+    </script>
+
+    <!-- MultiSelect -->
+    <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
+    <script>
+        jQuery(document).ready(function() {
+            // For multiselect
+            $('#pre-selected-options').multiSelect();
+            $('#optgroup').multiSelect({
+                selectableOptgroup: true
+            });
+            $('#public-methods').multiSelect();
+            $('#select-all').click(function() {
+                $('#public-methods').multiSelect('select_all');
+                return false;
+            });
+            $('#deselect-all').click(function() {
+                $('#public-methods').multiSelect('deselect_all');
+                return false;
+            });
+            $('#refresh').on('click', function() {
+                $('#public-methods').multiSelect('refresh');
+                return false;
+            });
+            $('#add-option').on('click', function() {
+                $('#public-methods').multiSelect('addOption', {
+                    value: 42,
+                    text: 'test 42',
+                    index: 0
+                });
+                return false;
+            });
+        });
+    </script>
+
+    <!-- Select2 JS -->
+    <script src="{{ asset('plugins/select2/dist/js/select2.full.min.js') }}"></script>
+    <script>
+        $(".select2").select2();
+        $('.selectpicker').selectpicker();
     </script>
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->

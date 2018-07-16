@@ -8,6 +8,7 @@ use App\Setor;
 use App\Configuracao;
 use App\GrupoTreinamento;
 use App\GrupoDivulgacao;
+use App\User;
 use App\Classes\Constants;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\NumberDefaultRequest;
@@ -121,6 +122,26 @@ class ConfiguracoesController extends Controller
         $grupoD[0]->save();
 
         return redirect()->route('configuracoes')->with(['edit_disclosure-group_success' => 'valor']);
+    }
+
+
+    public function linkUsersTrainingGroup($id) {
+        $setoresUsuarios = [];
+        
+        $setores = Setor::all();
+        foreach($setores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
+
+        // dd($setoresUsuarios);
+
+        $grupoTreinamento = GrupoTreinamento::where('id', '=', $id)->get();
+        return view('configuracoes.link-users', ['grupoTreinamento' => $grupoTreinamento[0], 'setoresUsuarios' => $setoresUsuarios]);
     }
 
 }

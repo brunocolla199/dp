@@ -90,7 +90,6 @@ Route::group(['middleware' => ['auth']], function() {
 Route::get('/teste', 'HomeController@teste');
 
 
-
 // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');

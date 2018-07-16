@@ -27,15 +27,29 @@ class DocumentacaoController extends Controller
 {
     
     public function index() {
-        $aprovadores       = User::orderBy('name')->get()->pluck('name', 'id');
-
-
-        $tipoDocumentos    = TipoDocumento::orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
+        // Valores 'comuns' necessários
+        $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id');
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
-        $usuariosInteresse = User::orderBy('name')->get()->pluck('name', 'id');
 
+        // Aprovadores
+        $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
+        $gerentes_aprovadores  = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_GERENCIA)->orderBy('name')->get()->pluck('name', 'id'); 
+
+        // Área de Interesse
+        $setoresUsuarios = [];
+        $todosSetores = Setor::all();
+        foreach($todosSetores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
+
+        // Documentos já criados (para listagem)
         $documentos  = DB::table('documento')
                             ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
                             ->join('workflow',          'workflow.documento_id',        '=', 'documento.id')
@@ -47,42 +61,33 @@ class DocumentacaoController extends Controller
                             )->get();
 
 
-        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'setores' => $setores, 'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
-                                            'aprovadores' => $aprovadores, 'usuariosInteresse' => $usuariosInteresse, 'documentos' => $documentos]);
+        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'diretores_aprovadores' => $diretores_aprovadores, 'gerentes_aprovadores' => $gerentes_aprovadores,
+                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
+                                            'setores' => $setores, 
+                                            'setoresUsuarios' => $setoresUsuarios, 
+                                            'documentos' => $documentos ]);
     }
 
 
     public function validateData(DadosNovoDocumentoRequest $request) {
-        // $aprovador               = $request->aprovador;
-        $aprovador               = 1;
-
+        return view('documentacao.helper');
+        
         $tipo_documento          = $request->tipo_documento;
-        $areaTreinamento         = $request->areaTreinamento;
+        $aprovador               = $request->aprovador;
+        $grupoTreinamento         = $request->grupoTreinamento;
         $grupoDivulgacao         = $request->grupoDivulgacao;
-        $grupoInteresse          = $request->grupoInteresse;
+        $areaInteresse           = $request->areaInteresse;
         $setorDono               = $request->setor_dono_doc;
         $tituloDocumento         = $request->tituloDocumento;
         $validadeDocumento       = $request->validadeDocumento;
         $acao                    = $request->action;
-
-        // Definindo qual é o tipo do grupo de interesse: Usuário ou Setor?
-        $tipo_grupoInteresse = 0;
-        if($request->tipo_area_interesse == "on") {
-            $g = User::where('id', '=', $request->grupoInteresse)->get();
-            $view_grupoInteresse = $g[0]->name;  
-            $tipo_grupoInteresse = Constants::$ID_TIPO_GRUPO_INTERESSE_USUARIO;
-        } else {
-            $g = Setor::where('id', '=', $request->grupoInteresse)->get();
-            $view_grupoInteresse = $g[0]->nome; 
-            $tipo_grupoInteresse = Constants::$ID_TIPO_GRUPO_INTERESSE_SETOR;
-        }
         
 
         // $view_aprovador          = User::where('id', '=', $request->aprovador)->get();
         $view_aprovador          = User::where('id', '=', 1)->get(); // ALINHAR QUANDO DER TEMPO
         
         $view_tipo_documento     = TipoDocumento::where('id', '=', $request->tipo_documento)->get();
-        $view_areaTreinamento    = Setor::where('id', '=', $request->areaTreinamento)->get();
+        $view_grupoTreinamento    = Setor::where('id', '=', $request->grupoTreinamento)->get();
         $view_grupoDivulgacao    = Setor::where('id', '=', $request->grupoDivulgacao)->get();
         $view_setorDono          = Setor::where('id', '=', $setorDono)->get();
         
@@ -90,7 +95,7 @@ class DocumentacaoController extends Controller
         $qtdDocs = DB::table('documento')
                         ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
                         ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
-                        ->select('documento.*', 'dados_documento.setor_id')
+                        ->select('COUNT( documento.id) AS total')
                         ->where('documento.tipo_documento_id', '=', $tipo_documento)
                         ->where('dados_documento.setor_id', '=', $setorDono)
                         ->get();
@@ -99,7 +104,7 @@ class DocumentacaoController extends Controller
         if( count($qtdDocs) <= 0 )  {
            $codigo = $this->buildCodDocument(1);
         } else { 
-            $codigo = $this->buildCodDocument($qtdDocs + 1);
+            $codigo = $this->buildCodDocument($qtdDocs[0]->total + 1);
         }
 
         // Concatena e gera o código final
@@ -109,9 +114,9 @@ class DocumentacaoController extends Controller
 
         return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'view_tipo_documento' => $view_tipo_documento[0]->nome,
                                                         'aprovador' => 1, 'view_aprovador' => $view_aprovador[0]->name,
-                                                        'areaTreinamento' => $areaTreinamento, 'view_areaTreinamento' => $view_areaTreinamento[0]->nome, 
+                                                        'grupoTreinamento' => $grupoTreinamento, 'view_grupoTreinamento' => $view_grupoTreinamento[0]->nome, 
                                                         'grupoDivulgacao' => $grupoDivulgacao, 'view_grupoDivulgacao' => $view_grupoDivulgacao[0]->nome, 
-                                                        'grupoInteresse' => $grupoInteresse, 'view_grupoInteresse' => $view_grupoInteresse, 'tipo_grupoInteresse' => $tipo_grupoInteresse,
+                                                        'areaInteresse' => $areaInteresse, 'view_areaInteresse' => $view_areaInteresse,
                                                         'setorDono' => $setorDono, 'view_setorDono' => $view_setorDono[0]->nome, 
                                                         'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento,'acao' => $acao]);
     }
@@ -162,7 +167,6 @@ class DocumentacaoController extends Controller
         
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
     }
-
 
 
     public function saveNewDocument(Request $request) { 

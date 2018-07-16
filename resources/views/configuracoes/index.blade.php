@@ -113,9 +113,10 @@
                                                                                 <td>{{ $setor->sigla }}</td>
                                                                                 <td>{{ $setor->descricao }}</td>
                                                                                 <td class="text-nowrap">
-                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                    <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    <center>
+                                                                                        <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                        <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    </center>
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -146,9 +147,11 @@
                                                                                 <td><a href="javascript:void(0)">{{ $grupoT->nome }}</a></td> 
                                                                                 <td>{{ $grupoT->descricao }}</td>
                                                                                 <td class="text-nowrap">
-                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                    <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    <center>
+                                                                                        <a href="{{ route('users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                        <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                        <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    </center>
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -178,9 +181,10 @@
                                                                                 <td><a href="javascript:void(0)">{{ $grupoD->nome }}</a></td> 
                                                                                 <td>{{ $grupoD->descricao }}</td>
                                                                                 <td class="text-nowrap">
-                                                                                    <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                    <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    <center>
+                                                                                        <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                        <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    </center>
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach

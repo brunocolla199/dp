@@ -81,7 +81,18 @@
                                                                 {!! Form::label('aprovador', 'APROVADOR:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('aprovador', ['Aqui devemos decidir', 'se o melhor é criar', 'um novo "setor" especial chamado Aprovadores', 'ou se colocamos um permissionamento no usuário', '(Questão de Gerência e diretoria'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                <select class="form-control custom-select" name="aprovador" id="aprovador" style="width: 100%"> <!-- colocar classe = select2 -->
+                                                                    <optgroup label="Diretoria">
+                                                                        @foreach($diretores_aprovadores as $key => $diretor)
+                                                                            <option value="{{ $key }}">{{ $diretor }}</option>
+                                                                        @endforeach
+                                                                    </optgroup>
+                                                                    <optgroup label="Gerência">
+                                                                        @foreach($gerentes_aprovadores as $key => $gerente)
+                                                                            <option value="{{ $key }}">{{ $gerente }}</option>
+                                                                        @endforeach
+                                                                    </optgroup>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -92,10 +103,10 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('areaTreinamento', 'ÁREA DE TREINAMENTO:') !!}
+                                                                {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('areaTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -137,28 +148,24 @@
 
                                                 <!-- Linha 4 -->
                                                 <div class="row">
-                                                    <small>Aqui temos que ver como vai ficar, tendo em vista que ela solicitou que mais de um setor e um ou mais usuários possam ser escolhidos (muda BD, inclusive).</small>
-
                                                     <div class="col-md-12">
-                                                        <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('grupoInteresse', 'GRUPO DE INTERESSE:') !!}
-                                                            <span class="text-muted" style="font-weight: normal"> Escolha abaixo se este grupo de interesse é <code>um usuário</code> ou <code>um setor</code>. </span>
-                                                        </div>    
-                                                    </div>
-                                                    <div class="col-md-6 bt-switch">
                                                         <div class="form-group">
-                                                            <div class="col-md-12">
-                                                                <input id="ckb_tipo_area_interesse" name="tipo_area_interesse" type="checkbox" checked data-size="large" data-on-text="Usuário" data-off-text="Setor" data-on-color="info" data-off-color="success"/>
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('areaInteresse', 'ÁREA DE INTERESSE:') !!}
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 ">
-                                                        <div class="form-group">
                                                             <div class="col-md-12">
-                                                                {!! Form::select('grupoInteresse', $usuariosInteresse, '', ['class' => 'form-control  custom-select', 'id' => 'grupoInteresse']) !!}
+                                                                <select multiple id="optgroup" name="areaInteresse[]">
+                                                                    @foreach($setoresUsuarios as $key => $su)
+                                                                        <optgroup label="{{ $key }}">
+                                                                            @foreach($su as $key2 => $user)
+                                                                                <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                        </div>
-                                                    </div>
+                                                        </div>   
+                                                    </div>                                                    
                                                 </div>
 
                                                 <!-- Linha 5 -->

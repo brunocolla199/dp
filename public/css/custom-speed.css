@@ -119,6 +119,14 @@
     color: cornflowerblue!important;
 }
 
+/* Estilizando o multiselect  */
+.ms-container {
+    width: 100%!important;
+}
+
+.ms-list li{
+    font-size: 18px!important;
+}
 
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {

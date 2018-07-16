@@ -48,7 +48,6 @@
                                         <input id="checkbox-signup" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                                         <label for="checkbox-signup"> Mantenha-me conectado </label>
                                     </div>
-                                    <a href="javascript:void(0)" id="to-recover" class="text-dark pull-right"><i class="fa fa-lock m-r-5"></i> Esqueceu a senha?</a> 
                                 </div>
                             </div>
 

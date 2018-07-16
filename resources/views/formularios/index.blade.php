@@ -104,8 +104,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane  p-20" id="verForms" role="tabpanel">
-                                    => 2 Linhas de filtros <br>
-                                    => 1 tabela abaixo <br> 
+                                    Aqui serão listados todos os formulários.
                                 </div>
                             </div>
 
