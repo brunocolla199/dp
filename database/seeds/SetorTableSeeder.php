@@ -15,7 +15,7 @@ class SetorTableSeeder extends Seeder
     {
         
         /*
-        * Qualidade - O setor mais importante da empre
+        * Qualidade - O setor mais importante da empresa
         */
         $qualidade               = new Setor();
         $qualidade->nome         = "Qualidade";
