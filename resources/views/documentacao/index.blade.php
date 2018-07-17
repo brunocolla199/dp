@@ -67,11 +67,35 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('setor_dono_doc', 'Setor (dono do documento):') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('setor_dono_doc', $setores, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
                                                                 {!! Form::label('tipo_documento', 'TIPO DE DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
                                                                 {!! Form::select('tipo_documento', $tipoDocumentos, '-- Selecione --', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Linha 2 -->
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                Aqui vai ser o Código do Documento....
                                                             </div>
                                                         </div>
                                                     </div>
@@ -95,62 +119,14 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div>    
                                                 </div>
 
-                                                <!-- Linha 2 -->
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::select('grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::select('grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Linha 3 --> 
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('setor_dono_doc', 'Setor (dono do documento):') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::select('setor_dono_doc', $setores, '', ['class' => 'form-control  custom-select']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div class="col-md-8 control-label font-bold">
-                                                                {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::text('validadeDocumento', date('d/m/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Linha 4 -->
+                                                <!-- Linha 3 -->
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <div class="col-md-6 control-label font-bold">
+                                                            <div class="col-md-10 control-label font-bold">
                                                                 {!! Form::label('areaInteresse', 'ÁREA DE INTERESSE:') !!}
                                                             </div>
                                                             <div class="col-md-12">
@@ -168,7 +144,58 @@
                                                     </div>                                                    
                                                 </div>
 
-                                                <!-- Linha 5 -->
+                                                <!-- Linha 4 --> 
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Linha 5 --> 
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('validadeDocumento', date('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('copiaControlada', 'CÓPIA CONTROLADA:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <input name="copiaControlada" type="radio" id="sim" value="true" class="with-gap radio-col-blue" />
+                                                                <label for="sim">Sim</label>
+                                                                <input name="copiaControlada" type="radio" id="nao" value="false" class="with-gap radio-col-light-blue" checked/>
+                                                                <label for="nao">Não</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
+
+                                                <!-- Linha 6 -->
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="form-group">
@@ -352,7 +379,7 @@
                             textColor: '#eeeeee',  // Text color of the toast
                             textAlign: 'left', 
                             allowToastClose: true,
-                            hideAfter: 4500, // false
+                            hideAfter: 100, // false
                             stack: 6
                         });
                     }

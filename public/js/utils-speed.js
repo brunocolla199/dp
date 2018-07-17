@@ -62,3 +62,26 @@ function showToast(h, t, i) {
         stack: 6
     });
 }
+
+
+function ajaxMethod(method, url, obj) {
+    return new Promise(function(resolve, reject) {        
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            type: method,
+            url: url,
+            dataType: 'JSON',
+            data: obj,
+            success: function (data) {
+                resolve(data);
+            }, error: function (err) {
+                reject(err);
+            }
+        });
+    });
+}

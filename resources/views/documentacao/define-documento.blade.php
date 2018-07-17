@@ -77,26 +77,26 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>SETOR DO DOCUMENTO: </b>{{ $view_setorDono }}  </p>
+                                    <p class="pull-left"><b>SETOR DO DOCUMENTO: </b>{{ $text_setorDono }}  </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>APROVADOR: </b>{{ $view_aprovador }}  </p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>ÁREA DE INTERESSE: </b>{{ $view_grupoInteresse }}  </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>TIPO DE DOCUMENTO: </b>{{ $view_tipo_documento }}  </p>
+                                    <p class="pull-left"><b>APROVADOR: </b>{{ $text_aprovador }}  </p>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE TREINAMENTO: </b>{{ $view_areaTreinamento }}  </p>
+                                    <p class="pull-left"><b>CÓPIA CONTROLADA: </b>{{ $text_copiaControlada }}  </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $view_grupoDivulgacao }}  </p>
+                                    <p class="pull-left"><b>TIPO DE DOCUMENTO: </b>{{ $text_tipo_documento }}  </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>GRUPO DE TREINAMENTO: </b>{{ $text_grupoTreinamento }}  </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $text_grupoDivulgacao }}  </p>
                                 </div>
                             </div>
                         </div>
@@ -142,16 +142,21 @@
                                                 <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
                                                 {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now']) !!}
                                                 
-                                                {!! Form::hidden('tipo_documento', $tipo_documento) !!}
-                                                {!! Form::hidden('id_aprovador', $aprovador) !!}
-                                                {!! Form::hidden('areaTreinamento', $areaTreinamento) !!}
-                                                {!! Form::hidden('grupoDivulgacao', $grupoDivulgacao) !!}
-                                                {!! Form::hidden('grupoInteresse', $grupoInteresse) !!}
-                                                {!! Form::hidden('tipo_grupoInteresse', $tipo_grupoInteresse) !!}
-                                                {!! Form::hidden('setor_dono_doc', $setorDono) !!}
-                                                {!! Form::hidden('tituloDocumento', $tituloDocumento) !!}
-                                                {!! Form::hidden('codigoDocumento', $codigoDocumento) !!}
-                                                {!! Form::hidden('validadeDocumento', $validadeDocumento) !!}
+                                                {!! Form::hidden('tipo_documento',      $tipo_documento) !!}
+                                                {!! Form::hidden('id_aprovador',        $aprovador) !!}
+                                                {!! Form::hidden('grupoTreinamento',    $grupoTreinamento) !!}
+                                                {!! Form::hidden('grupoDivulgacao',     $grupoDivulgacao) !!}
+                                                {!! Form::hidden('setor_dono_doc',      $setorDono) !!}
+                                                {!! Form::hidden('copiaControlada',     $copiaControlada) !!}                                                
+                                                {!! Form::hidden('tituloDocumento',     $tituloDocumento) !!}
+                                                {!! Form::hidden('codigoDocumento',     $codigoDocumento) !!}
+                                                {!! Form::hidden('validadeDocumento',   $validadeDocumento) !!}
+
+                                                @if( count($areaInteresse) > 0 )
+                                                    @foreach($areaInteresse as $usuariosInteresse)
+                                                        <input type="hidden" name="areaInteresse[]" value="<?php echo $usuariosInteresse ?>">
+                                                    @endforeach
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12">
@@ -199,16 +204,22 @@
 
                             {!! Form::open(['route' => 'documentacao.save-new-document', 'method' => 'POST', 'id' => 'form-upload-new-document', 'enctype' => 'multipart/form-data']) !!}
                                 {{ csrf_field() }}
-                                {!! Form::hidden('tipo_documento', $tipo_documento) !!}
-                                {!! Form::hidden('id_aprovador', $aprovador) !!}
-                                {!! Form::hidden('areaTreinamento', $areaTreinamento) !!}
-                                {!! Form::hidden('grupoDivulgacao', $grupoDivulgacao) !!}
-                                {!! Form::hidden('grupoInteresse', $grupoInteresse) !!}
-                                {!! Form::hidden('tipo_grupoInteresse', $tipo_grupoInteresse) !!}
-                                {!! Form::hidden('setor_dono_doc', $setorDono) !!}
-                                {!! Form::hidden('tituloDocumento', $tituloDocumento) !!}
-                                {!! Form::hidden('codigoDocumento', $codigoDocumento) !!}
-                                {!! Form::hidden('validadeDocumento', $validadeDocumento) !!}
+                              
+                                {!! Form::hidden('tipo_documento',      $tipo_documento) !!}
+                                {!! Form::hidden('id_aprovador',        $aprovador) !!}
+                                {!! Form::hidden('grupoTreinamento',    $grupoTreinamento) !!}
+                                {!! Form::hidden('grupoDivulgacao',     $grupoDivulgacao) !!}
+                                {!! Form::hidden('setor_dono_doc',      $setorDono) !!}
+                                {!! Form::hidden('copiaControlada',     $copiaControlada) !!}                                                
+                                {!! Form::hidden('tituloDocumento',     $tituloDocumento) !!}
+                                {!! Form::hidden('codigoDocumento',     $codigoDocumento) !!}
+                                {!! Form::hidden('validadeDocumento',   $validadeDocumento) !!}
+
+                                @if( count($areaInteresse) > 0 )
+                                    @foreach($areaInteresse as $usuariosInteresse)
+                                        <input type="hidden" name="areaInteresse[]" value="<?php echo $usuariosInteresse ?>">
+                                    @endforeach
+                                @endif
                             {!! Form::close() !!}
       
 

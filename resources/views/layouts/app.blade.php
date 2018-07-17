@@ -228,7 +228,45 @@
         @yield('content')
 
 
+        <!-- modal para selecionar novo setor ao usuário [utilizado nas vinculações] -->
+        <div id="new-sector-to-user" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Definindo novo setor para o usuário</h4>
+                            <button type="button" class="close cancel-change-sector-user" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-md-12 alert alert-warning">
+                                <p class="text-justify">
+                                    <b>Você está prestes a desvincular o usuário selecionado deste setor.</b> <small>Portanto, precisamos que você defina um novo setor para este usuário:</small>
+                                </p>
+                            </div>
+                            <div class="col-md-12 mb-4">
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
 
+                            <div class="form-group">
+                                {!! Form::label('novo_setor_do_usuario', 'NOVO SETOR DO USUÁRIO:') !!}
+                                {!! Form::select('novo_setor_do_usuario', ['ovo', 'ovo2'], '', ['class' => 'form-control', 'id' => 'novo_setor_do_usuario']) !!}
+                            </div>
+                        <div class="modal-footer">
+                            <span class="text-left"> Tem certeza que deseja alterar? </span>
+                            <button type="button" class="btn btn-default waves-effect cancel-change-sector-user" data-dismiss="modal">Cancelar</button>
+                            <button type="button" id="changeSectorUser" class="btn btn-success waves-effect waves-light">Alterar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal para selecionar novo setor ao usuário -->
 
     </div>
     <!-- ============================================================== -->
@@ -320,7 +358,6 @@
     <!-- Speed Custom JS -->
     <script src="{{ asset('js/utils-speed.js') }}"></script>     
 
-
     <!-- jQuery file upload -->
     <script src="{{ asset('plugins/dropify/dist/js/dropify.min.js') }}"></script>   
     <script>
@@ -371,31 +408,50 @@
     <script>
         jQuery(document).ready(function() {
             // For multiselect
-            $('#pre-selected-options').multiSelect();
             $('#optgroup').multiSelect({
-                selectableOptgroup: true
+                selectableOptgroup: true,
+
+                afterDeselect: function(values){
+                    var id = $("#optgroup").data('setor');
+                    var obj = {'id_setor': id};
+                    ajaxMethod('POST', " {{ URL::route('ajax.setores.retornaSetoresExcetoUm') }} ", obj).then(function(result) {
+                        $("#novo_setor_do_usuario option").remove();
+                        
+                        Object.keys(result.response).forEach(function(key) {
+                            $('#novo_setor_do_usuario').append($('<option>', { 
+                                value: key,
+                                text : result.response[key]
+                            }));
+                        });
+                    }, function(err) {
+                        console.log(err);
+                    });
+
+                    $("#new-sector-to-user").modal({
+                        backdrop: 'static',
+                        'keyboard': false
+                    });
+                }
+
             });
-            $('#public-methods').multiSelect();
-            $('#select-all').click(function() {
-                $('#public-methods').multiSelect('select_all');
-                return false;
-            });
-            $('#deselect-all').click(function() {
-                $('#public-methods').multiSelect('deselect_all');
-                return false;
-            });
-            $('#refresh').on('click', function() {
-                $('#public-methods').multiSelect('refresh');
-                return false;
-            });
-            $('#add-option').on('click', function() {
-                $('#public-methods').multiSelect('addOption', {
-                    value: 42,
-                    text: 'test 42',
-                    index: 0
+
+
+            // 'Click' em "Alterar" no modal para definir um novo setor para o usuário
+            $("#changeSectorUser").click(function() {
+                var obj = {'users': values};
+                
+                ajaxMethod('POST', " {{ URL::route('ajax.usuarios.trocarSetor') }} ", obj).then(function(result) {
+                    console.log(result);
+                }, function(err) {
+                    console.log(err);
                 });
-                return false;
             });
+        
+            // Fechou modal sem selecionar um novo setor
+            $('.cancel-change-sector-user').click(function (e) {
+                location.reload();
+            });
+
         });
     </script>
 

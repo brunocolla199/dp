@@ -19,6 +19,7 @@ class CreateDadosDocumentoTable extends Migration
             $table->double('versao', 8, 2);
             $table->boolean('status');
             $table->text('observacao');
+            $table->boolean('copia_controlada');
             $table->integer('setor_id')->unsigned();
             $table->foreign('setor_id')->references('id')->on('setor');
             $table->integer('grupo_treinamento_id')->unsigned();

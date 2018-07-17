@@ -14,6 +14,7 @@ use App\Classes\Constants;
 use App\User;
 use App\Workflow;
 use App\Configuracao;
+use App\AreaInteresseDocumento;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
 use Illuminate\Support\Facades\View;
@@ -69,63 +70,67 @@ class DocumentacaoController extends Controller
     }
 
 
-    public function validateData(DadosNovoDocumentoRequest $request) {
-        return view('documentacao.helper');
-        
+    public function validateData(DadosNovoDocumentoRequest $request) {        
         $tipo_documento          = $request->tipo_documento;
+        $text_tipo_documento     = TipoDocumento::where('id', '=', $request->tipo_documento)->get();
+
         $aprovador               = $request->aprovador;
-        $grupoTreinamento         = $request->grupoTreinamento;
+        $text_aprovador          = User::where('id', '=', $request->aprovador)->get();
+
+        $grupoTreinamento        = $request->grupoTreinamento;
+        $text_grupoTreinamento   = GrupoTreinamento::where('id', '=', $request->grupoTreinamento)->get();
+
         $grupoDivulgacao         = $request->grupoDivulgacao;
-        $areaInteresse           = $request->areaInteresse;
+        $text_grupoDivulgacao    = GrupoDivulgacao::where('id', '=', $request->grupoDivulgacao)->get();
+
         $setorDono               = $request->setor_dono_doc;
+        $text_setorDono          = Setor::where('id', '=', $setorDono)->get();
+        
+        $copiaControlada         = ($request->copiaControlada) ? true : false;
+        $text_copiaControlada    = ($request->copiaControlada) ? 'Sim' : 'Não';
+
         $tituloDocumento         = $request->tituloDocumento;
         $validadeDocumento       = $request->validadeDocumento;
-        $acao                    = $request->action;
-        
 
-        // $view_aprovador          = User::where('id', '=', $request->aprovador)->get();
-        $view_aprovador          = User::where('id', '=', 1)->get(); // ALINHAR QUANDO DER TEMPO
-        
-        $view_tipo_documento     = TipoDocumento::where('id', '=', $request->tipo_documento)->get();
-        $view_grupoTreinamento    = Setor::where('id', '=', $request->grupoTreinamento)->get();
-        $view_grupoDivulgacao    = Setor::where('id', '=', $request->grupoDivulgacao)->get();
-        $view_setorDono          = Setor::where('id', '=', $setorDono)->get();
+        $acao                    = $request->action;
+        $areaInteresse           = $request->areaInteresse;        
         
         // Define código do documento
         $qtdDocs = DB::table('documento')
                         ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
                         ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
-                        ->select('COUNT( documento.id) AS total')
+                        ->select('documento.id')
                         ->where('documento.tipo_documento_id', '=', $tipo_documento)
                         ->where('dados_documento.setor_id', '=', $setorDono)
-                        ->get();
+                        ->get()->count();
 
         $codigo = 0;
         if( count($qtdDocs) <= 0 )  {
            $codigo = $this->buildCodDocument(1);
         } else { 
-            $codigo = $this->buildCodDocument($qtdDocs[0]->total + 1);
+            $codigo = $this->buildCodDocument($qtdDocs + 1);
         }
 
         // Concatena e gera o código final
-        $codigo_final = $view_tipo_documento[0]->sigla . "-";
-        $codigo_final .= ($view_tipo_documento[0]->sigla == "IT") ? $view_setorDono[0]->sigla : "";
+        $codigo_final = $text_tipo_documento[0]->sigla . "-";
+        $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla : "";
         $codigo_final .= $codigo;
 
-        return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'view_tipo_documento' => $view_tipo_documento[0]->nome,
-                                                        'aprovador' => 1, 'view_aprovador' => $view_aprovador[0]->name,
-                                                        'grupoTreinamento' => $grupoTreinamento, 'view_grupoTreinamento' => $view_grupoTreinamento[0]->nome, 
-                                                        'grupoDivulgacao' => $grupoDivulgacao, 'view_grupoDivulgacao' => $view_grupoDivulgacao[0]->nome, 
-                                                        'areaInteresse' => $areaInteresse, 'view_areaInteresse' => $view_areaInteresse,
-                                                        'setorDono' => $setorDono, 'view_setorDono' => $view_setorDono[0]->nome, 
-                                                        'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento,'acao' => $acao]);
+        return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
+                                                        'aprovador' => $aprovador, 'text_aprovador' => $text_aprovador[0]->name,
+                                                        'grupoTreinamento' => $grupoTreinamento, 'text_grupoTreinamento' => $text_grupoTreinamento[0]->nome, 
+                                                        'grupoDivulgacao' => $grupoDivulgacao, 'text_grupoDivulgacao' => $text_grupoDivulgacao[0]->nome, 
+                                                        'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
+                                                        'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
+                                                        'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
+                                                        'acao' => $acao, 'areaInteresse' => $areaInteresse ]);
     }
 
 
     public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
         $novoDocumento = $request->all();
 
-        // Popular a tabela 'documento' e, em seguida, as tabelas: 'dados_dcumento', 'workflow'
+        // Popular a tabela 'documento' e, em seguida, as tabelas: 'dados_dcumento', 'area_interesse_documento', 'workflow'
          //if (Input::file('doc_uploaded') != null) {
             $file = $request->file('doc_uploaded', 'local');
             $extensao = $file->getClientOriginalExtension();
@@ -140,20 +145,29 @@ class DocumentacaoController extends Controller
             $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
             $documento->save();
             
-            // Quando tiver tempo, verificar se deu certo a inserção do documento
+            // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
             $dados_documento = new DadosDocumento();
             $dados_documento->validade              = $novoDocumento['validadeDocumento'];
             $dados_documento->versao                = 1.0;
             $dados_documento->status                = true;
-            $dados_documento->observacao            = "";
-            $dados_documento->tipo_grupo_interesse  = $novoDocumento['tipo_grupoInteresse'];
-            $dados_documento->grupo_interesse_id    = $novoDocumento['grupoInteresse'];
+            $dados_documento->observacao            = "Documento Novo";
+            $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
             $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
-            $dados_documento->grupo_treinamento_id  = $novoDocumento['areaTreinamento'];
+            $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
             $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
             $dados_documento->aprovador_id          = $novoDocumento['id_aprovador'];
             $dados_documento->documento_id          = $documento->id; // id que acabou de ser inserido no 'save' acima
             $dados_documento->save();
+            
+            // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
+            if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
+                foreach($novoDocumento['areaInteresse'] as $key => $user) {
+                    $areaInteresseDocumento = new AreaInteresseDocumento();
+                    $areaInteresseDocumento->documento_id  = $documento->id;
+                    $areaInteresseDocumento->usuario_id  = $user;
+                    $areaInteresseDocumento->save();
+                }
+            }
 
             
             // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
@@ -162,7 +176,6 @@ class DocumentacaoController extends Controller
             $workflow->observacao   = "";
             $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
             $workflow->save();
-
          //}
         
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
@@ -215,6 +228,7 @@ class DocumentacaoController extends Controller
         
         File::move($titulo.'.docx', $full_path_dest);
         
+
         $documento = new Documento();
         $documento->nome                 = $titulo;
         $documento->codigo               = $codigo;
@@ -222,20 +236,29 @@ class DocumentacaoController extends Controller
         $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
         $documento->save();
         
-        // Quando tiver tempo, verificar se deu certo a inserção do documento
+        // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
         $dados_documento = new DadosDocumento();
         $dados_documento->validade              = $novoDocumento['validadeDocumento'];
         $dados_documento->versao                = 1.0;
         $dados_documento->status                = true;
         $dados_documento->observacao            = "Documento Novo";
-        $dados_documento->tipo_grupo_interesse  = $novoDocumento['tipo_grupoInteresse'];
-        $dados_documento->grupo_interesse_id    = $novoDocumento['grupoInteresse'];
+        $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
         $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
-        $dados_documento->grupo_treinamento_id  = $novoDocumento['areaTreinamento'];
+        $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
         $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
         $dados_documento->aprovador_id          = $novoDocumento['id_aprovador'];
         $dados_documento->documento_id          = $documento->id; // id que acabou de ser inserido no 'save' acima
         $dados_documento->save();
+        
+        // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
+        if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
+            foreach($novoDocumento['areaInteresse'] as $key => $user) {
+                $areaInteresseDocumento = new AreaInteresseDocumento();
+                $areaInteresseDocumento->documento_id  = $documento->id;
+                $areaInteresseDocumento->usuario_id  = $user;
+                $areaInteresseDocumento->save();
+            }
+        }
 
         
         // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
