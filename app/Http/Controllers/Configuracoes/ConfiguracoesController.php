@@ -37,10 +37,17 @@ class ConfiguracoesController extends Controller
                                 ->orderBy('nome')
                                 ->get();
 
+        $diretoriaGerencia = DB::table('setor')
+                                ->select('setor.*')
+                                ->where('id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)
+                                ->orWhere('id', '=', Constants::$ID_TIPO_SETOR_GERENCIA)
+                                ->orderBy('nome')
+                                ->get();
+
         $numeroPadraoParaCodigo = Configuracao::all();
 
         return view('configuracoes.index', ['setoresEmpresa' => $setoresEmpresa, 'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao,
-                                            'numeroPadraoParaCodigo' => $numeroPadraoParaCodigo[0]->numero_padrao_codigo]);
+                                            'diretoriaGerencia' => $diretoriaGerencia, 'numeroPadraoParaCodigo' => $numeroPadraoParaCodigo[0]->numero_padrao_codigo]);
     }
 
 
@@ -138,10 +145,87 @@ class ConfiguracoesController extends Controller
             $setoresUsuarios[$setor->nome] = $arrUsers;
         }
 
-        // dd($setoresUsuarios);
-
         $grupoTreinamento = GrupoTreinamento::where('id', '=', $id)->get();
-        return view('configuracoes.link-users', ['grupoTreinamento' => $grupoTreinamento[0], 'setoresUsuarios' => $setoresUsuarios]);
+        $text_agrupamento = "ao setor " . $grupoTreinamento[0]->nome;
+        $checkGrouping = $grupoTreinamento[0]->nome;
+        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoT' => $grupoTreinamento[0], 'setoresUsuarios' => $setoresUsuarios]);
+    }
+
+
+    public function linkUsersDirectionManagement($id) {
+        /*
+        $usersNotLinked = [];
+        $usersLinked = [];
+        
+        $allSectors = Setor::where('id', '!=', $id)->get();
+        foreach($allSectors as $key => $sector) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $sector->id)->get();
+            foreach($users as $key2 => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $usersNotLinked[$sector->nome] = $arrUsers;
+        }
+        
+        $arrUsers = [];
+        $specialSector = Setor::where('id', '=', $id)->get();
+        $users2 = User::where('setor_id', '=', $specialSector[0]->id)->get();
+        foreach($users2 as $key3 => $user2) {
+            $arrUsers[$user2->id] = $user2->name;
+        }
+        $usersLinked[$specialSector[0]->nome] = $arrUsers;
+        */
+
+        $usersAndSectors = [];
+
+        $allSectors = Setor::orderBy('nome')->get();
+        foreach($allSectors as $key => $sector) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $sector->id)->get();
+            foreach($users as $key2 => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $usersAndSectors[$sector->nome] = $arrUsers;
+        }
+        
+        $text_agrupamento = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "à Diretoria" : "à Gerência";
+        $checkGrouping = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "Diretoria" : "Gerência";
+        $setorAtual = Setor::where('id', '=', $id)->get();
+
+        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'setor' => $setorAtual[0], 'setoresUsuarios' => $usersAndSectors]);
+    }
+
+
+    public function linkSave(Request $request) {
+        // dd($request->all());
+        $novosUsuariosVinculados = $request->usersLinked;
+
+        $tipoAgrupamento = $request->tipo_agrupamento;
+        $idAgrupamento   = $request->id_agrupamento;
+
+        switch ($tipoAgrupamento) {
+            case '1': // Grupo de Treinamento
+                # code...
+                break;
+
+            case '2': // Grupo de Divulgação
+                # code...
+                break;
+            
+            default: // (0) == Setor
+                $users = User::select('id')->where('setor_id', '=', $idAgrupamento)->get()->pluck('id');
+                $array =  (array) $users;
+                foreach($novosUsuariosVinculados as $key => $user) {
+                    if (!in_array($user, $array)) {
+                        $u = User::where('id', '=', $user)->get();
+                        $u[0]->setor_id = $idAgrupamento;
+                        $u[0]->save();
+                    }
+                }
+                break;
+        }        
+
+        return redirect()->route('configuracoes')->with('link_success', 'valor');
     }
 
 }

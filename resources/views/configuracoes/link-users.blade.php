@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')  
+    <!-- O que fazer nesta situação? -->
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 
 	<div class="page-wrapper">
         <div class="container-fluid">
@@ -22,16 +24,50 @@
                     <div class="card">
                         <div class="card-body">
                         
-                            <h4 class="box-title">Clique sobre os usuários que deseja selecionar. <small>Caso todos os usuários do setor devam ser selecionados, clique sobre o nome do setor.</small></h4>
-                            <select multiple id="optgroup" name="optgroup[]">
-                                @foreach($setoresUsuarios as $key => $su)
-                                    <optgroup label="{{$key}}">
-                                        @foreach($su as $key2 => $user)
-                                            <option value="{{$user}}">{{$user}}</option>
+                            <h4>Vinculando usuários <span class="text-info"> {{ $text_agrupamento }} </span> </h4>
+                            <div class="col-md-12 alert alert-info">
+                                <h5 class="box-title">Clique sobre os usuários que deseja vincular. <small>Caso deseje vincular todos os usuários do setor, clique sobre o nome do setor.</small></h5>
+                                <h5 class="box-title">Para desvincular, selecione <b>um</b> usuário por vez. <small>Pedimos isso em razão da definição de um novo setor para cada usuário desvinculado.</small></h5>
+                            </div>
+                                
+                            <div class="mt-4">
+                                {!! Form::open(['route' => 'configuracoes.link.save', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
+                                    @if( isset($setor) )
+                                        {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_SETOR) !!}
+                                        {!! Form::hidden('id_agrupamento', $setor->id) !!}
+                                        {!! Form::hidden('diretoria_ou_gerencia', ($checkGrouping == "Diretoria") ? Constants::$ID_TIPO_SETOR_DIRETORIA : Constants::$ID_TIPO_SETOR_GERENCIA ) !!}
+                                    @elseif( isset($grupotT) )
+                                        {{ dd("grupotT") }}   
+                                    @elseif( isset($grupotD) )
+                                        {{ dd("grupotD") }}   
+                                    @endif
+
+                                    <select multiple id="optgroup" name="usersLinked[]" data-setor="{{$setor->id}}">
+                                        @foreach($setoresUsuarios as $key => $su)
+                                            @if($key == $checkGrouping )
+                                                <optgroup label="{{$key}}">
+                                                    @foreach($su as $key2 => $user)
+                                                        <option selected value="{{$key2}}">{{$user}}</option>
+                                                    @endforeach
+                                                </optgroup>
+                                            @else
+                                                <optgroup label="{{$key}}">
+                                                    @foreach($su as $key2 => $user)
+                                                        <option value="{{$key2}}">{{$user}}</option>
+                                                    @endforeach
+                                                </optgroup>
+                                            @endif
                                         @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
+                                    </select>
+
+                                    <div class="pull-right">
+                                        <br>
+                                        <input type="submit" id="btn-save-new-document" class="btn btn-lg btn-success" value="Atualzar Vinculações">
+                                    </div>
+                                {!! Form::close() !!}
+                            </div>
+
+
 
                         </div>
                     </div>
@@ -39,7 +75,7 @@
             </div>
             <!-- End Page Content -->
 
-
+            
 
         </div>
     </div>

@@ -256,7 +256,7 @@
 
                             <div class="form-group">
                                 {!! Form::label('novo_setor_do_usuario', 'NOVO SETOR DO USUÁRIO:') !!}
-                                {!! Form::select('novo_setor_do_usuario', ['ovo', 'ovo2'], '', ['class' => 'form-control', 'id' => 'novo_setor_do_usuario']) !!}
+                                {!! Form::select('novo_setor_do_usuario', ['ovo', 'ovo2'], '', ['class' => 'form-control', 'id' => 'novo_setor_do_usuario', 'style' => 'height: auto']) !!}
                             </div>
                         <div class="modal-footer">
                             <span class="text-left"> Tem certeza que deseja alterar? </span>
@@ -412,6 +412,8 @@
                 selectableOptgroup: true,
 
                 afterDeselect: function(values){
+                    window.sessionStorage.setItem("id_usuario_atual_desvinculacao", values[0]);
+
                     var id = $("#optgroup").data('setor');
                     var obj = {'id_setor': id};
                     ajaxMethod('POST', " {{ URL::route('ajax.setores.retornaSetoresExcetoUm') }} ", obj).then(function(result) {
@@ -438,10 +440,12 @@
 
             // 'Click' em "Alterar" no modal para definir um novo setor para o usuário
             $("#changeSectorUser").click(function() {
-                var obj = {'users': values};
-                
+                var obj = {'user': window.sessionStorage.getItem('id_usuario_atual_desvinculacao'), 'new_sector': $("#novo_setor_do_usuario").val()};
+
+                console.log(obj);
                 ajaxMethod('POST', " {{ URL::route('ajax.usuarios.trocarSetor') }} ", obj).then(function(result) {
-                    console.log(result);
+                    window.sessionStorage.clear();
+                    location.reload();
                 }, function(err) {
                     console.log(err);
                 });
@@ -449,6 +453,7 @@
         
             // Fechou modal sem selecionar um novo setor
             $('.cancel-change-sector-user').click(function (e) {
+                window.sessionStorage.clear();
                 location.reload();
             });
 

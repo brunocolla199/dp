@@ -14,6 +14,8 @@
 		<input type="hidden" name="status" id="status" value="edit_training-group_success">
     @elseif (session('edit_disclosure-group_success'))
 		<input type="hidden" name="status" id="status" value="edit_disclosure-group_success">
+    @elseif (session('link_success'))
+		<input type="hidden" name="status" id="status" value="link_success">
     @endif
 
     <script>
@@ -30,6 +32,8 @@
                 showToast('Sucesso!', 'Grupo de Treinamento editado com sucesso.', 'success');
             } else if(status == "edit_disclosure-group_success") {
                 showToast('Sucesso!', 'Grupo de Divulgação editado com sucesso.', 'success');
+            } else if(status == "link_success") {
+                showToast('Sucesso!', 'Vinculações atualizadas com sucesso.', 'success');
             }
         });
     </script>
@@ -88,6 +92,7 @@
                                             <li class="nav-item"> <a class="nav-link speed-subtabs ovo" style="cursor: pointer" data-toggle="collapse" data-target="#setores-empresa" aria-expanded="false" aria-controls="setores-empresa" role="tab"> <i class="fa fa-sitemap"></i> <span class="hidden-xs-down"> SETORES DA EMPRESA</span></a> </li>
                                             <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-treinamento" aria-expanded="false" aria-controls="grupos-treinamento" role="tab"> <i class="fa fa-gavel"></i>   <span class="hidden-xs-down"> GRUPOS DE TREINAMENTO</span></a> </li>
                                             <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-divulgacao" aria-expanded="false" aria-controls="grupos-divulgacao" role="tab">  <i class="fa fa-bullhorn"></i>      <span class="hidden-xs-down"> GRUPOS DE DIVULGAÇÃO</span></a> </li>
+                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#diretoria_gerencia" aria-expanded="false" aria-controls="diretoria_gerencia" role="tab">  <i class="fa fa-briefcase"></i>      <span class="hidden-xs-down"> DIRETORIA/GERÊNCIA</span></a> </li>
                                         </ul>
                                         <!-- Tab panes -->
                                         <div class="tab-content">
@@ -148,7 +153,7 @@
                                                                                 <td>{{ $grupoT->descricao }}</td>
                                                                                 <td class="text-nowrap">
                                                                                     <center>
-                                                                                        <a href="{{ route('users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                        <a href="{{ route('configuracoes.link.users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                         <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                                                                         <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                     </center>
@@ -184,6 +189,44 @@
                                                                                     <center>
                                                                                         <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                                                                         <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                    </center>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="collapse" id="diretoria_gerencia" role="tabpanel">
+                                                <div class="p-20">
+                                                    <div class="row">
+                                                        <h5 class="alert alert-info alert-dismissible" role="alert">
+                                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                            Os setores especiais <b>Diretoria</b> e <b>Gerência</b> não podem ser modificados, pois são padrões dentro do sistema.
+                                                        </h5>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="row mt-3 margin-top-1percent">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Nome do Setor Especial</th>
+                                                                            <th>Descrição</th>
+                                                                            <th>Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach($diretoriaGerencia as $dg)
+                                                                            <tr>
+                                                                                <td><a href="javascript:void(0)">{{ $dg->nome }}</a></td> 
+                                                                                <td>{{ $dg->descricao }}</td>
+                                                                                <td class="text-nowrap">
+                                                                                    <center>
+                                                                                        <a href="{{ route('configuracoes.link.users_direction-management', ['id' => $dg->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                     </center>
                                                                                 </td>
                                                                             </tr>
@@ -334,8 +377,8 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             <h4 class="modal-title">Alterando informações do setor</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         </div>
                         {!! Form::open(['route' => 'configuracoes.edit.sector', 'class' => 'form-horizontal']) !!}
                             <div class="modal-body">
@@ -381,8 +424,8 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             <h4 class="modal-title">Alterando informações do grupo de treinamento</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         </div>
                         {!! Form::open(['route' => 'configuracoes.edit.training-group', 'class' => 'form-horizontal']) !!}
                             <div class="modal-body">
@@ -424,8 +467,8 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             <h4 class="modal-title">Alterando informações do grupo de divulgação</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         </div>
                         {!! Form::open(['route' => 'configuracoes.edit.disclosure-group', 'class' => 'form-horizontal']) !!}
                             <div class="modal-body">
