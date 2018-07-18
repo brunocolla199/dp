@@ -159,7 +159,7 @@ class ConfiguracoesController extends Controller
         $grupoAtual[$grupoT[0]->nome] = $arrUsers;        
 
         $grupoTreinamento = GrupoTreinamento::where('id', '=', $id)->get();
-        $text_agrupamento = "ao setor " . $grupoTreinamento[0]->nome;
+        $text_agrupamento = "ao grupo de treinamento '" . $grupoTreinamento[0]->nome . "'";
         $checkGrouping = $grupoTreinamento[0]->nome;
 
         return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoT' => $grupoTreinamento[0], 'setoresUsuarios' => $usersAndSectors, 'usuariosJaVinculados' => $grupoAtual]);
@@ -213,15 +213,36 @@ class ConfiguracoesController extends Controller
         $grupoAtual[$grupoD[0]->nome] = $arrUsers;        
 
         $grupoDivulgacao = GrupoDivulgacao::where('id', '=', $id)->get();
-        $text_agrupamento = "ao setor " . $grupoDivulgacao[0]->nome;
+        $text_agrupamento = "ao grupo de divulgação '" . $grupoDivulgacao[0]->nome . "'";
         $checkGrouping = $grupoDivulgacao[0]->nome;
 
         return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoD' => $grupoDivulgacao[0], 'setoresUsuarios' => $usersAndSectors, 'usuariosJaVinculados' => $grupoAtual]);
     }
 
 
+    public function linkUsersSectors($id) {
+        $usersAndSectors = [];
+
+        $allSectors = Setor::orderBy('nome')->get();
+        foreach($allSectors as $key => $sector) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $sector->id)->get();
+            foreach($users as $key2 => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $usersAndSectors[$sector->nome] = $arrUsers;
+        }
+        
+
+        $setorAtual = Setor::where('id', '=', $id)->get();
+        $text_agrupamento = "ao setor '" . $setorAtual[0]->nome . "'";
+        $checkGrouping = $setorAtual[0]->nome;
+
+        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'setor' => $setorAtual[0], 'setoresUsuarios' => $usersAndSectors]);
+    }
+
+
     public function linkSave(Request $request) {
-        // dd($request->all());
         $novosUsuariosVinculados = $request->usersLinked;
 
         $tipoAgrupamento = $request->tipo_agrupamento;

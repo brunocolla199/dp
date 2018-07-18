@@ -76,6 +76,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('link/{id}/users_training-group', 		['as' => 'configuracoes.link.users_training-group',     	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersTrainingGroup']);
 		Route::get('link/{id}/users_direction-management', 	['as' => 'configuracoes.link.users_direction-management',   'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDirectionManagement']);
 		Route::get('link/{id}/users_disclosure-group', 		['as' => 'configuracoes.link.users_disclosure-group',   	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDisclosureGroup']);
+		Route::get('link/{id}/users_sectors', 				['as' => 'configuracoes.link.users_sectors',   				'uses' => 'Configuracoes\ConfiguracoesController@linkUsersSectors']);
 		Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
 	});
 	

@@ -119,6 +119,7 @@
                                                                                 <td>{{ $setor->descricao }}</td>
                                                                                 <td class="text-nowrap">
                                                                                     <center>
+                                                                                        <a href="{{ route('configuracoes.link.users_sectors', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                         <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                                                                         <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                     </center>
