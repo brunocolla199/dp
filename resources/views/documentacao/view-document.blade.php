@@ -28,52 +28,51 @@
                 <div class="row">
                     <div class="col-md-12 card">
                         <div class=" card-body">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <div class="col-md-6 control-label font-bold">
-                                            {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
-                                        </div>
-                                        <div class="col-md-12">
-                                            {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control', 'readonly']) !!}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <div class="col-md-6 control-label font-bold">
-                                            {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
-                                        </div>
-                                        <div class="col-md-12">
-                                            {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
-                                        </div>
-                                    </div>
-                                </div> 
 
-                                <div class="col-md-12">
-                                    <div class="pull-right">
-                                        <br>
-                                        <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
-                                    </div>
-                                    <!-- <div class="pull-right">
-                                        {!! Form::button('Salvar Alterações', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}       
-                                    </div> -->
-                                </div>
-
-                                
-
-                                
-                                <!-- Editor -->
-                                <div class="col-md-12 document-editor" style="margin-top:20px;">
-                                    <div class="document-editor__toolbar"></div>
-                                    <div class="document-editor__editable-container">
-                                        <div class="document-editor__editable">
-                                            <p></p>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control', 'readonly']) !!}
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
+                                            </div>
+                                        </div>
+                                    </div> 
                                 </div>
-                                <!-- End Editor -->
+                            </div>
+
+                            <!-- Editor -->
+                            <div class="col-md-12 document-editor" style="margin-top:20px;">
+                                <div class="document-editor__toolbar"></div>
+                                <div class="document-editor__editable-container">
+                                    <div class="document-editor__editable">
+                                        <p></p>
+                                    </div>
                                 </div>
+                            </div>
+                            <!-- End Editor -->
+                                
+                            
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <br>
+                                    <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
+                                </div>
+                            </div>
 
                         </div>
                     </div>
