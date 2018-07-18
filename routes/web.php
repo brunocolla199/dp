@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth']], function() {
 	*/
 	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  						'uses' => 'AjaxController@getUsers']);
 	Route::post('ajax/usuarios/trocarSetor',  			['as' => 'ajax.usuarios.trocarSetor', 	  				'uses' => 'AjaxController@trocarSetor']);
+	Route::post('ajax/usuarios/removerDoGrupo',			['as' => 'ajax.usuarios.removerDoGrupo', 	  			'uses' => 'AjaxController@removerDoGrupo']);
 	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  						'uses' => 'AjaxController@getSectors']);
 	Route::post('ajax/setores/retornaSetoresExcetoUm',  ['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
 

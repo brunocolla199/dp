@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Setor;
 use App\Configuracao;
 use App\GrupoTreinamento;
+use App\GrupoTreinamentoUsuario;
 use App\GrupoDivulgacao;
 use App\User;
 use App\Classes\Constants;
@@ -133,49 +134,51 @@ class ConfiguracoesController extends Controller
 
 
     public function linkUsersTrainingGroup($id) {
-        $setoresUsuarios = [];
+        // $gruposTreinamentoEUsuarios = [];
         
-        $setores = Setor::all();
-        foreach($setores as $key => $setor) {
-            $arrUsers = [];
-            $users = User::where('setor_id', '=', $setor->id)->get();
-            foreach($users as $key => $user) {
-                $arrUsers[] = $user->name;
-            }
-            $setoresUsuarios[$setor->nome] = $arrUsers;
-        }
+        // $gruposT = GrupoTreinamento::all();
+        // foreach($gruposT as $key => $grupo) {
+        //     $arrUsers = [];
+        //     $relations = GrupoTreinamentoUsuario::where('grupo_id', '=', $grupo->id)->get();
+        //     foreach($relations as $key2 => $rel) {
+        //         $user = User::where('id', '=', $rel->usuario_id)->get();
+        //         $arrUsers[] = $user->name;
+        //     }
+        //     $gruposTreinamentoEUsuarios[$grupo->nome] = $arrUsers;
+        // }
 
-        $grupoTreinamento = GrupoTreinamento::where('id', '=', $id)->get();
-        $text_agrupamento = "ao setor " . $grupoTreinamento[0]->nome;
-        $checkGrouping = $grupoTreinamento[0]->nome;
-        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoT' => $grupoTreinamento[0], 'setoresUsuarios' => $setoresUsuarios]);
-    }
+        $usersAndSectors = [];
+        $grupoAtual      = [];
 
-
-    public function linkUsersDirectionManagement($id) {
-        /*
-        $usersNotLinked = [];
-        $usersLinked = [];
-        
-        $allSectors = Setor::where('id', '!=', $id)->get();
+        $allSectors = Setor::orderBy('nome')->get();
         foreach($allSectors as $key => $sector) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $sector->id)->get();
             foreach($users as $key2 => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
-            $usersNotLinked[$sector->nome] = $arrUsers;
+            $usersAndSectors[$sector->nome] = $arrUsers;
         }
-        
-        $arrUsers = [];
-        $specialSector = Setor::where('id', '=', $id)->get();
-        $users2 = User::where('setor_id', '=', $specialSector[0]->id)->get();
-        foreach($users2 as $key3 => $user2) {
-            $arrUsers[$user2->id] = $user2->name;
-        }
-        $usersLinked[$specialSector[0]->nome] = $arrUsers;
-        */
 
+
+        $arrUsers = [];
+        $grupoT = GrupoTreinamento::where('id', '=', $id)->get();
+        $relations = GrupoTreinamentoUsuario::where('grupo_id', '=', $grupoT[0]->id)->get();
+        foreach($relations as $key => $rel) {
+            $user = User::where('id', '=', $rel->usuario_id)->get();
+            $arrUsers[] = $user[0]->name;
+        }
+        $grupoAtual[$grupoT[0]->nome] = $arrUsers;        
+
+        $grupoTreinamento = GrupoTreinamento::where('id', '=', $id)->get();
+        $text_agrupamento = "ao setor " . $grupoTreinamento[0]->nome;
+        $checkGrouping = $grupoTreinamento[0]->nome;
+
+        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoT' => $grupoTreinamento[0], 'setoresUsuarios' => $usersAndSectors, 'usuariosJaVinculados' => $grupoAtual]);
+    }
+
+
+    public function linkUsersDirectionManagement($id) {
         $usersAndSectors = [];
 
         $allSectors = Setor::orderBy('nome')->get();
@@ -188,9 +191,10 @@ class ConfiguracoesController extends Controller
             $usersAndSectors[$sector->nome] = $arrUsers;
         }
         
+
+        $setorAtual = Setor::where('id', '=', $id)->get();
         $text_agrupamento = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "à Diretoria" : "à Gerência";
         $checkGrouping = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "Diretoria" : "Gerência";
-        $setorAtual = Setor::where('id', '=', $id)->get();
 
         return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'setor' => $setorAtual[0], 'setoresUsuarios' => $usersAndSectors]);
     }
@@ -205,7 +209,19 @@ class ConfiguracoesController extends Controller
 
         switch ($tipoAgrupamento) {
             case '1': // Grupo de Treinamento
-                # code...
+                foreach($novosUsuariosVinculados as $key => $user) {
+                    $relations = DB::table('grupo_treinamento_usuario')->where([
+                        ['grupo_id', '=', $idAgrupamento],
+                        ['usuario_id', '=', $user]
+                    ])->get();
+                    
+                    if ( count($relations) == 0) {
+                        $gtu = new GrupoTreinamentoUsuario();
+                        $gtu->grupo_id = $idAgrupamento;
+                        $gtu->usuario_id = $user;
+                        $gtu->save();
+                    }
+                }
                 break;
 
             case '2': // Grupo de Divulgação

@@ -32,37 +32,60 @@
                                 
                             <div class="mt-4">
                                 {!! Form::open(['route' => 'configuracoes.link.save', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
+                                    
+                                
+                                
                                     @if( isset($setor) )
                                         {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_SETOR) !!}
                                         {!! Form::hidden('id_agrupamento', $setor->id) !!}
-                                        {!! Form::hidden('diretoria_ou_gerencia', ($checkGrouping == "Diretoria") ? Constants::$ID_TIPO_SETOR_DIRETORIA : Constants::$ID_TIPO_SETOR_GERENCIA ) !!}
-                                    @elseif( isset($grupotT) )
-                                        {{ dd("grupotT") }}   
+                                       
+                                        <select multiple id="optgroup" name="usersLinked[]" data-setor="{{$setor->id}}">
+                                            @foreach($setoresUsuarios as $key => $su)
+                                                @if($key == $checkGrouping )
+                                                    <optgroup label="{{$key}}">
+                                                        @foreach($su as $key2 => $user)
+                                                            <option selected value="{{$key2}}">{{$user}}</option>
+                                                        @endforeach
+                                                    </optgroup>
+                                                @else
+                                                    <optgroup label="{{$key}}">
+                                                        @foreach($su as $key2 => $user)
+                                                            <option value="{{$key2}}">{{$user}}</option>
+                                                        @endforeach
+                                                    </optgroup>
+                                                @endif
+                                            @endforeach
+                                        </select>
+
+
+
+                                    @elseif( isset($grupoT) )
+                                        {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_GRUPO_TREINAMENTO) !!}
+                                        {!! Form::hidden('id_agrupamento', $grupoT->id) !!}
+
+                                        <select multiple id="optgroup-grupoT" name="usersLinked[]" data-setor="{{$grupoT->id}}">
+                                            @foreach($setoresUsuarios as $key => $su)
+                                                <optgroup label="{{$key}}">
+                                                    @foreach($su as $key2 => $user)
+                                                        @if( in_array($user, $usuariosJaVinculados[$checkGrouping]) )
+                                                            <option selected value="{{$key2}}">{{$user}}</option>
+                                                        @else
+                                                            <option value="{{$key2}}">{{$user}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </optgroup>
+                                            @endforeach
+                                        </select>
+
+
+
                                     @elseif( isset($grupotD) )
                                         {{ dd("grupotD") }}   
                                     @endif
 
-                                    <select multiple id="optgroup" name="usersLinked[]" data-setor="{{$setor->id}}">
-                                        @foreach($setoresUsuarios as $key => $su)
-                                            @if($key == $checkGrouping )
-                                                <optgroup label="{{$key}}">
-                                                    @foreach($su as $key2 => $user)
-                                                        <option selected value="{{$key2}}">{{$user}}</option>
-                                                    @endforeach
-                                                </optgroup>
-                                            @else
-                                                <optgroup label="{{$key}}">
-                                                    @foreach($su as $key2 => $user)
-                                                        <option value="{{$key2}}">{{$user}}</option>
-                                                    @endforeach
-                                                </optgroup>
-                                            @endif
-                                        @endforeach
-                                    </select>
-
                                     <div class="pull-right">
                                         <br>
-                                        <input type="submit" id="btn-save-new-document" class="btn btn-lg btn-success" value="Atualzar Vinculações">
+                                        <input type="submit" id="btn-save-new-document" class="btn btn-lg btn-success" value="Atualizar Vinculações">
                                     </div>
                                 {!! Form::close() !!}
                             </div>

@@ -10,7 +10,7 @@ class GrupoTreinamentoUsuario extends Model
     protected $table = "grupo_treinamento_usuario";
 
     protected $fillable = [
-        'id', 'id_grupo', 'id_usuario'
+        'id', 'grupo_id', 'usuario_id'
     ];
 
 }

@@ -15,10 +15,10 @@ class CreateGrupoDivulgacaoUsuarioTable extends Migration
     {
         Schema::create('grupo_divulgacao_usuario', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('id_grupo')->unsigned();
-            $table->foreign('id_grupo')->references('id')->on('grupo_divulgacao');
-            $table->integer('id_usuario')->unsigned();
-            $table->foreign('id_usuario')->references('id')->on('users');
+            $table->integer('grupo_id')->unsigned();
+            $table->foreign('grupo_id')->references('id')->on('grupo_divulgacao');
+            $table->integer('usuario_id')->unsigned();
+            $table->foreign('usuario_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

@@ -68,7 +68,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-10 control-label font-bold">
-                                                                {!! Form::label('setor_dono_doc', 'Setor (dono do documento):') !!}
+                                                                {!! Form::label('setor_dono_doc', 'Setor:') !!}
                                                             </div>
                                                             <div class="col-md-12">
                                                                 {!! Form::select('setor_dono_doc', $setores, '', ['class' => 'form-control  custom-select']) !!}

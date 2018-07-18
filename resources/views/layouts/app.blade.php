@@ -228,6 +228,9 @@
         @yield('content')
 
 
+
+
+
         <!-- modal para selecionar novo setor ao usuário [utilizado nas vinculações] -->
         <div id="new-sector-to-user" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog">
@@ -407,7 +410,11 @@
     <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
     <script>
         jQuery(document).ready(function() {
-            // For multiselect
+            /*
+            * 
+            * MultiSelect de DIRETORIA / GERÊNCIA
+            * 
+            */
             $('#optgroup').multiSelect({
                 selectableOptgroup: true,
 
@@ -437,7 +444,6 @@
 
             });
 
-
             // 'Click' em "Alterar" no modal para definir um novo setor para o usuário
             $("#changeSectorUser").click(function() {
                 var obj = {'user': window.sessionStorage.getItem('id_usuario_atual_desvinculacao'), 'new_sector': $("#novo_setor_do_usuario").val()};
@@ -455,6 +461,27 @@
             $('.cancel-change-sector-user').click(function (e) {
                 window.sessionStorage.clear();
                 location.reload();
+            });
+
+
+            /*
+            * 
+            * MultiSelect de GRUPOS DE TREINAMENTO
+            *
+            */
+            $('#optgroup-grupoT').multiSelect({
+                selectableOptgroup: true,
+
+                afterDeselect: function(values){
+                    var id = $("#optgroup-grupoT").data('setor');
+                    var obj = {'id_grupo': id, 'id_user': values[0]};
+
+                    ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
+                       console.log(result);
+                    }, function(err) {
+                        console.log(err);
+                    });
+                }
             });
 
         });
