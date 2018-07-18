@@ -464,6 +464,7 @@
             });
 
 
+
             /*
             * 
             * MultiSelect de GRUPOS DE TREINAMENTO
@@ -474,12 +475,30 @@
 
                 afterDeselect: function(values){
                     var id = $("#optgroup-grupoT").data('setor');
-                    var obj = {'id_grupo': id, 'id_user': values[0]};
+                    var obj = {'id_grupo': id, 'id_user': values[0], 'tipo_grupo': 'treinamento'};
 
                     ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
-                       console.log(result);
                     }, function(err) {
-                        console.log(err);
+                    });
+                }
+            });
+
+
+
+            /*
+            * 
+            * MultiSelect de GRUPOS DE DIVULGAÇÃO
+            *
+            */
+            $('#optgroup-grupoD').multiSelect({
+                selectableOptgroup: true,
+
+                afterDeselect: function(values){
+                    var id = $("#optgroup-grupoD").data('setor');
+                    var obj = {'id_grupo': id, 'id_user': values[0], 'tipo_grupo': 'divulgacao'};
+
+                    ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
+                    }, function(err) {
                     });
                 }
             });

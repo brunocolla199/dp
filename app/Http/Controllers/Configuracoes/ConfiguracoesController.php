@@ -9,6 +9,7 @@ use App\Configuracao;
 use App\GrupoTreinamento;
 use App\GrupoTreinamentoUsuario;
 use App\GrupoDivulgacao;
+use App\GrupoDivulgacaoUsuario;
 use App\User;
 use App\Classes\Constants;
 use Illuminate\Support\Facades\DB;
@@ -134,19 +135,6 @@ class ConfiguracoesController extends Controller
 
 
     public function linkUsersTrainingGroup($id) {
-        // $gruposTreinamentoEUsuarios = [];
-        
-        // $gruposT = GrupoTreinamento::all();
-        // foreach($gruposT as $key => $grupo) {
-        //     $arrUsers = [];
-        //     $relations = GrupoTreinamentoUsuario::where('grupo_id', '=', $grupo->id)->get();
-        //     foreach($relations as $key2 => $rel) {
-        //         $user = User::where('id', '=', $rel->usuario_id)->get();
-        //         $arrUsers[] = $user->name;
-        //     }
-        //     $gruposTreinamentoEUsuarios[$grupo->nome] = $arrUsers;
-        // }
-
         $usersAndSectors = [];
         $grupoAtual      = [];
 
@@ -200,6 +188,38 @@ class ConfiguracoesController extends Controller
     }
 
 
+    public function linkUsersDisclosureGroup($id) {
+        $usersAndSectors = [];
+        $grupoAtual      = [];
+
+        $allSectors = Setor::orderBy('nome')->get();
+        foreach($allSectors as $key => $sector) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $sector->id)->get();
+            foreach($users as $key2 => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $usersAndSectors[$sector->nome] = $arrUsers;
+        }
+
+
+        $arrUsers = [];
+        $grupoD = GrupoDivulgacao::where('id', '=', $id)->get();
+        $relations = GrupoDivulgacaoUsuario::where('grupo_id', '=', $grupoD[0]->id)->get();
+        foreach($relations as $key => $rel) {
+            $user = User::where('id', '=', $rel->usuario_id)->get();
+            $arrUsers[] = $user[0]->name;
+        }
+        $grupoAtual[$grupoD[0]->nome] = $arrUsers;        
+
+        $grupoDivulgacao = GrupoDivulgacao::where('id', '=', $id)->get();
+        $text_agrupamento = "ao setor " . $grupoDivulgacao[0]->nome;
+        $checkGrouping = $grupoDivulgacao[0]->nome;
+
+        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoD' => $grupoDivulgacao[0], 'setoresUsuarios' => $usersAndSectors, 'usuariosJaVinculados' => $grupoAtual]);
+    }
+
+
     public function linkSave(Request $request) {
         // dd($request->all());
         $novosUsuariosVinculados = $request->usersLinked;
@@ -225,7 +245,19 @@ class ConfiguracoesController extends Controller
                 break;
 
             case '2': // Grupo de Divulgação
-                # code...
+                foreach($novosUsuariosVinculados as $key => $user) {
+                    $relations = DB::table('grupo_divulgacao_usuario')->where([
+                        ['grupo_id', '=', $idAgrupamento],
+                        ['usuario_id', '=', $user]
+                    ])->get();
+                    
+                    if ( count($relations) == 0) {
+                        $gtu = new GrupoDivulgacaoUsuario();
+                        $gtu->grupo_id = $idAgrupamento;
+                        $gtu->usuario_id = $user;
+                        $gtu->save();
+                    }
+                }
                 break;
             
             default: // (0) == Setor

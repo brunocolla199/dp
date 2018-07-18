@@ -75,6 +75,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('edit/disclosure-group', 				['as' => 'configuracoes.edit.disclosure-group',      		'uses' => 'Configuracoes\ConfiguracoesController@editDisclosureGroup']);
 		Route::get('link/{id}/users_training-group', 		['as' => 'configuracoes.link.users_training-group',     	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersTrainingGroup']);
 		Route::get('link/{id}/users_direction-management', 	['as' => 'configuracoes.link.users_direction-management',   'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDirectionManagement']);
+		Route::get('link/{id}/users_disclosure-group', 		['as' => 'configuracoes.link.users_disclosure-group',   	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDisclosureGroup']);
 		Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
 	});
 	

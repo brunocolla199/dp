@@ -153,7 +153,7 @@
                                                                                 <td>{{ $grupoT->descricao }}</td>
                                                                                 <td class="text-nowrap">
                                                                                     <center>
-                                                                                        <a href="{{ route('configuracoes.link.users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                        <a href="{{ route('configuracoes.link.users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                         <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                                                                         <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                     </center>
@@ -187,6 +187,7 @@
                                                                                 <td>{{ $grupoD->descricao }}</td>
                                                                                 <td class="text-nowrap">
                                                                                     <center>
+                                                                                        <a href="{{ route('configuracoes.link.users_disclosure-group', ['id' => $grupoD->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                         <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                                                                         <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                     </center>

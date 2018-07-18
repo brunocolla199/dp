@@ -28,11 +28,20 @@ class AjaxController extends Controller
 
 
     public function removerDoGrupo(Request $request) {
-        $gtu = DB::table('grupo_treinamento_usuario')->where([
-            ['grupo_id', '=', $request->id_grupo],
-            ['usuario_id', '=', $request->id_user]
-        ])->delete();
+        $tipoGrupo = $request->tipo_grupo;
         
+        if($tipoGrupo == "treinamento") {
+            $gtu = DB::table('grupo_treinamento_usuario')->where([
+                    ['grupo_id', '=', $request->id_grupo],
+                    ['usuario_id', '=', $request->id_user]
+            ])->delete();
+        } else if($tipoGrupo == "divulgacao") {
+            $gdu = DB::table('grupo_divulgacao_usuario')->where([
+                ['grupo_id', '=', $request->id_grupo],
+                ['usuario_id', '=', $request->id_user]
+            ])->delete();
+        }
+
         return response()->json(['response' => 'delete_success']);
     }
     

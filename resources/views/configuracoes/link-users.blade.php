@@ -79,8 +79,23 @@
 
 
 
-                                    @elseif( isset($grupotD) )
-                                        {{ dd("grupotD") }}   
+                                    @elseif( isset($grupoD) )
+                                        {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_GRUPO_DIVULGACAO) !!}
+                                        {!! Form::hidden('id_agrupamento', $grupoD->id) !!}
+
+                                        <select multiple id="optgroup-grupoD" name="usersLinked[]" data-setor="{{$grupoD->id}}">
+                                            @foreach($setoresUsuarios as $key => $su)
+                                                <optgroup label="{{$key}}">
+                                                    @foreach($su as $key2 => $user)
+                                                        @if( in_array($user, $usuariosJaVinculados[$checkGrouping]) )
+                                                            <option selected value="{{$key2}}">{{$user}}</option>
+                                                        @else
+                                                            <option value="{{$key2}}">{{$user}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </optgroup>
+                                            @endforeach
+                                        </select>   
                                     @endif
 
                                     <div class="pull-right">
