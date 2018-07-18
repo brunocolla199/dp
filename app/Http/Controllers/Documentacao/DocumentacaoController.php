@@ -295,6 +295,7 @@ class DocumentacaoController extends Controller
         return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false));
     }
 
+    
     public function saveEditDocument(Request $request){
         $document_id = $request->document_id;
         $documento = Documento::find($document_id);
