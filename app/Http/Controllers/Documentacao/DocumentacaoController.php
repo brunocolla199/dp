@@ -280,7 +280,9 @@ class DocumentacaoController extends Controller
         $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
 
         $docPath = $storagePath."uploads/".$documento[0]->nome.".".$documento[0]->extensao;
-    
+        
+        // $docPath = Storage::url();
+
         $phpWord = \PhpOffice\PhpWord\IOFactory::load($docPath);
 
         $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
@@ -290,7 +292,7 @@ class DocumentacaoController extends Controller
         $documento->docData = $this->extractHtmlDoc(ob_get_contents(), 'body');
         ob_end_clean();
     
-        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false));
+        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false));
     }
 
     public function saveEditDocument(Request $request){

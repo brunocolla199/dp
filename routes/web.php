@@ -80,6 +80,12 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
 	});
 	
+	/*
+	* DOWNLOAD
+	*/
+	Route::get('/download/{file}', function ($file='') {
+		return response()->download(storage_path('app/uploads/'.$file)); 
+	});
 
 	// Registration Routes...
 	Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');

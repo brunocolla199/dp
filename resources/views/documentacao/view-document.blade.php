@@ -31,7 +31,7 @@
 
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <div class="col-md-6 control-label font-bold">
                                                 {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
@@ -42,13 +42,23 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <div class="col-md-6 control-label font-bold">
                                                 {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
                                             </div>
                                             <div class="col-md-12">
                                                 {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="col-md-4">
+                                        <div class="control-label font-bold text-center">
+                                            Download Documento<br>
+                                            <div class="text-center">
+                                                <a href="{{url('/download/'.$docPath)}}" target="_blank"><br>
+                                                    <i class="fa fa-download fa-2x"></i>
+                                                </a>
                                             </div>
                                         </div>
                                     </div> 
