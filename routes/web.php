@@ -53,8 +53,8 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('save-attached-document',   ['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
 		Route::post('save-new-document',        ['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
 		Route::post('view-document',   			['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
+		Route::post('save-edited-document',   	['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
 	});
-	
     
     /*
 	* FORMULÁRIOS
