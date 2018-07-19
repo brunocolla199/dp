@@ -103,9 +103,10 @@
 
 <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
 <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
+<script src="{{ asset('plugins/ckeditor/language/pt-br.js') }}"></script>
 <script>
     
-    var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), {}).then( editor => {
+    var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), {  }).then( editor => {
         const toolbarContainer = document.querySelector( '.document-editor__toolbar' );
         toolbarContainer.appendChild( editor.ui.view.toolbar.element );
         

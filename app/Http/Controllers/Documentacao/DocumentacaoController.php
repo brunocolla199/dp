@@ -116,6 +116,8 @@ class DocumentacaoController extends Controller
         $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla : "";
         $codigo_final .= $codigo;
 
+        $docData = File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla).".html"); 
+
         return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
                                                         'aprovador' => $aprovador, 'text_aprovador' => $text_aprovador[0]->name,
                                                         'grupoTreinamento' => $grupoTreinamento, 'text_grupoTreinamento' => $text_grupoTreinamento[0]->nome, 
@@ -123,7 +125,7 @@ class DocumentacaoController extends Controller
                                                         'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
                                                         'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
                                                         'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
-                                                        'acao' => $acao, 'areaInteresse' => $areaInteresse ]);
+                                                        'acao' => $acao, 'areaInteresse' => $areaInteresse, 'docData'=>$docData ]);
     }
 
 
@@ -181,47 +183,76 @@ class DocumentacaoController extends Controller
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
     }
 
+    /*
+    * Função para criar o cabeçalho padrãp do DOCX de acordo com o tipo de documento 
+    */
+    protected function createDocHeader($phpWord, $novoDocumento){
+        // dd($doc_type);
+
+        $section = $phpWord->addSection(['marginTop'=>0]);
+        $header = $section->createHeader();
+
+        $tipoDocumento = TipoDocumento::where('id', '=', $novoDocumento['tipo_documento'])->get(['nome_tipo', 'sigla']);
+
+        switch ($tipoDocumento[0]->sigla) {
+            case 'DG':
+                
+            break;
+            
+            case 'IT':
+            
+                $header->addImage(public_path() . '/images/doc_headers/dpword_header_it.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
+
+                // Estilos da Tabela & Cabeçalho
+                $tableCellStyle 		= array('valign' => 'center');
+                $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
+                $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
+        
+                // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
+                $table_style = new \PhpOffice\PhpWord\Style\Table;
+                $table_style->setBorderSize(0);
+                $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
+                $table_style->setWidth(3000);
+                $table_style->setAlignment('right');
+        
+                $table = $header->addTable($table_style);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText('Instrução de Trabalho', $tableFontStyle);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
+
+                return $section;
+            break;
+        
+            case 'PG':
+            # code...
+            break;
+        }
+
+    }
 
     public function saveNewDocument(Request $request) { 
         
         $novoDocumento = $request->all();
         $titulo   = $novoDocumento['tituloDocumento'];
-        $codigo   = $novoDocumento['codigoDocumento'];
+        $codigo   = $novoDocumento['codigoDocumento']; 
         $extensao = 'docx';
 
-        //Criando Header Padrão Arquivo Word
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
-
-        $section = $phpWord->addSection(['marginTop'=>0]);
-        $header = $section->createHeader();
-        $header->addImage(public_path() . '/images/dpword_header_bg.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
-
-		// Estilos da Tabela & Cabeçalho
-        $tableCellStyle 		= array('valign' => 'center');
-        $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-        $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
-
-        // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-        $table_style = new \PhpOffice\PhpWord\Style\Table;
-        $table_style->setBorderSize(0);
-        $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-        $table_style->setWidth(3000);
-        $table_style->setAlignment('right');
-
-        $table = $header->addTable($table_style);
-        $table->addRow();
-        $table->addCell(151, $tableCellStyle)->addText('Documento Tipo:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
-        $table->addRow();
-        $table->addCell(151, $tableCellStyle)->addText($titulo, $tableFontStyle);
-        $table->addRow();
-        $table->addCell(151, $tableCellStyle)->addText('Código:'.$codigo, $tableFontStyle);
-        $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-        $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
+        
+        //Criando Header Padrão Arquivo Word
+        $section = $this->createDocHeader($phpWord, $novoDocumento);
 
         \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $novoDocumento['docData']));
         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($titulo.'.docx');
 
+        Storage::disk('local')->put('uploads/'.$titulo.'.html', $novoDocumento['docData']);
+        
         //Salvando local
         $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$titulo.'.docx');
         
@@ -267,7 +298,7 @@ class DocumentacaoController extends Controller
         $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
         $workflow->save();
 
-        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
+        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
     }
 
 
@@ -275,22 +306,29 @@ class DocumentacaoController extends Controller
 
         $document_id = $request->document_id;
         
-        $documento = Documento::where('id', '=', $document_id)->get();
-    
-        $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
+        $documento     = Documento::where('id', '=', $document_id)->get();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
 
-        $docPath = $storagePath."uploads/".$documento[0]->nome.".".$documento[0]->extensao;
+        // dd($tipoDocumento);
         
-        // $docPath = Storage::url();
+        if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
+            $documento->docData = Storage::get("uploads/".$documento[0]->nome.".html");
+        } else {
+            $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
 
-        $phpWord = \PhpOffice\PhpWord\IOFactory::load($docPath);
+            $docPath = $storagePath."uploads/".$documento[0]->nome.".".$documento[0]->extensao;
 
-        $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-        
-        ob_start();
-        $htmlWriter->save('php://output');
-        $documento->docData = $this->extractHtmlDoc(ob_get_contents(), 'body');
-        ob_end_clean();
+            $phpWord = \PhpOffice\PhpWord\IOFactory::load($docPath);
+
+            $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
+            
+            ob_start();
+            $htmlWriter->save('php://output');
+            $documento->docData = json_encode($this->extractHtmlDoc(ob_get_contents(), 'body'));
+            ob_end_clean();
+        }
+
+
     
         return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false));
     }
@@ -332,15 +370,17 @@ class DocumentacaoController extends Controller
             $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
 
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $request->docData));
-            $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-            $objWriter->save($documento->nome.'.docx');
+            $objWriterWord = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+            $objWriterWord->save($documento->nome.'.docx');
+
+            Storage::disk('local')->put('uploads/'.$documento->nome.'.html', $request->docData);
     
             //Salvando local
             $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$documento->nome.'.docx');
             
             File::move($documento->nome.'.docx', $full_path_dest);
 
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$request->docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
+            return view('documentacao.view-document', array('nome'=>$documento->nome, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$request->docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
         }
 
     }
@@ -354,6 +394,9 @@ class DocumentacaoController extends Controller
             $lines  = explode("\n", $html);
             $isBody = false;
             $result = '';
+
+            // dd($lines);
+
             foreach ($lines as $key => $line){
                 if($line == '<body>') $isBody = true;
 
@@ -362,10 +405,10 @@ class DocumentacaoController extends Controller
                     $result .= $line;
                 }
                 
-                if($isBody && $line !== '<p>&nbsp;</p>') $result .= $line;
+                // if($isBody && $line !== '<p>&nbsp;</p>') $result .= str_replace("'", "\'", $line);
+                if($isBody && $line !== '<p>&nbsp;</p>') $result .= str_replace("'", "\"", $line);
                 
             }
-            
             return $result;
                 // return ;
                 break;

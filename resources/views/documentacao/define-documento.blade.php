@@ -197,7 +197,7 @@
                                 <div class="document-editor__toolbar"></div>
                                 <div class="document-editor__editable-container">
                                     <div class="document-editor__editable">
-                                        <p>Novo documento...</p>
+                                        <p></p>
                                     </div>
                                 </div>
                             </div>
@@ -265,6 +265,14 @@
         var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), {}).then( editor => {
             const toolbarContainer = document.querySelector( '.document-editor__toolbar' );
             toolbarContainer.appendChild( editor.ui.view.toolbar.element );
+
+            const content = '{!! $docData !!}';
+            console.log(content);
+
+            const viewFragment = editor.data.processor.toView(content);
+            const modelFragment = editor.data.toModel( viewFragment );
+
+            editor.model.insertContent( modelFragment, editor.model.document.selection );
             window.editor = editor;
         }).catch( err => {
             console.error( err );
