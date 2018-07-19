@@ -151,6 +151,7 @@
                                                 {!! Form::hidden('tituloDocumento',     $tituloDocumento) !!}
                                                 {!! Form::hidden('codigoDocumento',     $codigoDocumento) !!}
                                                 {!! Form::hidden('validadeDocumento',   $validadeDocumento) !!}
+                                                {!! Form::hidden('docData',             "") !!}
 
                                                 @if( count($areaInteresse) > 0 )
                                                     @foreach($areaInteresse as $usuariosInteresse)

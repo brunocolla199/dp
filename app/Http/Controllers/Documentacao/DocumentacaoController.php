@@ -95,8 +95,14 @@ class DocumentacaoController extends Controller
         $acao                    = $request->action;
         $areaInteresse           = $request->areaInteresse;        
         
+
+
+        $codigo_final = $text_tipo_documento[0]->sigla . "-";
+        $codigo = 0;
+        
         // Define código do documento
-        $qtdDocs = DB::table('documento')
+        if($text_tipo_documento[0]->sigla == "IT") { // Incremento depende do setor (cada setor tem seu incremento)
+            $qtdDocs = DB::table('documento')
                         ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
                         ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
                         ->select('documento.id')
@@ -104,17 +110,30 @@ class DocumentacaoController extends Controller
                         ->where('dados_documento.setor_id', '=', $setorDono)
                         ->get()->count();
 
-        $codigo = 0;
-        if( count($qtdDocs) <= 0 )  {
-           $codigo = $this->buildCodDocument(1);
-        } else { 
-            $codigo = $this->buildCodDocument($qtdDocs + 1);
+            if( count($qtdDocs) <= 0 )  {
+                $codigo = $this->buildCodDocument(1);
+            } else { 
+                $codigo = $this->buildCodDocument($qtdDocs + 1);
+            }
+
+        } else { // Incremento único (independente de setor)
+            $qtdDocs = DB::table('documento')
+                        ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
+                        ->select('documento.id')
+                        ->where('documento.tipo_documento_id', '=', $tipo_documento)
+                        ->get()->count();
+
+            if( count($qtdDocs) <= 0 )  {
+                $codigo = $this->buildCodDocument(1);
+            } else { 
+                $codigo = $this->buildCodDocument($qtdDocs + 1);
+            }
         }
 
         // Concatena e gera o código final
-        $codigo_final = $text_tipo_documento[0]->sigla . "-";
-        $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla : "";
+        $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla . "-" : "";
         $codigo_final .= $codigo;
+
 
         $docData = File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla).".html"); 
 
@@ -180,7 +199,7 @@ class DocumentacaoController extends Controller
             $workflow->save();
          //}
         
-        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor'));
+        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
     }
 
     /*
