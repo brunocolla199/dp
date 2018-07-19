@@ -263,13 +263,14 @@
     <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
     <script>
         
-        var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), {}).then( editor => {
+        var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), { ckfinder: {
+            uploadUrl: '{{ url("/ajax/upload")  }}'
+        }}).then( editor => {
             const toolbarContainer = document.querySelector( '.document-editor__toolbar' );
             toolbarContainer.appendChild( editor.ui.view.toolbar.element );
 
             const content = '{!! $docData !!}';
-            console.log(content);
-
+            
             const viewFragment = editor.data.processor.toView(content);
             const modelFragment = editor.data.toModel( viewFragment );
 

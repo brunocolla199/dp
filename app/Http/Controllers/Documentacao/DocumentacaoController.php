@@ -95,8 +95,6 @@ class DocumentacaoController extends Controller
         $acao                    = $request->action;
         $areaInteresse           = $request->areaInteresse;        
         
-
-
         $codigo_final = $text_tipo_documento[0]->sigla . "-";
         $codigo = 0;
         
@@ -206,15 +204,14 @@ class DocumentacaoController extends Controller
     * Função para criar o cabeçalho padrãp do DOCX de acordo com o tipo de documento 
     */
     protected function createDocHeader($phpWord, $novoDocumento){
-        // dd($doc_type);
-
+        
         $section = $phpWord->addSection(['marginTop'=>0]);
         $header = $section->createHeader();
 
         $tipoDocumento = TipoDocumento::where('id', '=', $novoDocumento['tipo_documento'])->get(['nome_tipo', 'sigla']);
 
         switch ($tipoDocumento[0]->sigla) {
-            case 'DG':
+            case 'PG':
                 
             break;
             
@@ -236,7 +233,7 @@ class DocumentacaoController extends Controller
         
                 $table = $header->addTable($table_style);
                 $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('Instrução de Trabalho', $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('INSTRUÇÃO DE TRABALHO', $tableFontStyle);
                 $table->addRow();
                 $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
                 $table->addRow();
@@ -247,11 +244,37 @@ class DocumentacaoController extends Controller
                 return $section;
             break;
         
-            case 'PG':
-            # code...
+            case 'DG':
+            
+            $header->addImage(public_path() . '/images/doc_headers/dpword_header_dg_vert.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
+
+            // Estilos da Tabela & Cabeçalho
+            $tableCellStyle 		= array('valign' => 'center');
+            $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
+            $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
+    
+            // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
+            $table_style = new \PhpOffice\PhpWord\Style\Table;
+            $table_style->setBorderSize(0);
+            $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
+            $table_style->setWidth(3000);
+            $table_style->setAlignment('right');
+    
+            $table = $header->addTable($table_style);
+            $table->addRow();
+            $table->addCell(151, $tableCellStyle)->addText('DIRETRIZ DE GESTÃO', $tableFontStyle);
+            $table->addRow();
+            $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
+            $table->addRow();
+            $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
+            $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
+            $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
+
+            return $section;
+
+
             break;
         }
-
     }
 
     public function saveNewDocument(Request $request) { 
@@ -263,19 +286,19 @@ class DocumentacaoController extends Controller
 
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
         
-        //Criando Header Padrão Arquivo Word
-        $section = $this->createDocHeader($phpWord, $novoDocumento);
+        // //Criando Header Padrão Arquivo Word
+        // $section = $this->createDocHeader($phpWord, $novoDocumento);
 
-        \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $novoDocumento['docData']));
-        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-        $objWriter->save($titulo.'.docx');
+        // \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $novoDocumento['docData']));
+        // $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        // $objWriter->save($titulo.'.docx');
 
         Storage::disk('local')->put('uploads/'.$titulo.'.html', $novoDocumento['docData']);
         
         //Salvando local
-        $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$titulo.'.docx');
+        // $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$titulo.'.docx');
         
-        File::move($titulo.'.docx', $full_path_dest);
+        // File::move($titulo.'.docx', $full_path_dest);
         
 
         $documento = new Documento();
@@ -328,8 +351,6 @@ class DocumentacaoController extends Controller
         $documento     = Documento::where('id', '=', $document_id)->get();
         $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
 
-        // dd($tipoDocumento);
-        
         if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
             $documento->docData = Storage::get("uploads/".$documento[0]->nome.".html");
         } else {
@@ -346,8 +367,6 @@ class DocumentacaoController extends Controller
             $documento->docData = json_encode($this->extractHtmlDoc(ob_get_contents(), 'body'));
             ob_end_clean();
         }
-
-
     
         return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false));
     }
@@ -361,44 +380,44 @@ class DocumentacaoController extends Controller
         if($documento->save()){
 
             //Criando Header Padrão Arquivo Word
-            $phpWord = new \PhpOffice\PhpWord\PhpWord();
+            // $phpWord = new \PhpOffice\PhpWord\PhpWord();
 
-            $section = $phpWord->addSection(['marginTop'=>0]);
-            $header = $section->createHeader();
-            $header->addImage(public_path() . '/images/dpword_header_bg.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
+            // $section = $phpWord->addSection(['marginTop'=>0]);
+            // $header = $section->createHeader();
+            // $header->addImage(public_path() . '/images/dpword_header_bg.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
 
-            // Estilos da Tabela & Cabeçalho
-            $tableCellStyle 		= array('valign' => 'center');
-            $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-            $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
+            // // Estilos da Tabela & Cabeçalho
+            // $tableCellStyle 		= array('valign' => 'center');
+            // $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
+            // $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
 
-            // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-            $table_style = new \PhpOffice\PhpWord\Style\Table;
-            $table_style->setBorderSize(0);
-            $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-            $table_style->setWidth(3000);
-            $table_style->setAlignment('right');
+            // // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
+            // $table_style = new \PhpOffice\PhpWord\Style\Table;
+            // $table_style->setBorderSize(0);
+            // $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
+            // $table_style->setWidth(3000);
+            // $table_style->setAlignment('right');
 
-            $table = $header->addTable($table_style);
-            $table->addRow();
-            $table->addCell(151, $tableCellStyle)->addText('Documento Tipo:'.$request->codigoDocumento, $tableFontStyle);
-            $table->addRow();
-            $table->addCell(151, $tableCellStyle)->addText($documento->nome, $tableFontStyle);
-            $table->addRow();
-            $table->addCell(151, $tableCellStyle)->addText('Código:'.$documento->codigo, $tableFontStyle);
-            $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-            $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
+            // $table = $header->addTable($table_style);
+            // $table->addRow();
+            // $table->addCell(151, $tableCellStyle)->addText('Documento Tipo:'.$request->codigoDocumento, $tableFontStyle);
+            // $table->addRow();
+            // $table->addCell(151, $tableCellStyle)->addText($documento->nome, $tableFontStyle);
+            // $table->addRow();
+            // $table->addCell(151, $tableCellStyle)->addText('Código:'.$documento->codigo, $tableFontStyle);
+            // $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
+            // $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
 
-            \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $request->docData));
-            $objWriterWord = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-            $objWriterWord->save($documento->nome.'.docx');
+            // \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $request->docData));
+            // $objWriterWord = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+            // $objWriterWord->save($documento->nome.'.docx');
 
             Storage::disk('local')->put('uploads/'.$documento->nome.'.html', $request->docData);
     
             //Salvando local
-            $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$documento->nome.'.docx');
+            // $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$documento->nome.'.docx');
             
-            File::move($documento->nome.'.docx', $full_path_dest);
+            // File::move($documento->nome.'.docx', $full_path_dest);
 
             return view('documentacao.view-document', array('nome'=>$documento->nome, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$request->docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
         }

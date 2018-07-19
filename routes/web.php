@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/usuarios/removerDoGrupo',			['as' => 'ajax.usuarios.removerDoGrupo', 	  			'uses' => 'AjaxController@removerDoGrupo']);
 	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  						'uses' => 'AjaxController@getSectors']);
 	Route::post('ajax/setores/retornaSetoresExcetoUm',  ['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
+	Route::post('ajax/upload',                          ['as' => 'ajax.upload.image',	                		'uses' => 'AjaxController@uploadEditorImage']);
 
 
     /*

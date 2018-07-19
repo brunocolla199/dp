@@ -510,7 +510,6 @@
     <script src="{{ asset('plugins/select2/dist/js/select2.full.min.js') }}"></script>
     <script>
         $(".select2").select2();
-        $('.selectpicker').selectpicker();
     </script>
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->

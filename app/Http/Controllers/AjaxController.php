@@ -7,6 +7,7 @@ use App\User;
 use App\Setor;
 use App\GrupoTreinamentoUsuario;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AjaxController extends Controller
 {
@@ -57,6 +58,20 @@ class AjaxController extends Controller
     public function retornaSetoresExcetoUm(Request $request) {
         $setores = Setor::where('id', "!=", $request->id_setor)->orderBy('nome')->get()->pluck('nome', 'id');
         return response()->json(['response' => $setores]);
+    }
+
+
+    //Uploads (Imagens Ckeditor)
+    public function uploadEditorImage(Request $request){
+        $files = $request->files->all();
+        
+        $file = $request->file()['upload'];
+        $path = $file->store('public');           
+
+        return response()->json([
+            "uploaded"=> true,
+            "url"=> Storage::url($path)
+        ]);
     }
 
 

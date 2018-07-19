@@ -52,7 +52,7 @@
                                             </div>
                                         </div>
                                     </div> 
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <div class="control-label font-bold text-center">
                                             Download Documento<br>
                                             <div class="text-center">
@@ -61,7 +61,7 @@
                                                 </a>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>  -->
                                 </div>
                             </div>
 
@@ -106,7 +106,9 @@
 <script src="{{ asset('plugins/ckeditor/language/pt-br.js') }}"></script>
 <script>
     
-    var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), {  }).then( editor => {
+    var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), { ckfinder: {
+            uploadUrl: '{{ url("/ajax/upload")  }}'
+        } }).then( editor => {
         const toolbarContainer = document.querySelector( '.document-editor__toolbar' );
         toolbarContainer.appendChild( editor.ui.view.toolbar.element );
         
