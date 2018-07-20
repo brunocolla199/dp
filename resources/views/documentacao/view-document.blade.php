@@ -14,6 +14,11 @@
                         <li class="breadcrumb-item active">Visualização de Documento</li>
                     </ol>
                 </div>
+                <div class="col-md-7 col-4 align-self-center">
+                    <div class="">
+                        <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-xl pull-right m-l-10"><i class="ti-comment-alt text-white"></i></button>
+                    </div>
+                </div>
             </div>
             
             
