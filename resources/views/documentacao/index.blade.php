@@ -7,11 +7,7 @@
     <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}"  rel="stylesheet">
     <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     
-    <link href="{{ asset('plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') }}"  rel="stylesheet">
-    <script src="{{ asset('plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
-    
 
-    
 
 
     <!-- Page wrapper  -->
@@ -247,56 +243,71 @@
                                 <div class="tab-pane  p-20" id="visualizarDocs" role="tabpanel">
                                     <div class="col-md-12">
                                         <div class="row">
+                                            <h5 class="alert alert-info alert-dismissible" role="alert">
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                Quando o campo <b>Título do Documento</b> for preenchido, os outros filtros serão <b>ignorados</b>. Caso o campo seja deixado em branco, os outros filtros serão aplicados em conjunto.
+                                            </h5>
+                                        </div>
+                                        <div class="row">
                                             <h4>FILTROS</h4>
                                             <div class="col-md-12">
-                                                
-                                                <div class="row">
-                                                    <div class="col-md-3 margin-right-1percent">
-                                                        <div class="row ">
-                                                            {!! Form::select('filtroTipoDocumento', ['TIPO DE DOCUMENTO', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 margin-right-1percent">
-                                                        <div class="row">
-                                                            {!! Form::select('filtroAprovador', ['APROVADOR', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 margin-right-1percent">
-                                                        <div class="row">
-                                                            {!! Form::select('filtroAreaInteresse', ['ÁREA DE INTERESSE', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2 margin-right-1percent">
-                                                        <div class="row">
-                                                            <div class="input-group">
-                                                                <input type="text" class="form-control" id="datepicker-autoclose" placeholder="Validade">
-                                                                <span class="input-group-addon"><i class="icon-calender"></i></span> 
+
+                                                {!! Form::open(['route' => 'documentacao.filter-documents-index', 'class' => 'form-horizontal']) !!}
+                                                    <div class="row">
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <div class="row ">
+                                                                {!! Form::select('search_tipoDocumento', $tipoDocumentos, '-- Selecione --', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>  
-                                                <div class="row margin-top-1percent">
-                                                    <div class="col-md-3 margin-right-1percent">
-                                                        <div class="row ">
-                                                            {!! Form::select('grupoTreinamento', ['GRUPO DE TREINAMENTO', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <div class="row">
+                                                                <select class="form-control custom-select" name="search_aprovador" id="search_aprovador" style="width: 100%"> <!-- colocar classe = select2 -->
+                                                                    <optgroup label="Diretoria">
+                                                                        @foreach($diretores_aprovadores as $key => $diretor)
+                                                                            <option value="{{ $key }}">{{ $diretor }}</option>
+                                                                        @endforeach
+                                                                    </optgroup>
+                                                                    <optgroup label="Gerência">
+                                                                        @foreach($gerentes_aprovadores as $key => $gerente)
+                                                                            <option value="{{ $key }}">{{ $gerente }}</option>
+                                                                        @endforeach
+                                                                    </optgroup>
+                                                                </select>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-3 margin-right-1percent">
-                                                        <div class="row">
-                                                            {!! Form::select('grupoDivulgacao', ['GRUPO DE DIVULGAÇÃO', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <div class="row ">
+                                                                {!! Form::select('search_grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-3 margin-right-1percent">
-                                                        <div class="row">
-                                                            {!! Form::text('tituloDocumento', null, ['class' => 'form-control', 'placeholder' => 'Título do Documento']) !!}
+                                                        <div class="col-md-2 margin-right-1percent">
+                                                            <div class="row">
+                                                                <div class="input-group">
+                                                                    {!! Form::text('search_validadeDocumento', date('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate_search']) !!}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-2 mx-auto margin-right-1percent">
-                                                        <div class="row">
-                                                            <button type="button" class="btn btn-secondary btn-rounded"><i class="fa fa-search"></i> Buscar</button>
+                                                    </div>  
+                                                    <div class="row margin-top-1percent">
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <div class="row">
+                                                                {!! Form::select('search_grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>  
+                                                        <div class="col-md-4 margin-right-1percent">
+                                                            <div class="row">
+                                                                {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => 'Título do Documento']) !!}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-1 mr-4">
+                                                            <a href="{{ route('documentacao') }}" class="btn waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
+                                                        </div>
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
+                                                        </div>
+                                                    </div> 
+                                                {!! Form::close() !!} 
                                                 
                                             </div>
                                         </div>
@@ -353,17 +364,12 @@
             <!-- ============================================================== -->
 
             <script>
-                var tipoAreaInteresse = "usuario";
 
                 // Material Date picker   
                 $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
+                $('#mdate_search').bootstrapMaterialDatePicker({ weekStart : 0, time: false, lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
 
-                // Date Picker
-                jQuery('.mydatepicker, #datepicker').datepicker();
-                jQuery('#datepicker-autoclose').datepicker({
-                    autoclose: true,
-                    todayHighlight: true
-                });
+
 
                 /*
                 *   QUANDO CARREGAR A PÁGINA
@@ -383,29 +389,6 @@
                             stack: 6
                         });
                     }
-
-                    // Get bootstrap switch value => [STATE] true = usuario | false = setor
-                    $('input[name="tipo_area_interesse"]').on('switchChange.bootstrapSwitch', function(event, state) {
-                        var route = (state) ? " {{ URL::route('retornarUsuarios') }} " : " {{ URL::route('retornarSetores') }} ";
-                        tipoAreaInteresse  = (state) ? "usuario" : "setor";
-                        $("#tituloDocumento").val("");
-                        
-                        $.ajax({
-				    		type: 'GET',
-				    		url: route,
-				    		dataType: 'JSON',
-				    		success: function (data) {
-                                $("#grupoInteresse option").remove();
-
-                                var cont = 0;
-                                $.each(data.response, function( index, value ){
-                                    $("#grupoInteresse").append('<option value="' + index + '">' + value.split(';')[0]  + '</option>');
-                                });
-				            }, error: function (err) {
-				            	console.log(err);
-				            }
-                        });                         
-                    });
 
                     // Envia o form conforme o botão que foi clicado
                     $("#importDocument").click(function(){

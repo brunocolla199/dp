@@ -70,6 +70,40 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function filterDocumentsIndex(Request $request) {
+        // Valores 'comuns' necessários
+        $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
+        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
+
+        // Aprovadores
+        $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
+        $gerentes_aprovadores  = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_GERENCIA)->orderBy('name')->get()->pluck('name', 'id'); 
+
+        // Área de Interesse
+        $setoresUsuarios = [];
+        $todosSetores = Setor::all();
+        foreach($todosSetores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
+
+        // Documentos já criados (para listagem)
+        $documentos  = $this->filterListDocuments($request->all()); 
+
+        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'diretores_aprovadores' => $diretores_aprovadores, 'gerentes_aprovadores' => $gerentes_aprovadores,
+                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
+                                            'setores' => $setores, 
+                                            'setoresUsuarios' => $setoresUsuarios, 
+                                            'documentos' => $documentos ]);
+    }
+
+
     public function validateData(DadosNovoDocumentoRequest $request) {        
         $setorDono               = $request->setor_dono_doc;
         $text_setorDono          = Setor::where('id', '=', $setorDono)->get();
@@ -500,6 +534,46 @@ class DocumentacaoController extends Controller
         }
 
         return $codigo;
+    }
+
+
+    public function filterListDocuments($req) {
+        $list = null;
+        
+        $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
+        $dateFmt = $date->format('Y-m-d');
+
+        if(null == $req['search_tituloDocumento'] || "" == $req['search_tituloDocumento']) {
+            $list = DB::table('documento')
+                        ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
+                        ->join('workflow',          'workflow.documento_id',        '=', 'documento.id')
+                        ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
+                            ->select('documento.*', 
+                                'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.versao',
+                                'workflow.id AS wkf_id', 'workflow.etapa', 
+                                'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
+                            )
+                            ->where("documento.tipo_documento_id",             "=",    $req['search_tipoDocumento'])
+                            ->where("dados_documento.aprovador_id",            "=",    $req['search_aprovador'])
+                            ->where("dados_documento.grupo_treinamento_id",    "=",    $req['search_grupoTreinamento'])
+                            ->where("dados_documento.grupo_divulgacao_id",     "=",    $req['search_grupoDivulgacao'])
+                            ->where("dados_documento.validade",                "=",    $dateFmt)
+                            ->get();
+        } else {
+            $list = DB::table('documento')
+                        ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
+                        ->join('workflow',          'workflow.documento_id',        '=', 'documento.id')
+                        ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
+                            ->select('documento.*', 
+                                'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.versao',
+                                'workflow.id AS wkf_id', 'workflow.etapa', 
+                                'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
+                            )
+                            ->where("documento.nome",  "ilike",   "%" . $req['search_tituloDocumento'] . "%")
+                            ->get();
+        }
+        
+        return $list;
     }
 
 }
