@@ -4,13 +4,19 @@ namespace App\Classes;
 
 class Constants {
 
+    // Níveis de acesso ao documento
+    public static $NIVEL_ACESSO_DOC_CONFIDENCIAL            = "Confidencial";
+    
+    public static $NIVEL_ACESSO_DOC_RESTRITO                = "Restrito";
+    
+    public static $NIVEL_ACESSO_DOC_LIVRE                   = "Livre";
+
     // Tipos de Agrupamentos [SELECT]
     public static $ID_TIPO_AGRUPAMENTO_SETOR                = 0;
     
     public static $ID_TIPO_AGRUPAMENTO_GRUPO_TREINAMENTO    = 1;
     
     public static $ID_TIPO_AGRUPAMENTO_GRUPO_DIVULGACAO     = 2;
-
 
 
     // Tipos de Setores

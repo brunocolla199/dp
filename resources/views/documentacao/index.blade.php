@@ -92,10 +92,10 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-10 control-label font-bold">
-                                                                {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
+                                                                {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                Aqui vai ser o Código do Documento....
+                                                                {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL], '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>

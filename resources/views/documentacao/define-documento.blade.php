@@ -65,14 +65,20 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-5">
+                                <div class="col-md-6">
                                     <p class="pull-left"><b>TÍTULO DO DOCUMENTO: </b>{{ $tituloDocumento }}  </p>
                                 </div>
-                                <div class="col-md-3">
-                                    <p><b>CÓDIGO: </b>{{ $codigoDocumento }}  </p>
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>CÓDIGO: </b>{{ $codigoDocumento }}  </p>
                                 </div>
-                                <div class="col-md-4">
-                                    <p><b>VALIDADE DO DOCUMENTO: </b>{{ $validadeDocumento }}  </p>
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>NÍVEL DE ACESSO: </b>{{ $nivelAcessoDocumento }}  </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="pull-left"><b>VALIDADE DO DOCUMENTO: </b>{{ $validadeDocumento }}  </p>
                                 </div>
                             </div>
                             <div class="row">
@@ -142,16 +148,17 @@
                                                 <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
                                                 {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now']) !!}
                                                 
-                                                {!! Form::hidden('tipo_documento',      $tipo_documento) !!}
-                                                {!! Form::hidden('id_aprovador',        $aprovador) !!}
-                                                {!! Form::hidden('grupoTreinamento',    $grupoTreinamento) !!}
-                                                {!! Form::hidden('grupoDivulgacao',     $grupoDivulgacao) !!}
-                                                {!! Form::hidden('setor_dono_doc',      $setorDono) !!}
-                                                {!! Form::hidden('copiaControlada',     $copiaControlada) !!}                                                
-                                                {!! Form::hidden('tituloDocumento',     $tituloDocumento) !!}
-                                                {!! Form::hidden('codigoDocumento',     $codigoDocumento) !!}
-                                                {!! Form::hidden('validadeDocumento',   $validadeDocumento) !!}
-                                                {!! Form::hidden('docData',             "") !!}
+                                                {!! Form::hidden('tipo_documento',          $tipo_documento) !!}
+                                                {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
+                                                {!! Form::hidden('id_aprovador',            $aprovador) !!}
+                                                {!! Form::hidden('grupoTreinamento',        $grupoTreinamento) !!}
+                                                {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
+                                                {!! Form::hidden('setor_dono_doc',          $setorDono) !!}
+                                                {!! Form::hidden('copiaControlada',         $copiaControlada) !!}                                                
+                                                {!! Form::hidden('tituloDocumento',         $tituloDocumento) !!}
+                                                {!! Form::hidden('codigoDocumento',         $codigoDocumento) !!}
+                                                {!! Form::hidden('validadeDocumento',       $validadeDocumento) !!}
+                                                {!! Form::hidden('docData',                 "") !!}
 
                                                 @if( count($areaInteresse) > 0 )
                                                     @foreach($areaInteresse as $usuariosInteresse)
@@ -207,6 +214,7 @@
                                 {{ csrf_field() }}
                               
                                 {!! Form::hidden('tipo_documento',      $tipo_documento) !!}
+                                {!! Form::hidden('nivel_acesso',        $nivelAcessoDocumento) !!}
                                 {!! Form::hidden('id_aprovador',        $aprovador) !!}
                                 {!! Form::hidden('grupoTreinamento',    $grupoTreinamento) !!}
                                 {!! Form::hidden('grupoDivulgacao',     $grupoDivulgacao) !!}

@@ -20,6 +20,7 @@ class CreateDadosDocumentoTable extends Migration
             $table->boolean('status');
             $table->text('observacao');
             $table->boolean('copia_controlada');
+            $table->string('nivel_acesso', 20);
             $table->integer('setor_id')->unsigned();
             $table->foreign('setor_id')->references('id')->on('setor');
             $table->integer('grupo_treinamento_id')->unsigned();

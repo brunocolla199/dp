@@ -71,8 +71,13 @@ class DocumentacaoController extends Controller
 
 
     public function validateData(DadosNovoDocumentoRequest $request) {        
+        $setorDono               = $request->setor_dono_doc;
+        $text_setorDono          = Setor::where('id', '=', $setorDono)->get();
+
         $tipo_documento          = $request->tipo_documento;
         $text_tipo_documento     = TipoDocumento::where('id', '=', $request->tipo_documento)->get();
+
+        $nivelAcessoDocumento   = (  ($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : ( ($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  )    );
 
         $aprovador               = $request->aprovador;
         $text_aprovador          = User::where('id', '=', $request->aprovador)->get();
@@ -82,9 +87,6 @@ class DocumentacaoController extends Controller
 
         $grupoDivulgacao         = $request->grupoDivulgacao;
         $text_grupoDivulgacao    = GrupoDivulgacao::where('id', '=', $request->grupoDivulgacao)->get();
-
-        $setorDono               = $request->setor_dono_doc;
-        $text_setorDono          = Setor::where('id', '=', $setorDono)->get();
         
         $copiaControlada         = ($request->copiaControlada) ? true : false;
         $text_copiaControlada    = ($request->copiaControlada) ? 'Sim' : 'Não';
@@ -136,6 +138,7 @@ class DocumentacaoController extends Controller
         $docData = File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla).".html"); 
 
         return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
+                                                        'nivelAcessoDocumento' => $nivelAcessoDocumento,
                                                         'aprovador' => $aprovador, 'text_aprovador' => $text_aprovador[0]->name,
                                                         'grupoTreinamento' => $grupoTreinamento, 'text_grupoTreinamento' => $text_grupoTreinamento[0]->nome, 
                                                         'grupoDivulgacao' => $grupoDivulgacao, 'text_grupoDivulgacao' => $text_grupoDivulgacao[0]->nome, 
@@ -171,6 +174,7 @@ class DocumentacaoController extends Controller
             $dados_documento->status                = true;
             $dados_documento->observacao            = "Documento Novo";
             $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
+            $dados_documento->nivel_acesso          = $novoDocumento['nivel_acesso'];
             $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
             $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
             $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
@@ -200,82 +204,6 @@ class DocumentacaoController extends Controller
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
     }
 
-    /*
-    * Função para criar o cabeçalho padrãp do DOCX de acordo com o tipo de documento 
-    */
-    protected function createDocHeader($phpWord, $novoDocumento){
-        
-        $section = $phpWord->addSection(['marginTop'=>0]);
-        $header = $section->createHeader();
-
-        $tipoDocumento = TipoDocumento::where('id', '=', $novoDocumento['tipo_documento'])->get(['nome_tipo', 'sigla']);
-
-        switch ($tipoDocumento[0]->sigla) {
-            case 'PG':
-                
-            break;
-            
-            case 'IT':
-            
-                $header->addImage(public_path() . '/images/doc_headers/dpword_header_it.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
-
-                // Estilos da Tabela & Cabeçalho
-                $tableCellStyle 		= array('valign' => 'center');
-                $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-                $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
-        
-                // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-                $table_style = new \PhpOffice\PhpWord\Style\Table;
-                $table_style->setBorderSize(0);
-                $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-                $table_style->setWidth(3000);
-                $table_style->setAlignment('right');
-        
-                $table = $header->addTable($table_style);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('INSTRUÇÃO DE TRABALHO', $tableFontStyle);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
-                $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-                $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
-
-                return $section;
-            break;
-        
-            case 'DG':
-            
-            $header->addImage(public_path() . '/images/doc_headers/dpword_header_dg_vert.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
-
-            // Estilos da Tabela & Cabeçalho
-            $tableCellStyle 		= array('valign' => 'center');
-            $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-            $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
-    
-            // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-            $table_style = new \PhpOffice\PhpWord\Style\Table;
-            $table_style->setBorderSize(0);
-            $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-            $table_style->setWidth(3000);
-            $table_style->setAlignment('right');
-    
-            $table = $header->addTable($table_style);
-            $table->addRow();
-            $table->addCell(151, $tableCellStyle)->addText('DIRETRIZ DE GESTÃO', $tableFontStyle);
-            $table->addRow();
-            $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
-            $table->addRow();
-            $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
-            $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-            $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
-
-            return $section;
-
-
-            break;
-        }
-    }
 
     public function saveNewDocument(Request $request) { 
         
@@ -315,6 +243,7 @@ class DocumentacaoController extends Controller
         $dados_documento->status                = true;
         $dados_documento->observacao            = "Documento Novo";
         $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
+        $dados_documento->nivel_acesso          = $novoDocumento['nivel_acesso'];
         $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
         $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
         $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
@@ -457,6 +386,81 @@ class DocumentacaoController extends Controller
     }
 
 
+    /*
+    * Função para criar o cabeçalho padrãp do DOCX de acordo com o tipo de documento 
+    */
+    protected function createDocHeader($phpWord, $novoDocumento){
+        
+        $section = $phpWord->addSection(['marginTop'=>0]);
+        $header = $section->createHeader();
+
+        $tipoDocumento = TipoDocumento::where('id', '=', $novoDocumento['tipo_documento'])->get(['nome_tipo', 'sigla']);
+
+        switch ($tipoDocumento[0]->sigla) {
+            case 'PG':
+                
+            break;
+            
+            case 'IT':
+            
+                $header->addImage(public_path() . '/images/doc_headers/dpword_header_it.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
+
+                // Estilos da Tabela & Cabeçalho
+                $tableCellStyle 		= array('valign' => 'center');
+                $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
+                $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
+        
+                // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
+                $table_style = new \PhpOffice\PhpWord\Style\Table;
+                $table_style->setBorderSize(0);
+                $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
+                $table_style->setWidth(3000);
+                $table_style->setAlignment('right');
+        
+                $table = $header->addTable($table_style);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText('INSTRUÇÃO DE TRABALHO', $tableFontStyle);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
+
+                return $section;
+            break;
+        
+            case 'DG':
+            
+                $header->addImage(public_path() . '/images/doc_headers/dpword_header_dg_vert.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
+
+                // Estilos da Tabela & Cabeçalho
+                $tableCellStyle 		= array('valign' => 'center');
+                $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
+                $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
+        
+                // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
+                $table_style = new \PhpOffice\PhpWord\Style\Table;
+                $table_style->setBorderSize(0);
+                $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
+                $table_style->setWidth(3000);
+                $table_style->setAlignment('right');
+        
+                $table = $header->addTable($table_style);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText('DIRETRIZ DE GESTÃO', $tableFontStyle);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
+                $table->addRow();
+                $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
+                $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
+
+                return $section;
+
+            break;
+        }
+    }
 
 
 
