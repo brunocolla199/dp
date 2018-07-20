@@ -188,17 +188,17 @@
                     <!-- Sidebar navigation-->
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/bpmn') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">BPMN 2.0 </span></a>    
+                            <li class="{{ (\Request::is('bpmn/*')) ? 'active' : '' }}">
+                                <a class="waves-effect waves-dark {{ (\Request::is('bpmn/*')) ? 'active' : '' }}" href="{{ url('/bpmn') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">BPMN 2.0 </span></a>    
                             </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/documentacao') }}" aria-expanded="false"><i class="mdi mdi-library-books"></i><span class="hide-menu">Documentação </span></a>    
+                            <li class="{{ (\Request::is('documentacao/*')) ? 'active' : '' }}">
+                                <a class="waves-effect waves-dark {{ (\Request::is('documentacao/*')) ? 'active' : '' }}" href="{{ url('/documentacao') }}" aria-expanded="false"><i class="mdi mdi-library-books"></i><span class="hide-menu">Documentação </span></a>    
                             </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-document"></i><span class="hide-menu">Formulários </span></a>    
+                            <li class="{{ (\Request::is('formularios/*')) ? 'active' : '' }}">
+                                <a class="waves-effect waves-dark {{ (\Request::is('formularios/*')) ? 'active' : '' }}" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-document"></i><span class="hide-menu">Formulários </span></a>    
                             </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
+                            <li class="{{ (\Request::is('configuracoes/*')) ? 'active' : '' }}">
+                                <a class="waves-effect waves-dark {{ (\Request::is('configuracoes/*')) ? 'active' : '' }}" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
                             </li>
                         </ul>
                     </nav>
