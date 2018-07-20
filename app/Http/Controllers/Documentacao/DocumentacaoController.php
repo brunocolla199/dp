@@ -229,7 +229,7 @@ class DocumentacaoController extends Controller
             
             // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
             $workflow = new Workflow();
-            $workflow->etapa        = Constants::$ETAPA_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
+            $workflow->etapa        = Constants::$ETAPA_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
             $workflow->observacao   = "";
             $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
             $workflow->save();
@@ -298,7 +298,7 @@ class DocumentacaoController extends Controller
         
         // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
         $workflow = new Workflow();
-        $workflow->etapa        = Constants::$ETAPA_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
+        $workflow->etapa        = Constants::$ETAPA_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
         $workflow->observacao   = "";
         $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
         $workflow->save();
