@@ -134,7 +134,10 @@
                                 <!-- ============================================================== -->
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="flag-icon flag-icon-br"></i></a>
-                                    <div class="dropdown-menu dropdown-menu-right scale-up"> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-br"></i> Português (Brasil)</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-us"></i> Inglês</a> </div>
+                                    <div class="dropdown-menu dropdown-menu-right scale-up"> 
+                                        <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-br"></i> Português (Brasil)</a> 
+                                        <!-- <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-us"></i> Inglês</a>  -->
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -174,9 +177,10 @@
                         <!-- User profile text-->
                         <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Olá, <b>{{ Auth::user()->name }}!</b></a>
                             <div class="dropdown-menu animated flipInY">
-                                <a href="#" class="dropdown-item"><i class="ti-user"></i> Meu Perfil</a>
-                                <a href="#" class="dropdown-item"><i class="ti-settings"></i> Configurações</a>
-                                <div class="dropdown-divider"></div> <a href="{{ url('/logout') }}" class="dropdown-item"><i class="fa fa-power-off"></i> Sair</a>
+                                <!-- <a href="#" class="dropdown-item"><i class="ti-user"></i> Meu Perfil</a>
+                                <a href="#" class="dropdown-item"><i class="ti-settings"></i> Configurações</a> -->
+                                    <!-- <div class="dropdown-divider"></div>  -->
+                                <a href="{{ url('/logout') }}" class="dropdown-item"><i class="fa fa-power-off"></i> Sair</a>
                             </div>
                         </div>
                     </div>
@@ -195,9 +199,6 @@
                             </li>
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
-                            </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="mdi mdi-air-conditioner"></i><span class="hide-menu">Form.io </span></a>    
                             </li>
                         </ul>
                     </nav>
