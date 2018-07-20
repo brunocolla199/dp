@@ -171,11 +171,12 @@
                 <!-- Sidebar scroll-->
                 <div class="scroll-sidebar">
                     <!-- User profile -->
-                    <div class="user-profile" style="background: url({{ asset('images/background/user-info.jpg') }}) no-repeat;">
+                    
+                    <div class="user-profile" style="background: url({{ asset('images/background/work.jpg') }}) no-repeat;">
                         <!-- User profile image -->
-                        <div class="profile-img"> <img src="{{ asset('images/users/profile.png') }}"  alt="user" /> </div>
+                        <div class="profile-img" style="height: 130px;"> </div>
                         <!-- User profile text-->
-                        <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Olá, <b>{{ Auth::user()->name }}!</b></a>
+                        <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Olá, <b>{{ explode(' ', Auth::user()->name)[0] }}!</b></a>
                             <div class="dropdown-menu animated flipInY">
                                 <!-- <a href="#" class="dropdown-item"><i class="ti-user"></i> Meu Perfil</a>
                                 <a href="#" class="dropdown-item"><i class="ti-settings"></i> Configurações</a> -->
