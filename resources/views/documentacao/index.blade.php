@@ -131,7 +131,7 @@
                                                                 {!! Form::label('areaInteresse', 'ÁREA DE INTERESSE:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                <select multiple id="optgroup" name="areaInteresse[]">
+                                                                <select multiple id="optgroup-newAreaDeInteresse" name="areaInteresse[]">
                                                                     @foreach($setoresUsuarios as $key => $su)
                                                                         <optgroup label="{{ $key }}">
                                                                             @foreach($su as $key2 => $user)

@@ -554,6 +554,15 @@
                 }
             });
 
+
+
+            /*
+            * 
+            * MultiSelect de NOVA ÁREA DE INTERESSE
+            *
+            */
+            $('#optgroup-newAreaDeInteresse').multiSelect({selectableOptgroup: true});
+
         });
     </script>
 
