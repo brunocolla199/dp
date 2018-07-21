@@ -209,6 +209,7 @@ class DocumentacaoController extends Controller
             $dados_documento->observacao            = "Documento Novo";
             $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
             $dados_documento->nivel_acesso          = $novoDocumento['nivel_acesso'];
+            $dados_documento->finalizado            = false;
             $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
             $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
             $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
@@ -278,6 +279,7 @@ class DocumentacaoController extends Controller
         $dados_documento->observacao            = "Documento Novo";
         $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
         $dados_documento->nivel_acesso          = $novoDocumento['nivel_acesso'];
+        $dados_documento->finalizado            = false;
         $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
         $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
         $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];

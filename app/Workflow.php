@@ -10,7 +10,7 @@ class Workflow extends Model
     protected $table = 'workflow';
 
     protected $fillable = [
-        'id', 'etapa', 'observacao', 'documento_id'
+        'id', 'etapa_num', 'etapa', 'descricao', 'justificativa', 'documento_id'
     ];
 
 }

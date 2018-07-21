@@ -15,8 +15,10 @@ class CreateWorkflowTable extends Migration
     {
         Schema::create('workflow', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('etapa_num')->unsigned();
             $table->string('etapa', 50);
-            $table->text('observacao');
+            $table->string('descricao', 100);
+            $table->string('justificativa', 300);
             $table->integer('documento_id')->unsigned();
             $table->foreign('documento_id')->references('id')->on('documento');
             $table->timestamps();

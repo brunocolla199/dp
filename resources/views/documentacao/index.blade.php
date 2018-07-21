@@ -380,6 +380,7 @@
                 *   QUANDO CARREGAR A PÁGINA
                 */
                 $(document).ready(function(){
+                    /*
                     var arr = ["IT - 012 - V2", "DP - 12 - V1", "IT - 07 - V2", "IT - 05 - V2", "PG-09-V2", "DG-01-V3", "IT - 012 - V2", "DP - 12 - V1", "IT - 07 - V2", "IT - 05 - V2"];
                     for(var i=0; i<10; i++) {
                         $.toast({
@@ -394,6 +395,7 @@
                             stack: 6
                         });
                     }
+                    */
 
                     // Envia o form conforme o botão que foi clicado
                     $("#importDocument").click(function(){
