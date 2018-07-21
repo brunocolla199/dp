@@ -173,8 +173,11 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12">
-                                            <div class="col-md-offset-6 col-md-3 pull-right">
+                                            <div class="col-md-offset-2 col-md-3 pull-right">
                                                 {!! Form::submit('Salvar Documento', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                            </div>
+                                            <div class="col-md-offset-2 col-md-3 pull-right">
+                                                <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
                                             </div>
                                         </div>
 
@@ -237,9 +240,14 @@
                             {!! Form::close() !!}
       
 
-                            <div class="pull-right">
+                            <div class="col-lg-12 col-md-12">
                                 <br>
-                                <input type="button" id="btn-save-new-document" class="btn btn-lg btn-success" value="Salvar Documento">
+                                <div class="col-md-offset-2 col-md-3 pull-right">
+                                    <input type="button" id="btn-save-new-document" class="btn btn-lg btn-success" value="Salvar Documento">
+                                </div>
+                                <div class="col-md-offset-2 col-md-3 pull-right">
+                                    <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
+                                </div>
                             </div>
 
 
