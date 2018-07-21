@@ -15,6 +15,8 @@ class CreateListaPresencaTable extends Migration
     {
         Schema::create('lista_presenca', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('nome', 80);
+            $table->string('extensao', 10);
             $table->date('data');
             $table->text('descricao');
             $table->integer('documento_id')->unsigned();
