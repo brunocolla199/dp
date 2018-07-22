@@ -321,7 +321,7 @@ class DocumentacaoController extends Controller
         $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
 
         if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
-            $documento->docData = Storage::get("uploads/".$documento[0]->nome.".html");
+            $documento->docData = trim(json_encode(Storage::get("uploads/".$documento[0]->nome.".html")), '"');
         } else {
             $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
 
@@ -388,7 +388,9 @@ class DocumentacaoController extends Controller
             
             // File::move($documento->nome.'.docx', $full_path_dest);
 
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$request->docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
+            $docData = trim(json_encode($request->docData), '"');
+            
+            return view('documentacao.view-document', array('nome'=>$documento->nome, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
         }
 
     }

@@ -186,38 +186,14 @@
                                 </div>
                             </div>
                             @else
-                            <!-- <div>
-                                <div class="row">
-                                    <h3> Novo Documento: </h3>
-                                </div>
-
-                                <div class="row">
-                                    <textarea id="ckeditor"></textarea>
-                                </div>
-                            </div> -->
-
 
                             <h3>Novo Documento:</h3>
-
-                            <!-- The toolbar will be rendered in this container. -->
-                            <!-- <div id="toolbar-container"></div> -->
-
-                            <!-- This container will become the editable. -->
-                            <!-- <div id="editor" style="height:500px;">
-                                <p>Documento Inicial.</p>
-                            </div>  -->
-                        
-
-                            
-                            <div class="document-editor" >
-                                <div class="document-editor__toolbar"></div>
-                                <div class="document-editor__editable-container">
-                                    <div class="document-editor__editable">
-                                        <p></p>
-                                    </div>
-                                </div>
+                            <!-- Editor -->
+                            <div class="container" >
+                                <textarea id="speed-editor"></textarea>
                             </div>
-
+                            <!-- End Editor -->
+                                    
                             {!! Form::open(['route' => 'documentacao.save-new-document', 'method' => 'POST', 'id' => 'form-upload-new-document', 'enctype' => 'multipart/form-data']) !!}
                                 {{ csrf_field() }}
                               
@@ -281,28 +257,16 @@
 
 @section('footer')
 
-    <script src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
+    <script src="https://cdn.ckeditor.com/4.8.0/full-all/ckeditor.js"></script>
+    <script src="{{ asset('plugins/ckeditor-document-editor/initEditor.js') }}"></script>
+
     <script>
-        
-        var editor = DecoupledEditor.create( document.querySelector( '.document-editor__editable' ), { ckfinder: {
-            uploadUrl: '{{ url("/ajax/upload")  }}'
-        }}).then( editor => {
-            const toolbarContainer = document.querySelector( '.document-editor__toolbar' );
-            toolbarContainer.appendChild( editor.ui.view.toolbar.element );
 
-            const content = '{!! $docData !!}';
-            
-            const viewFragment = editor.data.processor.toView(content);
-            const modelFragment = editor.data.toModel( viewFragment );
-
-            editor.model.insertContent( modelFragment, editor.model.document.selection );
-            window.editor = editor;
-        }).catch( err => {
-            console.error( err );
-        });
+        //Iniciando Speed Editor
+        initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}');
 
         $("#btn-save-new-document").click(function(){
-            var docData = editor.getData();
+            var docData = CKEDITOR.instances['speed-editor'].getData();
 
             $("#form-upload-new-document").append("<input type='hidden' name='docData' value='"+docData+"' >")
             $("#form-upload-new-document").submit();
