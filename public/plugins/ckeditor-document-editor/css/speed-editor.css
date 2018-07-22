@@ -63,3 +63,24 @@ body.document-editor table thead th:first-of-type {
     content: counters(item, ".") ". ";
 	counter-increment: item
 }
+
+/* .cke_editable ul {
+
+    list-style-image:url("images/seta.png");
+}
+.cke_editable ul {
+
+    list-style-image:url("images/seta.png");
+} */
+
+[style="list-style-type: disc;"]{
+    list-style-image:url("images/arrow.png");
+}
+
+[style="list-style-type: circle;"]{
+    list-style-image:url("images/circle.png");
+}
+
+[style="list-style-type: square;"]{
+    list-style-image:url("images/check.png");
+}

@@ -17,6 +17,18 @@ function initEditor(content, customCSS){
             { name: 'tools', items: [  ] },
             { name: 'editing', items: [  ] }
         ],
+
+        font_names : 
+        'Arial/Arial, Helvetica, sans-serif;'+
+        'Comic Sans MS/Comic Sans MS, cursive;'+
+        'Courier New/Courier New, Courier, monospace;' +
+        'Georgia/Georgia, serif;' +
+        'Lucida Sans Unicode/Lucida Sans Unicode, Lucida Grande, sans-serif;' +
+        'Tahoma/Tahoma, Geneva, sans-serif;' +
+        'Times New Roman/Times New Roman, Times, serif;' +
+        'Trebuchet MS/Trebuchet MS, Helvetica, sans-serif;' +
+        'Calibri/Calibri, Calibri, sans-serif;' + /* here is your font */
+        'Verdana/Verdana, Geneva, sans-serif',
         
         // Since we define all configuration options here, let's instruct CKEditor to not load config.js which it does by default.
         // One HTTP request less will result in a faster startup time.
@@ -47,9 +59,15 @@ function initEditor(content, customCSS){
         // Make the editing area bigger than default.
         height: 800,
         
+
+        filebrowserBrowseUrl: '/plugins/ckfinder/ckfinder.html',
+        filebrowserUploadUrl: '/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+        filebrowserWindowWidth: '1000',
+        filebrowserWindowHeight: '700',
+
         // An array of stylesheets to style the WYSIWYG area.
         // Note: it is recommended to keep your own styles in a separate file in order to make future updates painless.
-        contentsCss: [ 'https://cdn.ckeditor.com/4.8.0/full-all/contents.css', customCSS, 'mystyles.css' ],
+        contentsCss: [ 'https://cdn.ckeditor.com/4.8.0/full-all/contents.css', customCSS ],
         
         // This is optional, but will let us define multiple different styles for multiple editors using the same CSS file.
         bodyClass: 'document-editor',
@@ -100,6 +118,39 @@ function initEditor(content, customCSS){
         ]
     } );
         
+
+    CKEDITOR.on( 'instanceReady', function( ev ) {
+        // 
+        // var lists = CKEDITOR.instances['speed-editor'].document.getElementsByTag('ul');
+        
+        
+        // for (var l in lists){
+        //     if(typeof lists[l] == 'object'){
+        //         for(var ul in lists[l]){
+        //             if(typeof lists[l][ul] == 'object'){
+        //                 console.log(lists[l][ul]);
+                 
+        //                 // if(lists[l][ul].hasAttribute("style", "list-style-type: disc;")){
+        //                 //     lists[l][ul].setAttribute("style","list-style-image:url(\'images/arrow.png\')");
+        //                 // }
+                        
+        //                 // if(lists[l][ul].hasAttribute("style", "list-style-type: square;")){
+        //                 //     lists[l][ul].setAttribute("style","list-style-image:url(\'images/check.png\')");
+        //                 // }
+                        
+        //                 // if(lists[l][ul].hasAttribute("style", "list-style-type: circle;")){
+        //                 //     lists[l][ul].setAttribute("style","list-style-image:url(\'images/circle.png\')");
+        //                 // }
+        //             }
+        //         }
+        //     }
+        // }
+
+    });
+
+
+
+
     if(content !== ''){
         CKEDITOR.instances['speed-editor'].setData(content);
     }
