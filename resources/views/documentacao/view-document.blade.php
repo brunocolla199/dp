@@ -61,7 +61,7 @@
                                         <div class="control-label font-bold text-center">
                                             Download Documento<br>
                                             <div class="text-center">
-                                                <a href="{{url('/download/'.$docPath)}}" target="_blank"><br>
+                                                <a href="{{url('documentacao/make-pdf/'.$document_id)}}" target="_blank"><br>
                                                     <i class="fa fa-download fa-2x"></i>
                                                 </a>
                                             </div>
@@ -107,6 +107,7 @@
 
 <script src="https://cdn.ckeditor.com/4.8.0/full-all/ckeditor.js"></script>
 <script src="{{ asset('plugins/ckeditor-document-editor/initEditor.js') }}"></script>
+<script src="{{ asset('plugins/ckeditor-document-editor/translate/pt-br.js') }}"></script>
 
 <script>
 

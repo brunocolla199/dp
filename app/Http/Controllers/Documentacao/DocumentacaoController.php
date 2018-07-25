@@ -395,6 +395,44 @@ class DocumentacaoController extends Controller
 
     }
 
+    public function makeDocumentPdf($codigo){
+        $documento     = Documento::where('id', '=', $codigo)->get();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
+
+        $docHtmlContent = "";
+
+        switch ($tipoDocumento[0]->sigla) {
+            case 'DG':
+                $docHtmlContent .= "<div>".
+                                    "<img src='/storage/sof0gag0dihVRnJQuZDxrS8aGdk8kKLD0PkzwoTo.png'>"
+                                    ."</div>";
+                
+                
+                break;
+                
+                case 'PG':
+                $docHtmlContent .= "<h1> PG LIL BITCH!!!!!!!! </h1>";
+                
+                break;
+                
+                case 'IT':
+                $docHtmlContent .= "<h1> IT LIL BITCH!!!!!!!! </h1>";
+                
+                break;
+        }
+
+        echo $docHtmlContent;
+        exit();
+
+        $docHtmlContent .= Storage::get("uploads/".$documento[0]->nome.".html");
+        // dd($docHtmlContent);
+		$pdf = \App::make('dompdf.wrapper');
+		$pdf->loadHTML($docHtmlContent);
+        return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->stream();
+
+
+    }
+
 
     protected function extractHtmlDoc($html, $section){
 
@@ -405,8 +443,6 @@ class DocumentacaoController extends Controller
             $isBody = false;
             $result = '';
 
-            // dd($lines);
-
             foreach ($lines as $key => $line){
                 if($line == '<body>') $isBody = true;
 
@@ -415,7 +451,6 @@ class DocumentacaoController extends Controller
                     $result .= $line;
                 }
                 
-                // if($isBody && $line !== '<p>&nbsp;</p>') $result .= str_replace("'", "\'", $line);
                 if($isBody && $line !== '<p>&nbsp;</p>') $result .= str_replace("'", "\"", $line);
                 
             }

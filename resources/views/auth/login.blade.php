@@ -18,13 +18,13 @@
                         <form class="form-horizontal form-material" id="loginform" method="POST" action="{{ route('login') }}">
                             {{ csrf_field() }}
 
-                            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }} m-t-40">
+                            <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }} m-t-40">
                                 <div class="col-xs-12">
-                                    <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required="" autofocus placeholder="Usuário">
+                                    <input id="email" type="text" class="form-control" name="username" value="{{ old('username') }}" required="" autofocus placeholder="Usuário">
                                 
-                                    @if ($errors->has('email'))
+                                    @if ($errors->has('username'))
                                         <span class="help-block">
-                                            <strong>{{ $errors->first('email') }}</strong>
+                                            <strong>{{ $errors->first('username') }}</strong>
                                         </span>
                                     @endif
                                 </div>
