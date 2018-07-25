@@ -148,6 +148,13 @@ class ConfiguracoesController extends Controller
             $usersAndSectors[$sector->nome] = $arrUsers;
         }
 
+        //Khalil was in here
+
+        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
+        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
+        
+        //Khalil is out
+
 
         $arrUsers = [];
         $grupoT = GrupoTreinamento::where('id', '=', $id)->get();
@@ -179,6 +186,13 @@ class ConfiguracoesController extends Controller
             $usersAndSectors[$sector->nome] = $arrUsers;
         }
         
+        //Khalil was in here
+
+        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
+        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
+        
+        //Khalil is out
+
 
         $setorAtual = Setor::where('id', '=', $id)->get();
         $text_agrupamento = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "à Diretoria" : "à Gerência";
@@ -201,6 +215,13 @@ class ConfiguracoesController extends Controller
             }
             $usersAndSectors[$sector->nome] = $arrUsers;
         }
+
+        //Khalil was in here
+
+        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
+        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
+        
+        //Khalil is out
 
 
         $arrUsers = [];
@@ -233,6 +254,13 @@ class ConfiguracoesController extends Controller
             $usersAndSectors[$sector->nome] = $arrUsers;
         }
         
+        //Khalil was in here
+
+        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
+        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
+        
+        //Khalil is out
+
 
         $setorAtual = Setor::where('id', '=', $id)->get();
         $text_agrupamento = "ao setor '" . $setorAtual[0]->nome . "'";
