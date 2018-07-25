@@ -1,5 +1,6 @@
   
-function initEditor(content, customCSS){
+function initEditor(content, customCSS, base_path){
+
     CKEDITOR.replace( 'speed-editor', {
         // Define the toolbar: http://docs.ckeditor.com/ckeditor4/docs/#!/guide/dev_toolbar
         // The full preset from CDN which we used as a base provides more features than we need.
@@ -60,8 +61,8 @@ function initEditor(content, customCSS){
         height: 800,
         
 
-        filebrowserBrowseUrl: '/plugins/ckfinder/ckfinder.html',
-        filebrowserUploadUrl: '/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+        filebrowserBrowseUrl: base_path+'/plugins/ckfinder/ckfinder.html',
+        filebrowserUploadUrl: base_path+'/plugins/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
         filebrowserWindowWidth: '1000',
         filebrowserWindowHeight: '700',
 

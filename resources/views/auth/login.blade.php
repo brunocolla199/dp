@@ -20,7 +20,7 @@
 
                             <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }} m-t-40">
                                 <div class="col-xs-12">
-                                    <input id="email" type="text" class="form-control" name="username" value="{{ old('username') }}" required="" autofocus placeholder="Usuário">
+                                    <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" required="" autofocus placeholder="Usuário">
                                 
                                     @if ($errors->has('username'))
                                         <span class="help-block">

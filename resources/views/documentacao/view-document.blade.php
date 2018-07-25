@@ -111,7 +111,7 @@
 
 <script>
 
-    initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}');
+    initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
 
     $("#btn-save-document").click(function(){
         var docData = CKEDITOR.instances['speed-editor'].getData();

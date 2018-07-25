@@ -263,7 +263,7 @@
     <script>
 
         //Iniciando Speed Editor
-        initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}');
+        initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
 
         $("#btn-save-new-document").click(function(){
             var docData = CKEDITOR.instances['speed-editor'].getData();
