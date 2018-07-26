@@ -135,3 +135,19 @@
 }
 
 
+[style="list-style-type: disc;"]{
+    list-style-image:url("images/arrow.png") !important;
+}
+
+[style="list-style-type: circle;"]{
+    list-style-image:url("images/circle.png")!important;
+}
+
+[style="list-style-type: square;"]{
+    list-style-image:url("images/check.png")!important;
+}
+
+
+.form-actions .save-form{
+    display:none;
+}

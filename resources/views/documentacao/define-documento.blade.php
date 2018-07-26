@@ -88,7 +88,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>SETOR DO DOCUMENTO: </b>{{ $text_setorDono }}  </p>
+                                    <p class="pull-left"><b>SETOR: </b>{{ $text_setorDono }}  </p>
                                 </div>
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>APROVADOR: </b>{{ $text_aprovador }}  </p>

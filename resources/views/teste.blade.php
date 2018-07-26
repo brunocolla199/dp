@@ -38,7 +38,15 @@
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div id='builder'></div>
+                                    <section id="main_content" class="inner">
+                                        <form class="build-form clearfix"></form>
+                                        <div class="render-form"></div>
+                                    </section>
+                                    <div class="container render-btn-wrap">
+                                        <button id="renderForm" class="btn btn-default">Preview Form</button>
+                                        <button id="viewData" class="btn btn-default">console.log Data</button>
+                                        <button id="reloadBtn" class="btn btn-default">Reset Editor</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -46,6 +54,9 @@
                     </div>
                 </div>
             </div>
+
+
+
             <!-- ============================================================== -->
             <!-- End Page Content -->
             <!-- ============================================================== -->
@@ -61,14 +72,20 @@
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
 
-    <link rel='stylesheet' href="{{ asset('css/formio.full.min.css') }}">
-    <script src="{{ asset('js/formio.full.min.js') }}"></script>
 
-    <script type="text/javascript">
-        window.onload = function() {
-            // console.log('ovo');
-             Formio.builder(document.getElementById('builder'), 'https://examples.form.io/example');
-        }
+  
+
+
+@endsection
+
+
+
+@section('footer')
+    <script src="{{ asset('plugins/formeo/formeo.min.js') }}"></script>
+    <script src="{{ asset('plugins/formeo/initFormeo.js') }}"></script>
+
+    <script>
+        initFormeo('', '{{ url("/") }}');
     </script>
 
 @endsection

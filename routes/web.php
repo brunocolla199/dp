@@ -63,7 +63,12 @@ Route::group(['middleware' => ['auth']], function() {
 	* FORMULÁRIOS
 	*/
 	Route::group(['prefix' => 'formularios'], function() {
-		Route::get('',	       		['as' => 'formularios', 	        	'uses' => 'Formularios\FormulariosController@index']);
+		Route::get('',	       		      ['as' => 'formularios', 	        	      'uses' => 'Formularios\FormulariosController@index']);
+		Route::post('validate-data',      ['as' => 'formularios.validate-data',	      'uses' => 'Formularios\FormulariosController@validateData']);
+		Route::post('view-formulario',	  ['as' => 'formularios.view-formulario', 	  'uses' => 'Formularios\FormulariosController@viewForm']);
+		Route::post('filter-forms-index', ['as' => 'formularios.filter-forms-index',  'uses' => 'Documentacao\FormulariosController@filterFormsIndex']);
+		Route::post('save-edited-form',   ['as' => 'formularios.save-edited-form',     'uses' => 'Documentacao\FormulariosController@saveEditForm']);
+		Route::post('save-new-form',	  ['as' => 'formularios.save-new-form', 	  'uses' => 'Formularios\FormulariosController@saveNewForm']);
 	});
 
 	/*
@@ -120,6 +125,4 @@ Route::get('/logout', function()
 	return Redirect::to('/login');
 });
 
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
+// Auth::routes();

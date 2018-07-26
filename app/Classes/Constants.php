@@ -36,6 +36,11 @@ class Constants {
     
     public static $ID_TIPO_DOCUMENTO_FORMULARIO             = 4;
 
+    // Fomatos de Documentos
+    public static $EXTENSAO_DOCUMENTO  = '.html';
+
+    public static $EXTENSAO_FORMULARIO = '.json';
+
 
     // Etapas do Workflow (Controla o "andamento" do documento)
     public static $ETAPA_WORKFLOW_ELABORADOR_NUM                     = 1;

@@ -37,36 +37,27 @@
                                 <div class="tab-pane active" id="novoForm" role="tabpanel">
                                     <div class="p-20">
                                         <div class="col-md-12">
-                                        {!! Form::open(['route' => 'home', 'class' => 'form-horizontal']) !!}
+                                        {!! Form::open(['route' => 'formularios.validate-data', 'method' => 'POST', 'id' => 'form-save-new-document', 'enctype' => 'multipart/form-data']) !!}
+                                            {{ csrf_field() }}
                                                 <!-- Linha 1 -->
                                                 <div class="row">
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('area', 'ÁREA:') !!}
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('setor_dono_form', 'Setor:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('area', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('setor_dono_form', $setores, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <div class="col-md-12 control-label font-bold">
-                                                                {!! Form::label('documentoVinculado', 'ATRELADO AO DOCUMENTO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::select('documentoVinculado', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-12 control-label font-bold">
                                                                 {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('grupoDivulgacao', ['-- Selecione --', 'Opção 1', 'Opção 2', 'Opção 3'], '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('grupoDivulgacao', $grupoDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -74,7 +65,41 @@
 
                                                 <!-- Linha 2 -->
                                                 <div class="row">
-                                                    <div class="col-md-12">
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO], '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('documentosAtrelados', 'ATRELAR AOS DOCUMENTOS:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <select multiple id="optgroup-documentosAtrelados" name="documentosAtrelados[]" class="form-control select2">
+                                                                    @foreach($documentosTipo as $key => $docs)
+                                                                        <optgroup label="{{ $key }}">
+                                                                            @foreach($docs as $key2 => $doc)
+                                                                                <option value="{{ $doc['doc_id'] }}">{{ $doc['nome'] }}</option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>   
+                                                    </div>           
+                                                </div>
+
+                                                <!-- Linha 3  -->
+                                                <div class="row">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
                                                                 {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
@@ -83,10 +108,12 @@
                                                                 {!! Form::text('tituloFormulario', null, ['class' => 'form-control']) !!}
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div>                                     
                                                 </div>
 
-                                                <!-- Linha 3 -->
+
+
+                                                <!-- Linha 4 -->
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
@@ -99,17 +126,107 @@
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR FORMULÁRIO</button>
+                                                            <button type="button" id="createFormulario" class="btn btn-save-new-form waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR FORMULÁRIO</button>
                                                         </div>
                                                     </div>
                                                 </div>
+
+
+                                                 <!-- Linha 5 -->
+                                                 <div class="row">
+                                                    <div class="col-md-12 mb-4">
+                                                        @if ($errors->any())
+                                                            <div class="alert alert-danger">
+                                                                <ul>
+                                                                    @foreach ($errors->all() as $error)
+                                                                        <li>{{ $error }}</li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
                                                 
                                             {!! Form::close() !!}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="tab-pane  p-20" id="verForms" role="tabpanel">
-                                    Aqui serão listados todos os formulários.
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <h5 class="alert alert-info alert-dismissible" role="alert">
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                Quando o campo <b>Título do Formulário</b> for preenchido, os outros filtros serão <b>ignorados</b>. Caso o campo seja deixado em branco, os outros filtros serão aplicados em conjunto.
+                                            </h5>
+                                        </div>
+                                        <div class="row">
+                                            <h4>FILTROS</h4>
+                                            <div class="col-md-12">
+
+                                                {!! Form::open(['route' => 'formularios.filter-forms-index', 'class' => 'form-horizontal']) !!}
+                                                    <div class="row margin-top-1percent">
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <div class="row">
+                                                                {!! Form::select('search_grupoDivulgacao', $grupoDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 margin-right-1percent">
+                                                            <div class="row">
+                                                                {!! Form::text('search_tituloFomulario', null, ['class' => 'form-control', 'placeholder' => 'Título do Formulário']) !!}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-1 mr-4">
+                                                            <a href="{{ route('formularios') }}" class="btn waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
+                                                        </div>
+                                                        <div class="col-md-3 margin-right-1percent">
+                                                            <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success" disabled><i class="fa fa-search"></i> Buscar</button>
+                                                        </div>
+                                                    </div> 
+                                                {!! Form::close() !!} 
+                                                
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row mt-5 margin-top-1percent">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Título do Formulário</th>
+                                                            <th>Código</th>
+                                                            <th>Status</th>
+                                                            <th>Data Última Alteração</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        @foreach($formularios as $formulario)
+                                                        <tr>
+                                                            {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                                {{ Form::hidden('fomulario_id', $formulario->id) }}
+                                                                <td>
+                                                                    {!! Form::submit($formulario->nome, ['class' => 'a-href-submit']) !!}
+                                                                </td>
+                                                            {{ Form::close() }}
+
+                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $formulario->codigo }} </td>
+
+                                                            <td>
+                                                                <p class="text-muted font-weight-bold"> {{ $formulario->etapa }} </p>
+                                                            </td>
+                                                            <td>{{ date("d/m/Y H:i:s", strtotime($formulario->updated_at)) }}</td>
+                                                        </tr>
+                                                        @endforeach
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                            
+                                    </div> 
                                 </div>
                             </div>
 
@@ -123,3 +240,24 @@
         </div>
     </div>
 @endsection
+
+
+
+@section('footer')
+
+    <script>
+        // Envia o form conforme o botão que foi clicado
+        $("#importFormulario").click(function(){
+            var input = $("<input>").attr("type", "hidden").attr("name", "action").val("import");
+            $('#form-generate-document').append($(input));
+            $('#form-generate-document').submit();
+        });
+        $("#createFormulario").click(function(){
+            var input = $("<input>").attr("type", "hidden").attr("name", "action").val("create");
+            $('#form-save-new-document').append($(input));
+            $('#form-save-new-document').submit();
+        });
+    </script>
+
+@endsection
+
