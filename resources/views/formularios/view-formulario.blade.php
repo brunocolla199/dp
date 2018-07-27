@@ -124,7 +124,7 @@
                                                 {!! Form::label('codigoFormulario', 'CÓDIGO DO FORMULÁRIO:') !!}
                                             </div>
                                             <div class="col-md-12">
-                                                {!! Form::text('codigoFormulario', $codigo, ['class' => 'form-control'], 'readonly') !!}
+                                                {!! Form::text('codigoFormulario', $codigo, ['class' => 'form-control', 'readonly']) !!}
                                             </div>
                                         </div>
                                     </div> 
@@ -149,7 +149,7 @@
                                         <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
                                     @endif
                                 </div>
-                                comming soon
+                                coming soon
                             </div>
                             
 

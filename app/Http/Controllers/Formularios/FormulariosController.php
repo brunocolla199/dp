@@ -98,7 +98,7 @@ class FormulariosController extends Controller
             'formulario_id'=>$request->formulario_id, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
-            'filePath'=>$formulario[0]->nome.".".$formulario[0]->extensao, 
+            'filePath'=>\URL::to('/download/formulario/'.$formulario[0]->nome.".".$formulario[0]->extensao), 
             'formData'=>trim($formulario[0]->conteudo, '"'), 
             'resp'=>false)
         );
