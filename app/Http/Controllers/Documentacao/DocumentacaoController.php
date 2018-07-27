@@ -411,12 +411,12 @@ class DocumentacaoController extends Controller
                 break;
                 
                 case 'PG':
-                $docHtmlContent .= "<h1> PG LIL BITCH!!!!!!!! </h1>";
+                $docHtmlContent .= "<h1>  </h1>";
                 
                 break;
                 
                 case 'IT':
-                $docHtmlContent .= "<h1> IT LIL BITCH!!!!!!!! </h1>";
+                $docHtmlContent .= "<h1>  </h1>";
                 
                 break;
         }

@@ -6,7 +6,7 @@ function initEditor(content, customCSS, base_path){
         // The full preset from CDN which we used as a base provides more features than we need.
         // Also by default it comes with a 3-line toolbar. Here we put all buttons in a single row.
         toolbar: [
-            { name: 'document', items: [ 'Print' ] },
+            { name: 'document', items: [ 'Print', 'PasteFromWord' ] },
             { name: 'clipboard', items: [ 'Undo', 'Redo' ] },
             { name: 'styles', items: [ 'Format', 'Font', 'FontSize' ] },
             { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat', 'CopyFormatting' ] },

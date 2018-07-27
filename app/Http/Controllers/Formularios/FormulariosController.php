@@ -29,7 +29,7 @@ class FormulariosController extends Controller
     
     public function validateData(DadosNovoFormularioRequest $request) {
 
-        $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['nome']);
+        $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['nome', 'sigla']);
         $text_grupoDivulgacao = GrupoDivulgacao::where('id', '=', $request->grupoDivulgacao)->get(['nome']);
         $acao = $request->action;
 
@@ -38,7 +38,8 @@ class FormulariosController extends Controller
         $qtdForms = Formulario::count();
 
         $tipoDocumento = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
-        $codigo_final = $tipoDocumento[0]->sigla;
+    
+        $codigo_final = $tipoDocumento[0]->sigla."-";
         $codigo = 0;
 
         if( count($qtdForms) <= 0 )  {
@@ -64,10 +65,7 @@ class FormulariosController extends Controller
     }
 
     public function saveNewForm(Request $request){
-        $novoForm = $request->all();
-
-        // dd($novoForm);
-
+        
         $formulario = new Formulario();
         $formulario->nome                 = $request->tituloFormulario;
         $formulario->codigo               = $request->codigoFormulario;
@@ -86,76 +84,69 @@ class FormulariosController extends Controller
          $workflow->formulario_id = $formulario->id; // id que acabou de ser inserido no 'save' na tabela de formulário
          $workflow->save();
 
-         return View::make('formularios.define-formulario', array('overlay_sucesso' => 'valor', 'docData'=>''));
+         return View::make('formularios.define-formulario', array('overlay_sucesso' => 'valor'));
     
     }
 
     public function viewForm(Request $request){        
         
-        $formulario  = Formulario::where('id', '=', $request->fomulario_id)->get();
-        
+        $formulario  = Formulario::where('id', '=', $request->formulario_id)->get();
+
         return View::make('formularios.view-formulario', array(
             'nome'=>$formulario[0]->nome,  
-            'document_id'=>$request->formulario_id, 
+            'acao'=>$request->action,  
+            'formulario_id'=>$request->formulario_id, 
             'codigo'=>$formulario[0]->codigo, 
-            'docData'=>$formulario[0]->conteudo, 
+            'extensao'=>$formulario[0]->extensao,
+            'filePath'=>$formulario[0]->nome.".".$formulario[0]->extensao, 
+            'formData'=>trim($formulario[0]->conteudo, '"'), 
             'resp'=>false)
         );
     }
 
     public function saveEditForm(Request $request){
-        dd($request);
-        $document_id = $request->document_id;
-        $documento = Formulario::find($document_id);
-        $documento->codigo = $request->codigoDocumento;
-        
-        if($documento->save()){
-
-            //Criando Header Padrão Arquivo Word
-            // $phpWord = new \PhpOffice\PhpWord\PhpWord();
-
-            // $section = $phpWord->addSection(['marginTop'=>0]);
-            // $header = $section->createHeader();
-            // $header->addImage(public_path() . '/images/dpword_header_bg.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
-
-            // // Estilos da Tabela & Cabeçalho
-            // $tableCellStyle 		= array('valign' => 'center');
-            // $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-            // $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
-
-            // // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-            // $table_style = new \PhpOffice\PhpWord\Style\Table;
-            // $table_style->setBorderSize(0);
-            // $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-            // $table_style->setWidth(3000);
-            // $table_style->setAlignment('right');
-
-            // $table = $header->addTable($table_style);
-            // $table->addRow();
-            // $table->addCell(151, $tableCellStyle)->addText('Documento Tipo:'.$request->codigoDocumento, $tableFontStyle);
-            // $table->addRow();
-            // $table->addCell(151, $tableCellStyle)->addText($documento->nome, $tableFontStyle);
-            // $table->addRow();
-            // $table->addCell(151, $tableCellStyle)->addText('Código:'.$documento->codigo, $tableFontStyle);
-            // $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-            // $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
-
-            // \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $request->docData));
-            // $objWriterWord = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-            // $objWriterWord->save($documento->nome.'.docx');
-
-            Storage::disk('local')->put('uploads/'.$documento->nome.'.html', $request->docData);
-    
-            //Salvando local
-            // $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$documento->nome.'.docx');
-            
-            // File::move($documento->nome.'.docx', $full_path_dest);
-
-            $docData = trim(json_encode($request->docData), '"');
-            
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
+        $formulario = Formulario::find($request->formulario_id);
+        $formulario->codigo = $request->codigoFormulario;
+        $formulario->conteudo = $request->formData;
+        if($formulario->save()){
+            return view('formularios.view-formulario',array(
+                    'nome'=>$formulario->nome,  
+                    'formulario_id'=>$request->formulario_id, 
+                    'codigo'=>$formulario->codigo, 
+                    'formData'=>trim($formulario->conteudo, '"'), 
+                    'resp'=>false
+                )
+            );
         }
+    }
 
+    public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest  
+        $file = $request->file('doc_uploaded', 'local');
+        $extensao = $file->getClientOriginalExtension();
+        $titulo   = $request->tituloFormulario;
+        $codigo   = $request->codigoFormulario;
+        $path     = $file->storeAs('/uploads/formularios/', $titulo . "." . $extensao, 'local');
+        
+
+        $formulario = new Formulario();
+        $formulario->nome                 = $request->tituloFormulario;
+        $formulario->codigo               = $request->codigoFormulario;
+        $formulario->extensao             = $extensao;
+        $formulario->setor_id             = $request->setor_dono_form;
+        $formulario->grupo_divulgacao_id  = $request->grupoDivulgacao;
+        $formulario->nivel_acesso         = $request->nivel_acesso;
+        $formulario->save();
+
+        // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
+        $workflow = new WorkflowFormulario();
+        $workflow->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
+        $workflow->etapa        = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
+        $workflow->descricao    = "";
+        $workflow->justificativa= "";
+        $workflow->formulario_id = $formulario->id; // id que acabou de ser inserido no 'save' na tabela de formulário
+        $workflow->save();
+
+        return View::make('formularios.define-formulario', array('overlay_sucesso' => 'valor'));
     }
 
 

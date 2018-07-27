@@ -63,12 +63,13 @@ Route::group(['middleware' => ['auth']], function() {
 	* FORMULÁRIOS
 	*/
 	Route::group(['prefix' => 'formularios'], function() {
-		Route::get('',	       		      ['as' => 'formularios', 	        	      'uses' => 'Formularios\FormulariosController@index']);
-		Route::post('validate-data',      ['as' => 'formularios.validate-data',	      'uses' => 'Formularios\FormulariosController@validateData']);
-		Route::post('view-formulario',	  ['as' => 'formularios.view-formulario', 	  'uses' => 'Formularios\FormulariosController@viewForm']);
-		Route::post('filter-forms-index', ['as' => 'formularios.filter-forms-index',  'uses' => 'Documentacao\FormulariosController@filterFormsIndex']);
-		Route::post('save-edited-form',   ['as' => 'formularios.save-edited-form',     'uses' => 'Documentacao\FormulariosController@saveEditForm']);
-		Route::post('save-new-form',	  ['as' => 'formularios.save-new-form', 	  'uses' => 'Formularios\FormulariosController@saveNewForm']);
+		Route::get('',	       		          ['as' => 'formularios', 	        	          'uses' => 'Formularios\FormulariosController@index']);
+		Route::post('validate-data',          ['as' => 'formularios.validate-data',	          'uses' => 'Formularios\FormulariosController@validateData']);
+		Route::post('view-formulario',	      ['as' => 'formularios.view-formulario', 	      'uses' => 'Formularios\FormulariosController@viewForm']);
+		Route::post('filter-forms-index',     ['as' => 'formularios.filter-forms-index',      'uses' => 'Formularios\FormulariosController@filterFormsIndex']);
+		Route::post('save-edited-form',       ['as' => 'formularios.save-edited-form',        'uses' => 'Formularios\FormulariosController@saveEditForm']);
+		Route::post('save-new-form',	      ['as' => 'formularios.save-new-form', 	      'uses' => 'Formularios\FormulariosController@saveNewForm']);
+		Route::post('save-attached-document', ['as' => 'formularios.save-attached-document',  'uses' => 'Formularios\FormulariosController@saveAttachedDocument']);
 	});
 
 	/*
@@ -93,6 +94,10 @@ Route::group(['middleware' => ['auth']], function() {
 	*/
 	Route::get('/download/{file}', function ($file='') {
 		return response()->download(storage_path('app/uploads/'.$file)); 
+	});
+
+	Route::get('/download/formulario/{file}', function ($file='') {
+		return response()->download(storage_path('app/uploads/formularios/'.$file)); 
 	});
 
 	// Registration Routes...

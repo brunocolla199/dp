@@ -123,10 +123,38 @@
                                         @endif
                                     </div>
 
-                                
+                                    {!! Form::open(['route' => 'formularios.save-attached-document', 'method' => 'POST', 'id' => 'form-upload-document', 'enctype' => 'multipart/form-data']) !!}
+                                        {{ csrf_field() }}
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h4 class="card-title"> Upload de formulários </h4>
+                                                <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
+                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                
+                                                {!! Form::hidden('codigoFormulario',        $codigoFormulario) !!}
+                                                {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
+                                                {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
+                                                {!! Form::hidden('setor_dono_form',         $setorDono) !!}                                             
+                                                {!! Form::hidden('tituloFormulario',        $tituloFormulario) !!}
+
+                                            
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="col-md-offset-2 col-md-3 pull-right">
+                                                {!! Form::submit('Salvar Formulário', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                            </div>
+                                            <div class="col-md-offset-2 col-md-3 pull-right">
+                                                <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
+                                            </div>
+                                        </div>
+
+                                    {!! Form::close() !!}
 
                                 </div>
                             </div>
+
                             @else
 
                             <h3>Novo Formulário:</h3>
@@ -140,8 +168,7 @@
                                     
                             {!! Form::open(['route' => 'formularios.save-new-form', 'method' => 'POST', 'id' => 'form-upload-new-form', 'enctype' => 'multipart/form-data']) !!}
                                 {{ csrf_field() }}
-                                
-
+                            
                                 {!! Form::hidden('codigoFormulario',        $codigoFormulario) !!}
                                 {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
                                 {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}

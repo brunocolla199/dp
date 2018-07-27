@@ -117,16 +117,19 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" disabled>IMPORTAR FORMULÁRIO</button>
-                                                            <span> 
+                                                            <button type="button" id="importFormulario" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >IMPORTAR FORMULÁRIO</button>
+                                                            <!-- <span> 
                                                                 <small>Botão desabilitado em virtude da necessidade de disponibilizar um download específico, pois os formulários serão um tipo específico de documento 
                                                                         e, por isso, não será suportado qualquer formato.</small> 
-                                                            </span>
+                                                            </span> -->
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <button type="button" id="createFormulario" class="btn btn-save-new-form waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR FORMULÁRIO</button>
+                                                            <button disabled type="button" id="createFormulario" class="btn btn-save-new-form waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR FORMULÁRIO</button>
+                                                            <span> 
+                                                                <small>Botão desabilitado em virtude de definições pendentes referentes ao editor de formulários" </small> 
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -173,7 +176,7 @@
                                                         </div>
                                                         <div class="col-md-4 margin-right-1percent">
                                                             <div class="row">
-                                                                {!! Form::text('search_tituloFomulario', null, ['class' => 'form-control', 'placeholder' => 'Título do Formulário']) !!}
+                                                                {!! Form::text('search_tituloFormulario', null, ['class' => 'form-control', 'placeholder' => 'Título do Formulário']) !!}
                                                             </div>
                                                         </div>
                                                         
@@ -206,7 +209,8 @@
                                                         @foreach($formularios as $formulario)
                                                         <tr>
                                                             {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
-                                                                {{ Form::hidden('fomulario_id', $formulario->id) }}
+                                                                {{ Form::hidden('formulario_id', $formulario->id) }}
+                                                                {{ Form::hidden('action', 'view') }}
                                                                 <td>
                                                                     {!! Form::submit($formulario->nome, ['class' => 'a-href-submit']) !!}
                                                                 </td>
@@ -249,8 +253,8 @@
         // Envia o form conforme o botão que foi clicado
         $("#importFormulario").click(function(){
             var input = $("<input>").attr("type", "hidden").attr("name", "action").val("import");
-            $('#form-generate-document').append($(input));
-            $('#form-generate-document').submit();
+            $('#form-save-new-document').append($(input));
+            $('#form-save-new-document').submit();
         });
         $("#createFormulario").click(function(){
             var input = $("<input>").attr("type", "hidden").attr("name", "action").val("create");

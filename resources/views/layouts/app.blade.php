@@ -201,6 +201,9 @@
                             <li class="{{ (\Request::is('configuracoes/*')) ? 'active' : '' }}">
                                 <a class="waves-effect waves-dark {{ (\Request::is('configuracoes/*')) ? 'active' : '' }}" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
                             </li>
+                            <li class="{{ (\Request::is('sobre/*')) ? 'active' : '' }}">
+                                <a class="waves-effect waves-dark {{ (\Request::is('sobre/*')) ? 'active' : '' }}" href="{{ url('/sobre') }}" aria-expanded="false"><i class="mdi mdi-help"></i><span class="hide-menu">Sobre </span></a>    
+                            </li>
                         </ul>
                     </nav>
                     <!-- End Sidebar navigation -->
@@ -417,16 +420,16 @@
     <script>
         $(document).ready(function() {
             // Basic
-            $('.dropify').dropify();
-
-            // Translated
-            $('.dropify-fr').dropify({
+            $('.dropify').dropify({
                 messages: {
-                    default: 'Glissez-déposez un fichier ici ou cliquez',
-                    replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
-                    remove: 'Supprimer',
-                    error: 'Désolé, le fichier trop volumineux'
-                }
+                    default: 'Arraste um arquivo para cá ou clique',
+                    replace: 'Arraste um arquivo para cá ou clique para substituir',
+                    remove: 'Remover',
+                    error: 'Erro ao processar arquivo, contate o suporte técnico (suporte@speedsoftware.com.br)'
+                },
+                error:{
+                    fileExtension:'O formato do arquivo não é suportado (pdf doc docx xlsx xls apenas).'
+                } 
             });
 
             // Used events

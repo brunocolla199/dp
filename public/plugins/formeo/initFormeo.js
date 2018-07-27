@@ -2,6 +2,9 @@
 
 function initFormeo(formData, basePath){
     console.log(basePath);
+    
+    formData = (formData) || null;
+    
     let container = document.querySelector('.build-form');
     let renderContainer = document.querySelector('.render-form');
     let formeoOpts = {
@@ -89,8 +92,12 @@ function initFormeo(formData, basePath){
     };
 
 
-    const formeo = new window.Formeo(formeoOpts);
-    console.log(formeo);
+    if(formData !== null){
+        const formeo = new window.Formeo(formeoOpts, formData);
+    } else {
+        const formeo = new window.Formeo(formeoOpts);
+    }
+
     let editing = true;
 
     let toggleEdit = document.getElementById('renderForm');
