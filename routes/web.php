@@ -97,7 +97,7 @@ Route::group(['middleware' => ['auth']], function() {
 	});
 
 	Route::get('/download/formulario/{file}', function ($file='') {
-		return response()->download(storage_path('app/uploads/formularios/'.$file)); 
+		return response()->file(storage_path('app/uploads/formularios/'.$file)); 
 	});
 
 	// Registration Routes...
