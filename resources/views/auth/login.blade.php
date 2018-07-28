@@ -79,6 +79,10 @@
                     </div>
                 </div>
 
+                <div class="row justify-content-md-center">
+                    <small>Versão 1.0 - <a href="http://speedsoftware.com.br/" target="_blank">Speed Software</a></small>
+                </div>
+
             </div>
         </div>
 
