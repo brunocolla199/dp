@@ -19,6 +19,8 @@ function initEditor(content, customCSS, base_path){
             { name: 'editing', items: [  ] }
         ],
 
+        
+
         font_names : 
         'Arial/Arial, Helvetica, sans-serif;'+
         'Comic Sans MS/Comic Sans MS, cursive;'+
@@ -34,7 +36,7 @@ function initEditor(content, customCSS, base_path){
         // Since we define all configuration options here, let's instruct CKEditor to not load config.js which it does by default.
         // One HTTP request less will result in a faster startup time.
         // For more information check http://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.config-cfg-customConfig
-        customConfig: '',
+        customConfig: base_path+'plugins/ckeditor-document-editor/initEditor.js',
         
         // Sometimes applications that convert HTML to PDF prefer setting image width through attributes instead of CSS styles.
         // For more information check:
@@ -120,7 +122,36 @@ function initEditor(content, customCSS, base_path){
     } );
         
 
+    
     CKEDITOR.on( 'instanceReady', function( ev ) {
+
+
+
+        var ol = CKEDITOR.instances['speed-editor'].document.getElementsByTag('ol');
+        
+        for (var l in ol){
+            if(typeof ol[l] == 'object' ){
+                console.log(ol[l]);
+                for(var o in ol[l]){
+                    if(typeof ol[l][o] == 'object' && ol[l][o].hasAttribute('start')){
+                        // console.log(ol[l][o]);
+
+                        var item = ol[l][o].firstChild;
+                        item.style.textTransform = 'uppercase'; 
+                        item.setAttribute('start', ol[l][o].getAttribute("start"));
+                        console.log(ol[l][o].getAttribute("start"));
+                    }
+                }
+            }
+        }
+
+            
+        
+        // CK.find('ol[start]').each(function(index, value){
+        //     console.log(index);
+        //     console.log(value);
+        // });
+
         // 
         // var lists = CKEDITOR.instances['speed-editor'].document.getElementsByTag('ul');
         

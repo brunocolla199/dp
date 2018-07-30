@@ -246,7 +246,7 @@
         <script src="{{ asset('plugins/formeo/initFormeo.js') }}"></script>
 
         <script>
-            initFormeo('', '{{ url("/") }}');
+            // initFormeo('', '{{ url("/") }}');
             $("#btn-save-new-form").click(function(){
                 var formData = JSON.stringify(window.sessionStorage.getItem('formData'));
                 

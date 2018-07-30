@@ -54,6 +54,7 @@ body.document-editor table thead th:first-of-type {
 /* CSS para numeração da lista (Office Word Style)  */
 .cke_editable ol {
     counter-reset: item;
+    padding:0;
 }
 
 .cke_editable ol li {
@@ -63,6 +64,7 @@ body.document-editor table thead th:first-of-type {
     content: counters(item, ".") ". ";
 	counter-increment: item
 }
+
 
 /* .cke_editable ul {
 
@@ -83,4 +85,17 @@ body.document-editor table thead th:first-of-type {
 
 [style="list-style-type: square;"]{
     list-style-image:url("images/check.png");
+}
+
+.cke_editable ol li h1, .cke_editable ol li p, .cke_editable ul li h1 {
+    display:inline-block;
+}
+
+
+/* .cke_editable ol{
+    content:attr(start);
+} */
+
+.cke_editable ol[start] li:first-child::before {
+    content:attr(start)". ";
 }

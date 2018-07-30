@@ -57,16 +57,17 @@
                                             </div>
                                         </div>
                                     </div> 
-                                    <!-- <div class="col-md-4">
+                                    <div class="col-md-4">
                                         <div class="control-label font-bold text-center">
-                                            Download Documento<br>
+                                            Pré-visualização do Documento<br>
                                             <div class="text-center">
-                                                <a href="{{url('documentacao/make-pdf/'.$document_id)}}" target="_blank"><br>
+                                                <a href="{{url('documentacao/make-pdf/'.$document_id)}}"  target="_blank"><br>
+                                                <!-- <a href="#" data-toggle="modal" data-target="#preview-form-modal"><br> -->
                                                     <i class="fa fa-download fa-2x"></i>
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>  -->
+                                    </div> 
                                 </div>
                             </div>
 
@@ -101,11 +102,64 @@
         </div>
     </div>
 
+
+ <!-- modal para prévisualizar documento -->
+ <div id="preview-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg" style="max-width:825px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Pré-Visualização de Documento</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                
+                    @if($tipo_doc == 'IT')
+
+                        <div class="speed-header">
+                            <img src="/doc_templates/IT.png">
+                            <p> </p>
+                            <table style="position:absolute; top:50px; right:35px; width:450px; text-align:right;" >
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" align="right" ><span class="text-small" style="color:#ffffff"><strong>INSTRUÇÃO DE TRABALHO</strong></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" align="right" >  <span class="text-small" style="color:#ffffff">{{$nome}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="text-small" style="color:#ffffff"><strong>CÓDIGO: {{$codigo}} </strong></span></td>
+                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 1</strong></span></td>
+                                        <td><span class="text-small" style="color:#ffffff"><strong>Data: {{ date("d/m/Y", strtotime( $doc_date)) }}</strong></span></td>
+                                    </tr>
+                                </tbody>
+                            </table> 
+                        </div>
+
+                        {!! $docData !!}
+
+                    @elseif($tipo_doc == 'DG')
+                    
+                    @elseif($tipo_doc == 'PG')
+
+                    @endif
+            
+            
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.modal para prévisualizar documento -->
+
+
 @endsection
 
 @section('footer')
 
 <script src="https://cdn.ckeditor.com/4.8.0/full-all/ckeditor.js"></script>
+<script src="{{ asset('plugins/ckeditor-document-editor/ckeditorConfig.js') }}"></script>
 <script src="{{ asset('plugins/ckeditor-document-editor/initEditor.js') }}"></script>
 <script src="{{ asset('plugins/ckeditor-document-editor/translate/pt-br.js') }}"></script>
 
