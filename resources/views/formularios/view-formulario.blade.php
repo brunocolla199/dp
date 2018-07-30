@@ -149,7 +149,9 @@
                                         <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
                                     @endif
                                 </div>
-                                coming soon
+                                <div class="col-md-4 text-center">
+                                    
+                                </div>
                             </div>
                             
 

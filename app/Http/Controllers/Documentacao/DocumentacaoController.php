@@ -15,6 +15,7 @@ use App\User;
 use App\Workflow;
 use App\Configuracao;
 use App\AreaInteresseDocumento;
+use App\Formulario;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
 use Illuminate\Support\Facades\View;
@@ -33,6 +34,10 @@ class DocumentacaoController extends Controller
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id');
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
+        $formularios       = Formulario::all()->pluck('nome', 'id');
+
+        // dd($formularios);
+
 
         // Aprovadores
         $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
@@ -66,7 +71,9 @@ class DocumentacaoController extends Controller
                                             'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
-                                            'documentos' => $documentos ]);
+                                            'documentos' => $documentos,
+                                            'formularios' => $formularios
+                                            ]);
     }
 
 
@@ -492,7 +499,7 @@ class DocumentacaoController extends Controller
                                         
                                         <div class="pg-first-page">
 
-                                            <img width="815" height="580" src="'.public_path('/doc_templates/PG/first-page-bg.png').'">
+                                            <img width="819" height="580" src="'.public_path('/doc_templates/PG/first-page-bg.png').'">
                                             
                                             <div class="pg-heading-info">
                                                 <h1> Procedimento de Gestão </h1>
@@ -595,7 +602,7 @@ class DocumentacaoController extends Controller
         // echo $docHtmlContent;
         // exit();
 		$pdf = \App::make('dompdf.wrapper');
-		$pdf->loadHTML($docHtmlContent);
+		$pdf->loadHTML( str_replace('/ckfinder', public_path().'/ckfinder', $docHtmlContent));
         return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->stream();
 
 

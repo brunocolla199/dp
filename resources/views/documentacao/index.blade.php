@@ -197,7 +197,7 @@
 
                                             <!-- Linha 6 -->
                                             <div class="row">
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="col-md-6 control-label font-bold">
                                                             {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
@@ -207,6 +207,20 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="col-md-10 control-label font-bold">
+                                                            {!! Form::label('formulariosAtrelados', 'ATRELAR AOS FORMULÁRIOS:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <select multiple id="optgroup-formulariosAtrelados" name="formulariosAtrelados[]" class="form-control select2" style="width:100%;">
+                                                                @foreach($formularios as $key => $form)
+                                                                    <option value="{{ $key }}">{{ $form }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>   
+                                                </div>           
                                             </div>
 
                                             <!-- Linha 5 -->

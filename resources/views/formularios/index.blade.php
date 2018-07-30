@@ -77,7 +77,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-6">
+                                                <!-- <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="col-md-10 control-label font-bold">
                                                             {!! Form::label('documentosAtrelados', 'ATRELAR AOS DOCUMENTOS:') !!}
@@ -94,7 +94,7 @@
                                                             </select>
                                                         </div>
                                                     </div>   
-                                                </div>           
+                                                </div>            -->
                                             </div>
 
                                             <!-- Linha 3  -->

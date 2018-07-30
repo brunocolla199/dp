@@ -60,10 +60,12 @@
                                     <div class="col-md-4">
                                         <div class="control-label font-bold text-center">
                                             Pré-visualização do Documento<br>
-                                            <div class="text-center">
-                                                <a href="{{url('documentacao/make-pdf/'.$document_id)}}"  target="_blank"><br>
+                                            <div class="text-center">   
+                                                <br>
+                                                <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
                                                 <!-- <a href="#" data-toggle="modal" data-target="#preview-form-modal"><br> -->
-                                                    <i class="fa fa-download fa-2x"></i>
+                                                    Visualizar    
+                                                <!-- <i class="fa fa-download fa-2x"></i> -->
                                                 </a>
                                             </div>
                                         </div>
