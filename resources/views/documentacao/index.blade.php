@@ -8,6 +8,28 @@
     <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     
 
+    @if (session('approval_success'))
+		<input type="hidden" name="status" id="status" value="approval_success">
+    @elseif (session('reject_success'))
+		<input type="hidden" name="status" id="status" value="reject_success">
+    @elseif (session('resend_success'))
+		<input type="hidden" name="status" id="status" value="resend_success">
+    @endif
+
+    <script>
+        $(document).ready(function(){
+            // Verifica se acabou de gravar uma nova solicitação
+            var status = $("#status").val();
+            if(status == "approval_success") {
+                showToast('Sucesso!', 'O documento foi aprovado.', 'success');
+            } else if(status == "reject_success") {
+                showToast('Sucesso!', 'O documento foi rejeitado.', 'success');
+            } else if(status == "resend_success") {
+                showToast('Sucesso!', 'O documento foi reenviado para a Qualidade.', 'success');
+            }
+        });
+    </script>
+
 
 
     <!-- Page wrapper  -->
@@ -345,24 +367,47 @@
                                                         </thead>
                                                         <tbody>
 
-                                                            @foreach($documentos as $documento)
-                                                            <tr>
-                                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                                    {{ Form::hidden('document_id', $documento->id) }}
-                                                                    <td>
-                                                                        {!! Form::submit($documento->nome, ['class' => 'a-href-submit']) !!}
-                                                                    </td>
-                                                                {{ Form::close() }}
+                                                            @if( count($documentos_nao_finalizados) > 0 )
+                                                                @foreach($documentos_nao_finalizados as $doc)
+                                                                    <tr>
+                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                            {{ Form::hidden('document_id', $doc['id']) }}
+                                                                            <td>
+                                                                                {!! Form::submit($doc['nome'], ['class' => 'a-href-submit']) !!}
+                                                                            </td>
+                                                                        {{ Form::close() }}
 
-                                                                <td> {{ $documento->codigo }} </td>
+                                                                        <td> {{ $doc['codigo'] }} </td>
 
-                                                                <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $documento->nome_tipo }} </td>
-                                                                <td>
-                                                                    <p class="text-muted font-weight-bold"> {{ $documento->etapa }} </p>
-                                                                </td>
-                                                                <td>{{ date("d/m/Y", strtotime($documento->validade)) }}</td>
-                                                            </tr>
-                                                            @endforeach
+                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $doc['nome_tipo'] }} </td>
+                                                                        <td>
+                                                                            <p class="text-muted font-weight-bold"> {{ $doc['etapa'] }} </p>
+                                                                        </td>
+                                                                        <td>{{ date("d/m/Y", strtotime($doc['validade'])) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @endif
+
+                                                            @if( count($documentos_finalizados) > 0 )
+                                                                @foreach($documentos_finalizados as $docF)
+                                                                    <tr>
+                                                                        {{ Form::open(['route' => 'home', 'method' => 'GET']) }}
+                                                                            {{ Form::hidden('document_id', $docF['id']) }}
+                                                                            <td>
+                                                                                {!! Form::submit($docF['nome'], ['class' => 'a-href-submit']) !!}
+                                                                            </td>
+                                                                        {{ Form::close() }}
+
+                                                                        <td> {{ $docF['codigo'] }} </td>
+
+                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF['nome_tipo'] }} </td>
+                                                                        <td>
+                                                                            <p class="text-muted font-weight-bold text-success"> Finalizado </p>
+                                                                        </td>
+                                                                        <td>{{ date("d/m/Y", strtotime($docF['validade'])) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @endif
 
                                                         </tbody>
                                                     </table>

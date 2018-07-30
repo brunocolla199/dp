@@ -16,7 +16,6 @@ class CreateDadosDocumentoTable extends Migration
         Schema::create('dados_documento', function (Blueprint $table) {
             $table->increments('id');
             $table->date('validade');
-            $table->double('versao', 8, 2);
             $table->boolean('status');
             $table->text('observacao');
             $table->boolean('copia_controlada');
@@ -28,6 +27,8 @@ class CreateDadosDocumentoTable extends Migration
             $table->foreign('grupo_treinamento_id')->references('id')->on('grupo_treinamento');
             $table->integer('grupo_divulgacao_id')->unsigned();
             $table->foreign('grupo_divulgacao_id')->references('id')->on('grupo_divulgacao');
+            $table->integer('elaborador_id')->unsigned();
+            $table->foreign('elaborador_id')->references('id')->on('users');
             $table->integer('aprovador_id')->unsigned();
             $table->foreign('aprovador_id')->references('id')->on('users');
             $table->integer('documento_id')->unsigned();

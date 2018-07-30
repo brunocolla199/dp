@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\User;
+use App\Classes\Constants;
 
 class UsersTableSeeder extends Seeder
 {
@@ -14,14 +15,6 @@ class UsersTableSeeder extends Seeder
     {
 
         // Qualidade
-        $qualidade           = new User();
-        $qualidade->name     = "Qualidade";
-        $qualidade->username = "qualidade";
-        $qualidade->email    = "qualidade@speedsoftware.com.br";
-        $qualidade->setor_id = 1;
-        $qualidade->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
-        $qualidade->save();
-
         $qualidade2           = new User();
         $qualidade2->name     = "Celise Zilli";
         $qualidade2->username = "celise.zilli";
@@ -29,6 +22,14 @@ class UsersTableSeeder extends Seeder
         $qualidade2->setor_id = 1;
         $qualidade2->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $qualidade2->save();
+
+        $qualidade           = new User();
+        $qualidade->name     = "Qualidade";
+        $qualidade->username = "qualidade";
+        $qualidade->email    = "qualidade@speedsoftware.com.br";
+        $qualidade->setor_id = 1;
+        $qualidade->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
+        $qualidade->save();
 
         $qualidade3           = new User();
         $qualidade3->name     = "Natalia Hoyer";
@@ -134,7 +135,7 @@ class UsersTableSeeder extends Seeder
         $comercial1->setor_id = 8;
         $comercial1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $comercial1->save();
-
+        
         $comercial2           = new User();
         $comercial2->name     = "Usuário Comercial II";
         $comercial2->username = "comercial2";
@@ -142,7 +143,15 @@ class UsersTableSeeder extends Seeder
         $comercial2->setor_id = 8;
         $comercial2->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $comercial2->save();
-
+        
+        // Pessoas & Organização (Capital Humano)
+        $pessoas_organizacao1           = new User();
+        $pessoas_organizacao1->name     = "Usuário Capital Humano I";
+        $pessoas_organizacao1->username = "capital.humano1";
+        $pessoas_organizacao1->email    = "capital.humano11@speedsoftware.com.br";
+        $pessoas_organizacao1->setor_id = Constants::$ID_SETOR_CAPITAL_HUMANO;
+        $pessoas_organizacao1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
+        $pessoas_organizacao1->save();
                 
     }
 }

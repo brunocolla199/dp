@@ -128,6 +128,11 @@
     font-size: 18px!important;
 }
 
+/* Background customizado de uma notificação que necessita interação do usuário */
+.bkg-color-need-interaction {
+    background-color: #ffe082;
+}
+
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
 	border: 1px solid black;

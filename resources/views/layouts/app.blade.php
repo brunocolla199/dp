@@ -229,7 +229,6 @@
 
 
 
-
         @yield('content')
 
 
@@ -245,33 +244,90 @@
                 <div class="r-panel-body">
                     <div class="row mb-4">
 
-                        <div class="col-md-12">
-                            <div class="ribbon-wrapper card">
-                                <div class="ribbon ribbon-bookmark  ribbon-success"> IT - QUA - 001 </div>
-                                <p class="ribbon-content">O documento código <a href="javascript:void(0)"><b> IT-QUA-001 </b></a> vence em 20/04/2018 </p>
-                            </div>
-                        </div>
+                        @if (!Auth::guest())
+                        
 
-                        <div class="col-md-12">
-                            <div class="ribbon-wrapper card">
-                                <div class="ribbon ribbon-bookmark  ribbon-primary">DG - 001</div>
-                                <p class="ribbon-content">O documento código <a href="javascript:void(0)"><b> DG-001 </b></a> vence em 20/04/2018</p>
-                            </div>
-                        </div>
+                            @if( count(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id )) <= 0 )
+                                <div class="col-md-12 mb-4">
+                                    Não há nenhuma nova notificação para ser visualizada.
+                                </div>
+                            @else
+                                @foreach(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id ) as $notificacao)
+                                    @if($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_INSTRUCAO_DE_TRABALHO)
+                                        <div class="col-md-12">
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
+                                                
+                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    <button type="submit" class="a-href-submit" style="color: white">
+                                                        <div class="ribbon ribbon-bookmark ribbon-success">
+                                                            {{ $notificacao->codigo }}
+                                                        </div>
+                                                    </button>  
+                                                {{ Form::close() }}
 
-                        <div class="col-md-12">
-                            <div class="ribbon-wrapper card">
-                                <div class="ribbon ribbon-bookmark  ribbon-info">PG - 001</div>
-                                <p class="ribbon-content">O documento código <a href="javascript:void(0)"><b> PG-001 </b></a> foi finalizado</p>
-                            </div>
-                        </div>
+                                                <p class="ribbon-content"> {{ $notificacao->texto }} </p>
+                                            </div>
+                                        </div>
+                                    @elseif($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_PROCEDIMENTO_DE_GESTAO)
+                                        <div class="col-md-12">
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
+                                                
+                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    <button type="submit" class="a-href-submit" style="color: white">
+                                                        <div class="ribbon ribbon-bookmark ribbon-info">
+                                                            {{ $notificacao->codigo }}
+                                                        </div>
+                                                    </button>  
+                                                {{ Form::close() }}
 
-                        <div class="col-md-12">
-                            <div class="ribbon-wrapper card">
-                                <div class="ribbon ribbon-bookmark  ribbon-warning">FR - OPE - 001</div>
-                                <p class="ribbon-content">O formulário código <a href="javascript:void(0)"><b> FR-OPE-001 </b></a> foi criado</p>
-                            </div>
-                        </div>
+                                                <p class="ribbon-content"> {{ $notificacao->texto }} </p>
+                                            </div>
+                                        </div>
+                                    @elseif($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_DIRETRIZES_DE_GESTAO)
+                                        <div class="col-md-12">
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
+                                                
+                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    <button type="submit" class="a-href-submit" style="color: white">
+                                                        <div class="ribbon ribbon-bookmark ribbon-primary">
+                                                            {{ $notificacao->codigo }}
+                                                        </div>
+                                                    </button>  
+                                                {{ Form::close() }}
+
+                                                <p class="ribbon-content"> {{ $notificacao->texto }} </p>
+                                            </div>
+                                        </div>
+                                    @elseif($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)
+                                        <div class="col-md-12">
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
+                                                
+                                                <!--
+                                                    -- 
+                                                    Aqui será necessário mudar a rota e direcionar para edição ou aprovação de FORMULÁRIO 
+                                                    --
+                                                -->
+                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    <button type="submit" class="a-href-submit" style="color: white">
+                                                        <div class="ribbon ribbon-bookmark ribbon-warning">
+                                                            {{ $notificacao->codigo }}
+                                                        </div>
+                                                    </button>  
+                                                
+
+                                                <p class="ribbon-content"> {{ $notificacao->texto }} </p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            @endif
+
+
+                        @endif
+
 
                     </div>
                 </div>

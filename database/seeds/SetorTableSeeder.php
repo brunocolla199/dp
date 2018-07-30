@@ -190,15 +190,5 @@ class SetorTableSeeder extends Seeder
         $transporte->save();
 
 
-        /*
-        * EXTRA - Setor utilizado para usuários que acabaram de ser importados
-        */
-        $importacao              = new Setor();
-        $importacao->nome        = "Importação";
-        $importacao->sigla       = "IMPOR";
-        $importacao->descricao   = "Setor criado para que os usuários que acabaram de ser importados do AD sejam vinculados, ficando no aguardo da sua vinculação ao setor ao qual eles realmente pertencem.";
-        $importacao->tipo_setor_id = Constants::$ID_TIPO_SETOR_SETOR_NORMAL;
-        $importacao->save();
-
     }
 }

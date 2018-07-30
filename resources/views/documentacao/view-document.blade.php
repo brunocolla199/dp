@@ -23,18 +23,57 @@
             
             
             <!-- Start Page Content -->
+            <div class="row">
+                <div class="col-md-12 card">
+                    <div class="card-body">
 
 
-            {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
-                {{ csrf_field() }}
+                        <!-- Div com os botões de aprovar ou rejeitar -->
+                        @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
+                            <div class="row">
+                                <div class="col-md-5"></div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-12">    
+                                            {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
+                                                {{ Form::hidden('documento_id', $document_id) }}
+                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                            {{ Form::close() }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif( \App\Classes\Helpers::instance()->checkPermissionsToApprove($etapa_doc, $document_id) )
+                            <div class="row">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-5 mr-4">
+                                            <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target=".bs-example-modal-sm">REJEITAR <i class="fa fa-remove"></i></button>
+                                        </div>
+                                        <div class="col-md-5">    
+                                            {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                {{ Form::hidden('documento_id', $document_id) }}
+                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                            {{ Form::close() }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
-                 {!! Form::hidden('document_id', $document_id) !!}
 
-                <div class="row">
-                    <div class="col-md-12 card">
-                        <div class=" card-body">
 
+                        {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
+                            {{ csrf_field() }}
+
+                            {!! Form::hidden('document_id', $document_id) !!}
+
+                            
                             <div class="col-md-12">
+                                <hr>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -73,14 +112,13 @@
                                 </div>
                             </div>
 
-                            <!-- Editor -->
 
+                            <!-- Editor -->
                             <div class="container" >
                                 <textarea id="speed-editor">
                                     
                                 </textarea>
                             </div>
-
                             <!-- End Editor -->
                                 
                             
@@ -91,16 +129,50 @@
                                 </div>
                             </div>
 
-                        </div>
+                        {!! Form::close() !!}
+
+
                     </div>
                 </div>
+            </div>
+            <!-- End Page Content -->
 
 
-                
-                <!-- End Page Content -->
 
-            {!! Form::close() !!}
-
+            <!-- modal justificativa reprovação do documento -->
+            <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Rejeitar Documento</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        {{ Form::open(['route' => 'documentacao.reject-document', 'method' => 'POST']) }}
+                            {{ Form::hidden('documento_id', $document_id) }}
+                            {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                            <div class="modal-body"> 
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-md-12 control-label font-bold">
+                                            {!! Form::label('justificativaReprovacaoDoc', 'JUSTIFICATIVA:') !!}
+                                        </div>
+                                        <div class="col-md-12">
+                                            {!! Form::textarea('justificativaReprovacaoDoc', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger waves-effect">Rejeitar</button>
+                            </div>
+                        {!! Form::close() !!}
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal justificativa reprovação do documento -->
         </div>
     </div>
 

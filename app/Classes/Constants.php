@@ -90,6 +90,18 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO                   = "Documento divulgado";
     
     public static $DESCRICAO_WORKFLOW_VALIDADE_VENCIDA                      = "Validade Vencida";
+    
+    public static $DESCRICAO_WORKFLOW_EMISSAO                               = "Emissão";
+    
+    public static $DESCRICAO_WORKFLOW_EM_ELABORACAO                         = "Em Elaboração";
+    
+    
+    // Extras
+    public static $ID_SETOR_QUALIDADE = 1;
+
+    public static $ID_SETOR_CAPITAL_HUMANO = 16; // Pessoas & Organização
+    
+    public static $ID_USUARIO_ADMIN_SETOR_QUALIDADE = 1; // [CELISE] Verificar se for importado do AD
 }
 
 
