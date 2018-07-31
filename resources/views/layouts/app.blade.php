@@ -259,6 +259,7 @@
                                                 
                                                 {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                     {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
                                                     <button type="submit" class="a-href-submit" style="color: white">
                                                         <div class="ribbon ribbon-bookmark ribbon-success">
                                                             {{ $notificacao->codigo }}
@@ -275,6 +276,7 @@
                                                 
                                                 {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                     {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
                                                     <button type="submit" class="a-href-submit" style="color: white">
                                                         <div class="ribbon ribbon-bookmark ribbon-info">
                                                             {{ $notificacao->codigo }}
@@ -291,6 +293,7 @@
                                                 
                                                 {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                     {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
                                                     <button type="submit" class="a-href-submit" style="color: white">
                                                         <div class="ribbon ribbon-bookmark ribbon-primary">
                                                             {{ $notificacao->codigo }}

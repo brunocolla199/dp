@@ -337,6 +337,9 @@ class DocumentacaoController extends Controller
 
 
     public function viewDocument(Request $request) {
+        if( array_key_exists("notify_id", $request->all()) ) {
+            \App\Classes\Helpers::instance()->atualizaNotificacaoVisualizada($request->notify_id);
+        }
 
         $document_id = $request->document_id;
         

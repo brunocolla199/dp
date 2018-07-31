@@ -29,6 +29,7 @@ class Helpers {
         return $notificacoes;
     }
     
+    
     function gravaNotificacao($texto, $necessitaInteracao, $idUser, $idDoc) {
         $notificacao = new Notificacao();
         $notificacao->texto                 = $texto;
