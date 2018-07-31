@@ -50,7 +50,7 @@ class UsersTableSeeder extends Seeder
 
         // Diretores
         $diretor1           = new User();
-        $diretor1->name     = "Usuário Diretor I";
+        $diretor1->name     = "Diretor I";
         $diretor1->username = "diretor1";
         $diretor1->email    = "diretor1@speedsoftware.com.br";
         $diretor1->setor_id = 2;
@@ -58,7 +58,7 @@ class UsersTableSeeder extends Seeder
         $diretor1->save();
 
         $diretor2           = new User();
-        $diretor2->name     = "Usuário Diretor II";
+        $diretor2->name     = "Diretor II";
         $diretor2->username = "diretor2";
         $diretor2->email    = "diretor2@speedsoftware.com.br";
         $diretor2->setor_id = 2;
@@ -68,7 +68,7 @@ class UsersTableSeeder extends Seeder
 
         // Gerentes
         $gerente1           = new User();
-        $gerente1->name     = "Usuário Gerência I";
+        $gerente1->name     = "Gerência I";
         $gerente1->username = "gerente1";
         $gerente1->email    = "gerente1@speedsoftware.com.br";
         $gerente1->setor_id = 3;
@@ -76,7 +76,7 @@ class UsersTableSeeder extends Seeder
         $gerente1->save();
 
         $gerente2           = new User();
-        $gerente2->name     = "Usuário Gerência II";
+        $gerente2->name     = "Gerência II";
         $gerente2->username = "gerente2";
         $gerente2->email    = "gerente2@speedsoftware.com.br";
         $gerente2->setor_id = 3;
@@ -93,7 +93,7 @@ class UsersTableSeeder extends Seeder
         
         // Administrativo
         $administrativo1           = new User();
-        $administrativo1->name     = "Usuário Administrativo I";
+        $administrativo1->name     = "Administrativo I";
         $administrativo1->username = "administrativo1";
         $administrativo1->email    = "administrativo1@speedsoftware.com.br";
         $administrativo1->setor_id = 4;
@@ -102,7 +102,7 @@ class UsersTableSeeder extends Seeder
         
         // Armadores
         $armadores1           = new User();
-        $armadores1->name     = "Usuário Armadores I";
+        $armadores1->name     = "Armadores I";
         $armadores1->username = "armadores1";
         $armadores1->email    = "armadores1@speedsoftware.com.br";
         $armadores1->setor_id = 5;
@@ -111,7 +111,7 @@ class UsersTableSeeder extends Seeder
         
         // CDI
         $cdi1           = new User();
-        $cdi1->name     = "Usuário CDI I";
+        $cdi1->name     = "CDI I";
         $cdi1->username = "cdi1";
         $cdi1->email    = "cdi1@speedsoftware.com.br";
         $cdi1->setor_id = 6;
@@ -120,7 +120,7 @@ class UsersTableSeeder extends Seeder
         
         // Compras
         $compras1           = new User();
-        $compras1->name     = "Usuário Compras I";
+        $compras1->name     = "Compras I";
         $compras1->username = "compras1";
         $compras1->email    = "compras1@speedsoftware.com.br";
         $compras1->setor_id = 7;
@@ -129,7 +129,7 @@ class UsersTableSeeder extends Seeder
         
         // Comercial
         $comercial1           = new User();
-        $comercial1->name     = "Usuário Comercial I";
+        $comercial1->name     = "Comercial I";
         $comercial1->username = "comercial1";
         $comercial1->email    = "comercial1@speedsoftware.com.br";
         $comercial1->setor_id = 8;
@@ -137,7 +137,7 @@ class UsersTableSeeder extends Seeder
         $comercial1->save();
         
         $comercial2           = new User();
-        $comercial2->name     = "Usuário Comercial II";
+        $comercial2->name     = "Comercial II";
         $comercial2->username = "comercial2";
         $comercial2->email    = "comercial2@speedsoftware.com.br";
         $comercial2->setor_id = 8;
@@ -146,7 +146,7 @@ class UsersTableSeeder extends Seeder
         
         // Pessoas & Organização (Capital Humano)
         $pessoas_organizacao1           = new User();
-        $pessoas_organizacao1->name     = "Usuário Capital Humano I";
+        $pessoas_organizacao1->name     = "Capital Humano I";
         $pessoas_organizacao1->username = "capital.humano1";
         $pessoas_organizacao1->email    = "capital.humano11@speedsoftware.com.br";
         $pessoas_organizacao1->setor_id = Constants::$ID_SETOR_CAPITAL_HUMANO;
