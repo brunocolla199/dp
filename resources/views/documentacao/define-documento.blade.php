@@ -110,6 +110,16 @@
                                     <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $text_grupoDivulgacao }}  </p>
                                 </div>
                             </div>
+
+                             @if( count($formsAtrelados) > 0 )
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="pull-left"><b>FORMULÁRIOS ATRELADOS: </b>{{ $text_formsAtrelados }}  </p>
+                                    </div>   
+                                </div>
+                            @endif
+
                         </div>
                         <div class="card-footer text-muted">
                             Informações do Novo Documento
@@ -170,6 +180,13 @@
                                                         <input type="hidden" name="areaInteresse[]" value="<?php echo $usuariosInteresse ?>">
                                                     @endforeach
                                                 @endif
+
+                                                 @if( count($formsAtrelados) > 0 )
+                                                    @foreach($formsAtrelados as $formAtrelado)
+                                                        <input type="hidden" name="formsAtrelados[]" value="<?php echo $formAtrelado ?>">
+                                                    @endforeach
+                                                @endif
+
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12">
@@ -211,6 +228,12 @@
                                 @if( count($areaInteresse) > 0 )
                                     @foreach($areaInteresse as $usuariosInteresse)
                                         <input type="hidden" name="areaInteresse[]" value="<?php echo $usuariosInteresse ?>">
+                                    @endforeach
+                                @endif
+
+                                @if( count($formsAtrelados) > 0 )
+                                    @foreach($formsAtrelados as $formAtrelado)
+                                        <input type="hidden" name="formsAtrelados[]" value="<?php echo $formAtrelado ?>">
                                     @endforeach
                                 @endif
                             {!! Form::close() !!}

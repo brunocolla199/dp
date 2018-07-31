@@ -16,6 +16,7 @@ class CreateHistoricoFormularioTable extends Migration
         Schema::create('historico_formulario', function (Blueprint $table) {
             $table->increments('id');
             $table->text('descricao');
+            $table->integer('etapa')->unsigned();
             $table->integer('formulario_id')->unsigned();
             $table->foreign('formulario_id')->references('id')->on('formulario');
             $table->timestamps();

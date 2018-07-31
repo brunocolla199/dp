@@ -16,6 +16,7 @@ use App\Workflow;
 use App\Configuracao;
 use App\AreaInteresseDocumento;
 use App\Formulario;
+use App\DocumentoFormulario;
 use App\ListaPresenca;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
@@ -138,7 +139,12 @@ class DocumentacaoController extends Controller
         
         $codigo_final = $text_tipo_documento[0]->sigla . "-";
         $codigo = 0;
+
+        $formsIDs = array_map('intval', $request->formulariosAtrelados);
+
+        $text_formsAtrelados = Formulario::whereIn('id', $formsIDs)->get(['nome'])->implode('nome',', ');
         
+
         // Define código do documento
         if($text_tipo_documento[0]->sigla == "IT") { // Incremento depende do setor (cada setor tem seu incremento)
             $qtdDocs = DB::table('documento')
@@ -174,6 +180,8 @@ class DocumentacaoController extends Controller
         $codigo_final .= $codigo;
 
 
+       
+
         $docData = File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".html"); 
 
         return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
@@ -184,13 +192,13 @@ class DocumentacaoController extends Controller
                                                         'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
                                                         'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
                                                         'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
-                                                        'acao' => $acao, 'areaInteresse' => $areaInteresse, 'docData'=>$docData ]);
+                                                        'acao' => $acao, 'areaInteresse' => $areaInteresse, 'docData'=>$docData, 'formsAtrelados'=>$request->formulariosAtrelados, 'text_formsAtrelados'=>$text_formsAtrelados ]);
     }
 
 
     public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
         $novoDocumento = $request->all();
-
+        
         // Popular a tabela 'documento' e, em seguida, as tabelas: 'dados_dcumento', 'area_interesse_documento', 'workflow'
          //if (Input::file('doc_uploaded') != null) {
             $file = $request->file('doc_uploaded', 'local');
@@ -232,6 +240,16 @@ class DocumentacaoController extends Controller
                 }
             }
 
+            //Populando a tabela de vinculação Documento -> Formulários
+            if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
+                foreach($novoDocumento['formsAtrelados'] as $key => $form) {
+                    $documentoFormulario = new DocumentoFormulario();
+                    $documentoFormulario->documento_id  = $documento->id;
+                    $documentoFormulario->formulario_id = $form;
+                    $documentoFormulario->save();
+                }
+            }
+
             
             // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
             $workflow = new Workflow();
@@ -259,11 +277,12 @@ class DocumentacaoController extends Controller
 
 
     public function saveNewDocument(Request $request) {         
+        
         $novoDocumento = $request->all();
         $titulo   = $novoDocumento['tituloDocumento'];
         $codigo   = $novoDocumento['codigoDocumento']; 
         $extensao = 'docx';
-       
+
         Storage::disk('local')->put('uploads/'.$titulo.'.html', $novoDocumento['docData']); 
 
         $documento = new Documento();
@@ -299,6 +318,15 @@ class DocumentacaoController extends Controller
             }
         }
 
+        //Populando a tabela de vinculação Documento -> Formulários
+        if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
+            foreach($novoDocumento['formsAtrelados'] as $key => $form) {
+                $documentoFormulario = new DocumentoFormulario();
+                $documentoFormulario->documento_id  = $documento->id;
+                $documentoFormulario->formulario_id = $form;
+                $documentoFormulario->save();
+            }
+        }
         
         // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
         $workflow = new Workflow();
