@@ -11,7 +11,9 @@
     @if (session('approval_success'))
 		<input type="hidden" name="status" id="status" value="approval_success">
     @elseif (session('reject_success'))
-		<input type="hidden" name="status" id="status" value="reject_success">
+        <input type="hidden" name="status" id="status" value="reject_success">
+    @elseif (session('link_success'))
+		<input type="hidden" name="status" id="status" value="link_success">
     @elseif (session('resend_success'))
 		<input type="hidden" name="status" id="status" value="resend_success">
     @elseif (session('import_list_success'))
@@ -32,6 +34,8 @@
                 showToast('Sucesso!', 'O documento foi rejeitado.', 'success');
             } else if(status == "resend_success") {
                 showToast('Sucesso!', 'O documento foi reenviado para a Qualidade.', 'success');
+            } else if(status == "link_success") {
+                showToast('Sucesso!', 'A vinculação foi realizada com sucesso.', 'success');
             } else if(status == "import_list_success") {
                 showToast('Sucesso!', 'A lista de presença foi salva.', 'success');
             } else if(status == "reject_list_success") {
@@ -375,6 +379,7 @@
                                                                 <th>Tipo do Documento</th>
                                                                 <th>Status</th>
                                                                 <th>Validade</th>
+                                                                <th>Formulários</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -396,6 +401,12 @@
                                                                             <p class="text-muted font-weight-bold"> {{ $doc->etapa }} </p>
                                                                         </td>
                                                                         <td>{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
+                                                                        <td>
+                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false">
+                                                                                <i class="fa fa-exchange text-info"></i>
+                                                                                Vínculos
+                                                                            </a>
+                                                                        </td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
@@ -417,6 +428,12 @@
                                                                             <p class="text-muted font-weight-bold text-success"> Finalizado </p>
                                                                         </td>
                                                                         <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
+                                                                        <td>
+                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true">
+                                                                                <i class="fa fa-exchange text-info"></i>
+                                                                                Vínculos
+                                                                            </a>
+                                                                        </td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
@@ -438,14 +455,50 @@
             <!-- ============================================================== -->
             <!-- End Page Content -->
             <!-- ============================================================== -->
+            
+             <!-- Modal para vínculos com formulários -->
+            <div id="vinculos-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-lg">
+                    
+                    {{ Form::open(['route' => 'documentacao.save-link-form', 'id' => 'save-link-form', 'method' => 'POST']) }}
+                        
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Vinculação de Formulários</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="col-md-12 control-label font-bold">
+                                        {!! Form::label('formulariosAtrelados', 'ATRELAR AOS FORMULÁRIOS:') !!}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <select multiple name="formulariosAtreladosDocs[]" class="form-control select2-vinculos" style="width:100%;">
+                                            @foreach($formularios as $key => $form)
+                                                <option value="{{ $key }}" >{{ $form }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>   
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
+                            <button type="button" class="btn-save-link btn btn-success waves-effect" >Salvar Vínculos </button>
+                        </div>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+            <!-- /.modal para vínculos com formulários -->
+
 
             <script>
 
                 // Material Date picker   
                 $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
                 $('#mdate_search').bootstrapMaterialDatePicker({ weekStart : 0, time: false, lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
-
-
 
                 /*
                 *   QUANDO CARREGAR A PÁGINA
@@ -493,5 +546,36 @@
     <!-- ============================================================== -->
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
+
+@endsection
+
+
+@section('footer')
+
+<script>
+
+    $(function(){
+        
+        $("[data-target='#vinculos-form-modal']").click(function(){
+            var forms = JSON.parse($(this).attr('data-forms'));
+            var id = $(this).attr('data-id');
+            var status = $(this).attr('data-finalizado');
+
+            $("#save-link-form").append("<input type='hidden' name='documento_id' value='"+id+"' >")
+            
+            $(".select2-vinculos").select2();   
+            $(".select2-vinculos").select2('data', forms);
+            
+        });
+        
+        $(".btn-save-link").click(function(){
+            $("#save-link-form").submit();
+        });
+
+    });
+     
+
+</script>
+
 
 @endsection

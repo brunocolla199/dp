@@ -40,7 +40,6 @@ class DocumentacaoController extends Controller
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
         $formularios       = Formulario::all()->pluck('nome', 'id');
 
-        // dd($formularios);
 
 
         // Aprovadores
@@ -140,9 +139,12 @@ class DocumentacaoController extends Controller
         $codigo_final = $text_tipo_documento[0]->sigla . "-";
         $codigo = 0;
 
-        $formsIDs = array_map('intval', $request->formulariosAtrelados);
-
-        $text_formsAtrelados = Formulario::whereIn('id', $formsIDs)->get(['nome'])->implode('nome',', ');
+        if($request->formulariosAtrelados){
+            $formsIDs = array_map('intval', $request->formulariosAtrelados);   
+            $text_formsAtrelados = Formulario::whereIn('id', $formsIDs)->get(['nome'])->implode('nome',', ');
+        } else {
+            $text_formsAtrelados = '';
+        }
         
 
         // Define código do documento
@@ -350,6 +352,20 @@ class DocumentacaoController extends Controller
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
     }
 
+    public function salvaVinculoFormulario(Request $request){
+
+        //Populando a tabela de vinculação Documento -> Formulários
+        if( isset($request->formulariosAtreladosDocs) && count($request->formulariosAtreladosDocs) > 0 ) {
+            foreach($request->formulariosAtreladosDocs as $key => $form) {
+                $documentoFormulario = new DocumentoFormulario();
+                $documentoFormulario->documento_id  = $request->documento_id;
+                $documentoFormulario->formulario_id = $form;
+                $documentoFormulario->save();
+            }
+        }
+        
+        return redirect()->route('documentacao')->with('link_success','message');
+    }
 
     public function viewDocument(Request $request) {
         if( array_key_exists("notify_id", $request->all()) ) {
@@ -1363,12 +1379,27 @@ class DocumentacaoController extends Controller
         if( count($documentos_NAOFinalizados) > 0 ) {
             usort($documentos_NAOFinalizados, array($this, "cmp"));
             $docs["nao_finalizados"] = $documentos_NAOFinalizados;
+            
+            //Adicionando formulários vinculados ao doc
+            foreach ($docs['nao_finalizados'] as $key => &$value) {
+                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->get(['formulario.id as id', 'formulario.nome as text'])->toJson();
+            }
+
+            // dd($docs["nao_finalizados"]);
         }
 
         if( count($documentosFinalizados) > 0 ) {
             usort($documentosFinalizados, array($this, "cmp"));
             $docs["finalizados"] = $documentosFinalizados;
+            
+            //Adicionando formulários vinculados ao doc
+            foreach ($docs['finalizados'] as $key => &$value) {
+                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->get(['formulario.id as id', 'formulario.nome as text'])->tojson();
+            }
         }
+
+
+
 
         
         return $docs;

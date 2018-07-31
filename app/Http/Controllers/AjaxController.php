@@ -74,5 +74,10 @@ class AjaxController extends Controller
         ]);
     }
 
+    //Método para retornar formulário vinculados ao documento
+    public function getDocumentosFormularios(Request $request){
+        dd($request);
+    }   
+
 
 }

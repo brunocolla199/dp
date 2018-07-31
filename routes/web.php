@@ -32,6 +32,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  						'uses' => 'AjaxController@getSectors']);
 	Route::post('ajax/setores/retornaSetoresExcetoUm',  ['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
 	Route::post('ajax/upload',                          ['as' => 'ajax.upload.image',	                		'uses' => 'AjaxController@uploadEditorImage']);
+	Route::post('ajax/documentos/retornaFormularios',   ['as' => 'ajax.documentos.formularios',	                'uses' => 'AjaxController@getDocumentosFormularios']);
 
 
     /*
@@ -62,10 +63,11 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('resend-document',  		['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
 		Route::post('salva-lista-presenca',		['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
 		Route::post('resend-list',  			['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
+		Route::post('save-link-form',	     	['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
 
 	});
     
-    /*
+	/*
 	* FORMULÁRIOS
 	*/
 	Route::group(['prefix' => 'formularios'], function() {
