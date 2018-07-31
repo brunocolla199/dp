@@ -58,8 +58,8 @@ class DocumentacaoController extends Controller
 
         // DOCUMENTOS já criados (para listagem)
         $documentos = $this->getDocumentsIndex();
-        $docsNAOFinalizados = ( array_key_exists(0, $documentos) && count($documentos[0]) > 0 )  ? $documentos[0] : null;
-        $docsFinalizados = ( array_key_exists(1, $documentos) && count($documentos[1]) > 0 )  ? $documentos[1] : null;
+        $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
+        $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
         return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'diretores_aprovadores' => $diretores_aprovadores, 'gerentes_aprovadores' => $gerentes_aprovadores,
                                             'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
@@ -243,7 +243,7 @@ class DocumentacaoController extends Controller
             // Gravar notificação para todos usuários do setor Qualidade sobre a importação do documento
             $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
             foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $codigo . " foi importado.", false, $user->id, $documento->id);
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $codigo . " foi importado e precisa ser revisado.", true, $user->id, $documento->id);
             }
 
             // Grava histórico do documento
@@ -365,13 +365,16 @@ class DocumentacaoController extends Controller
             ob_end_clean();
         }
     
-        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id));
+        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa));
     }
 
     
     public function saveEditDocument(Request $request){
         $document_id = $request->document_id;
+
         $documento = Documento::find($document_id);
+        $workflowDoc   = Workflow::where('documento_id', '=', $document_id)->get();
+        $dadosDoc      = DadosDocumento::where('documento_id', '=', $document_id)->get();
         $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get(['nome_tipo', 'sigla']);
         $documento->codigo = $request->codigoDocumento;
         
@@ -419,7 +422,7 @@ class DocumentacaoController extends Controller
             
             $docData = trim(json_encode( $request->docData), '"');
             
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!']));
+            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa));
         }
 
     }
@@ -798,11 +801,37 @@ class DocumentacaoController extends Controller
                 break;
 
             case 3: // Área de Interesse
-                # code...
+                $dados_doc[0]->observacao = "Aprovado pela Área de Interesse";
+                $dados_doc[0]->save();
+
+                $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_APROVADOR_NUM;
+                $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT;
+                $workflow_doc[0]->save();
+
+                // Notificações
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $dados_doc[0]->aprovador_id, $idDoc);
+
+                // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_AREA_DE_INTERESSE, $idDoc);
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR, $idDoc);
                 break;
 
             case 4: // Aprovador
-                # code...
+                $dados_doc[0]->observacao = "Aprovado pelo Aprovador";
+                $dados_doc[0]->save();
+
+                $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
+                $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
+                $workflow_doc[0]->save();
+
+                // Notificações
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita lista de presença.", true, $dados_doc[0]->elaborador_id, $idDoc);
+
+                // Histórico
+                if( $documento[0]->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_DIRETRIZES_DE_GESTAO ) \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_DIRETORIA, $idDoc);
+                else \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_GERENCIA, $idDoc);
+
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA, $idDoc);
                 break;
 
             case 5: // Upload da Lista de Presença
@@ -846,21 +875,55 @@ class DocumentacaoController extends Controller
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e rejeitado pela Qualidade.", false, $user->id, $idDoc);
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi devolvido para correção pela Qualidade.", false, $user->id, $idDoc);
                 }
 
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido.", true, $dados_doc[0]->elaborador_id, $idDoc);
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Qualidade).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
             case 3: // Área de Interesse
-                # code...
+                $dados_doc[0]->observacao = "Rejeitado pela Área de Interesse";
+                $dados_doc[0]->save();
+
+                $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
+                $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
+                $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
+                $workflow_doc[0]->save();
+
+                // Notificações
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi devolvido para correção pela Área de Interesse.", false, $user->id, $idDoc);
+                }
+
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Área de Interesse).", true, $dados_doc[0]->elaborador_id, $idDoc);
+
+                // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
             case 4: // Aprovador
-                # code...
+                $dados_doc[0]->observacao = "Rejeitado pelo Aprovador";
+                $dados_doc[0]->save();
+
+                $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
+                $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
+                $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
+                $workflow_doc[0]->save();
+
+                // Notificações
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi devolvido para correção pelo Aprovador.", false, $user->id, $idDoc);
+                }
+
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pelo Aprovador).", true, $dados_doc[0]->elaborador_id, $idDoc);
+
+                // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
             case 5: // Upload da Lista de Presença
@@ -889,13 +952,12 @@ class DocumentacaoController extends Controller
         $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
 
-
         $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
         $dados_doc[0]->save();
         
         $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
         $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
-
+        $workflow_doc[0]->justificativa = '';
         $workflow_doc[0]->save();
 
         // Notificações
@@ -1012,6 +1074,16 @@ class DocumentacaoController extends Controller
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
 
+        $clonedBaseQuery2 = clone $base_query;
+        $clonedBaseQuery3 = clone $base_query;
+        $clonedBaseQuery4 = clone $base_query;
+        $clonedBaseQuery5 = clone $base_query;
+        $clonedBaseQuery6 = clone $base_query;
+        $clonedBaseQuery7 = clone $base_query;
+        $clonedBaseQuery8 = clone $base_query;
+        $clonedBaseQuery9 = clone $base_query;
+        $clonedBaseQuery10 = clone $base_query;
+
         $query_extra = DB::table('documento')
                             ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
                             ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
@@ -1026,6 +1098,10 @@ class DocumentacaoController extends Controller
                                     'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
                                     'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
                             );
+                            
+        $clonedQueryExtra2 = clone $query_extra;
+        $clonedQueryExtra3 = clone $query_extra;
+        $clonedQueryExtra4 = clone $query_extra;
 
 
         $documentos_NAOFinalizados = array(); 
@@ -1036,131 +1112,150 @@ class DocumentacaoController extends Controller
             $documentos_NAOFinalizados_NAOConfidenciais;
             $documentos_NAOFinalizados_Confidenciais = array();
             
-            $documentos_NAOFinalizados_NAOConfidenciais = $base_query->where('dados_documento.finalizado', '=', false)
-                                                                        ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                        ->get();
+            $documentos_NAOFinalizados_NAOConfidenciais = $clonedBaseQuery2->where('dados_documento.finalizado', '=', false)
+                                                                            ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
+                                                                            ->get();
                                                                         
             if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) {
-                $documentos_NAOFinalizados_Confidenciais = $base_query->where('dados_documento.finalizado', '=', false)
-                                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                        ->get();                                                        
+                $documentos_NAOFinalizados_Confidenciais = $clonedBaseQuery3->where('dados_documento.finalizado', '=', false)
+                                                                            ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
+                                                                            ->get();                                                        
             }
 
-            if( count($documentos_NAOFinalizados_NAOConfidenciais) > 0 ) $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_NAOConfidenciais; 
-            if( count($documentos_NAOFinalizados_Confidenciais) > 0 ) $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_Confidenciais; 
+            if( count($documentos_NAOFinalizados_NAOConfidenciais) > 0 ) 
+                for ($i=0; $i < count($documentos_NAOFinalizados_NAOConfidenciais); $i++) 
+                    $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_NAOConfidenciais[$i]; 
+
+
+            if( count($documentos_NAOFinalizados_Confidenciais) > 0 ) 
+                for ($i=0; $i < count($documentos_NAOFinalizados_Confidenciais); $i++) 
+                    $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_Confidenciais[$i]; 
 
         } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE && Auth::user()->setor_id != Constants::$ID_SETOR_CAPITAL_HUMANO ) {
-            $docs_etapa1 = $base_query->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', 2)
-                                        ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                        ->get();
 
-            $docs_etapa3 = $query_extra->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
-                                        ->get();
-
-
-            $docs_etapa4 = $base_query->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
-                                        ->where('dados_documento.aprovador_id', '=', Auth::user()->id)
-                                        ->get();
-
-            $docs_etapas_5_6 = $base_query->where('dados_documento.finalizado', '=', false)
-                                            ->where(function ($query) {
-                                                $query->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM)
-                                                    ->orWhere('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM);
-                                            })
+            $docs_etapa1 = $clonedBaseQuery4->where('dados_documento.finalizado', '=', false)
+                                            ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
                                             ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
                                             ->get();
 
-            if( count($docs_etapa1) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa1; 
-            if( count($docs_etapa3) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa3; 
-            if( count($docs_etapa4) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa4; 
-            if( count($docs_etapas_5_6) > 0 ) $documentos_NAOFinalizados[] = $docs_etapas_5_6; 
+            $docs_etapa3 = $clonedQueryExtra2->where('dados_documento.finalizado', '=', false)
+                                                ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
+                                                ->get();                           
+            
+            $docs_etapa4 = $clonedBaseQuery5->where('dados_documento.finalizado', '=', false)
+                                            ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
+                                            ->where('dados_documento.aprovador_id', '=', Auth::user()->id)
+                                            ->get();
+
+
+            $docs_etapas_5_6 = $clonedBaseQuery6->where('dados_documento.finalizado', '=', false)
+                                                ->where(function ($query) {
+                                                    $query->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM)
+                                                        ->orWhere('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM);
+                                                })
+                                                ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
+                                                ->get();
+
+            if( count($docs_etapa1) > 0 ) 
+                for ($i=0; $i < count($docs_etapa1); $i++) 
+                    $documentos_NAOFinalizados[] = $docs_etapa1[$i]; 
+
+
+            if( count($docs_etapa3) > 0 ) 
+                for ($i=0; $i < count($docs_etapa3); $i++) 
+                    $documentos_NAOFinalizados[] = $docs_etapa3[$i]; 
+
+
+            if( count($docs_etapa4) > 0 ) 
+                for ($i=0; $i < count($docs_etapa4); $i++) 
+                    $documentos_NAOFinalizados[] = $docs_etapa4[$i]; 
+
+
+            if( count($docs_etapas_5_6) > 0 ) 
+                for ($i=0; $i < count($docs_etapas_5_6); $i++) 
+                    $documentos_NAOFinalizados[] = $docs_etapas_5_6[$i]; 
+
             
         } else if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO) {
-            $docs_etapa7 = $base_query->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)
-                                        ->get();
+            $docs_etapa7 = $clonedBaseQuery7->where('dados_documento.finalizado', '=', false)
+                                            ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)
+                                            ->get();
 
-            if( count($docs_etapa7) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa7; 
+            if( count($docs_etapa7) > 0 ) 
+                for ($i=0; $i < count($docs_etapa7); $i++) 
+                    $documentos_NAOFinalizados[] = $docs_etapa7[$i];  
         }
 
-        
+
         
         // B) Documentos finalizados
-        $docsFinalizados_livres = $base_query->where('dados_documento.finalizado', '=', true)
-                                                ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
-                                                ->get();
+        $docsFinalizados_livres = $clonedBaseQuery8->where('dados_documento.finalizado', '=', true)
+                                                    ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
+                                                    ->get();
 
         
         $docsFinalizados_restritos = array();
         if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
-            $docsFinalizados_restritos = $base_query->where('dados_documento.finalizado', '=', true)
-                                                    ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                    ->get();
+            $docsFinalizados_restritos = $clonedBaseQuery9->where('dados_documento.finalizado', '=', true)
+                                                            ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
+                                                            ->get();
         } else {
-            $docsFinalizados_restritos = $query_extra->where('dados_documento.finalizado', '=', true)
-                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                        ->where(function ($query) {
-                                                            $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                                ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                                ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id)
-                                                                ->orWhere('dados_documento.setor_id', '=', Auth::user()->setor_id);
-                                                        })->get();
+            $docsFinalizados_restritos = $clonedQueryExtra3->where('dados_documento.finalizado', '=', true)
+                                                            ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
+                                                            ->where(function ($query) {
+                                                                $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
+                                                                    ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
+                                                                    ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id)
+                                                                    ->orWhere('dados_documento.setor_id', '=', Auth::user()->setor_id);
+                                                            })->get();
         }
 
         $docsFinalizados_confidenciais = array();
         if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) {
-            $docsFinalizados_confidenciais = $base_query->where('dados_documento.finalizado', '=', true)
-                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                        ->get();
+            $docsFinalizados_confidenciais = $clonedBaseQuery10->where('dados_documento.finalizado', '=', true)
+                                                                ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
+                                                                ->get();
         } else {
-            $docsFinalizados_confidenciais = $query_extra->where('dados_documento.finalizado', '=', true)
-                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                        ->where(function ($query) {
-                                                            $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                                ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                                ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id);
-                                                        })->get();
+            $docsFinalizados_confidenciais = $clonedQueryExtra4->where('dados_documento.finalizado', '=', true)
+                                                                ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
+                                                                ->where(function ($query) {
+                                                                    $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
+                                                                        ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
+                                                                        ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id);
+                                                                })->get();
         }
         
-        if( count($docsFinalizados_livres) > 0 ) $documentosFinalizados[] = $docsFinalizados_livres; 
-        if( count($docsFinalizados_restritos) > 0 ) $documentosFinalizados[] = $docsFinalizados_restritos; 
-        if( count($docsFinalizados_confidenciais) > 0 ) $documentosFinalizados[] = $docsFinalizados_confidenciais; 
+        if( count($docsFinalizados_livres) > 0 ) 
+            for ($i=0; $i < count($docsFinalizados_livres); $i++) 
+                $documentosFinalizados[] = $docsFinalizados_livres[$i]; 
 
-        // Convertendo objetos para array para poder ordenar a listagem
+        if( count($docsFinalizados_restritos) > 0 ) 
+            for ($i=0; $i < count($docsFinalizados_restritos); $i++) 
+                $documentosFinalizados[] = $docsFinalizados_restritos[$i];  
+
+        if( count($docsFinalizados_confidenciais) > 0 ) 
+            for ($i=0; $i < count($docsFinalizados_confidenciais); $i++) 
+                $documentosFinalizados[] = $docsFinalizados_confidenciais[$i];  
+
+        // Criando array final para a listagem de documentos
         $docs = array();
-        $arr_aux1 = array();
-        $arr_aux2 = array();
-
         if( count($documentos_NAOFinalizados) > 0 ) {
-            $arr_aux1 = (array) $documentos_NAOFinalizados[0];
-            for($i=0; $i < count($documentos_NAOFinalizados[0]); $i++) {
-                $arr_aux1[0][$i] = (array) $documentos_NAOFinalizados[0][$i];
-            }
-
-            usort($arr_aux1[0], array($this, "cmp"));
-            $docs[] = $arr_aux1[0];
+            usort($documentos_NAOFinalizados, array($this, "cmp"));
+            $docs["nao_finalizados"] = $documentos_NAOFinalizados;
         }
 
         if( count($documentosFinalizados) > 0 ) {
-            $arr_aux2 = (array) $documentosFinalizados[0];
-            for($i=0; $i < count($documentosFinalizados[0]); $i++) {
-                $arr_aux2[0][$i] = (array) $documentosFinalizados[0][$i];
-            }
-
-            usort($arr_aux2[0], array($this, "cmp"));
-            $docs[] = $arr_aux2[0];
+            usort($documentosFinalizados, array($this, "cmp"));
+            $docs["finalizados"] = $documentosFinalizados;
         }
-        
+
         
         return $docs;
     }
 
 
     private function cmp($a, $b) {
-        return strcmp($a["nome"], $b["nome"]);
+        return strcmp($a->nome, $b->nome);
     }
 
 }

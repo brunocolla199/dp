@@ -5,6 +5,7 @@ namespace App\Classes;
 use Illuminate\Http\Request;
 use App\Notificacao;
 use App\DadosDocumento;
+use App\AreaInteresseDocumento;
 use App\HistoricoDocumento;
 use App\HistoricoFormulario;
 use App\Classes\Constants;
@@ -80,18 +81,20 @@ class Helpers {
             case 2: // Qualidade
                 if($dados_doc[0]->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL) {
                     if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) return true;
-                    else return false;
                 } else {
                     return true;
                 }
                 break;
 
             case 3: // Área de Interesse
-                # code...
+                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
+                foreach ($usuariosAreaInteresseDocumento as $key => $idUser) {
+                    if (Auth::user()->id == $idUser) return true;
+                }
                 break;
 
             case 4: // Aprovador
-                # code...
+                if(Auth::user()->id == $dados_doc[0]->aprovador_id) return true;
                 break;
 
             case 5: // Upload da Lista de Presença

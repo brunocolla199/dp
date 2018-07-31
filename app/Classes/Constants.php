@@ -95,6 +95,8 @@ class Constants {
     
     public static $DESCRICAO_WORKFLOW_EM_ELABORACAO                         = "Em Elaboração";
     
+    public static $DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA          = "Aguardando lista de presença";
+    
     
     // Extras
     public static $ID_SETOR_QUALIDADE = 1;

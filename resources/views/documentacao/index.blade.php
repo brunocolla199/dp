@@ -371,19 +371,19 @@
                                                                 @foreach($documentos_nao_finalizados as $doc)
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                                            {{ Form::hidden('document_id', $doc['id']) }}
+                                                                            {{ Form::hidden('document_id', $doc->id) }}
                                                                             <td>
-                                                                                {!! Form::submit($doc['nome'], ['class' => 'a-href-submit']) !!}
+                                                                                {!! Form::submit($doc->nome, ['class' => 'a-href-submit']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td> {{ $doc['codigo'] }} </td>
+                                                                        <td> {{ $doc->codigo }} </td>
 
-                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $doc['nome_tipo'] }} </td>
+                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $doc->nome_tipo }} </td>
                                                                         <td>
-                                                                            <p class="text-muted font-weight-bold"> {{ $doc['etapa'] }} </p>
+                                                                            <p class="text-muted font-weight-bold"> {{ $doc->etapa }} </p>
                                                                         </td>
-                                                                        <td>{{ date("d/m/Y", strtotime($doc['validade'])) }}</td>
+                                                                        <td>{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
@@ -392,19 +392,19 @@
                                                                 @foreach($documentos_finalizados as $docF)
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'home', 'method' => 'GET']) }}
-                                                                            {{ Form::hidden('document_id', $docF['id']) }}
+                                                                            {{ Form::hidden('document_id', $docF->id) }}
                                                                             <td>
-                                                                                {!! Form::submit($docF['nome'], ['class' => 'a-href-submit']) !!}
+                                                                                {!! Form::submit($docF->nome, ['class' => 'a-href-submit']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td> {{ $docF['codigo'] }} </td>
+                                                                        <td> {{ $docF->codigo }} </td>
 
-                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF['nome_tipo'] }} </td>
+                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
                                                                         <td>
                                                                             <p class="text-muted font-weight-bold text-success"> Finalizado </p>
                                                                         </td>
-                                                                        <td>{{ date("d/m/Y", strtotime($docF['validade'])) }}</td>
+                                                                        <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif

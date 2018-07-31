@@ -31,9 +31,17 @@
                         <!-- Div com os botões de aprovar ou rejeitar -->
                         @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
                             <div class="row">
-                                <div class="col-md-5"></div>
+                                <div class="col-md-4"></div>
                                 <div class="col-md-4">
-                                    <div class="row">
+                                    <div class="row text-center">
+                                        @if( isset($justificativa) && $justificativa != "''")
+                                            <div class="col-md-12">
+                                                <div class="ribbon-wrapper card ">
+                                                    <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
+                                                    <p class="ribbon-content"> {{ $justificativa }} </p>
+                                                </div>
+                                            </div>
+                                        @endif
                                         <div class="col-md-12">    
                                             {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
                                                 {{ Form::hidden('documento_id', $document_id) }}
