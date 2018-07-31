@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('approval-document',  		['as' => 'documentacao.approval-document',	    		'uses' => 'Documentacao\DocumentacaoController@approvalDocument']);
 		Route::post('reject-document',  		['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
 		Route::post('resend-document',  		['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
+		Route::post('salva-lista-presenca',		['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
 
 	});
     
