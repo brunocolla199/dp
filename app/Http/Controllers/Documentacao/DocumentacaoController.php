@@ -30,6 +30,10 @@ class DocumentacaoController extends Controller
 {
     
     public function index() {
+
+
+        // dd(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id ));
+
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
