@@ -35,7 +35,7 @@
             
             <!-- Start Page Content -->
             <div class="row">
-                <div class="col-md-12 card" style="height: 800px">
+                <div class="col-md-12 card" style="min-height: 600px">
                     <div class="card-body">
 
                         <!-- Timeline do Documento -->
@@ -81,7 +81,7 @@
                         @if($finalizado)
                             
                             <div class="row h-100">
-                                <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="700px"></iframe>
+                                <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
                         @elseif( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )

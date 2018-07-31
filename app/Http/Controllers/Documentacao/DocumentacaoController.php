@@ -457,7 +457,7 @@ class DocumentacaoController extends Controller
             
             $docData = trim(json_encode( $request->docData), '"');
             
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'finalizado'=>$dadosDoc[0]->finalizado));
+            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado));
         }
 
     }
@@ -877,10 +877,10 @@ class DocumentacaoController extends Controller
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi finalizado.", false, $user->id, $idDoc);
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
                 }
 
-                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi finalizado.", false, $dados_doc[0]->elaborador_id, $idDoc);
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->elaborador_id, $idDoc);
 
                 // Notificação específica para documentos que possuem Cópia Controlada
                 if($dados_doc[0]->copia_controlada) {

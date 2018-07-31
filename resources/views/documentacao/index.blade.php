@@ -429,7 +429,7 @@
                                                                         </td>
                                                                         <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                         <td>
-                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true">
+                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true">
                                                                                 <i class="fa fa-exchange text-info"></i>
                                                                                 Vínculos
                                                                             </a>
