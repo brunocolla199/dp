@@ -76,6 +76,16 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('tituloFormulario', null, ['class' => 'form-control']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>     
 
                                                 <!-- <div class="col-md-6">
                                                     <div class="form-group">
@@ -97,21 +107,7 @@
                                                 </div>            -->
                                             </div>
 
-                                            <!-- Linha 3  -->
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::text('tituloFormulario', null, ['class' => 'form-control']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>                                     
-                                            </div>
-
-                                            <!-- Linha 4 -->
+                                            <!-- Linha 3 -->
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="col-md-12">
