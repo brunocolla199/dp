@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <!-- O que fazer nestas situações? -->
+    
+    <!-- jQuery -->
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('plugins/dropify/dist/css/dropify.min.css') }}">
+
 	<div class="page-wrapper">
         <div class="container-fluid">
             
@@ -27,117 +34,158 @@
                 <div class="col-md-12 card">
                     <div class="card-body">
 
+                        @if( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
 
-                        <!-- Div com os botões de aprovar ou rejeitar -->
-                        @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
-                            <div class="row">
-                                <div class="col-md-4"></div>
-                                <div class="col-md-4">
-                                    <div class="row text-center">
-                                        @if( isset($justificativa) && $justificativa != "''")
-                                            <div class="col-md-12">
-                                                <div class="ribbon-wrapper card ">
-                                                    <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
-                                                    <p class="ribbon-content"> {{ $justificativa }} </p>
+                            <!-- Div com os botões de aprovar ou rejeitar -->
+                            @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
+                                <div class="row">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4">
+                                        <div class="row text-center">
+                                            @if( isset($justificativa) && $justificativa != "''")
+                                                <div class="col-md-12">
+                                                    <div class="ribbon-wrapper card ">
+                                                        <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
+                                                        <p class="ribbon-content"> {{ $justificativa }} </p>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            <div class="col-md-12">    
+                                                {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('documento_id', $document_id) }}
+                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                    {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                {{ Form::close() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif( \App\Classes\Helpers::instance()->checkPermissionsToApprove($etapa_doc, $document_id) )
+                                <div class="row">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <div class="col-md-5 mr-4">
+                                                <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target=".bs-example-modal-sm">REJEITAR <i class="fa fa-remove"></i></button>
+                                            </div>
+                                            <div class="col-md-5">    
+                                                {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('documento_id', $document_id) }}
+                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                    {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                {{ Form::close() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
+                                {{ csrf_field() }}
+
+                                {!! Form::hidden('document_id', $document_id) !!}
+
+                                
+                                <div class="col-md-12">
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-6 control-label font-bold">
+                                                    {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                                </div>
+                                                <div class="col-md-12">
+                                                    {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control', 'readonly']) !!}
                                                 </div>
                                             </div>
-                                        @endif
-                                        <div class="col-md-12">    
-                                            {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
-                                                {{ Form::hidden('documento_id', $document_id) }}
-                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                            {{ Form::close() }}
                                         </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-6 control-label font-bold">
+                                                    {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
+                                                </div>
+                                                <div class="col-md-12">
+                                                    {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
+                                                </div>
+                                            </div>
+                                        </div> 
+                                        <div class="col-md-4">
+                                            <div class="control-label font-bold text-center">
+                                                Pré-visualização do Documento<br>
+                                                <div class="text-center">   
+                                                    <br>
+                                                    <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
+                                                    <!-- <a href="#" data-toggle="modal" data-target="#preview-form-modal"><br> -->
+                                                        Visualizar    
+                                                    <!-- <i class="fa fa-download fa-2x"></i> -->
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div> 
                                     </div>
                                 </div>
-                            </div>
-                        @elseif( \App\Classes\Helpers::instance()->checkPermissionsToApprove($etapa_doc, $document_id) )
-                            <div class="row">
-                                <div class="col-md-4"></div>
-                                <div class="col-md-4">
-                                    <div class="row">
-                                        <div class="col-md-5 mr-4">
-                                            <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target=".bs-example-modal-sm">REJEITAR <i class="fa fa-remove"></i></button>
-                                        </div>
-                                        <div class="col-md-5">    
-                                            {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
-                                                {{ Form::hidden('documento_id', $document_id) }}
-                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                            {{ Form::close() }}
-                                        </div>
-                                    </div>
+
+
+                                <!-- Editor -->
+                                <div class="container" >
+                                    <textarea id="speed-editor">
+                                        
+                                    </textarea>
                                 </div>
-                            </div>
-                        @endif
-
-
-
-                        {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
-                            {{ csrf_field() }}
-
-                            {!! Form::hidden('document_id', $document_id) !!}
-
-                            
-                            <div class="col-md-12">
-                                <hr>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <div class="col-md-6 control-label font-bold">
-                                                {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
-                                            </div>
-                                            <div class="col-md-12">
-                                                {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control', 'readonly']) !!}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <div class="col-md-6 control-label font-bold">
-                                                {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
-                                            </div>
-                                            <div class="col-md-12">
-                                                {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    <div class="col-md-4">
-                                        <div class="control-label font-bold text-center">
-                                            Pré-visualização do Documento<br>
-                                            <div class="text-center">   
-                                                <br>
-                                                <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
-                                                <!-- <a href="#" data-toggle="modal" data-target="#preview-form-modal"><br> -->
-                                                    Visualizar    
-                                                <!-- <i class="fa fa-download fa-2x"></i> -->
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                </div>
-                            </div>
-
-
-                            <!-- Editor -->
-                            <div class="container" >
-                                <textarea id="speed-editor">
+                                <!-- End Editor -->
                                     
-                                </textarea>
-                            </div>
-                            <!-- End Editor -->
                                 
-                            
-                            <div class="col-md-12">
-                                <div class="pull-right">
-                                    <br>
-                                    <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
+                                <div class="col-md-12">
+                                    <div class="pull-right">
+                                        <br>
+                                        <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
+                                    </div>
+                                </div>
+
+                            {!! Form::close() !!}
+
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id)
+
+                            <div class="row">
+                                <div class="col-md-3" style="border-right: 1px solid black;">
+                                    <div class="control-label font-bold text-center">
+                                        <h3>Pré-visualização do Documento</h3>
+                                        <div class="text-center">   
+                                            <br>
+                                            <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-lg btn-success"  target="_blank"> Visualizar </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    {!! Form::open(['route' => 'documentacao.salva-lista-presenca', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+                                        {{ csrf_field() }}
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h4 class="card-title"> Upload de lista de presença </h4>
+                                                <label for="input-file-now">Por favor, anexe a lista de presença do documento <b>{{ $nome }}</b> .</label>
+                                                {!! Form::hidden('documento_id', $document_id) !!}
+                                                {!! Form::hidden('nome_lista', "Lista Presença - Doc. " . $nome) !!}
+                                                
+                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="col-md-offset-2 col-md-3 pull-right">
+                                                {!! Form::submit('Salvar Lista', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                            </div>
+                                        </div>
+
+                                    {!! Form::close() !!}
                                 </div>
                             </div>
 
-                        {!! Form::close() !!}
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id )
+                        
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO )
+
+                        @endif
 
 
                     </div>

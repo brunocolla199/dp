@@ -16,6 +16,7 @@ use App\Workflow;
 use App\Configuracao;
 use App\AreaInteresseDocumento;
 use App\Formulario;
+use App\ListaPresenca;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
 use Illuminate\Support\Facades\View;
@@ -819,14 +820,6 @@ class DocumentacaoController extends Controller
 
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA, $idDoc);
                 break;
-
-            case 5: // Upload da Lista de Presença
-                # code...
-                break;
-
-            case 6: // Correção da Lista de Presença
-                # code...
-                break;
             
             default: // (7) Capital Humano
                 # code...
@@ -912,13 +905,6 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
-            case 5: // Upload da Lista de Presença
-                # code...
-                break;
-
-            case 6: // Correção da Lista de Presença
-                # code...
-                break;
             
             default: // (7) Capital Humano
                 # code...
@@ -956,6 +942,44 @@ class DocumentacaoController extends Controller
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $idDoc);
 
         return redirect()->route('documentacao')->with('resend_success', 'message');
+    }
+
+
+    public function salvaListaPresenca(Request $request) {
+        $idDoc = $request->documento_id;
+        $documento = Documento::where('id', '=', $idDoc)->get();
+        
+        $file = $request->file('doc_uploaded', 'local');
+        $extensao = $file->getClientOriginalExtension();
+        \Storage::disk('public_uploads')->putFileAs('/', $file, $request->nome_lista . "." . $extensao);
+
+        $lista = new ListaPresenca();
+        $lista->nome            = $request->nome_lista;
+        $lista->extensao        = $extensao;
+        $lista->descricao       = "Lista de Presença anexada";
+        $lista->data            = date('d/m/Y');
+        $lista->documento_id    = $idDoc;
+        $lista->save();
+
+        $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+        $dados_doc[0]->observacao = "Lista de Presença importada pelo elaborador";
+        $dados_doc[0]->save();
+
+        $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
+        $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+        $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
+        $workflow_doc[0]->save();
+
+        // Notificações
+        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
+        foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $idUser, $idDoc);
+        }
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
+
+        return redirect()->route('documentacao')->with('import_list_success', 'message');
     }
 
 

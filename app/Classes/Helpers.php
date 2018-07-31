@@ -119,14 +119,6 @@ class Helpers {
             case 4: // Aprovador
                 if(Auth::user()->id == $dados_doc[0]->aprovador_id) return true;
                 break;
-
-            case 5: // Upload da Lista de Presença
-                # code...
-                break;
-
-            case 6: // Correção da Lista de Presença
-                # code...
-                break;
             
             default: // (7) Capital Humano
                 # code...

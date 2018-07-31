@@ -14,6 +14,8 @@
 		<input type="hidden" name="status" id="status" value="reject_success">
     @elseif (session('resend_success'))
 		<input type="hidden" name="status" id="status" value="resend_success">
+    @elseif (session('import_list_success'))
+		<input type="hidden" name="status" id="status" value="import_list_success">
     @endif
 
     <script>
@@ -26,6 +28,8 @@
                 showToast('Sucesso!', 'O documento foi rejeitado.', 'success');
             } else if(status == "resend_success") {
                 showToast('Sucesso!', 'O documento foi reenviado para a Qualidade.', 'success');
+            } else if(status == "import_list_success") {
+                showToast('Sucesso!', 'A lista de presença foi salva.', 'success');
             }
         });
     </script>
