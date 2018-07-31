@@ -9,6 +9,7 @@ use App\GrupoDivulgacao;
 use App\Setor;
 use App\Documento;
 use App\Formulario;
+use App\HistoricoFormulario;
 use App\NotificacaoFormulario;
 use App\TipoDocumento;
 use Illuminate\Support\Facades\View;
@@ -115,11 +116,17 @@ class FormulariosController extends Controller
         
         $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();    
         $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->get();
+        $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
+                                            ->join('users', 'users.id', '=', 'formulario.elaborador_id')
+                                            ->where('formulario_id', '=', $request->formulario_id)->orderby('finalizado')->get();
+
+        // dd($historico);
 
         return View::make('formularios.view-formulario', array(
             'nome'=>$formulario[0]->nome,  
             'acao'=>$request->action,  
             'formulario_id'=>$request->formulario_id, 
+            'historico'=>$historico, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
             'filePath'=>\URL::to('/download/'.$formulario[0]->nome.".".$formulario[0]->extensao), 

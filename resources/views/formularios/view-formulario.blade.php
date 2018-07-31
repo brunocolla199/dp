@@ -188,8 +188,36 @@
                                         <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
                                     @endif
                                 </div>
-                                <div class="col-md-4 text-center">
                                     
+                                <div class="col-md-4" style="font-size:14px">
+                                    <div class="form-group">
+                                        
+                                        <!-- INICIO TIMELINE FORMS -->
+                                        
+                                        <ul class="timeline">
+                                            
+                                        @foreach($historico as $key => $hist)
+                                            <li class=" {{ $key%2 == 0 ? 'timeline-inverted' : '' }}">
+                                                <div class="timeline-badge {{ ($finalizado && $hist->etapa == 2) ? 'green' : '' }} success"  >
+                                                    <i class="mdi mdi-file-document"></i>
+                                                    <!-- <img class="img-responsive" alt="user" src="../assets/images/users/1.jpg" alt="img"> -->
+                                                </div>
+                                                <div class="timeline-panel">
+                                                    <div class="timeline-heading">
+                                                        <h4 class="timeline-title">{{ $hist->username }}</h4>
+                                                        <p><small class="text-muted"><i class="fa fa-clock-o"></i> {{ $hist->created_at->diffForHumans() }}</small> </p>
+                                                    </div>
+                                                    <div class="timeline-body">
+                                                        <p>{{ $hist->descricao }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                                
+                                        </ul>
+                                                                                        
+                                        <!-- END TIMELINE FORMS -->
+                                    </div>
                                 </div>
                             </div>
                             
