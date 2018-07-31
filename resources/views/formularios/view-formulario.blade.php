@@ -193,6 +193,7 @@
                                     <div class="form-group">
                                         
                                         <!-- INICIO TIMELINE FORMS -->
+                                        <?php \Carbon\Carbon::setLocale('pt_BR') ?>
                                         
                                         <ul class="timeline">
                                             
