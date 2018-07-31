@@ -1009,13 +1009,29 @@ class DocumentacaoController extends Controller
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
 
+        $query_extra = DB::table('documento')
+                            ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
+                            ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
+                            ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
+                            ->join('area_interesse_documento', function($join) {
+                                $join->on('area_interesse_documento.documento_id', '=', 'documento.id')
+                                        ->where('area_interesse_documento.usuario_id', '=', Auth::user()->id);
+                            })
+                            ->select('documento.*', 
+                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id',
+                                    'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
+                                    'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
+                                    'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
+                            );
+
+
         $documentos_NAOFinalizados = array(); 
         $documentosFinalizados = array(); 
         
         // A) Documentos não finalizados
         if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
-            $documentos_NAOFinalizados_NAOConfidenciais; // todos os membros da qualidade podem ver
-            $documentos_NAOFinalizados_Confidenciais = array(); // apenas um membro da qualidade pode ver
+            $documentos_NAOFinalizados_NAOConfidenciais;
+            $documentos_NAOFinalizados_Confidenciais = array();
             
             $documentos_NAOFinalizados_NAOConfidenciais = $base_query->where('dados_documento.finalizado', '=', false)
                                                                         ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
@@ -1031,27 +1047,12 @@ class DocumentacaoController extends Controller
             if( count($documentos_NAOFinalizados_Confidenciais) > 0 ) $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_Confidenciais; 
 
         } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE && Auth::user()->setor_id != Constants::$ID_SETOR_CAPITAL_HUMANO ) {
-            $docs_etapa1 = $base_query
-                                ->where('dados_documento.finalizado', '=', false)
-                                ->where('workflow.etapa_num', '=', 2)
-                                ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                ->get();
+            $docs_etapa1 = $base_query->where('dados_documento.finalizado', '=', false)
+                                        ->where('workflow.etapa_num', '=', 2)
+                                        ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
+                                        ->get();
 
-            $docs_etapa3 = DB::table('documento')
-                                ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
-                                ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
-                                ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
-                                ->join('area_interesse_documento', function($join) {
-                                    $join->on('area_interesse_documento.documento_id', '=', 'documento.id')
-                                            ->where('area_interesse_documento.usuario_id', '=', Auth::user()->id);
-                                })
-                                ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id',
-                                        'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
-                                        'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
-                                        'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
-                                )    
-                                        ->where('dados_documento.finalizado', '=', false)
+            $docs_etapa3 = $query_extra->where('dados_documento.finalizado', '=', false)
                                         ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
                                         ->get();
 
@@ -1096,15 +1097,14 @@ class DocumentacaoController extends Controller
                                                     ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
                                                     ->get();
         } else {
-            $docsFinalizados_restritos = $base_query->where('dados_documento.finalizado', '=', true)
-                                                    ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                    ->where(function ($query) {
-                                                        $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                              ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                              ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id)
-                                                              ->orWhere('dados_documento.setor_id', '=', Auth::user()->setor_id);
-                                                    })
-                                                        ->get();
+            $docsFinalizados_restritos = $query_extra->where('dados_documento.finalizado', '=', true)
+                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
+                                                        ->where(function ($query) {
+                                                            $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
+                                                                ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
+                                                                ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id)
+                                                                ->orWhere('dados_documento.setor_id', '=', Auth::user()->setor_id);
+                                                        })->get();
         }
 
         $docsFinalizados_confidenciais = array();
@@ -1113,21 +1113,20 @@ class DocumentacaoController extends Controller
                                                         ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
                                                         ->get();
         } else {
-            $docsFinalizados_confidenciais = $base_query->where('dados_documento.finalizado', '=', true)
+            $docsFinalizados_confidenciais = $query_extra->where('dados_documento.finalizado', '=', true)
                                                         ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
                                                         ->where(function ($query) {
                                                             $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
                                                                 ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
                                                                 ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id);
-                                                        })
-                                                        ->get();
+                                                        })->get();
         }
         
         if( count($docsFinalizados_livres) > 0 ) $documentosFinalizados[] = $docsFinalizados_livres; 
         if( count($docsFinalizados_restritos) > 0 ) $documentosFinalizados[] = $docsFinalizados_restritos; 
         if( count($docsFinalizados_confidenciais) > 0 ) $documentosFinalizados[] = $docsFinalizados_confidenciais; 
 
-        // Convertendo objetos para array par apoder ordenar a listagem
+        // Convertendo objetos para array para poder ordenar a listagem
         $docs = array();
         $arr_aux1 = array();
         $arr_aux2 = array();
