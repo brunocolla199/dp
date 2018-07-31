@@ -35,29 +35,10 @@ class Helpers {
                             ->where('notificacao_formulario.visualizada', '=', false)
                             ->orderBy('notificacao_formulario.created_at', 'desc')->get();
     
-
-
-
         // return $notificacoes;
         return $notificacoes->merge($notificacoes_forms);
     }
 
-    function getNotificationsFormularios($idUser) {
-        $notificacoes = DB::table('notificacao_formulario')
-                            ->join('documento',         'notificacao.documento_id',     '=', 'documento.id')
-                            ->join('dados_documento',   'dados_documento.documento_id', '=', 'notificacao.documento_id')
-                            ->select('notificacao.*', 
-                                        'documento.id AS doc_id', 'documento.tipo_documento_id', 'documento.codigo', 
-                                        'dados_documento.id AS dd_id'
-                            )
-                            ->where('notificacao.usuario_id', '=', $idUser)
-                            ->where('notificacao.visualizada', '=', false)
-                            ->orderBy('notificacao.created_at', 'desc')->get();
-
-        return $notificacoes;
-    }
-    
-    
     function gravaNotificacao($texto, $necessitaInteracao, $idUser, $idDoc) {
         $notificacao = new Notificacao();
         $notificacao->texto                 = $texto;
