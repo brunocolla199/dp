@@ -20,6 +20,11 @@ class CreateFormularioTable extends Migration
             $table->string('extensao', 10);
             $table->text('conteudo')->nullable();
             $table->string('nivel_acesso', 20);
+            $table->boolean('finalizado');
+            $table->integer('tipo_documento_id')->unsigned();
+            $table->foreign('tipo_documento_id')->references('id')->on('tipo_documento');
+            $table->integer('elaborador_id')->unsigned();
+            $table->foreign('elaborador_id')->references('id')->on('users');
             $table->integer('setor_id')->unsigned();
             $table->foreign('setor_id')->references('id')->on('setor');
             $table->integer('grupo_divulgacao_id')->unsigned();

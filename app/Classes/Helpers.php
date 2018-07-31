@@ -4,6 +4,7 @@ namespace App\Classes;
 
 use Illuminate\Http\Request;
 use App\Notificacao;
+use App\NotificacaoFormulario;
 use App\DadosDocumento;
 use App\AreaInteresseDocumento;
 use App\HistoricoDocumento;
@@ -26,11 +27,18 @@ class Helpers {
                             ->where('notificacao.usuario_id', '=', $idUser)
                             ->where('notificacao.visualizada', '=', false)
                             ->orderBy('notificacao.created_at', 'desc')->get();
-
-        return $notificacoes;
+        
+        $notificacoes_forms = DB::table('notificacao_formulario')
+                            ->join('formulario', 'notificacao_formulario.formulario_id', '=', 'formulario.id')
+                            ->select('notificacao_formulario.*', 'formulario.tipo_documento_id', 'formulario.id AS doc_id', 'formulario.codigo AS codigo')
+                            ->where('notificacao_formulario.usuario_id', '=', $idUser)
+                            ->where('notificacao_formulario.visualizada', '=', false)
+                            ->orderBy('notificacao_formulario.created_at', 'desc')->get();
+    
+        // return $notificacoes;
+        return $notificacoes->merge($notificacoes_forms);
     }
-    
-    
+
     function gravaNotificacao($texto, $necessitaInteracao, $idUser, $idDoc) {
         $notificacao = new Notificacao();
         $notificacao->texto                 = $texto;
@@ -41,9 +49,24 @@ class Helpers {
         $notificacao->save();
     }
     
-    
+    function gravaNotificacaoFormulario($texto, $necessitaInteracao, $idUser, $idForm) {
+        $notificacao = new NotificacaoFormulario();
+        $notificacao->texto                 = $texto;
+        $notificacao->visualizada           = false;
+        $notificacao->necessita_interacao   = $necessitaInteracao;
+        $notificacao->usuario_id     	    = $idUser;
+        $notificacao->formulario_id     	= $idForm;
+        $notificacao->save();
+    }
+
     function atualizaNotificacaoVisualizada($idNotificacao) {
         $notificacao = Notificacao::where('id', '=', $idNotificacao)->get();
+        $notificacao[0]->visualizada = true;
+        $notificacao[0]->save();
+    }
+
+    function atualizaNotificacaoFormVisualizada($idNotificacao) {
+        $notificacao = NotificacaoFormulario::where('id', '=', $idNotificacao)->get();
         $notificacao[0]->visualizada = true;
         $notificacao[0]->save();
     }
@@ -62,7 +85,7 @@ class Helpers {
     function gravaHistoricoFormulario($texto, $idForm) {
         $hForm = new HistoricoFormulario();
         $hForm->descricao    = $texto;
-        $hForm->documento_id = $idDoc;
+        $hForm->formulario_id = $idForm;
         $hForm->save();
     }
 

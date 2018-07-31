@@ -75,6 +75,9 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('save-edited-form',       ['as' => 'formularios.save-edited-form',        'uses' => 'Formularios\FormulariosController@saveEditForm']);
 		Route::post('save-new-form',	      ['as' => 'formularios.save-new-form', 	      'uses' => 'Formularios\FormulariosController@saveNewForm']);
 		Route::post('save-attached-document', ['as' => 'formularios.save-attached-document',  'uses' => 'Formularios\FormulariosController@saveAttachedDocument']);
+		Route::post('approval-form',  		  ['as' => 'formularios.approval-form',	    		'uses' => 'Formularios\FormulariosController@approvalForm']);
+		Route::post('reject-form',  		  ['as' => 'formularios.reject-form',	    		'uses' => 'Formularios\FormulariosController@rejectForm']);
+		Route::post('resend-form',  		  ['as' => 'formularios.resend-form',	    		'uses' => 'Formularios\FormulariosController@resendForm']);
 	});
 
 	/*

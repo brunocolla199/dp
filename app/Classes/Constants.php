@@ -89,11 +89,19 @@ class Constants {
 
     public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO                   = "Documento divulgado";
     
+    public static $DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO                   = "Formulário divulgado";
+    
     public static $DESCRICAO_WORKFLOW_VALIDADE_VENCIDA                      = "Validade Vencida";
     
     public static $DESCRICAO_WORKFLOW_EMISSAO                               = "Emissão";
     
     public static $DESCRICAO_WORKFLOW_EM_ELABORACAO                         = "Em Elaboração";
+
+    public static $DESCRICAO_WORKFLOW_EM_ELABORACAO_REVISAO                 = "Em Elaboração / Revisão";
+
+    public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Rejeitado pela Qualidade";
+   
+    public static $DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR                 = "Reenviado pelo Elaborador";
     
     public static $DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA          = "Aguardando lista de presença";
     

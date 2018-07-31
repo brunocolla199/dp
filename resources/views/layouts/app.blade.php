@@ -313,12 +313,15 @@
                                                     Aqui será necessário mudar a rota e direcionar para edição ou aprovação de FORMULÁRIO 
                                                     --
                                                 -->
-                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
+                                                    {{ Form::hidden('formulario_id', $notificacao->doc_id) }}
                                                     <button type="submit" class="a-href-submit" style="color: white">
                                                         <div class="ribbon ribbon-bookmark ribbon-warning">
                                                             {{ $notificacao->codigo }}
                                                         </div>
                                                     </button>  
+                                                    {{ Form::close() }}
                                                 
 
                                                 <p class="ribbon-content"> {{ $notificacao->texto }} </p>

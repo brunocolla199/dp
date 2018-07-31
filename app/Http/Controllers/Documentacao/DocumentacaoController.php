@@ -31,6 +31,7 @@ class DocumentacaoController extends Controller
 {
     
     public function index() {
+
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
@@ -262,23 +263,8 @@ class DocumentacaoController extends Controller
         $titulo   = $novoDocumento['tituloDocumento'];
         $codigo   = $novoDocumento['codigoDocumento']; 
         $extensao = 'docx';
-
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        
-        // //Criando Header Padrão Arquivo Word
-        // $section = $this->createDocHeader($phpWord, $novoDocumento);
-
-        // \PhpOffice\PhpWord\Shared\Html::addHtml($section, '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'.str_replace('<br>', '<br/>', $novoDocumento['docData']));
-        // $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-        // $objWriter->save($titulo.'.docx');
-
-        Storage::disk('local')->put('uploads/'.$titulo.'.html', $novoDocumento['docData']);
-        
-        //Salvando local
-        // $full_path_dest = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix('uploads/'.$titulo.'.docx');
-        
-        // File::move($titulo.'.docx', $full_path_dest);
-        
+       
+        Storage::disk('local')->put('uploads/'.$titulo.'.html', $novoDocumento['docData']); 
 
         $documento = new Documento();
         $documento->nome                 = $titulo;
