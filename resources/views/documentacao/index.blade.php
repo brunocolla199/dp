@@ -16,6 +16,10 @@
 		<input type="hidden" name="status" id="status" value="resend_success">
     @elseif (session('import_list_success'))
 		<input type="hidden" name="status" id="status" value="import_list_success">
+    @elseif (session('reject_list_success'))
+		<input type="hidden" name="status" id="status" value="reject_list_success">
+    @elseif (session('resend_list_success'))
+		<input type="hidden" name="status" id="status" value="resend_list_success">
     @endif
 
     <script>
@@ -30,6 +34,10 @@
                 showToast('Sucesso!', 'O documento foi reenviado para a Qualidade.', 'success');
             } else if(status == "import_list_success") {
                 showToast('Sucesso!', 'A lista de presença foi salva.', 'success');
+            } else if(status == "reject_list_success") {
+                showToast('Sucesso!', 'A lista de presença foi rejeitada.', 'success');
+            } else if(status == "resend_list_success") {
+                showToast('Sucesso!', 'A lista de presença foi reenviada ao Capital Humano.', 'success');
             }
         });
     </script>
@@ -395,7 +403,7 @@
                                                             @if( count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
                                                                     <tr>
-                                                                        {{ Form::open(['route' => 'home', 'method' => 'GET']) }}
+                                                                    {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $docF->id) }}
                                                                             <td>
                                                                                 {!! Form::submit($docF->nome, ['class' => 'a-href-submit']) !!}

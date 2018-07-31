@@ -335,6 +335,10 @@ class DocumentacaoController extends Controller
         $dadosDoc      = DadosDocumento::where('documento_id', '=', $document_id)->get();
         $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
 
+        $listaPresenca = ListaPresenca::where('documento_id', '=', $document_id)->get();
+        $filePath = null;
+        if( count($listaPresenca) > 0 ) $filePath = \URL::to('/download/lista-presenca/'.$listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
+
         if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
             $documento->docData = trim(json_encode(Storage::get("uploads/".$documento[0]->nome.".html")), '"');
         } else {
@@ -352,7 +356,7 @@ class DocumentacaoController extends Controller
             ob_end_clean();
         }
     
-        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa));
+        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado));
     }
 
     
@@ -409,7 +413,7 @@ class DocumentacaoController extends Controller
             
             $docData = trim(json_encode( $request->docData), '"');
             
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa));
+            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'finalizado'=>$dadosDoc[0]->finalizado));
         }
 
     }
@@ -822,7 +826,28 @@ class DocumentacaoController extends Controller
                 break;
             
             default: // (7) Capital Humano
-                # code...
+                $dados_doc[0]->observacao = "Lista de Presença aprovada pelo Capital Humano";
+                $dados_doc[0]->finalizado = true;
+                $dados_doc[0]->save();
+
+                // Notificações
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi finalizado.", false, $user->id, $idDoc);
+                }
+
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi finalizado.", false, $dados_doc[0]->elaborador_id, $idDoc);
+
+                // Notificação específica para documentos que possuem Cópia Controlada
+                if($dados_doc[0]->copia_controlada) {
+                    foreach ($usuariosSetorQualidade as $key => $user) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita de Cópia Controlada.", true, $user->id, $idDoc);
+                    }
+                }
+
+                // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO, $idDoc);
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO, $idDoc);
                 break;
         }
 
@@ -860,6 +885,7 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Qualidade).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
                 // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
@@ -881,6 +907,7 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Área de Interesse).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
                 // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_AREA_INTERESSE, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
@@ -902,12 +929,33 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pelo Aprovador).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
                 // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_APROVADOR, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
             
             default: // (7) Capital Humano
-                # code...
+                $dados_doc[0]->observacao = "Rejeitado pelo Capital Humano";
+                $dados_doc[0]->save();
+
+                $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM;
+                $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT;
+                $workflow_doc[0]->justificativa = $request->justificativaReprovacaoLista;
+                $workflow_doc[0]->save();
+
+                // Notificações
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("A lista de presença do documento " . $documento[0]->codigo . " foi devolvida para correção pelo Capital Humano.", false, $user->id, $idDoc);
+                }
+
+                \App\Classes\Helpers::instance()->gravaNotificacao("A lista de presença do documento " . $documento[0]->codigo . " precisa ser corrigida (rejeitada pelo Capital Humano).", true, $dados_doc[0]->elaborador_id, $idDoc);
+
+                // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_CAPITAL_HUMANO, $idDoc);
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
+
+                return redirect()->route('documentacao')->with('reject_list_success', 'message');
                 break;
         }
 
@@ -916,8 +964,6 @@ class DocumentacaoController extends Controller
 
 
     protected function resendDocument(Request $request) {
-        // E quando for documento confidencial?
-
         $idDoc = $request->documento_id;
 
         $documento = Documento::where('id', '=', $idDoc)->get();
@@ -939,9 +985,46 @@ class DocumentacaoController extends Controller
         }
 
         // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idDoc);
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $idDoc);
 
         return redirect()->route('documentacao')->with('resend_success', 'message');
+    }
+
+
+    protected function resendList(Request $request) {
+        $idDoc = $request->documento_id;
+        $documento = Documento::where('id', '=', $idDoc)->get();
+        $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
+        $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+        
+        // Exclui Lista antiga
+        Storage::disk('local')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
+        
+        // Salva nova lista de presença com o mesmo nome
+        $file = $request->file('doc_uploaded', 'local');
+        $extensao = $file->getClientOriginalExtension();
+        $path = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
+
+        $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
+        $dados_doc[0]->save();
+        
+        $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+        $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
+        $workflow_doc[0]->justificativa = '';
+        $workflow_doc[0]->save();
+
+        // Notificações
+        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
+        foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença reanalisada.", true, $idUser, $idDoc);
+        }
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idDoc);
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
+
+        return redirect()->route('documentacao')->with('resend_list_success', 'message');
     }
 
 
@@ -951,7 +1034,7 @@ class DocumentacaoController extends Controller
         
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        \Storage::disk('public_uploads')->putFileAs('/', $file, $request->nome_lista . "." . $extensao);
+        $path     = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
 
         $lista = new ListaPresenca();
         $lista->nome            = $request->nome_lista;

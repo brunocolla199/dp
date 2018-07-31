@@ -82,6 +82,12 @@ class Helpers {
     }
 
 
+    function getHistoricoDocumento($idDoc) {
+        $hDoc = HistoricoDocumento::where('documento_id', '=', $idDoc)->get();
+        return $hDoc;
+    }
+
+
     function gravaHistoricoFormulario($texto, $idForm) {
         $hForm = new HistoricoFormulario();
         $hForm->descricao    = $texto;

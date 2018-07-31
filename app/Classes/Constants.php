@@ -83,13 +83,13 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_APROVADO_GERENCIA                     = "Aprovado pela Gerência";  // Documentos IT, PG
     public static $DESCRICAO_WORKFLOW_APROVADO_DIRETORIA                    = "Aprovado pela Diretoria"; // Documentos DG
     
-    public static $DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO               = "Aprovado pelo capital humano";
+    public static $DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO               = "Lista de Presença aprovada pelo Capital Humano";
     
     public static $DESCRICAO_WORKFLOW_EM_TREINAMENTO                        = "Em treinamento";
 
     public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO                   = "Documento divulgado";
     
-    public static $DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO                   = "Formulário divulgado";
+    public static $DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO                  = "Formulário divulgado";
     
     public static $DESCRICAO_WORKFLOW_VALIDADE_VENCIDA                      = "Validade Vencida";
     
@@ -99,7 +99,13 @@ class Constants {
 
     public static $DESCRICAO_WORKFLOW_EM_ELABORACAO_REVISAO                 = "Em Elaboração / Revisão";
 
-    public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Rejeitado pela Qualidade";
+    public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Devolvido para correção pela Qualidade";
+    
+    public static $DESCRICAO_WORKFLOW_REJEITADO_AREA_INTERESSE              = "Devolvido para correção pela Área de Interesse";
+    
+    public static $DESCRICAO_WORKFLOW_REJEITADO_APROVADOR                   = "Devolvido para correção pelo Aprovador";
+    
+    public static $DESCRICAO_WORKFLOW_REJEITADO_CAPITAL_HUMANO              = "Lista de Presença devolvida para correção pelo Capital Humano";
    
     public static $DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR                 = "Reenviado pelo Elaborador";
     

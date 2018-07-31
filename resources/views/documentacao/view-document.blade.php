@@ -13,7 +13,7 @@
             
 
             <div class="row page-titles">
-                <div class="col-md-12 col-8 align-self-center">
+                <div class="col-md-8 col-8 align-self-center">
                     <h3 class="text-themecolor m-b-0 m-t-0">Visualização de Documento</h3>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
@@ -21,6 +21,10 @@
                         <li class="breadcrumb-item active">Visualização de Documento</li>
                     </ol>
                 </div>
+                <div class="col-3">
+                    <button class="btn btn-lg btn-info" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Ver Linha do Tempo</button>
+                </div>
+
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="">
                         <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-xl pull-right m-l-10"><i class="ti-comment-alt text-white"></i></button>
@@ -31,26 +35,71 @@
             
             <!-- Start Page Content -->
             <div class="row">
-                <div class="col-md-12 card">
+                <div class="col-md-12 card" style="height: 800px">
                     <div class="card-body">
 
-                        @if( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
+                        <!-- Timeline do Documento -->
+                        <div class="row">
+                            <div class="col col-centered">
+                                <div class="collapse multi-collapse" id="multiCollapseExample2">
+                                    <div class="card card-body text-center">
+
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-6">
+                                                <div class="row" style="font-size:14px">
+                                                    <div class="form-group">
+                                                        <?php \Carbon\Carbon::setLocale('pt_BR') ?>
+                                                        
+                                                        <ul class="timeline text-center">
+                                                            @foreach( \App\Classes\Helpers::instance()->getHistoricoDocumento($document_id) as $key => $hist )
+                                                                <li class=" {{ $key%2 == 0 ? 'timeline-inverted' : '' }}">
+                                                                    <div class="timeline-badge success"  >
+                                                                        <i class="mdi mdi-file-document"></i>
+                                                                    </div>
+                                                                    <div class="timeline-panel">
+                                                                        <div class="timeline-heading"
+                                                                            <p><small class="text-muted"><i class="fa fa-clock-o"></i> {{ $hist->created_at->diffForHumans() }}</small> </p>
+                                                                        </div>
+                                                                        <div class="timeline-body">
+                                                                            <p>{{ $hist->descricao }}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            @endforeach     
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>    
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($finalizado)
+                            
+                            <div class="row h-100">
+                                <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="700px"></iframe>
+                            </div>
+
+                        @elseif( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
 
                             <!-- Div com os botões de aprovar ou rejeitar -->
                             @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
                                 <div class="row">
-                                    <div class="col-md-4"></div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-12">
                                         <div class="row text-center">
                                             @if( isset($justificativa) && $justificativa != "''")
-                                                <div class="col-md-12">
+                                                <div class="col-md-8">
                                                     <div class="ribbon-wrapper card ">
                                                         <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
                                                         <p class="ribbon-content"> {{ $justificativa }} </p>
                                                     </div>
                                                 </div>
                                             @endif
-                                            <div class="col-md-12">    
+                                            <div class="col-md-4 align-middle">    
                                                 {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
                                                     {{ Form::hidden('documento_id', $document_id) }}
                                                     {{ Form::hidden('etapa_doc', $etapa_doc) }}
@@ -166,7 +215,7 @@
                                                 <h4 class="card-title"> Upload de lista de presença </h4>
                                                 <label for="input-file-now">Por favor, anexe a lista de presença do documento <b>{{ $nome }}</b> .</label>
                                                 {!! Form::hidden('documento_id', $document_id) !!}
-                                                {!! Form::hidden('nome_lista', "Lista Presença - Doc. " . $nome) !!}
+                                                {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}
                                                 
                                                 {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
                                             </div>
@@ -183,7 +232,84 @@
 
                         @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id )
                         
+                            {{ Form::open(['route' => 'documentacao.resend-list', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row text-center">
+                                            @if( isset($justificativa) && $justificativa != "''")
+                                                <div class="col-md-8">
+                                                    <div class="ribbon-wrapper card ">
+                                                        <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO DA LISTA</div> 
+                                                        <p class="ribbon-content"> {{ $justificativa }} </p>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            <div class="col-md-4 align-middle">    
+                                                {{ Form::hidden('documento_id', $document_id) }}
+                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                {!! Form::button('REENVIAR LISTA <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title"> Substituição da lista de presença </h4>
+                                        <label for="input-file-now">Por favor, anexe a lista de presença <i>corrigida</i> do documento <b>{{ $nome }}</b> .</label>
+                                        {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}                                        
+                                        {!! Form::hidden('extensao', $extensao) !!}                                        
+                                        {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required'=>'required']) !!}
+                                    </div>
+                                </div>
+                            {{ Form::close() }}
+
+                            <div class="col-md-12 mb-4">
+                                <hr>
+                                <span class="row mt-2 mb-2">
+                                    <h3>Abaixo você pode visualizar a <span class="text-info">Lista Presença - {{$nome}}</span> que foi rejeitada:</h3>
+                                </span>
+                            </div>
+
+                            <div class="row">
+                                @if(in_array($extensao, ['pdf']))
+                                    <iframe src="https://docs.google.com/viewer?url={{$filePath}}&embedded=true" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                @else
+                                    <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
+                                @endif
+                            </div>
+
                         @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO )
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-5 mr-4">
+                                            <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modal-reject-list">REJEITAR <i class="fa fa-remove"></i></button>
+                                        </div>
+                                        <div class="col-md-5">    
+                                            {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                {{ Form::hidden('documento_id', $document_id) }}
+                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                            {{ Form::close() }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mb-4">
+                                <hr>
+                            </div>
+
+                            <div class="row">
+                                @if(in_array($extensao, ['pdf']))
+                                    <iframe src="https://docs.google.com/viewer?url={{$filePath}}&embedded=true" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                @else
+                                    <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
+                                @endif
+                            </div>
 
                         @endif
 
@@ -229,6 +355,45 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal justificativa reprovação do documento -->
+
+            <!-- modal justificativa reprovação da lista de presença -->
+            <div class="modal fade" id="modal-reject-list" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Rejeitar Lista de Presença</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        {{ Form::open(['route' => 'documentacao.reject-document', 'method' => 'POST']) }}
+                            {{ Form::hidden('documento_id', $document_id) }}
+                            {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                            <div class="modal-body"> 
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-md-12 control-label font-bold">
+                                            {!! Form::label('justificativaReprovacaoLista', 'JUSTIFICATIVA:') !!}
+                                        </div>
+                                        <div class="col-md-12">
+                                            {!! Form::textarea('justificativaReprovacaoLista', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger waves-effect">Rejeitar</button>
+                            </div>
+                        {!! Form::close() !!}
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal justificativa reprovação da lista de presença -->
+
+
+
+
         </div>
     </div>
 

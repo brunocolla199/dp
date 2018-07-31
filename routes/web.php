@@ -61,6 +61,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('reject-document',  		['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
 		Route::post('resend-document',  		['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
 		Route::post('salva-lista-presenca',		['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
+		Route::post('resend-list',  			['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
 
 	});
     
@@ -102,6 +103,10 @@ Route::group(['middleware' => ['auth']], function() {
 	*/
 	Route::get('/download/{file}', function ($file='') {
 		return response()->download(storage_path('app/uploads/'.$file)); 
+	});
+
+	Route::get('/download/lista-presenca/{file}', function ($file='') {
+		return response()->download(storage_path('app/lists/'.$file)); 
 	});
 
 	Route::get('/download/formulario/{file}', function ($file='') {
