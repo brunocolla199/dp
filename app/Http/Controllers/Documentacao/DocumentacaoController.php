@@ -880,12 +880,27 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->save();
 
                 // Notificações
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->elaborador_id, $idDoc);
+
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
                     \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
                 }
 
-                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->elaborador_id, $idDoc);
+                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
+                if( count($usuariosAreaInteresseDocumento) > 0  ) {
+                    foreach ($usuariosAreaInteresseDocumento as $key => $idUser) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $idUser, $idDoc);
+                    }
+                }
+
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->aprovador_id, $idDoc);
+
+                $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
+                foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $idUser, $idDoc);
+                }
+
 
                 // Notificação específica para documentos que possuem Cópia Controlada
                 if($dados_doc[0]->copia_controlada) {
