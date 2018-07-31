@@ -1,6 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
+
+    @if (session('approval_success'))
+		<input type="hidden" name="status" id="status" value="approval_success">
+    @elseif (session('reject_success'))
+		<input type="hidden" name="status" id="status" value="reject_success">
+    @elseif (session('resend_success'))
+		<input type="hidden" name="status" id="status" value="resend_success">
+    @endif
+
+    <script>
+        $(document).ready(function(){
+            // Verifica se acabou de gravar uma nova solicitação
+            var status = $("#status").val();
+            if(status == "approval_success") {
+                showToast('Sucesso!', 'O Formulário foi aprovado.', 'success');
+            } else if(status == "reject_success") {
+                showToast('Sucesso!', 'O Formulário foi rejeitado.', 'success');
+            } else if(status == "resend_success") {
+                showToast('Sucesso!', 'O Formulário foi reenviado para a Qualidade.', 'success');
+            } 
+        });
+    </script>
+
+
 	<div class="page-wrapper">
         <div class="container-fluid">
             

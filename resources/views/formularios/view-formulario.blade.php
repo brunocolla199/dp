@@ -198,13 +198,19 @@
                                             
                                         @foreach($historico as $key => $hist)
                                             <li class=" {{ $key%2 == 0 ? 'timeline-inverted' : '' }}">
-                                                <div class="timeline-badge {{ ($finalizado && $hist->etapa == 2) ? 'green' : '' }} success"  >
-                                                    <i class="mdi mdi-file-document"></i>
-                                                    <!-- <img class="img-responsive" alt="user" src="../assets/images/users/1.jpg" alt="img"> -->
+                                                <div class="timeline-badge {{ ($loop->last && $hist->finalizado) ? 'icon-green' : 'success'}} "  >
+                                                    <!-- <i class="mdi {{ ($hist->finalizado == 'true') ? 'mdi-check-circle-outline' : 'mdi-file-document' }}"></i>  ESSE TA CERTO, MAS PRECISA SALVAR A ETAPA-->
+                                                    
+                                                    @if ($loop->last && $hist->finalizado)
+                                                        <i class="mdi mdi-check-circle-outline"></i>
+                                                    @else
+                                                        <i class="mdi mdi-file-document"></i>
+                                                    @endif
+
                                                 </div>
                                                 <div class="timeline-panel">
                                                     <div class="timeline-heading">
-                                                        <h4 class="timeline-title">{{ $hist->username }}</h4>
+                                                        <h4 class="timeline-title"></h4>
                                                         <p><small class="text-muted"><i class="fa fa-clock-o"></i> {{ $hist->created_at->diffForHumans() }}</small> </p>
                                                     </div>
                                                     <div class="timeline-body">
