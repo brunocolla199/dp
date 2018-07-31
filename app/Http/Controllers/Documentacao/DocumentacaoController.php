@@ -353,15 +353,20 @@ class DocumentacaoController extends Controller
     }
 
     public function salvaVinculoFormulario(Request $request){
-
+        // dd($request);
         //Populando a tabela de vinculação Documento -> Formulários
-        if( isset($request->formulariosAtreladosDocs) && count($request->formulariosAtreladosDocs) > 0 ) {
+        if(isset($request->formulariosAtreladosDocs) && count($request->formulariosAtreladosDocs) > 0 ) {
+
+            DocumentoFormulario::where('documento_id', $request->documento_id)->delete();
+
             foreach($request->formulariosAtreladosDocs as $key => $form) {
                 $documentoFormulario = new DocumentoFormulario();
                 $documentoFormulario->documento_id  = $request->documento_id;
                 $documentoFormulario->formulario_id = $form;
                 $documentoFormulario->save();
             }
+        } else {
+            DocumentoFormulario::where('documento_id', $request->documento_id)->delete();
         }
         
         return redirect()->route('documentacao')->with('link_success','message');
@@ -1382,7 +1387,7 @@ class DocumentacaoController extends Controller
             
             //Adicionando formulários vinculados ao doc
             foreach ($docs['nao_finalizados'] as $key => &$value) {
-                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->get(['formulario.id as id', 'formulario.nome as text'])->toJson();
+                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
             }
 
             // dd($docs["nao_finalizados"]);
@@ -1394,7 +1399,7 @@ class DocumentacaoController extends Controller
             
             //Adicionando formulários vinculados ao doc
             foreach ($docs['finalizados'] as $key => &$value) {
-                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->get(['formulario.id as id', 'formulario.nome as text'])->tojson();
+                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
             }
         }
 

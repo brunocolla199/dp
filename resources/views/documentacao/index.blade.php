@@ -562,9 +562,9 @@
             var status = $(this).attr('data-finalizado');
 
             $("#save-link-form").append("<input type='hidden' name='documento_id' value='"+id+"' >")
-            
-            $(".select2-vinculos").select2();   
-            $(".select2-vinculos").select2('data', forms);
+            $(".select2-vinculos").select2();
+            $(".select2-vinculos").val(forms);
+            $(".select2-vinculos").trigger('change');   
             
         });
         
