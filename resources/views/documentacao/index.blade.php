@@ -312,12 +312,13 @@
                                                         <div class="row">
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row ">
-                                                                    {!! Form::select('search_tipoDocumento', $tipoDocumentos, '-- Selecione --', ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_tipoDocumento', $tipoDocumentos, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row">
                                                                     <select class="form-control custom-select" name="search_aprovador" id="search_aprovador" style="width: 100%"> <!-- colocar classe = select2 -->
+                                                                        <option value="">- Aprovador -</option>
                                                                         <optgroup label="Diretoria">
                                                                             @foreach($diretores_aprovadores as $key => $diretor)
                                                                                 <option value="{{ $key }}">{{ $diretor }}</option>
@@ -333,13 +334,13 @@
                                                             </div>
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row ">
-                                                                    {!! Form::select('search_grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_grupoTreinamento', array(null => '- Grupo Treinamento -') + $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-2 margin-right-1percent">
                                                                 <div class="row">
                                                                     <div class="input-group">
-                                                                        {!! Form::text('search_validadeDocumento', date('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate_search']) !!}
+                                                                        {!! Form::text('search_validadeDocumento', null, ['class' => 'form-control', 'id' => 'mdate_search', 'placeholder'=>'- Validade -']) !!}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -347,12 +348,12 @@
                                                         <div class="row margin-top-1percent">
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row">
-                                                                    {!! Form::select('search_grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $gruposDivulgacao, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4 margin-right-1percent">
                                                                 <div class="row">
-                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => 'Título do Documento']) !!}
+                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -']) !!}
                                                                 </div>
                                                             </div>
                                                             
@@ -498,7 +499,7 @@
 
                 // Material Date picker   
                 $('#mdate').bootstrapMaterialDatePicker({ weekStart : 0, time: false, minDate: new Date(), lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
-                $('#mdate_search').bootstrapMaterialDatePicker({ weekStart : 0, time: false, lang: 'pt-br', format: 'DD/M/YYYY', currentDate: new Date(), cancelText: 'Cancelar', okText: 'Definir' });
+                $('#mdate_search').bootstrapMaterialDatePicker({ weekStart : 0, time: false, lang: 'pt-br', format: 'DD/M/YYYY',  cancelText: 'Cancelar', okText: 'Definir' }); //currentDate: new Date(),
 
                 /*
                 *   QUANDO CARREGAR A PÁGINA

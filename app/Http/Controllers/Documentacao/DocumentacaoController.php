@@ -32,15 +32,12 @@ class DocumentacaoController extends Controller
 {
     
     public function index() {
-
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
-        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id');
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
-
-
 
         // Aprovadores
         $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
@@ -72,15 +69,13 @@ class DocumentacaoController extends Controller
     }
 
 
-    /*
-    // PRECISO MUDAR A BUSCA: BUSCAR TODOS DOCUMENTOS CONFORME USUÁRIO LOGADO (WORKFLOW) E, SÓ ENTÃO, REALIZAR OS FILTROS
-    */
     public function filterDocumentsIndex(Request $request) {
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
-        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id');
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+        $formularios       = Formulario::all()->pluck('nome', 'id');
 
         // Aprovadores
         $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
@@ -100,12 +95,15 @@ class DocumentacaoController extends Controller
 
         // Documentos já criados (para listagem)
         $documentos  = $this->filterListDocuments($request->all()); 
+        $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
+        $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
         return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'diretores_aprovadores' => $diretores_aprovadores, 'gerentes_aprovadores' => $gerentes_aprovadores,
                                             'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
-                                            'documentos' => $documentos ]);
+                                            'formularios' => $formularios,
+                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados ]);
     }
 
 
@@ -781,9 +779,7 @@ class DocumentacaoController extends Controller
 
 
     /*
-    *       
-    *  WORKFLOW
-    *       
+    *  WORKFLOW      
     */
     protected function approvalDocument(Request $request) {
         $idDoc = $request->documento_id;
@@ -1136,24 +1132,9 @@ class DocumentacaoController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // ===========================================================  //  =========================================================== // =========================================================== // ===========================================================
-    //                                                                                                              ***  Úteis abaixo ***
-    // ===========================================================  //  =========================================================== // =========================================================== // ===========================================================
-    
-
+    /*
+    *  Úteis
+    */
     public function buildCodDocument($n) {
         $padrao = Configuracao::where('id', '=', '1')->get()[0]->numero_padrao_codigo;
         $codigo = "0";
@@ -1180,40 +1161,108 @@ class DocumentacaoController extends Controller
 
 
     public function filterListDocuments($req) {
-        // PRECISO MUDAR A BUSCA: BUSCAR TODOS DOCUMENTOS CONFORME USUÁRIO LOGADO (WORKFLOW) E, SÓ ENTÃO, REALIZAR OS FILTROS
         $list = null;
+        $baseData = null;
+        $documentos = $this->getDocumentsIndex();
         
-        $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
-        $dateFmt = $date->format('Y-m-d');
+        // Deixa os resultados em diferentes níveis hierárquicos
+        $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
+        $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
+        // Filtros
         if(null == $req['search_tituloDocumento'] || "" == $req['search_tituloDocumento']) {
-            $list = DB::table('documento')
-                        ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
-                        ->join('workflow',          'workflow.documento_id',        '=', 'documento.id')
-                        ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
-                            ->select('documento.*', 
-                                'dados_documento.id AS dd_id', 'dados_documento.validade',
-                                'workflow.id AS wkf_id', 'workflow.etapa', 
-                                'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
-                            )
-                            ->where("documento.tipo_documento_id",             "=",    $req['search_tipoDocumento'])
-                            ->where("dados_documento.aprovador_id",            "=",    $req['search_aprovador'])
-                            ->where("dados_documento.grupo_treinamento_id",    "=",    $req['search_grupoTreinamento'])
-                            ->where("dados_documento.grupo_divulgacao_id",     "=",    $req['search_grupoDivulgacao'])
-                            ->where("dados_documento.validade",                "=",    $dateFmt)
-                            ->get();
+            $arr1 = array();
+            $arr2 = array();
+            
+            if($docsNAOFinalizados != null) {
+                foreach ($docsNAOFinalizados as $key => $value) {
+                    $add = false;
+
+                    if( $value->tipo_documento_id == $req['search_tipoDocumento']) { 
+                        $add = true;           
+
+                        if($req['search_aprovador'] != null) {
+                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
+                            else $add = false;
+                        }
+                        if($req['search_grupoTreinamento'] != null) {
+                            if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
+                            else $add = false;
+                        }
+                        if($req['search_grupoDivulgacao'] != null) {
+                            if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
+                            else $add = false;
+                        }
+                        if($req['search_validadeDocumento'] != null) {
+                            $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
+                            $dateFmt = $date->format('Y-m-d');
+
+                            if($value->validade == $dateFmt) $add = true;
+                            else $add = false;
+                        }
+                    } 
+
+                    if($add) $arr1[] = $value; 
+                }
+
+                $list["nao_finalizados"] = $arr1;
+            }
+
+            if($docsFinalizados != null) {
+                foreach ($docsFinalizados as $key => $value) {
+                    $add = false;
+
+                    if( $value->tipo_documento_id == $req['search_tipoDocumento']) {    
+                        $add = true;
+                        
+                        if($req['search_aprovador'] != null) {
+                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
+                            else $add = false;
+                        }
+                        if($req['search_grupoTreinamento'] != null) {
+                            if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
+                            else $add = false;
+                        }
+                        if($req['search_grupoDivulgacao'] != null) {
+                            if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
+                            else $add = false;
+                        }
+                        if($req['search_validadeDocumento'] != null) {
+                            $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
+                            $dateFmt = $date->format('Y-m-d');
+
+                            if($value->validade == $dateFmt) $add = true;
+                            else $add = false;
+                        }
+                    } 
+
+                    if($add) $arr2[] = $value; 
+                }
+
+                $list["finalizados"] = $arr2;
+            }
+
         } else {
-            $list = DB::table('documento')
-                        ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
-                        ->join('workflow',          'workflow.documento_id',        '=', 'documento.id')
-                        ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
-                            ->select('documento.*', 
-                                'dados_documento.id AS dd_id', 'dados_documento.validade',
-                                'workflow.id AS wkf_id', 'workflow.etapa', 
-                                'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
-                            )
-                            ->where("documento.nome",  "ilike",   "%" . $req['search_tituloDocumento'] . "%")
-                            ->get();
+            $arr1 = array();
+            $arr2 = array();
+            
+            if($docsNAOFinalizados != null) {
+                foreach ($docsNAOFinalizados as $key => $value) {
+                    if( stripos($value->nome, $req['search_tituloDocumento']) !== false  ) {
+                        $arr1[] = $value; 
+                    }
+                }
+                $list["nao_finalizados"] = $arr1;
+            }
+
+            if($docsFinalizados != null) {
+                foreach ($docsFinalizados as $key => $value) {
+                    if( stripos($value->nome, $req['search_tituloDocumento']) !== false  ) {
+                        $arr2[] = $value; 
+                    }
+                }
+                $list["finalizados"] = $arr2;
+            }
         }
         
         return $list;
@@ -1226,7 +1275,7 @@ class DocumentacaoController extends Controller
                                 ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
                                 ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
@@ -1250,7 +1299,7 @@ class DocumentacaoController extends Controller
                                         ->where('area_interesse_documento.usuario_id', '=', Auth::user()->id);
                             })
                             ->select('documento.*', 
-                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id',
+                            'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id',
                                     'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                     'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
                                     'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
