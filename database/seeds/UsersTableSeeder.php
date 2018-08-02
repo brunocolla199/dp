@@ -15,6 +15,15 @@ class UsersTableSeeder extends Seeder
     {
 
         // Qualidade
+        $qualidade_speed           = new User();
+        $qualidade_speed->name     = "Speed Demonstração";
+        $qualidade_speed->username = "speedsoft";
+        $qualidade_speed->email    = "speedsoft@speedsoftware.com.br";
+        $qualidade_speed->setor_id = 1;
+        $qualidade_speed->password = bcrypt('Sp33dqu@18');
+        $qualidade_speed->save();
+
+        /*
         $qualidade2           = new User();
         $qualidade2->name     = "Celise Zilli";
         $qualidade2->username = "celise.zilli";
@@ -87,9 +96,7 @@ class UsersTableSeeder extends Seeder
 
 
 
-        /*
-        * SETORES NORMAIS ABAIXO
-        */
+        // SETORES NORMAIS ABAIXO/
         
         // Administrativo
         $administrativo1           = new User();
@@ -152,6 +159,7 @@ class UsersTableSeeder extends Seeder
         $pessoas_organizacao1->setor_id = Constants::$ID_SETOR_CAPITAL_HUMANO;
         $pessoas_organizacao1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $pessoas_organizacao1->save();
+        */
                 
     }
 }
