@@ -185,11 +185,11 @@
                                                 <h4>FILTROS</h4>
                                                 <div class="col-md-12">
 
-                                                    {!! Form::open(['route' => 'formularios.filter-forms-index', 'class' => 'form-horizontal']) !!}
+                                                    {!! Form::open(['route' => 'formularios.filter-forms-index', 'method' => 'POST', 'class' => 'form-horizontal']) !!}
                                                         <div class="row margin-top-1percent">
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row">
-                                                                    {!! Form::select('search_grupoDivulgacao', $grupoDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $grupoDivulgacao, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4 margin-right-1percent">
@@ -202,7 +202,7 @@
                                                                 <a href="{{ route('formularios') }}" class="btn waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
                                                             </div>
                                                             <div class="col-md-3 margin-right-1percent">
-                                                                <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success" disabled><i class="fa fa-search"></i> Buscar</button>
+                                                                <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
                                                             </div>
                                                         </div> 
                                                     {!! Form::close() !!} 
@@ -223,24 +223,47 @@
                                                         </thead>
                                                         <tbody>
 
-                                                            @foreach($formularios as $formulario)
-                                                            <tr>
-                                                                {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
-                                                                    {{ Form::hidden('formulario_id', $formulario->id) }}
-                                                                    {{ Form::hidden('action', 'view') }}
-                                                                    <td>
-                                                                        {!! Form::submit($formulario->nome, ['class' => 'a-href-submit']) !!}
-                                                                    </td>
-                                                                {{ Form::close() }}
+                                                            @if( is_array($formularios) && array_key_exists("nao_finalizados", $formularios) && count($formularios['nao_finalizados']) > 0 )
+                                                                @foreach($formularios['nao_finalizados'] as $form)
+                                                                    <tr>
+                                                                        {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                                            {{ Form::hidden('formulario_id', $form->id) }}
+                                                                            {{ Form::hidden('action', 'view') }}
+                                                                            <td>
+                                                                                {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                            </td>
+                                                                        {{ Form::close() }}
 
-                                                                <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $formulario->codigo }} </td>
+                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
 
-                                                                <td>
-                                                                    <p class="text-muted font-weight-bold"> {{ $formulario->etapa }} </p>
-                                                                </td>
-                                                                <td>{{ date("d/m/Y H:i:s", strtotime($formulario->updated_at)) }}</td>
-                                                            </tr>
-                                                            @endforeach
+                                                                        <td>
+                                                                            <p class="text-muted font-weight-bold"> {{ $form->etapa }} </p>
+                                                                        </td>
+                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @endif
+
+                                                            @if( is_array($formularios) && array_key_exists("finalizados", $formularios) && count($formularios['finalizados']) > 0 )
+                                                                @foreach($formularios['finalizados'] as $form)
+                                                                    <tr>
+                                                                        {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                                            {{ Form::hidden('formulario_id', $form->id) }}
+                                                                            {{ Form::hidden('action', 'view') }}
+                                                                            <td>
+                                                                                {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                            </td>
+                                                                        {{ Form::close() }}
+
+                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+
+                                                                        <td>
+                                                                            <p class="text-muted font-weight-bold text-success"> Finalizado </p>
+                                                                        </td>
+                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @endif                                                            
 
                                                         </tbody>
                                                     </table>

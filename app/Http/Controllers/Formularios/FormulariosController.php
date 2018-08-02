@@ -25,12 +25,23 @@ class FormulariosController extends Controller
 {
     
     public function index() {
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id');
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
-        $formularios       = Formulario::join('workflow_formulario', 'workflow_formulario.formulario_id', '=', 'formulario.id')->get();
-        // $formularios = $this->filterFormsIndex();
-        // dd($formularios);
+        $formularios       = $this->getFormsIndex();
+        
+        // $formularios1_old  = Formulario::join('workflow_formulario', 'workflow_formulario.formulario_id', '=', 'formulario.id')->get();      
+
+        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'documentosTipo'=>$documentos]);
+    }
+
+    public function filterFormsIndex(Request $request){
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
+        $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
+        
+        $formularios       = $this->filterListForms($request->all());
+
         return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'documentosTipo'=>$documentos]);
     }
     
@@ -381,134 +392,166 @@ class FormulariosController extends Controller
         return $codigo;
     }
 
-    public function filterFormsIndex(){
-
+    public function getFormsIndex() {
         $base_query = DB::table('formulario')
-                            ->join('workflow_formulario', 'workflow_formulario.formulario_id','=', 'formulario.id')
-                            ->select('*')
-                            ->get();
+                                ->join('workflow_formulario',   'workflow_formulario.formulario_id',    '=',    'formulario.id')
+                                ->select('formulario.*', 
+                                        'workflow_formulario.id AS wkf_id', 'workflow_formulario.etapa_num', 'workflow_formulario.etapa'
+                                );
 
-        // dd($base_query);
+        $clonedBaseQuery2 = clone $base_query;
+        $clonedBaseQuery3 = clone $base_query;
+        $clonedBaseQuery4 = clone $base_query;
+        $clonedBaseQuery5 = clone $base_query;
+        $clonedBaseQuery6 = clone $base_query;
 
-        $documentos_NAOFinalizados = array(); 
-        $documentosFinalizados = array(); 
-        
-        // A) Documentos não finalizados
+
+        $forms_NAOFinalizados = array(); 
+        $formsFinalizados = array(); 
+
+        // A) FORMS não finalizados
         if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
-            $documentos_NAOFinalizados_NAOConfidenciais; // todos os membros da qualidade podem ver
-            $documentos_NAOFinalizados_Confidenciais = array(); // apenas um membro da qualidade pode ver
+            $formsQualidade = $clonedBaseQuery2->where('formulario.finalizado', '=', false)->get();
+
+            if( count($formsQualidade) > 0 ) 
+                for ($i=0; $i < count($formsQualidade); $i++) 
+                    $forms_NAOFinalizados[] = $formsQualidade[$i]; 
+
+        } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE) {
+            $formsNOTQualidade = $clonedBaseQuery3->where('formulario.finalizado', '=', false)
+                                                    ->where('workflow_formulario.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
+                                                    ->get();
+
+            if( count($formsNOTQualidade) > 0 ) 
+                for ($i=0; $i < count($formsNOTQualidade); $i++) 
+                    $forms_NAOFinalizados[] = $formsNOTQualidade[$i]; 
+        }
+
+        // B) FORMS finalizados
+        $formsFinalizados_livre = $clonedBaseQuery4->where('formulario.finalizado', '=', true)
+                                                    ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
+                                                    ->get();
+
+        $formsFinalizados_restritos = array();
+        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+            $formsFinalizados_restritos = $clonedBaseQuery5->where('formulario.finalizado', '=', true)
+                                                            ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
+                                                            ->get();
+        } else {
+            // Como o fluxo de WF dos formulários tem apenas elaborados e qualidade e qualidade cai no if acima, só precisa verificar os que ele é elaborador
+            $formsFinalizados_restritos = $clonedBaseQuery6->where('formulario.finalizado', '=', true)
+                                                            ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
+                                                            ->where('formulario.elaborador_id', '=', Auth::user()->id)
+                                                            ->get();
+        } 
+        
+        
+        if( count($formsFinalizados_livre) > 0 ) 
+            for ($i=0; $i < count($formsFinalizados_livre); $i++) 
+                $formsFinalizados[] = $formsFinalizados_livre[$i]; 
+
+        if( count($formsFinalizados_restritos) > 0 ) 
+            for ($i=0; $i < count($formsFinalizados_restritos); $i++) 
+                $formsFinalizados[] = $formsFinalizados_restritos[$i];  
+
+
+
+         // Criando array final para a listagem de formulários
+         $forms = array();
+         if( count($forms_NAOFinalizados) > 0 ) {
+             usort($forms_NAOFinalizados, array($this, "cmp"));
+             $forms["nao_finalizados"] = $forms_NAOFinalizados;
+         }
+ 
+         if( count($formsFinalizados) > 0 ) {
+             usort($formsFinalizados, array($this, "cmp"));
+             $forms["finalizados"] = $formsFinalizados;
+         }
+         
+         return $forms;
+    }
+
+    private function cmp($a, $b) {
+        return strcmp($a->nome, $b->nome);
+    }
+
+    public function filterListForms($req) {
+        $list = null;
+        $baseData = null;
+        $formularios = $this->getFormsIndex();
+        
+        // Deixa os resultados em diferentes níveis hierárquicos
+        $formsNAOFinalizados = ( array_key_exists("nao_finalizados", $formularios) && count($formularios["nao_finalizados"]) > 0 )  ? $formularios["nao_finalizados"] : null;
+        $formsFinalizados = ( array_key_exists("finalizados", $formularios) && count($formularios["finalizados"]) > 0 )  ? $formularios["finalizados"] : null;
+
+        if ( array_key_exists("nao_finalizados", $formularios) && count($formularios["nao_finalizados"]) > 0 ) {
+            $formsNAOFinalizados = $formularios["nao_finalizados"];
+            $list["nao_finalizados"] = $formularios["nao_finalizados"];
+        } else {
+            $formsNAOFinalizados = null;
+        }
+
+        if ( array_key_exists("finalizados", $formularios) && count($formularios["finalizados"]) > 0 )  {
+            $formsFinalizados = $formularios["finalizados"] ;
+            $list["finalizados"] = $formularios["finalizados"];
+        } else {
+            $formsFinalizados = null;
+        }
+
+        // Filtros
+        if(null == $req['search_tituloFormulario'] || "" == $req['search_tituloFormulario']) {
+            if(null != $req['search_grupoDivulgacao']) {
+                $arr1 = array();
+                $arr2 = array();
+    
+                if($formsNAOFinalizados != null) {
+                    foreach ($formsNAOFinalizados as $key => $value) {
+                        $add = false;
+                        if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
+    
+                        if($add) $arr1[] = $value; 
+                    }
+    
+                    $list["nao_finalizados"] = $arr1;
+                }
+    
+                if($formsFinalizados != null) {
+                    foreach ($formsFinalizados as $key => $value) {
+                        $add = false;
+                        if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
+    
+                        if($add) $arr2[] = $value; 
+                    }
+    
+                    $list["finalizados"] = $arr2;
+                }
+            }           
+
+        } else {
+            $arr1 = array();
+            $arr2 = array();
             
-            $documentos_NAOFinalizados_NAOConfidenciais = $base_query->where('dados_documento.finalizado', '=', false)
-                                                                        ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                        ->get();
-                                                                        
-            if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) {
-                $documentos_NAOFinalizados_Confidenciais = $base_query->where('dados_documento.finalizado', '=', false)
-                                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                        ->get();                                                        
+            if($formsNAOFinalizados != null) {
+                foreach ($formsNAOFinalizados as $key => $value) {
+                    if( stripos($value->nome, $req['search_tituloFormulario']) !== false  ) {
+                        $arr1[] = $value; 
+                    }
+                }
+                $list["nao_finalizados"] = $arr1;
             }
 
-            if( count($documentos_NAOFinalizados_NAOConfidenciais) > 0 ) $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_NAOConfidenciais; 
-            if( count($documentos_NAOFinalizados_Confidenciais) > 0 ) $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_Confidenciais; 
-
-        } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE && Auth::user()->setor_id != Constants::$ID_SETOR_CAPITAL_HUMANO ) {
-
-            $docs_etapa1 = $base_query
-                ->where('dados_documento.finalizado', '=', false)
-                ->where('workflow.etapa_num', '=', 2)
-                ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                ->get();
-            
-            // dd($docs_etapa1);
-
-            $docs_etapa3 = DB::table('documento')
-                                ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
-                                ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
-                                ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
-                                ->join('area_interesse_documento', function($join) {
-                                    $join->on('area_interesse_documento.documento_id', '=', 'documento.id')
-                                            ->where('area_interesse_documento.usuario_id', '=', Auth::user()->id);
-                                })
-                                ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id',
-                                        'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
-                                        'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
-                                        'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
-                                )    
-                                        ->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
-                                        ->get();
-
-
-            $docs_etapa4 = $base_query->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
-                                        ->where('dados_documento.aprovador_id', '=', Auth::user()->id)
-                                        ->get();
-
-            $docs_etapas_5_6 = $base_query->where('dados_documento.finalizado', '=', false)
-                                            ->where(function ($query) {
-                                                $query->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM)
-                                                    ->orWhere('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM);
-                                            })
-                                            ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                            ->get();
-                                            
-                                            // dd($docs_etapas_5_6);
-            if( count($docs_etapa1) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa1; 
-            if( count($docs_etapa3) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa3; 
-            if( count($docs_etapa4) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa4; 
-            if( count($docs_etapas_5_6) > 0 ) $documentos_NAOFinalizados[] = $docs_etapas_5_6; 
-            
-        } else if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO) {
-            $docs_etapa7 = $base_query->where('dados_documento.finalizado', '=', false)
-                                        ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)
-                                        ->get();
-
-            if( count($docs_etapa7) > 0 ) $documentos_NAOFinalizados[] = $docs_etapa7; 
+            if($formsFinalizados != null) {
+                foreach ($formsFinalizados as $key => $value) {
+                    if( stripos($value->nome, $req['search_tituloFormulario']) !== false  ) {
+                        $arr2[] = $value; 
+                    }
+                }
+                $list["finalizados"] = $arr2;
+            }
         }
 
-        
-        
-        // B) Documentos finalizados
-        $docsFinalizados_livres = $base_query->where('dados_documento.finalizado', '=', true)
-                                                ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
-                                                ->get();
-
-        
-        $docsFinalizados_restritos = array();
-        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
-            $docsFinalizados_restritos = $base_query->where('dados_documento.finalizado', '=', true)
-                                                    ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                    ->get();
-        } else {
-            $docsFinalizados_restritos = $base_query_area->where('dados_documento.finalizado', '=', true)
-                                                    ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                    ->where(function ($query) {
-                                                        $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                              ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                              ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id)
-                                                              ->orWhere('dados_documento.setor_id', '=', Auth::user()->setor_id);
-                                                    })
-                                                        ->get();
-        }
-
-        $docsFinalizados_confidenciais = array();
-        if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) {
-            $docsFinalizados_confidenciais = $base_query->where('dados_documento.finalizado', '=', true)
-                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                        ->get();
-        } else {
-            $docsFinalizados_confidenciais = $base_query_area->where('dados_documento.finalizado', '=', true)
-                                                        ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                        ->where(function ($query) {
-                                                            $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                                ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                                ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id);
-                                                        })
-                                                        ->get();
-        }
-    
-        
-        return $docs;
+        return $list;
     }
+
+    
 }
