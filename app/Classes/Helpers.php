@@ -34,9 +34,11 @@ class Helpers {
                             ->where('notificacao_formulario.usuario_id', '=', $idUser)
                             ->where('notificacao_formulario.visualizada', '=', false)
                             ->orderBy('notificacao_formulario.created_at', 'desc')->get();
+
+        $collect = $notificacoes->merge($notificacoes_forms);
+        $sorted = $collect->sortByDesc('created_at');
     
-        // return $notificacoes;
-        return $notificacoes->merge($notificacoes_forms);
+        return $sorted;
     }
 
     function gravaNotificacao($texto, $necessitaInteracao, $idUser, $idDoc) {
