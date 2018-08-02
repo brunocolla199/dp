@@ -62,7 +62,7 @@ class Constants {
     public static $ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT = "Correção da Lista de Presença";
     
     public static $ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM                 = 7;
-    public static $ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT                = "Capital Humano";
+    public static $ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT                = "Análise da Lista de Presença";
 
 
     // Descrição do Workflow
