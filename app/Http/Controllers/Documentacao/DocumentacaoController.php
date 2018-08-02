@@ -496,8 +496,8 @@ class DocumentacaoController extends Controller
                                                         <td colspan="3"><span class="text-small" style="color:#ffffff">'.$documento[0]->nome.'</span></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><span class="text-small" style="color:#ffffff"><strong>CÓDIGO: '.$documento[0]->codigo.' </strong></span></td>
-                                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 1</strong></span></td>
+                                                        <td><span class="text-small" style="color:#ffffff"><strong>Código: '.$documento[0]->codigo.' </strong></span></td>
+                                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 0</strong></span></td>
                                                         <td><span class="text-small" style="color:#ffffff"><strong>Data: '. date("d/m/Y", strtotime( $documento[0]->updated_at)).'</strong></span></td>
                                                     </tr>
                                                 </tbody>
@@ -510,7 +510,7 @@ class DocumentacaoController extends Controller
                                                 <h1>'.$documento[0]->nome.'</h1>
                                                 <br>
                                                 <p>Código:'.$documento[0]->codigo.'</p>
-                                                <p>Revisão: 1</p>
+                                                <p>Revisão: 0</p>
                                                 <p>Data: '.date("d/m/Y", strtotime( $documento[0]->updated_at)).'</p>
 
                                             </div>
@@ -641,8 +641,8 @@ class DocumentacaoController extends Controller
                                                         <td colspan="3"><span class="text-small" style="color:#ffffff">'.$documento[0]->nome.'</span></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><span class="text-small" style="color:#ffffff"><strong>CÓDIGO: '.$documento[0]->codigo.' </strong></span></td>
-                                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 1</strong></span></td>
+                                                        <td><span class="text-small" style="color:#ffffff"><strong>Código: '.$documento[0]->codigo.' </strong></span></td>
+                                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 0</strong></span></td>
                                                         <td><span class="text-small" style="color:#ffffff"><strong>Data: '. date("d/m/Y", strtotime( $documento[0]->updated_at)).'</strong></span></td>
                                                     </tr>
                                                 </tbody>

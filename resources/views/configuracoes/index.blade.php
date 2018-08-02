@@ -274,7 +274,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <div class="col-md-6 control-label font-bold">
+                                                        <div class="col-md-12 control-label font-bold">
                                                             {!! Form::label('nome_do_agrupamento', 'NOME DO AGRUPAMENTO:') !!}
                                                         </div>
                                                         <div class="col-md-12">

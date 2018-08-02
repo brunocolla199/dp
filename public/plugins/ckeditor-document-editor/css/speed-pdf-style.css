@@ -57,7 +57,7 @@ bottom:-40px;
 }
 
 .page-number:before {
-content: "Página " counter(page);
+content: counter(page);
 color:white;
 }
 
