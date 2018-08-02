@@ -24,12 +24,6 @@
                 <div class="col-3">
                     <button class="btn btn-lg btn-info" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Ver Linha do Tempo</button>
                 </div>
-
-                <div class="col-md-7 col-4 align-self-center">
-                    <div class="">
-                        <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-xl pull-right m-l-10"><i class="ti-comment-alt text-white"></i></button>
-                    </div>
-                </div>
             </div>
             
             
