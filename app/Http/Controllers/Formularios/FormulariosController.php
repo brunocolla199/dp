@@ -26,7 +26,7 @@ class FormulariosController extends Controller
     
     public function index() {
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
+        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
         $formularios       = $this->getFormsIndex();
         
@@ -37,7 +37,7 @@ class FormulariosController extends Controller
 
     public function filterFormsIndex(Request $request){
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
+        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
         
         $formularios       = $this->filterListForms($request->all());
@@ -500,32 +500,44 @@ class FormulariosController extends Controller
 
         // Filtros
         if(null == $req['search_tituloFormulario'] || "" == $req['search_tituloFormulario']) {
-            if(null != $req['search_grupoDivulgacao']) {
-                $arr1 = array();
-                $arr2 = array();
-    
-                if($formsNAOFinalizados != null) {
-                    foreach ($formsNAOFinalizados as $key => $value) {
-                        $add = false;
+            $arr1 = array();
+            $arr2 = array();
+
+            if($formsNAOFinalizados != null) {
+                foreach ($formsNAOFinalizados as $key => $value) {
+                    $add = false;
+                    if($req['search_grupoDivulgacao'] != null) {
                         if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
-    
-                        if($add) $arr1[] = $value; 
+                        else continue;
                     }
-    
-                    $list["nao_finalizados"] = $arr1;
-                }
-    
-                if($formsFinalizados != null) {
-                    foreach ($formsFinalizados as $key => $value) {
-                        $add = false;
-                        if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
-    
-                        if($add) $arr2[] = $value; 
+                    if($req['search_setor'] != null) {
+                        if( $value->setor_id == $req['search_setor']) $add = true;           
+                        else continue;
                     }
-    
-                    $list["finalizados"] = $arr2;
+
+                    if($add) $arr1[] = $value; 
                 }
-            }           
+
+                $list["nao_finalizados"] = $arr1;
+            }
+
+            if($formsFinalizados != null) {
+                foreach ($formsFinalizados as $key => $value) {
+                    $add = false;
+                    if($req['search_grupoDivulgacao'] != null) {
+                        if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
+                        else continue;
+                    }
+                    if($req['search_setor'] != null) {
+                        if( $value->setor_id == $req['search_setor']) $add = true;           
+                        else continue;
+                    }
+                    
+                    if($add) $arr2[] = $value; 
+                }
+
+                $list["finalizados"] = $arr2;
+            }        
 
         } else {
             $arr1 = array();

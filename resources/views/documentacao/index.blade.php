@@ -351,19 +351,30 @@
                                                                     {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $gruposDivulgacao, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-4 margin-right-1percent">
+                                                            <div class="col-md-3 margin-right-1percent">
+                                                                <div class="row">
+                                                                    {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select']) !!}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-5">
                                                                 <div class="row">
                                                                     {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -']) !!}
                                                                 </div>
                                                             </div>
-                                                            
-                                                            <div class="col-md-1 mr-4">
-                                                                <a href="{{ route('documentacao') }}" class="btn waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
+                                                        </div>
+                                                        <div class="row margin-top-1percent">    
+                                                            <div class="col-md-6"> </div>
+                                                            <div class="col-md-6">
+                                                                <div class="row">
+                                                                    <div class="col-md-5">
+                                                                        <a href="{{ route('documentacao') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="col-md-3 margin-right-1percent">
-                                                                <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
-                                                            </div>
-                                                        </div> 
+                                                        </div>                                                            
                                                     {!! Form::close() !!} 
                                                     
                                                 </div>

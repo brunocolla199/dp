@@ -34,7 +34,7 @@ class DocumentacaoController extends Controller
     public function index() {
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
-        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
+        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
@@ -72,7 +72,7 @@ class DocumentacaoController extends Controller
     public function filterDocumentsIndex(Request $request) {
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
-        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id');
+        $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
@@ -349,6 +349,7 @@ class DocumentacaoController extends Controller
 
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
     }
+
 
     public function salvaVinculoFormulario(Request $request){
         // dd($request);
@@ -1183,22 +1184,26 @@ class DocumentacaoController extends Controller
 
                         if($req['search_aprovador'] != null) {
                             if($value->aprovador_id == $req['search_aprovador']) $add = true;
-                            else $add = false;
+                            else continue;
                         }
                         if($req['search_grupoTreinamento'] != null) {
                             if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
-                            else $add = false;
+                            else continue;
                         }
                         if($req['search_grupoDivulgacao'] != null) {
                             if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
-                            else $add = false;
+                            else continue;
                         }
                         if($req['search_validadeDocumento'] != null) {
                             $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
                             $dateFmt = $date->format('Y-m-d');
-
+                            
                             if($value->validade == $dateFmt) $add = true;
-                            else $add = false;
+                            else continue;
+                        }
+                        if($req['search_setor'] != null) {
+                            if($value->setor_id == $req['search_setor']) $add = true;
+                            else continue;
                         }
                     } 
 
@@ -1217,22 +1222,26 @@ class DocumentacaoController extends Controller
                         
                         if($req['search_aprovador'] != null) {
                             if($value->aprovador_id == $req['search_aprovador']) $add = true;
-                            else $add = false;
+                            else continue;
                         }
                         if($req['search_grupoTreinamento'] != null) {
                             if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
-                            else $add = false;
+                            else continue;
                         }
                         if($req['search_grupoDivulgacao'] != null) {
                             if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
-                            else $add = false;
+                            else continue;
                         }
                         if($req['search_validadeDocumento'] != null) {
                             $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
                             $dateFmt = $date->format('Y-m-d');
 
                             if($value->validade == $dateFmt) $add = true;
-                            else $add = false;
+                            else continue;
+                        }
+                        if($req['search_setor'] != null) {
+                            if($value->setor_id == $req['search_setor']) $add = true;
+                            else continue;
                         }
                     } 
 
@@ -1275,7 +1284,7 @@ class DocumentacaoController extends Controller
                                 ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
                                 ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
@@ -1299,7 +1308,7 @@ class DocumentacaoController extends Controller
                                         ->where('area_interesse_documento.usuario_id', '=', Auth::user()->id);
                             })
                             ->select('documento.*', 
-                            'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id',
+                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id',
                                     'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                     'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
                                     'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
@@ -1453,8 +1462,6 @@ class DocumentacaoController extends Controller
             foreach ($docs['nao_finalizados'] as $key => &$value) {
                 $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
             }
-
-            // dd($docs["nao_finalizados"]);
         }
 
         if( count($documentosFinalizados) > 0 ) {
@@ -1466,10 +1473,6 @@ class DocumentacaoController extends Controller
                 $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
             }
         }
-
-
-
-
         
         return $docs;
     }
