@@ -551,7 +551,6 @@
                 });
             </script>
 
-
         </div>
         <!-- ============================================================== -->
         <!-- End Container fluid -->
@@ -561,6 +560,11 @@
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
 
+    {{ Form::open(['route' => 'formularios.view-formulario', 'target'=>'_blank', 'id'=>'form-view-formulario', 'method' => 'POST']) }}
+        {{ Form::hidden('action', 'view') }}
+    {{ Form::close() }}
+
+
 @endsection
 
 
@@ -568,19 +572,34 @@
 
 <script>
 
+    function viewFormulario(id){
+        console.log(id);
+        $("#form-view-formulario").append("<input type='hidden' name='formulario_id' value="+id+" >");
+        $("#form-view-formulario").submit();
+    }
+    
     $(function(){
-        
+
+
         $("[data-target='#vinculos-form-modal']").click(function(){
             var forms = JSON.parse($(this).attr('data-forms'));
             var id = $(this).attr('data-id');
             var status = $(this).attr('data-finalizado');
 
             $("#save-link-form").append("<input type='hidden' name='documento_id' value='"+id+"' >")
-            $(".select2-vinculos").select2();
-            $(".select2-vinculos").val(forms);
-            $(".select2-vinculos").trigger('change');   
+            var select = $(".select2-vinculos").select2({
+                templateSelection: function (d) { 
+                    return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
+                },
+            });
+            select.val(forms);
+            select.trigger('change');   
+            
             
         });
+
+
+
         
         $(".btn-save-link").click(function(){
             $("#save-link-form").submit();

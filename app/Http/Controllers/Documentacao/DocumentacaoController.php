@@ -385,8 +385,10 @@ class DocumentacaoController extends Controller
 
         $listaPresenca = ListaPresenca::where('documento_id', '=', $document_id)->get();
         $filePath = null;
-        if( count($listaPresenca) > 0 ) $filePath = \URL::to('/download/lista-presenca/'.$listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
 
+        // if( count($listaPresenca) > 0 ) $filePath = \URL::to('/download/lista-presenca/'.$listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
+        if( count($listaPresenca) > 0 ) $filePath = \App\Classes\Helpers::instance()->getListaPresenca($listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
+        
         if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
             $documento->docData = trim(json_encode(Storage::get("uploads/".$documento[0]->nome.".html")), '"');
         } else {
@@ -1060,12 +1062,16 @@ class DocumentacaoController extends Controller
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
         
         // Exclui Lista antiga
-        Storage::disk('local')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
+        // Storage::disk('local')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
+        Storage::disk('s3')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
         
         // Salva nova lista de presença com o mesmo nome
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        $path = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
+        // $path = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
+        
+        Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
+        $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
 
         $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
         $dados_doc[0]->save();
@@ -1095,8 +1101,9 @@ class DocumentacaoController extends Controller
         
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        $path     = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
-
+        // $path     = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
+        Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
+        // $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
         $lista = new ListaPresenca();
         $lista->nome            = $request->nome_lista;
         $lista->extensao        = $extensao;

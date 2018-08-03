@@ -266,11 +266,7 @@
                             </div>
 
                             <div class="row">
-                                @if(in_array($extensao, ['pdf']))
-                                    <iframe src="https://docs.google.com/viewer?url={{$filePath}}&embedded=true" style="width:100%; height:500px;" frameborder="0"></iframe>
-                                @else
-                                    <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
-                                @endif
+                                <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
                             </div>
 
                         @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO )
@@ -298,11 +294,7 @@
                             </div>
 
                             <div class="row">
-                                @if(in_array($extensao, ['pdf']))
-                                    <iframe src="https://docs.google.com/viewer?url={{$filePath}}&embedded=true" style="width:100%; height:500px;" frameborder="0"></iframe>
-                                @else
-                                    <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{$filePath}}' width='100%' height='500px' frameborder='0'></iframe>
-                                @endif
+                                <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
                             </div>
 
                         @endif

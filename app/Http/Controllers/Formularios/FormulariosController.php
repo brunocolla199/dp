@@ -15,8 +15,10 @@ use App\TipoDocumento;
 use Illuminate\Support\Facades\View;
 use App\Configuracao;
 use App\User;
+use S3Presigned;
 use App\WorkflowFormulario;
 use App\Classes\Constants;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -124,15 +126,13 @@ class FormulariosController extends Controller
         if( array_key_exists("notify_id", $request->all()) ) {
             \App\Classes\Helpers::instance()->atualizaNotificacaoFormVisualizada($request->notify_id);
         }       
-        
+    
         $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();    
         $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->get();
         $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
-                                            ->join('users', 'users.id', '=', 'formulario.elaborador_id')
-                                            ->where('formulario_id', '=', $request->formulario_id)->orderby('finalizado')->get();
-
-        // dd($historico);
-
+        ->join('users', 'users.id', '=', 'formulario.elaborador_id')
+        ->where('formulario_id', '=', $request->formulario_id)->orderby('finalizado')->get();
+        
         return View::make('formularios.view-formulario', array(
             'nome'=>$formulario[0]->nome,  
             'acao'=>$request->action,  
@@ -140,7 +140,7 @@ class FormulariosController extends Controller
             'historico'=>$historico, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
-            'filePath'=>\URL::to('/download/'.$formulario[0]->nome.".".$formulario[0]->extensao), 
+            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($formulario[0]->nome.".".$formulario[0]->extensao), 
             'formData'=>trim($formulario[0]->conteudo, '"'), 
             'etapa_form'=>$workflowForm[0]->etapa_num,
             'elaborador_id'=>$formulario[0]->elaborador_id,
@@ -170,7 +170,8 @@ class FormulariosController extends Controller
         $extensao = $file->getClientOriginalExtension();
         $titulo   = $request->tituloFormulario;
         $codigo   = $request->codigoFormulario;
-        \Storage::disk('public_uploads')->putFileAs('/', $file, $titulo . "." . $extensao);
+        // \Storage::disk('public_uploads')->putFileAs('/', $file, $titulo . "." . $extensao);
+        \Storage::disk('s3')->put('/formularios/'.$titulo . "." . $extensao, file_get_contents($file), 'private');
 
         $formulario = new Formulario();
         $formulario->nome                 = $request->tituloFormulario;

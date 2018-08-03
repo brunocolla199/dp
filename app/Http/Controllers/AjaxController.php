@@ -73,11 +73,4 @@ class AjaxController extends Controller
             "url"=> Storage::url($path)
         ]);
     }
-
-    //Método para retornar formulário vinculados ao documento
-    public function getDocumentosFormularios(Request $request){
-        dd($request);
-    }   
-
-
 }

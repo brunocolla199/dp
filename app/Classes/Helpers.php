@@ -138,6 +138,38 @@ class Helpers {
 
 
 
+    /*** AWS S3 ***/
+    public function getFormulariosAWS($key){
+        $key = 'formularios/'.$key;
+        $s3 = \Storage::disk('s3');
+        $client = $s3->getDriver()->getAdapter()->getClient();
+        $bucket = \Config::get('filesystems.disks.s3.bucket');
+        
+        $command = $client->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key' => $key,
+            'ResponseContentDisposition' => 'attachment; filename='.$key
+        ]);
+        
+        $aws_req = $client->createPresignedRequest($command, '+1 minutes');
+        return (string) $aws_req->getUri();
+    }
+
+    public function getListaPresenca($key){
+        $key = 'lists/'.$key;
+        $s3 = \Storage::disk('s3');
+        $client = $s3->getDriver()->getAdapter()->getClient();
+        $bucket = \Config::get('filesystems.disks.s3.bucket');
+        
+        $command = $client->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key' => $key,
+            'ResponseContentDisposition' => 'attachment; filename='.$key
+        ]);
+        
+        $aws_req = $client->createPresignedRequest($command, '+1 minutes');
+        return (string) $aws_req->getUri();
+    }
 
 
     public static function instance()  {

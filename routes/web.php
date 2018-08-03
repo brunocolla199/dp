@@ -115,6 +115,11 @@ Route::group(['middleware' => ['auth']], function() {
 		return response()->file(storage_path('app/uploads/formularios/'.$file)); 
 	});
 
+	//DocumentViewer Library
+	Route::any('ViewerJS/{all?}', function(){
+		return View::make('ViewerJS.index');
+	});
+
 	// Registration Routes...
 	Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 	Route::post('register', 'Auth\RegisterController@register');
