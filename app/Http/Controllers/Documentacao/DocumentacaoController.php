@@ -1446,12 +1446,12 @@ class DocumentacaoController extends Controller
                     $documentos_NAOFinalizados[] = $docs_etapa1[$i]; 
 
 
-            if( count($docs_etapa3) > 0 ) 
+            if( is_array($docs_etapa3) && count($docs_etapa3) > 0 ) 
                 for ($i=0; $i < count($docs_etapa3); $i++) 
                     $documentos_NAOFinalizados[] = $docs_etapa3[$i]; 
 
 
-            if( count($docs_etapa4) > 0 ) 
+            if( is_array($docs_etapa4) && count($docs_etapa4) > 0 ) 
                 for ($i=0; $i < count($docs_etapa4); $i++) 
                     $documentos_NAOFinalizados[] = $docs_etapa4[$i]; 
 
@@ -1548,11 +1548,11 @@ class DocumentacaoController extends Controller
             for ($i=0; $i < count($docsFinalizados_livres); $i++) 
                 $documentosFinalizados[] = $docsFinalizados_livres[$i]; 
 
-        if( count($docsFinalizados_restritos) > 0 ) 
+        if( is_array($docsFinalizados_restritos) && count($docsFinalizados_restritos) > 0 ) 
             for ($i=0; $i < count($docsFinalizados_restritos); $i++) 
                 $documentosFinalizados[] = $docsFinalizados_restritos[$i];  
 
-        if( count($docsFinalizados_confidenciais) > 0 ) 
+        if( is_array($docsFinalizados_confidenciais) && count($docsFinalizados_confidenciais) > 0 ) 
             for ($i=0; $i < count($docsFinalizados_confidenciais); $i++) 
                 $documentosFinalizados[] = $docsFinalizados_confidenciais[$i];  
 
