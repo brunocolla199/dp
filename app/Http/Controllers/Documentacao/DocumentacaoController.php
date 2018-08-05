@@ -149,7 +149,6 @@ class DocumentacaoController extends Controller
 
 
     public function validateData(DadosNovoDocumentoRequest $request) {     
-        dd($request->all());
         $setorDono               = $request->setor_dono_doc;
         $text_setorDono          = Setor::where('id', '=', $setorDono)->get();
 
