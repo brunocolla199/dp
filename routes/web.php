@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  						'uses' => 'AjaxController@getUsers']);
 	Route::post('ajax/usuarios/trocarSetor',  			['as' => 'ajax.usuarios.trocarSetor', 	  				'uses' => 'AjaxController@trocarSetor']);
 	Route::post('ajax/usuarios/removerDoGrupo',			['as' => 'ajax.usuarios.removerDoGrupo', 	  			'uses' => 'AjaxController@removerDoGrupo']);
+	Route::post('ajax/usuarios/aprovadoresPorSetor',	['as' => 'ajax.usuarios.aprovadoresPorSetor', 	  		'uses' => 'AjaxController@getAprovadoresPorSetor']);
 	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  						'uses' => 'AjaxController@getSectors']);
 	Route::post('ajax/setores/retornaSetoresExcetoUm',  ['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
 	Route::post('ajax/upload',                          ['as' => 'ajax.upload.image',	                		'uses' => 'AjaxController@uploadEditorImage']);
@@ -90,14 +91,22 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('',	       								['as' => 'configuracoes', 	        						'uses' => 'Configuracoes\ConfiguracoesController@index']);
 		Route::post('save/number-default',	    			['as' => 'configuracoes.save.number-default', 	        	'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefault']);
 		Route::post('save/new-grouping',	    			['as' => 'configuracoes.save.new-grouping', 	        	'uses' => 'Configuracoes\ConfiguracoesController@saveNewGrouping']);
+		Route::post('save/quality-admin',	    			['as' => 'configuracoes.save.quality-admin', 	        	'uses' => 'Configuracoes\ConfiguracoesController@saveQualityAdmin']);
 		Route::post('edit/sector',	    					['as' => 'configuracoes.edit.sector', 	        			'uses' => 'Configuracoes\ConfiguracoesController@editSector']);
 		Route::post('edit/training-group', 					['as' => 'configuracoes.edit.training-group',      			'uses' => 'Configuracoes\ConfiguracoesController@editTrainingGroup']);
 		Route::post('edit/disclosure-group', 				['as' => 'configuracoes.edit.disclosure-group',      		'uses' => 'Configuracoes\ConfiguracoesController@editDisclosureGroup']);
 		Route::get('link/{id}/users_training-group', 		['as' => 'configuracoes.link.users_training-group',     	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersTrainingGroup']);
-		Route::get('link/{id}/users_direction-management', 	['as' => 'configuracoes.link.users_direction-management',   'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDirectionManagement']);
+		Route::get('link/{id}/approver_sector', 			['as' => 'configuracoes.link.approver_sector',   			'uses' => 'Configuracoes\ConfiguracoesController@linkApproverSector']);
 		Route::get('link/{id}/users_disclosure-group', 		['as' => 'configuracoes.link.users_disclosure-group',   	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDisclosureGroup']);
 		Route::get('link/{id}/users_sectors', 				['as' => 'configuracoes.link.users_sectors',   				'uses' => 'Configuracoes\ConfiguracoesController@linkUsersSectors']);
 		Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
+	});
+
+	/*
+	* SOBRE
+	*/
+	Route::group(['prefix' => 'sobre'], function() {
+		Route::get('',	   ['as' => 'sobre',	'uses' => 'SobreController@index']);
 	});
 	
 	/*

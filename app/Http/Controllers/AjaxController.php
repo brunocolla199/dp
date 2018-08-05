@@ -41,9 +41,23 @@ class AjaxController extends Controller
                 ['grupo_id', '=', $request->id_grupo],
                 ['usuario_id', '=', $request->id_user]
             ])->delete();
+        } else if($tipoGrupo == "aprovadores") {
+            $aprovSetor = DB::table('aprovador_setor')->where([
+                ['usuario_id', '=', $request->id_user],
+                ['setor_id', '=', $request->id_setor]
+            ])->delete();
         }
 
         return response()->json(['response' => 'delete_success']);
+    }
+
+
+    public function getAprovadoresPorSetor(Request $request) {
+        return response()->json(['response' => User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                                ->where('aprovador_setor.setor_id', '=', $request->id)
+                                                ->get()
+                                                ->pluck('name', 'id') 
+                                ]);
     }
     
 

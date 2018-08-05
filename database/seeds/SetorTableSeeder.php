@@ -29,19 +29,19 @@ class SetorTableSeeder extends Seeder
         /*
         * Diretoria e Gerência - 'Setores' especiais que informarão quais usuários podem ser aprovadores 
         */
-        $diretoria              = new Setor();
-        $diretoria->nome        = "Diretoria";
-        $diretoria->sigla       = "DIR";
-        $diretoria->descricao   = "Responsável em dirigir, planejar, organizar e controlar as atividades de diversas áreas da empresa.";
-        $diretoria->tipo_setor_id = Constants::$ID_TIPO_SETOR_DIRETORIA;
-        $diretoria->save();
+        // $diretoria              = new Setor();
+        // $diretoria->nome        = "Diretoria";
+        // $diretoria->sigla       = "DIR";
+        // $diretoria->descricao   = "Responsável em dirigir, planejar, organizar e controlar as atividades de diversas áreas da empresa.";
+        // $diretoria->tipo_setor_id = Constants::$ID_TIPO_SETOR_DIRETORIA;
+        // $diretoria->save();
         
-        $gerencia               = new Setor();
-        $gerencia->nome         = "Gerência";
-        $gerencia->sigla        = "GER";
-        $gerencia->descricao    = "Responsável por gerenciar diversas atividades da empresa.";
-        $gerencia->tipo_setor_id= Constants::$ID_TIPO_SETOR_GERENCIA;
-        $gerencia->save();   
+        // $gerencia               = new Setor();
+        // $gerencia->nome         = "Gerência";
+        // $gerencia->sigla        = "GER";
+        // $gerencia->descricao    = "Responsável por gerenciar diversas atividades da empresa.";
+        // $gerencia->tipo_setor_id= Constants::$ID_TIPO_SETOR_GERENCIA;
+        // $gerencia->save();   
 
 
         

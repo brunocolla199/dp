@@ -15,6 +15,7 @@ class UsersTableSeeder extends Seeder
     {
 
         // Qualidade
+        /*
         $qualidade_speed           = new User();
         $qualidade_speed->name     = "Speed Demonstração";
         $qualidade_speed->username = "speedsoft";
@@ -22,8 +23,8 @@ class UsersTableSeeder extends Seeder
         $qualidade_speed->setor_id = 1;
         $qualidade_speed->password = bcrypt('Sp33dqu@18');
         $qualidade_speed->save();
+        */
 
-        /*
         $qualidade2           = new User();
         $qualidade2->name     = "Celise Zilli";
         $qualidade2->username = "celise.zilli";
@@ -58,6 +59,7 @@ class UsersTableSeeder extends Seeder
 
 
         // Diretores
+        /*
         $diretor1           = new User();
         $diretor1->name     = "Diretor I";
         $diretor1->username = "diretor1";
@@ -73,9 +75,11 @@ class UsersTableSeeder extends Seeder
         $diretor2->setor_id = 2;
         $diretor2->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $diretor2->save();
+        */
 
 
         // Gerentes
+        /*
         $gerente1           = new User();
         $gerente1->name     = "Gerência I";
         $gerente1->username = "gerente1";
@@ -91,6 +95,7 @@ class UsersTableSeeder extends Seeder
         $gerente2->setor_id = 3;
         $gerente2->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $gerente2->save();
+        */
         
 
 
@@ -103,7 +108,7 @@ class UsersTableSeeder extends Seeder
         $administrativo1->name     = "Administrativo I";
         $administrativo1->username = "administrativo1";
         $administrativo1->email    = "administrativo1@speedsoftware.com.br";
-        $administrativo1->setor_id = 4;
+        $administrativo1->setor_id = 2;
         $administrativo1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $administrativo1->save();
         
@@ -112,7 +117,7 @@ class UsersTableSeeder extends Seeder
         $armadores1->name     = "Armadores I";
         $armadores1->username = "armadores1";
         $armadores1->email    = "armadores1@speedsoftware.com.br";
-        $armadores1->setor_id = 5;
+        $armadores1->setor_id = 3;
         $armadores1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $armadores1->save();
         
@@ -121,7 +126,7 @@ class UsersTableSeeder extends Seeder
         $cdi1->name     = "CDI I";
         $cdi1->username = "cdi1";
         $cdi1->email    = "cdi1@speedsoftware.com.br";
-        $cdi1->setor_id = 6;
+        $cdi1->setor_id = 4;
         $cdi1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $cdi1->save();
         
@@ -130,7 +135,7 @@ class UsersTableSeeder extends Seeder
         $compras1->name     = "Compras I";
         $compras1->username = "compras1";
         $compras1->email    = "compras1@speedsoftware.com.br";
-        $compras1->setor_id = 7;
+        $compras1->setor_id = 5;
         $compras1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $compras1->save();
         
@@ -139,7 +144,7 @@ class UsersTableSeeder extends Seeder
         $comercial1->name     = "Comercial I";
         $comercial1->username = "comercial1";
         $comercial1->email    = "comercial1@speedsoftware.com.br";
-        $comercial1->setor_id = 8;
+        $comercial1->setor_id = 6;
         $comercial1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $comercial1->save();
         
@@ -147,7 +152,7 @@ class UsersTableSeeder extends Seeder
         $comercial2->name     = "Comercial II";
         $comercial2->username = "comercial2";
         $comercial2->email    = "comercial2@speedsoftware.com.br";
-        $comercial2->setor_id = 8;
+        $comercial2->setor_id = 7;
         $comercial2->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $comercial2->save();
         
@@ -159,7 +164,7 @@ class UsersTableSeeder extends Seeder
         $pessoas_organizacao1->setor_id = Constants::$ID_SETOR_CAPITAL_HUMANO;
         $pessoas_organizacao1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $pessoas_organizacao1->save();
-        */
+        
                 
     }
 }

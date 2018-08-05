@@ -30,12 +30,21 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                        
-                            <h4>Vinculando usuários <span class="text-info"> {{ $text_agrupamento }} </span> </h4>
-                            <div class="col-md-12 alert alert-info">
-                                <h5 class="box-title">Clique sobre os usuários que deseja vincular. <small>Caso deseje vincular todos os usuários do setor, clique sobre o nome do setor.</small></h5>
-                                <h5 class="box-title">Para desvincular, selecione <b>um</b> usuário por vez. <small>Pedimos isso em razão da definição de um novo setor para cada usuário desvinculado.</small></h5>
-                            </div>
+                            
+                            @if( isset($setorDosAprovadores) )
+                                <h2>Definindo os aprovadores do setor <span class="text-primary"> {{ $text_agrupamento }} </span> </h2>
+                                <div class="col-md-12 alert alert-warning">
+                                    <h5 class="box-title">Clique sobre os usuários que deseja vincular. <small>Caso deseje vincular todos os usuários do setor, clique sobre o nome do setor.</small></h5>
+                                    <h5 class="box-title">Para desvincular, <b>apenas clique sobre o usuário</b>. <small>Ao fazer isso, o usuário <b>já foi desvinculado </b>.</small></h5>
+                                </div>
+                            @else
+                                <h4>Vinculando usuários <span class="text-info"> {{ $text_agrupamento }} </span> </h4>
+                                <div class="col-md-12 alert alert-info">
+                                    <h5 class="box-title">Clique sobre os usuários que deseja vincular. <small>Caso deseje vincular todos os usuários do setor, clique sobre o nome do setor.</small></h5>
+                                    <h5 class="box-title">Para desvincular, selecione <b>um</b> usuário por vez. <small>Pedimos isso em razão da definição de um novo setor para cada usuário desvinculado.</small></h5>
+                                </div>
+                            @endif
+                            
                                 
                             <div class="mt-4">
                                 {!! Form::open(['route' => 'configuracoes.link.save', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
@@ -61,6 +70,26 @@
                                                         @endforeach
                                                     </optgroup>
                                                 @endif
+                                            @endforeach
+                                        </select>
+
+
+
+                                    @elseif( isset($setorDosAprovadores) )
+                                        {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_APROVADORES_POR_SETOR) !!}
+                                        {!! Form::hidden('id_agrupamento', $setorDosAprovadores->id) !!}
+                                       
+                                        <select multiple id="optgroup-aprovadores" name="usersLinked[]" data-setor="{{$setorDosAprovadores->id}}">
+                                            @foreach($setoresUsuarios as $key => $su)
+                                                <optgroup label="{{$key}}">
+                                                    @foreach($su as $key2 => $user)
+                                                        @if( is_array($checkGrouping) && in_array($key2, $checkGrouping) )
+                                                            <option selected value="{{$key2}}">{{$user}}</option>
+                                                        @else
+                                                            <option value="{{$key2}}">{{$user}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </optgroup>
                                             @endforeach
                                         </select>
 

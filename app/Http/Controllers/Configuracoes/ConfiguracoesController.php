@@ -11,6 +11,7 @@ use App\GrupoTreinamentoUsuario;
 use App\GrupoDivulgacao;
 use App\GrupoDivulgacaoUsuario;
 use App\User;
+use App\AprovadorSetor;
 use App\Classes\Constants;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\NumberDefaultRequest;
@@ -39,17 +40,12 @@ class ConfiguracoesController extends Controller
                                 ->orderBy('nome')
                                 ->get();
 
-        $diretoriaGerencia = DB::table('setor')
-                                ->select('setor.*')
-                                ->where('id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)
-                                ->orWhere('id', '=', Constants::$ID_TIPO_SETOR_GERENCIA)
-                                ->orderBy('nome')
-                                ->get();
-
-        $numeroPadraoParaCodigo = Configuracao::all();
+        $configs = Configuracao::all();
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
 
         return view('configuracoes.index', ['setoresEmpresa' => $setoresEmpresa, 'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao,
-                                            'diretoriaGerencia' => $diretoriaGerencia, 'numeroPadraoParaCodigo' => $numeroPadraoParaCodigo[0]->numero_padrao_codigo]);
+                                            'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'adminSetorQualidade' => $configs[1]->admin_setor_qualidade,
+                                             'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
 
 
@@ -100,6 +96,15 @@ class ConfiguracoesController extends Controller
         }
 
         return redirect()->route('configuracoes')->with(['new_grouping_sucesso' => 'valor']);
+    }
+
+
+    public function saveQualityAdmin(Request $request) {
+        $config = Configuracao::where('id', '=', 2)->get();
+        $config[0]->admin_setor_qualidade = $request->userAdminQuality;
+        $config[0]->save();
+
+        return redirect()->route('configuracoes')->with(['admin_qualidade_sucesso' => 'valor']);
     }
 
 
@@ -173,35 +178,6 @@ class ConfiguracoesController extends Controller
     }
 
 
-    public function linkUsersDirectionManagement($id) {
-        $usersAndSectors = [];
-
-        $allSectors = Setor::orderBy('nome')->get();
-        foreach($allSectors as $key => $sector) {
-            $arrUsers = [];
-            $users = User::where('setor_id', '=', $sector->id)->get();
-            foreach($users as $key2 => $user) {
-                $arrUsers[$user->id] = $user->name;
-            }
-            $usersAndSectors[$sector->nome] = $arrUsers;
-        }
-        
-        //Khalil was in here
-
-        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
-        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
-        
-        //Khalil is out
-
-
-        $setorAtual = Setor::where('id', '=', $id)->get();
-        $text_agrupamento = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "à Diretoria" : "à Gerência";
-        $checkGrouping = ($id == Constants::$ID_TIPO_SETOR_DIRETORIA) ? "Diretoria" : "Gerência";
-
-        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'setor' => $setorAtual[0], 'setoresUsuarios' => $usersAndSectors]);
-    }
-
-
     public function linkUsersDisclosureGroup($id) {
         $usersAndSectors = [];
         $grupoAtual      = [];
@@ -270,6 +246,38 @@ class ConfiguracoesController extends Controller
     }
 
 
+    public function linkApproverSector($id) {
+        $usersAndSectors = [];
+
+        $allSectors = Setor::orderBy('nome')->get();
+        foreach($allSectors as $key => $sector) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $sector->id)->get();
+            foreach($users as $key2 => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $usersAndSectors[$sector->nome] = $arrUsers;
+        }
+        
+        //Khalil was in here
+        // And the Big John had to come adjust
+        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
+        $usersAndSectors['Sem Setor'] = $noSectorsUsers;        
+        //Khalil is out
+        // Big John: "Given mission is accomplished mission"
+
+
+        $setorAtual = Setor::where('id', '=', $id)->get();
+        $text_agrupamento = $setorAtual[0]->nome;
+        
+        // Pega todos os aprovadores do setor atual
+        $runQuery = AprovadorSetor::where('setor_id', '=', $id)->get()->pluck('usuario_id')->toArray();
+        $aprovadoresSetorAtual = ( count($runQuery) > 0 ) ? $runQuery : null;
+
+        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $aprovadoresSetorAtual, 'setorDosAprovadores' => $setorAtual[0], 'setoresUsuarios' => $usersAndSectors]);
+    }
+
+
     public function linkSave(Request $request) {
         $novosUsuariosVinculados = $request->usersLinked;
 
@@ -278,33 +286,55 @@ class ConfiguracoesController extends Controller
 
         switch ($tipoAgrupamento) {
             case '1': // Grupo de Treinamento
-                foreach($novosUsuariosVinculados as $key => $user) {
-                    $relations = DB::table('grupo_treinamento_usuario')->where([
-                        ['grupo_id', '=', $idAgrupamento],
-                        ['usuario_id', '=', $user]
-                    ])->get();
-                    
-                    if ( count($relations) == 0) {
-                        $gtu = new GrupoTreinamentoUsuario();
-                        $gtu->grupo_id = $idAgrupamento;
-                        $gtu->usuario_id = $user;
-                        $gtu->save();
+                if( is_array($novosUsuariosVinculados) ) {
+                    foreach($novosUsuariosVinculados as $key => $user) {
+                        $relations = DB::table('grupo_treinamento_usuario')->where([
+                            ['grupo_id', '=', $idAgrupamento],
+                            ['usuario_id', '=', $user]
+                        ])->get();
+                        
+                        if ( count($relations) == 0) {
+                            $gtu = new GrupoTreinamentoUsuario();
+                            $gtu->grupo_id = $idAgrupamento;
+                            $gtu->usuario_id = $user;
+                            $gtu->save();
+                        }
                     }
                 }
                 break;
 
             case '2': // Grupo de Divulgação
-                foreach($novosUsuariosVinculados as $key => $user) {
-                    $relations = DB::table('grupo_divulgacao_usuario')->where([
-                        ['grupo_id', '=', $idAgrupamento],
-                        ['usuario_id', '=', $user]
-                    ])->get();
-                    
-                    if ( count($relations) == 0) {
-                        $gtu = new GrupoDivulgacaoUsuario();
-                        $gtu->grupo_id = $idAgrupamento;
-                        $gtu->usuario_id = $user;
-                        $gtu->save();
+                if( is_array($novosUsuariosVinculados) ) {
+                    foreach($novosUsuariosVinculados as $key => $user) {
+                        $relations = DB::table('grupo_divulgacao_usuario')->where([
+                            ['grupo_id', '=', $idAgrupamento],
+                            ['usuario_id', '=', $user]
+                        ])->get();
+                        
+                        if ( count($relations) == 0) {
+                            $gtu = new GrupoDivulgacaoUsuario();
+                            $gtu->grupo_id = $idAgrupamento;
+                            $gtu->usuario_id = $user;
+                            $gtu->save();
+                        }
+                    }
+                }
+                break;
+
+            case '3': // Aprovadores
+                if( is_array($novosUsuariosVinculados) ) {
+                    foreach($novosUsuariosVinculados as $key => $user) {
+                        $relations = DB::table('aprovador_setor')->where([
+                            ['usuario_id', '=', $user],
+                            ['setor_id', '=', $idAgrupamento]
+                        ])->get();
+                        
+                        if ( count($relations) == 0) {
+                            $aprovSetor = new AprovadorSetor();
+                            $aprovSetor->usuario_id = $user;
+                            $aprovSetor->setor_id = $idAgrupamento;
+                            $aprovSetor->save();
+                        }
                     }
                 }
                 break;
@@ -312,11 +342,14 @@ class ConfiguracoesController extends Controller
             default: // (0) == Setor
                 $users = User::select('id')->where('setor_id', '=', $idAgrupamento)->get()->pluck('id');
                 $array =  (array) $users;
-                foreach($novosUsuariosVinculados as $key => $user) {
-                    if (!in_array($user, $array)) {
-                        $u = User::where('id', '=', $user)->get();
-                        $u[0]->setor_id = $idAgrupamento;
-                        $u[0]->save();
+
+                if( is_array($novosUsuariosVinculados) ) {
+                    foreach($novosUsuariosVinculados as $key => $user) {
+                        if (!in_array($user, $array)) {
+                            $u = User::where('id', '=', $user)->get();
+                            $u[0]->setor_id = $idAgrupamento;
+                            $u[0]->save();
+                        }
                     }
                 }
                 break;

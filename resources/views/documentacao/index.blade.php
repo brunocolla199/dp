@@ -142,21 +142,11 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('aprovador', 'APROVADOR:') !!}
+                                                            {!! Form::label('aprovadores', 'APROVADORES:') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            <select class="form-control custom-select" name="aprovador" id="aprovador" style="width: 100%"> <!-- colocar classe = select2 -->
-                                                                <optgroup label="Diretoria">
-                                                                    @foreach($diretores_aprovadores as $key => $diretor)
-                                                                        <option value="{{ $key }}">{{ $diretor }}</option>
-                                                                    @endforeach
-                                                                </optgroup>
-                                                                <optgroup label="Gerência">
-                                                                    @foreach($gerentes_aprovadores as $key => $gerente)
-                                                                        <option value="{{ $key }}">{{ $gerente }}</option>
-                                                                    @endforeach
-                                                                </optgroup>
-                                                            </select>
+
+                                                            {!! Form::select('aprovador', $aprovadoresSetorAtual, '', ['class' => 'form-control  custom-select', 'id' => 'aprovadores']) !!}
                                                         </div>
                                                     </div>
                                                 </div>    
@@ -312,55 +302,38 @@
 
                                                     {!! Form::open(['route' => 'documentacao.filter-documents-index', 'class' => 'form-horizontal']) !!}
                                                         <div class="row">
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-4" >
                                                                 <div class="row ">
-                                                                    {!! Form::select('search_tipoDocumento', $tipoDocumentos, null, ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_tipoDocumento', $tipoDocumentos, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-4" >
                                                                 <div class="row">
-                                                                    <select class="form-control custom-select" name="search_aprovador" id="search_aprovador" style="width: 100%"> <!-- colocar classe = select2 -->
-                                                                        <option value="">- Aprovador -</option>
-                                                                        <optgroup label="Diretoria">
-                                                                            @foreach($diretores_aprovadores as $key => $diretor)
-                                                                                <option value="{{ $key }}">{{ $diretor }}</option>
-                                                                            @endforeach
-                                                                        </optgroup>
-                                                                        <optgroup label="Gerência">
-                                                                            @foreach($gerentes_aprovadores as $key => $gerente)
-                                                                                <option value="{{ $key }}">{{ $gerente }}</option>
-                                                                            @endforeach
-                                                                        </optgroup>
-                                                                    </select>
+                                                                    {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $gruposDivulgacao, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-4" >
                                                                 <div class="row ">
-                                                                    {!! Form::select('search_grupoTreinamento', array(null => '- Grupo Treinamento -') + $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-2 margin-right-1percent">
-                                                                <div class="row">
-                                                                    <div class="input-group">
-                                                                        {!! Form::text('search_validadeDocumento', null, ['class' => 'form-control', 'id' => 'mdate_search', 'placeholder'=>'- Validade -']) !!}
-                                                                    </div>
+                                                                    {!! Form::select('search_grupoTreinamento', array(null => '- Grupo Treinamento -') + $gruposTreinamento, '', ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
                                                         </div>  
                                                         <div class="row margin-top-1percent">
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-4">
                                                                 <div class="row">
-                                                                    {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $gruposDivulgacao, null, ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-3">
                                                                 <div class="row">
-                                                                    {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select']) !!}
+                                                                    <div class="input-group">
+                                                                        {!! Form::text('search_validadeDocumento', null, ['class' => 'form-control', 'id' => 'mdate_search', 'placeholder'=>'- Validade -', 'style' => 'width: 96%']) !!}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-5">
                                                                 <div class="row">
-                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -']) !!}
+                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -', 'style' => 'width: 93.5%; margin-left:2.5%']) !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -368,7 +341,7 @@
                                                             <div class="col-md-6"> </div>
                                                             <div class="col-md-6">
                                                                 <div class="row">
-                                                                    <div class="col-md-5">
+                                                                    <div class="col-md-6">
                                                                         <a href="{{ route('documentacao') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
                                                                     </div>
                                                                     <div class="col-md-6">
@@ -547,6 +520,29 @@
                         $('#form-generate-document').submit();
                     });
 
+                    // Mudanças no select de setor dono do documento
+                    $("#setor_dono_doc").change(function(){
+                        var obj = {'id': $("#setor_dono_doc").val()};
+
+                        ajaxMethod('POST', " {{ URL::route('ajax.usuarios.aprovadoresPorSetor') }} ", obj).then(function(result) {
+                            var data = result.response;
+                            $("#aprovadores").empty();
+
+                            if(Object.keys(data).length > 0 ) {    
+                                Object.keys(data).forEach(function(key) {
+                                    $('#aprovadores').append($('<option>', { 
+                                        value: key,
+                                        text : data[key]
+                                    }));
+                                });
+                            }
+
+                        }, function(err) {
+                        });
+                    });
+
+                    // Chama trigger quando a página é recarregada
+                    $("#setor_dono_doc").val( $("#setor_dono_doc").val() ).trigger("change");
 
                 });
             </script>

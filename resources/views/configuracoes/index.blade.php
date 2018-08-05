@@ -16,6 +16,8 @@
 		<input type="hidden" name="status" id="status" value="edit_disclosure-group_success">
     @elseif (session('link_success'))
 		<input type="hidden" name="status" id="status" value="link_success">
+    @elseif (session('admin_qualidade_sucesso'))
+		<input type="hidden" name="status" id="status" value="admin_qualidade_sucesso">
     @endif
 
     <script>
@@ -34,6 +36,8 @@
                 showToast('Sucesso!', 'Grupo de Divulgação editado com sucesso.', 'success');
             } else if(status == "link_success") {
                 showToast('Sucesso!', 'Vinculações atualizadas com sucesso.', 'success');
+            } else if(status == "admin_qualidade_sucesso") {
+                showToast('Sucesso!', 'Usuário com privilégios do setor Qualidade atualizado com sucesso.', 'success');
             }
         });
     </script>
@@ -99,7 +103,7 @@
                                             <li class="nav-item"> <a class="nav-link speed-subtabs ovo" style="cursor: pointer" data-toggle="collapse" data-target="#setores-empresa" aria-expanded="false" aria-controls="setores-empresa" role="tab"> <i class="fa fa-sitemap"></i> <span class="hidden-xs-down"> SETORES DA EMPRESA</span></a> </li>
                                             <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-treinamento" aria-expanded="false" aria-controls="grupos-treinamento" role="tab"> <i class="fa fa-gavel"></i>   <span class="hidden-xs-down"> GRUPOS DE TREINAMENTO</span></a> </li>
                                             <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-divulgacao" aria-expanded="false" aria-controls="grupos-divulgacao" role="tab">  <i class="fa fa-bullhorn"></i>      <span class="hidden-xs-down"> GRUPOS DE DIVULGAÇÃO</span></a> </li>
-                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#diretoria_gerencia" aria-expanded="false" aria-controls="diretoria_gerencia" role="tab">  <i class="fa fa-briefcase"></i>      <span class="hidden-xs-down"> DIRETORIA/GERÊNCIA</span></a> </li>
+                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#aprovadores" aria-expanded="false" aria-controls="aprovadores" role="tab">  <i class="fa fa-group"></i>      <span class="hidden-xs-down"> APROVADORES</span></a> </li>
                                         </ul>
                                         <!-- Tab panes -->
                                         <div class="tab-content">
@@ -107,7 +111,7 @@
                                                 <div class="p-20">
                                                     <div class="row">                                                        
 
-                                                        <div class="row mt-5 margin-top-1percent">
+                                                        <div class="row mt-2 margin-top-1percent">
                                                             <div class="table-responsive">
                                                                 <table class="table">
                                                                     <thead>
@@ -144,7 +148,7 @@
                                             <div class="collapse" id="grupos-treinamento" role="tabpanel">
                                                 <div class="p-20">
                                                     <div class="row">
-                                                        <div class="row mt-5 margin-top-1percent">
+                                                        <div class="row mt-2 margin-top-1percent">
                                                             <div class="table-responsive">
                                                                 <table class="table">
                                                                     <thead>
@@ -178,7 +182,7 @@
                                             <div class="collapse" id="grupos-divulgacao" role="tabpanel">
                                                 <div class="p-20">
                                                     <div class="row">
-                                                        <div class="row mt-5 margin-top-1percent">
+                                                        <div class="row mt-2 margin-top-1percent">
                                                             <div class="table-responsive">
                                                                 <table class="table">
                                                                     <thead>
@@ -209,42 +213,44 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="collapse" id="diretoria_gerencia" role="tabpanel">
+                                            <div class="collapse" id="aprovadores" role="tabpanel">
                                                 <div class="p-20">
                                                     <div class="row">
-                                                        <h5 class="alert alert-info alert-dismissible" role="alert">
+                                                        <h5 class="alert container alert-info alert-dismissible" role="alert">
                                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                            Os setores especiais <b>Diretoria</b> e <b>Gerência</b> não podem ser modificados, pois são padrões dentro do sistema.
+                                                            Aqui serão definidos os <b>aprovadores</b> de cada setor da empresa, sendo que um usuário pode ser aprovador em mais do que um setor.
                                                         </h5>
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="row mt-3 margin-top-1percent">
-                                                            <div class="table-responsive">
-                                                                <table class="table">
-                                                                    <thead>
+
+                                                    <div class="row mt-2 margin-top-1percent">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Nome do Setor</th>
+                                                                        <th>Sigla</th>
+                                                                        <th>Descrição</th>
+                                                                        <th>Ações</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($setoresEmpresa as $setor)
                                                                         <tr>
-                                                                            <th>Nome do Setor Especial</th>
-                                                                            <th>Descrição</th>
-                                                                            <th>Ações</th>
+                                                                            <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
+                                                                            <td>{{ $setor->sigla }}</td>
+                                                                            <td>{{ $setor->descricao }}</td>
+                                                                            <td class="text-nowrap">
+                                                                                <center>
+                                                                                    <a href="{{ route('configuracoes.link.approver_sector', ['id' => $setor->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Definir Aprovadores"> <i class="fa fa-chain text-info"></i> </a>
+                                                                                </center>
+                                                                            </td>
                                                                         </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach($diretoriaGerencia as $dg)
-                                                                            <tr>
-                                                                                <td><a href="javascript:void(0)">{{ $dg->nome }}</a></td> 
-                                                                                <td>{{ $dg->descricao }}</td>
-                                                                                <td class="text-nowrap">
-                                                                                    <center>
-                                                                                        <a href="{{ route('configuracoes.link.users_direction-management', ['id' => $dg->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                    </center>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div> 
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -325,8 +331,8 @@
                                     <div class="col-md-12"> 
                                            
                                             <div class="row">
-                                                <div class="col-md-6">
 
+                                                <div class="col-md-6" style="border-right: 1px solid lightgray;">
                                                     <div class="col-md-12 mb-4">
                                                         @if ($errors->any())
                                                             <div class="alert alert-danger">
@@ -363,6 +369,34 @@
                                                     </div>
                                                     {!! Form::close() !!}
                                                 </div>
+
+                                                <div class="col-md-6">
+                                                    {!! Form::open(['route' => 'configuracoes.save.quality-admin', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
+                                                        <div class="row">
+                                                            <div class="col-md-12 mb-4">
+                                                                <div class="alert alert-warning">
+                                                                    <span>Por favor, defina o usuário com privilégios do setor <b>Qualidade</b>. </span>
+                                                                    <small><b>Lembre-se:</b> este usuário é o único que poderá ver documentos confidenciais!</small>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="col-md-12 control-label font-bold">
+                                                                        {!! Form::label('userAdminQuality', 'Administrador - Setor Qualidade:') !!}
+                                                                    </div>
+                                                                    <div class="col-md-12">
+                                                                        {!! Form::select('userAdminQuality', $usuariosSetorQualidade, $adminSetorQualidade, ['class' => 'form-control  custom-select']) !!}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-offset-8 pull-right col-md-4 mt-2">
+                                                            <button type="submit" class="btn btn-block btn-outline-success">Salvar</button>
+                                                        </div>
+                                                    {!! Form::close() !!}
+                                                </div>
+
                                             </div>
 
                                         </div>

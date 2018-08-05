@@ -18,6 +18,7 @@ use App\AreaInteresseDocumento;
 use App\Formulario;
 use App\DocumentoFormulario;
 use App\ListaPresenca;
+use App\AprovadorSetor;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
 use Illuminate\Support\Facades\View;
@@ -38,11 +39,26 @@ class DocumentacaoController extends Controller
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
-
+        
         // Aprovadores
-        $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
-        $gerentes_aprovadores  = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_GERENCIA)->orderBy('name')->get()->pluck('name', 'id'); 
+        $aprovadores = array();
+        $aprovadoresSetorAtual = array();
+        $setoresQuePossuemAprovadores = DB::table('aprovador_setor')
+                                                ->select('setor_id')
+                                                ->groupBy('setor_id')
+                                                ->get();
+        
+        foreach ($setoresQuePossuemAprovadores as $key => $value) {
+            $setor = Setor::where('id', '=', $value->setor_id)->get();
+            $users = AprovadorSetor::where('setor_id', '=', $value->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
+            $aprovadores[$setor[0]->nome] = $users;
+        }
 
+        $aprovadoresSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                        ->where('aprovador_setor.setor_id', '=', array_keys($setores)[0])
+                                        ->get()
+                                        ->pluck('name', 'id');
+    
         // Área de Interesse
         $setoresUsuarios = [];
         $todosSetores = Setor::all();
@@ -60,7 +76,8 @@ class DocumentacaoController extends Controller
         $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
         $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
-        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'diretores_aprovadores' => $diretores_aprovadores, 'gerentes_aprovadores' => $gerentes_aprovadores,
+        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
+                                            'aprovadores' => $aprovadores, 'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
                                             'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
@@ -78,8 +95,23 @@ class DocumentacaoController extends Controller
         $formularios       = Formulario::all()->pluck('nome', 'id');
 
         // Aprovadores
-        $diretores_aprovadores = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_DIRETORIA)->orderBy('name')->get()->pluck('name', 'id');
-        $gerentes_aprovadores  = User::where('setor_id', '=', Constants::$ID_TIPO_SETOR_GERENCIA)->orderBy('name')->get()->pluck('name', 'id'); 
+        $aprovadores = array();
+        $aprovadoresSetorAtual = array();
+        $setoresQuePossuemAprovadores = DB::table('aprovador_setor')
+                                                ->select('setor_id')
+                                                ->groupBy('setor_id')
+                                                ->get();
+        
+        foreach ($setoresQuePossuemAprovadores as $key => $value) {
+            $setor = Setor::where('id', '=', $value->setor_id)->get();
+            $users = AprovadorSetor::where('setor_id', '=', $value->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
+            $aprovadores[$setor[0]->nome] = $users;
+        }
+
+        $aprovadoresSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                        ->where('aprovador_setor.setor_id', '=', array_keys($setores)[0])
+                                        ->get()
+                                        ->pluck('name', 'id');
 
         // Área de Interesse
         $setoresUsuarios = [];
@@ -98,7 +130,8 @@ class DocumentacaoController extends Controller
         $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
         $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
-        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 'diretores_aprovadores' => $diretores_aprovadores, 'gerentes_aprovadores' => $gerentes_aprovadores,
+        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
+                                            'aprovadores' => $aprovadores, 'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
                                             'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
@@ -1189,10 +1222,12 @@ class DocumentacaoController extends Controller
                     if( $value->tipo_documento_id == $req['search_tipoDocumento']) { 
                         $add = true;           
 
+                        /*
                         if($req['search_aprovador'] != null) {
                             if($value->aprovador_id == $req['search_aprovador']) $add = true;
                             else continue;
                         }
+                        */
                         if($req['search_grupoTreinamento'] != null) {
                             if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
                             else continue;
@@ -1227,10 +1262,12 @@ class DocumentacaoController extends Controller
                     if( $value->tipo_documento_id == $req['search_tipoDocumento']) {    
                         $add = true;
                         
+                        /*
                         if($req['search_aprovador'] != null) {
                             if($value->aprovador_id == $req['search_aprovador']) $add = true;
                             else continue;
                         }
+                        */
                         if($req['search_grupoTreinamento'] != null) {
                             if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
                             else continue;
@@ -1286,6 +1323,7 @@ class DocumentacaoController extends Controller
 
 
     public function getDocumentsIndex() {
+        $idUsuarioAdminSetorQualidade = Configuracao::where('id', '=', 2)->get();
         $base_query = DB::table('documento')
                                 ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
                                 ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
@@ -1295,6 +1333,7 @@ class DocumentacaoController extends Controller
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
+
 
         $clonedBaseQuery2 = clone $base_query;
         $clonedBaseQuery3 = clone $base_query;
@@ -1310,21 +1349,15 @@ class DocumentacaoController extends Controller
                             ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
                             ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
                             ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
-                            ->join('area_interesse_documento', function($join) {
-                                $join->on('area_interesse_documento.documento_id', '=', 'documento.id')
-                                        ->where('area_interesse_documento.usuario_id', '=', Auth::user()->id);
-                            })
                             ->select('documento.*', 
                                     'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id',
                                     'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
-                                    'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo',
-                                    'area_interesse_documento.id AS aid_id', 'area_interesse_documento.documento_id AS aid_documento_id', 'area_interesse_documento.usuario_id AS aid_usuario_id'
+                                    'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                             );
                             
         $clonedQueryExtra2 = clone $query_extra;
         $clonedQueryExtra3 = clone $query_extra;
-        $clonedQueryExtra4 = clone $query_extra;
-
+        $clonedQueryExtra4 = clone $query_extra;        
 
         $documentos_NAOFinalizados = array(); 
         $documentosFinalizados = array(); 
@@ -1338,7 +1371,7 @@ class DocumentacaoController extends Controller
                                                                             ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
                                                                             ->get();
                                                                         
-            if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) {
+            if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) {
                 $documentos_NAOFinalizados_Confidenciais = $clonedBaseQuery3->where('dados_documento.finalizado', '=', false)
                                                                             ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
                                                                             ->get();                                                        
@@ -1359,15 +1392,37 @@ class DocumentacaoController extends Controller
                                             ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
                                             ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
                                             ->get();
-
-            $docs_etapa3 = $clonedQueryExtra2->where('dados_documento.finalizado', '=', false)
-                                                ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
-                                                ->get();                           
             
+            // Documentos na etapa 3 PRECISAM, OBRIGATORIAMENTE, possuir uma Área de Interesse para si (VER SLACK)
+            $docs_etapa3 = $clonedQueryExtra2
+                                ->where('dados_documento.finalizado', '=', false)
+                                ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
+                                ->get();
+
+            $aux_etapa3 = clone $docs_etapa3;
+            foreach ($aux_etapa3 as $key => $value) {
+                $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
+
+                if( !in_array(Auth::user()->id, $usuariosDaAreaDeInteresseDoDocumento) ) $docs_etapa3->forget($key);
+            }
+
+
             $docs_etapa4 = $clonedBaseQuery5->where('dados_documento.finalizado', '=', false)
                                             ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
-                                            ->where('dados_documento.aprovador_id', '=', Auth::user()->id)
                                             ->get();
+            
+            $aux_etapa4 = clone $docs_etapa4;
+            foreach ($aux_etapa4 as $key => $value) {              
+                $usuariosAprovadores_etapa4 = User::select('users.id', 'users.name')
+                                                    ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                                    ->where('aprovador_setor.setor_id', '=', $value->setor_id)
+                                                    ->get()
+                                                    ->pluck('name', 'id')
+                                                    ->toArray();
+                
+                if( !in_array(Auth::user()->id, array_keys($usuariosAprovadores_etapa4)) ) $docs_etapa4->forget($key);
+            }
+
 
 
             $docs_etapas_5_6 = $clonedBaseQuery6->where('dados_documento.finalizado', '=', false)
@@ -1408,43 +1463,77 @@ class DocumentacaoController extends Controller
                     $documentos_NAOFinalizados[] = $docs_etapa7[$i];  
         }
 
-
         
         // B) Documentos finalizados
         $docsFinalizados_livres = $clonedBaseQuery8->where('dados_documento.finalizado', '=', true)
                                                     ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
                                                     ->get();
 
-        
+        // Sorry about that, @zyadkhalil
         $docsFinalizados_restritos = array();
         if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
             $docsFinalizados_restritos = $clonedBaseQuery9->where('dados_documento.finalizado', '=', true)
                                                             ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
                                                             ->get();
         } else {
+            $I_U = Auth::user()->id;
+            $SI_U = Auth::user()->setor_id;
             $docsFinalizados_restritos = $clonedQueryExtra3->where('dados_documento.finalizado', '=', true)
                                                             ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                            ->where(function ($query) {
-                                                                $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                                    ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                                    ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id)
-                                                                    ->orWhere('dados_documento.setor_id', '=', Auth::user()->setor_id);
-                                                            })->get();
+                                                            ->get();
+
+            $aux_docsFinalizados_restritos = clone $docsFinalizados_restritos;
+            foreach ($aux_docsFinalizados_restritos as $key => $value) {
+                $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
+
+                $usuariosAprovadoresDoSetorDonoDoDocumento = User::select('users.id', 'users.name')
+                                                                    ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                                                    ->where('aprovador_setor.setor_id', '=', $value->setor_id)
+                                                                    ->get()
+                                                                    ->pluck('name', 'id')
+                                                                    ->toArray();
+                
+                // lista para todos os envolvidos na criação do doc (elaborador, qualidade, área de interesse e grupo de aprovadores) e para todos os membros do setor dono do documento
+                if( $value->elaborador_id == $I_U  ||  $SI_U == Constants::$ID_SETOR_QUALIDADE  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento))  ||  $SI_U == $value->setor_id ) {
+                    continue;
+                } else {
+                    $docsFinalizados_restritos->forget($key);
+                }
+            }
+
         }
 
         $docsFinalizados_confidenciais = array();
-        if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) {
+        if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) {
             $docsFinalizados_confidenciais = $clonedBaseQuery10->where('dados_documento.finalizado', '=', true)
                                                                 ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
                                                                 ->get();
         } else {
+            $I_U = Auth::user()->id;
+            $SI_U = Auth::user()->setor_id;
             $docsFinalizados_confidenciais = $clonedQueryExtra4->where('dados_documento.finalizado', '=', true)
-                                                                ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                ->where(function ($query) {
-                                                                    $query->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                                        ->orWhere('area_interesse_documento.usuario_id', '=', Auth::user()->id)
-                                                                        ->orWhere('dados_documento.aprovador_id', '=', Auth::user()->id);
-                                                                })->get();
+                                                            ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
+                                                            ->get();
+
+            $aux_docsFinalizados_confidenciais = clone $docsFinalizados_confidenciais;
+            foreach ($aux_docsFinalizados_confidenciais as $key => $value) {
+                $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
+
+                $usuariosAprovadoresDoSetorDonoDoDocumento = User::select('users.id', 'users.name')
+                                                                    ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                                                    ->where('aprovador_setor.setor_id', '=', $value->setor_id)
+                                                                    ->get()
+                                                                    ->pluck('name', 'id')
+                                                                    ->toArray();
+                
+                // Lista para o elaborador, para o usuário ADMIN da Qualidade, para todos os membros da área de interesse e para o grupo de aprovadores
+                if( $value->elaborador_id == $I_U  ||  $I_U == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento)) ) {
+                    continue;
+                } else {
+                    $docsFinalizados_confidenciais->forget($key);
+                }
+            }
+
         }
         
         if( count($docsFinalizados_livres) > 0 ) 

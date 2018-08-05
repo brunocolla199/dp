@@ -17,14 +17,15 @@ class Constants {
     public static $ID_TIPO_AGRUPAMENTO_GRUPO_TREINAMENTO    = 1;
     
     public static $ID_TIPO_AGRUPAMENTO_GRUPO_DIVULGACAO     = 2;
-
+    
+    public static $ID_TIPO_AGRUPAMENTO_APROVADORES_POR_SETOR= 3;
 
     // Tipos de Setores
     public static $ID_TIPO_SETOR_SETOR_NORMAL   = 1;
     
-    public static $ID_TIPO_SETOR_DIRETORIA      = 2;
+    // public static $ID_TIPO_SETOR_DIRETORIA      = 2;
     
-    public static $ID_TIPO_SETOR_GERENCIA       = 3;
+    // public static $ID_TIPO_SETOR_GERENCIA       = 3;
 
 
     // Tipos de Documentos

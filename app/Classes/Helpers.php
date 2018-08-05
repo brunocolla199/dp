@@ -9,6 +9,8 @@ use App\DadosDocumento;
 use App\AreaInteresseDocumento;
 use App\HistoricoDocumento;
 use App\HistoricoFormulario;
+use App\User;
+use App\Configuracao;
 use App\Classes\Constants;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -110,8 +112,9 @@ class Helpers {
                 break;
 
             case 2: // Qualidade
+                $idUsuarioAdminSetorQualidade = Configuracao::where('id', '=', 2)->get();
                 if($dados_doc[0]->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL) {
-                    if(Auth::user()->id == Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE) return true;
+                    if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) return true;
                 } else {
                     return true;
                 }
@@ -124,8 +127,15 @@ class Helpers {
                 }
                 break;
 
-            case 4: // Aprovador
-                if(Auth::user()->id == $dados_doc[0]->aprovador_id) return true;
+            case 4: // Aprovadores            
+                $usuariosAprovadoresDocumentoAtual = User::select('users.id', 'users.name')
+                                                            ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                                            ->where('aprovador_setor.setor_id', '=', $dados_doc[0]->setor_id)
+                                                            ->get()
+                                                            ->pluck('name', 'id')
+                                                            ->toArray();
+                
+                if( in_array(Auth::user()->id, array_keys($usuariosAprovadoresDocumentoAtual)) ) return true;
                 break;
             
             default: // (7) Capital Humano

@@ -44,6 +44,9 @@
     
     <!-- Select2 CSS -->
     <link rel="stylesheet" href="{{ asset('plugins/select2/dist/css/select2.min.css') }}">
+    
+    <!-- Prism -->
+    <link rel="stylesheet" href="{{ asset('plugins/prism/prism.css') }}">
 
     <!-- Styles | Este é o estilo padrão/principal criado pelo próprio Laravel -->
     <!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> -->
@@ -163,7 +166,7 @@
 
 
 
-        @if (!Auth::guest())
+        @if (!Auth::guest() && !Request::is('sobre') )
             <!-- ============================================================== -->
             <!-- Left Sidebar - style you can find in sidebar.scss  -->
             <!-- ============================================================== -->
@@ -198,10 +201,12 @@
                             <li class="{{ (\Request::is('formularios/*')) ? 'active' : '' }}">
                                 <a class="waves-effect waves-dark {{ (\Request::is('formularios/*')) ? 'active' : '' }}" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-document"></i><span class="hide-menu">Formulários </span></a>    
                             </li>
-                            <li class="{{ (\Request::is('configuracoes/*')) ? 'active' : '' }}">
-                                <a class="waves-effect waves-dark {{ (\Request::is('configuracoes/*')) ? 'active' : '' }}" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
-                            </li>
-                            <li class="{{ (\Request::is('sobre/*')) ? 'active' : '' }}">
+                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                <li class="{{ (\Request::is('configuracoes/*')) ? 'active' : '' }}">
+                                    <a class="waves-effect waves-dark {{ (\Request::is('configuracoes/*')) ? 'active' : '' }}" href="{{ url('/configuracoes') }}" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configurações </span></a>    
+                                </li>
+                            @endif
+                            <li class="{{ (Request::is('sobre/*')) ? 'active' : '' }}">
                                 <a class="waves-effect waves-dark {{ (\Request::is('sobre/*')) ? 'active' : '' }}" href="{{ url('/sobre') }}" aria-expanded="false"><i class="mdi mdi-help"></i><span class="hide-menu">Sobre </span></a>    
                             </li>
                         </ul>
@@ -223,7 +228,74 @@
             <!-- ============================================================== -->
             <!-- End Left Sidebar - style you can find in sidebar.scss  -->
             <!-- ============================================================== -->
+            
+        @elseif(!Auth::guest() && Request::is('sobre'))
+            <!-- ============================================================== -->
+            <!-- Left Sidebar - style you can find in sidebar.scss  -->
+            <!-- ============================================================== -->
+            <aside class="left-sidebar">
+                <!-- Sidebar scroll-->
+                <div class="scroll-sidebar">
+                    <!-- Sidebar navigation-->
+                    <nav class="sidebar-nav">
+                        <ul id="sidebarnav">
+                            <li class="nav-small-cap">DOCUMENTAÇÃO</li>
+                            <li><a href="#introducao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Introdução</span></a></li>
+                            <li><a href="#apresentacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Apresentação</span></a></li>
+                            <li><a href="#geral" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Geral</span></a></li>
+                            <li><a href="#acesso-ao-sistema" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Acesso ao sistema</span></a></li>
+                            <li><a href="#navegacao-no-sistema" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Navegação no sistema</span></a></li>
+                            <li><a href="#configuracoes" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Configurações </span></a></li>
+                            <li><a href="#setores-da-empresa" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Setores da empresa</span></a></li>
+                            <li><a href="#grupos-de-treinamento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Grupos de treinamento</span></a></li>
+                            <li><a href="#grupos-de-divulgacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Grupos de divulgação</span></a></li>
+                            <li><a href="#diretoria-gerencia" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Diretoria / Gerência</span></a></li>
+                            <li><a href="#padroes-de-codigos" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Padrões de Códigos</span></a></li>
+                            <li><a href="#documentos" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Documentos</span></a></li>
+                            <li><a href="#qualidade" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
+                            <li><a href="#elaboracao-de-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração de documento</span></a></li>
+                            <li><a href="#area-de-interesse" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Área de Interesse</span></a></li>
+                            <li><a href="#aprovador" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Aprovador</span></a></li>
+                            <li><a href="#upload-lista-de-presenca" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Upload Lista de Presença</span></a></li>
+                            <li><a href="#capital-humano" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Capital Humano</span></a></li>
+                            <li><a href="#divulgacao-do-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação do documento</span></a></li>
+                            <li><a href="#nivel-de-acesso-ao-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Nível de acesso ao documento</span></a></li>
+                            <li><a href="#edicao-de-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Edição de documento</span></a></li>
+                            <li><a href="#importar-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar documento</span></a></li>
+                            <li><a href="#criar-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Criar documento</span></a></li>
+                            <li><a href="#visualizacao-de-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização de documento</span></a></li>
+                            <li><a href="#status-do-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Status do Documento</span></a></li>
+                            <li><a href="#formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Formulários</span></a></li>
+                            <li><a href="#elaboracao-de-formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração de formulários</span></a></li>
+                            <li><a href="#upload-de-formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Upload de formulários</span></a></li>
+                            <li><a href="#qualidade" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
+                            <li><a href="#visualizacao-de-formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização de formulários</span></a></li>
+                            <li><a href="#status-do-formulario" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Status do formulário</span></a></li>
+                            <li><a href="#divulgacao-do-formulario" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação do formulário</span></a></li>
+                        </ul>
+                    </nav>
+                    <!-- End Sidebar navigation -->
+                </div>
+                <!-- End Sidebar scroll-->
+               <!-- Bottom points-->
+               <div class="sidebar-footer">
+                    <!-- item-->
+                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Speed Software"><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Speed Softwares - Logo"></a>
+                    <!-- item-->
+                    <a href="{{ url('/') }}" class="link" data-toggle="tooltip" title="Dashboard"><i class="mdi mdi-home"></i></a>
+                    <!-- item-->
+                    <a href="{{ url('/logout') }}" class="link" data-toggle="tooltip" title="Sair"><i class="mdi mdi-power"></i></a>
+                </div>
+                <!-- End Bottom points-->
+            </aside>
+            <!-- ============================================================== -->
+            <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+            <!-- ============================================================== -->
+
         @endif
+
+
+        
 
 
 
@@ -240,7 +312,7 @@
         <!-- .right-sidebar -->
         <div class="right-sidebar">
             <div class="slimscrollright">
-                <div class="rpanel-title" style="font-size: 120%"> NOTIFICAÇÕES <span><i class="ti-close right-side-toggle"></i></span> </div>
+                <div class="rpanel-title" style="font-size: 120%"> NOTIFICAÇÕES {{ \Request::is('sobre/*') == true }} <span><i class="ti-close right-side-toggle"></i></span> </div>
                 <div class="r-panel-body">
                     <div class="row mb-4">
 
@@ -528,12 +600,12 @@
         jQuery(document).ready(function() {
             /*
             * 
-            * MultiSelect de DIRETORIA / GERÊNCIA
+            * MultiSelect de SETOR
             * 
             */
             $('#optgroup').multiSelect({
                 selectableOptgroup: true,
-
+                
                 afterDeselect: function(values){
                     window.sessionStorage.setItem("id_usuario_atual_desvinculacao", values[0]);
 
@@ -557,14 +629,12 @@
                         'keyboard': false
                     });
                 }
-
             });
 
             // 'Click' em "Alterar" no modal para definir um novo setor para o usuário
             $("#changeSectorUser").click(function() {
                 var obj = {'user': window.sessionStorage.getItem('id_usuario_atual_desvinculacao'), 'new_sector': $("#novo_setor_do_usuario").val()};
 
-                console.log(obj);
                 ajaxMethod('POST', " {{ URL::route('ajax.usuarios.trocarSetor') }} ", obj).then(function(result) {
                     window.sessionStorage.clear();
                     location.reload();
@@ -572,11 +642,31 @@
                     console.log(err);
                 });
             });
-        
+
             // Fechou modal sem selecionar um novo setor
             $('.cancel-change-sector-user').click(function (e) {
                 window.sessionStorage.clear();
                 location.reload();
+            });
+
+
+            /*
+            * 
+            * MultiSelect de APROVADORES [DIRETORIA / GERÊNCIA old]
+            * 
+            */
+            $('#optgroup-aprovadores').multiSelect({ 
+                selectableOptgroup: true,
+
+                afterDeselect: function(values){
+                    var id = $("#optgroup-aprovadores").data('setor');
+                    var obj = {'id_setor': id, 'id_user': values[0], 'tipo_grupo': 'aprovadores'};
+
+                    ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
+                        console.log(result);
+                    }, function(err) {
+                    });
+                }
             });
 
 
@@ -600,7 +690,6 @@
             });
 
 
-
             /*
             * 
             * MultiSelect de GRUPOS DE DIVULGAÇÃO
@@ -620,7 +709,6 @@
             });
 
 
-
             /*
             * 
             * MultiSelect de NOVA ÁREA DE INTERESSE
@@ -635,6 +723,62 @@
     <script src="{{ asset('plugins/select2/dist/js/select2.full.min.js') }}"></script>
     <script>
         $(".select2").select2();
+    </script>
+
+    <!-- Prism -->
+    <script src="{{ asset('plugins/prism/prism.js') }}"></script>
+    <script>
+    // This is for the sticky sidebar    
+    $("#sidebarnav").stick_in_parent({
+        offset_top: 100
+    });
+    $('#sidebarnav a').click(function() {
+        $('html, body').animate({
+            scrollTop: $($(this).attr('href')).offset().top - 100
+        }, 500);
+        return false;
+    });
+    // This is auto select left sidebar
+    // Cache selectors
+    // Cache selectors
+    var lastId,
+        topMenu = $("#sidebarnav"),
+        topMenuHeight = topMenu.outerHeight(),
+        // All list items
+        menuItems = topMenu.find("a"),
+        // Anchors corresponding to menu items
+        scrollItems = menuItems.map(function() {
+            var item = $($(this).attr("href"));
+            if (item.length) {
+                return item;
+            }
+        });
+
+    // Bind click handler to menu items
+
+
+    // Bind to scroll
+    $(window).scroll(function() {
+        // Get container scroll position
+        var fromTop = $(this).scrollTop() + topMenuHeight - 250;
+
+        // Get id of current scroll item
+        var cur = scrollItems.map(function() {
+            if ($(this).offset().top < fromTop)
+                return this;
+        });
+        // Get the id of the current element
+        cur = cur[cur.length - 1];
+        var id = cur && cur.length ? cur[0].id : "";
+
+        if (lastId !== id) {
+            lastId = id;
+            // Set/remove active class
+            menuItems
+                .removeClass("active")
+                .filter("[href='#" + id + "']").addClass("active");
+        }
+    });
     </script>
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->

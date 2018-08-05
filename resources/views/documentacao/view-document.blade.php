@@ -123,12 +123,11 @@
                                 </div>
                             @endif
 
+                            <!-- Campos do documento e o editor -->
                             {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
                                 {{ csrf_field() }}
 
                                 {!! Form::hidden('document_id', $document_id) !!}
-
-                                
                                 <div class="col-md-12">
                                     <hr>
                                     <div class="row">
@@ -188,7 +187,9 @@
 
                             {!! Form::close() !!}
 
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id)
+
+
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
 
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
@@ -224,7 +225,10 @@
                                 </div>
                             </div>
 
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id )
+
+
+
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                         
                             {{ Form::open(['route' => 'documentacao.resend-list', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
                                 <div class="row">

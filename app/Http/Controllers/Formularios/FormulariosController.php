@@ -256,23 +256,7 @@ class FormulariosController extends Controller
                 
                 break;
 
-            case 3: // Área de Interesse
-                # code...
-                break;
-
-            case 4: // Aprovador
-                # code...
-                break;
-
-            case 5: // Upload da Lista de Presença
-                # code...
-                break;
-
-            case 6: // Correção da Lista de Presença
-                # code...
-                break;
-            
-            default: // (7) Capital Humano
+            default: 
                 # code...
                 break;
         }
@@ -315,24 +299,8 @@ class FormulariosController extends Controller
                 \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE, $idForm);
                 \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO_REVISAO, $idForm);
                 break;
-
-            case 3: // Área de Interesse
-                # code...
-                break;
-
-            case 4: // Aprovador
-                # code...
-                break;
-
-            case 5: // Upload da Lista de Presença
-                # code...
-                break;
-
-            case 6: // Correção da Lista de Presença
-                # code...
-                break;
             
-            default: // (7) Capital Humano
+            default: 
                 # code...
                 break;
         }

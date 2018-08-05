@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateConfiguracaoTable extends Migration
+class CreateAprovadorSetorTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateConfiguracaoTable extends Migration
      */
     public function up()
     {
-        Schema::create('configuracao', function (Blueprint $table) {
+        Schema::create('aprovador_setor', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('numero_padrao_codigo', 5)->nullable();
-            $table->integer('admin_setor_qualidade')->nullable();
+            $table->integer('usuario_id')->unsigned();
+            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->integer('setor_id')->unsigned();
+            $table->foreign('setor_id')->references('id')->on('setor');
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ class CreateConfiguracaoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('configuracao');
+        Schema::dropIfExists('aprovador_setor');
     }
 }
