@@ -15,8 +15,8 @@
             <!-- ============================================================== -->
             <div class="col-md-7 col-4 align-self-center">
                 <div class="">
-                    <a href="{{ URL::route('documentacao') }}" class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-xl pull-right m-l-10" data-toggle="tooltip" title="Retornar aos Documentos">
-                        <i class="ti-home text-white"></i>
+                    <a href="{{ URL::route('documentacao') }}" class="waves-effect waves-light btn-success btn btn-circle btn-xl pull-right m-l-10" data-toggle="tooltip" title="Retornar aos Documentos" style="position: fixed; bottom: 20px; right: 20px; padding: 25px;">
+                        <i class="ti-home text-white" style="position: absolute; top: 22px; left: 22px;"></i>
                     </a>
                 </div>
             </div>

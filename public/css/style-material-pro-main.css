@@ -1887,8 +1887,8 @@ File: scss
   animation-iteration-count: infinite;
   animation-timing-function: linear; */
   position: absolute;
-  top: 18px;
-  left: 18px; }
+  top: 22px;
+  left: 22px; }
 
 .right-sidebar {
   position: fixed;
