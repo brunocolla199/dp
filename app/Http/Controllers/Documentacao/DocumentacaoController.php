@@ -42,7 +42,7 @@ class DocumentacaoController extends Controller
         
         // Aprovadores
         $aprovadores = array();
-        $aprovadoresSetorAtual = array();
+        $aprovadoresSetorAtual = null;
         $setoresQuePossuemAprovadores = DB::table('aprovador_setor')
                                                 ->select('setor_id')
                                                 ->groupBy('setor_id')
@@ -50,14 +50,22 @@ class DocumentacaoController extends Controller
         
         foreach ($setoresQuePossuemAprovadores as $key => $value) {
             $setor = Setor::where('id', '=', $value->setor_id)->get();
-            $users = AprovadorSetor::where('setor_id', '=', $value->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
+            
+            $users = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                            ->where('aprovador_setor.setor_id', '=', $value->setor_id)
+                            ->get()->pluck('name', 'usuario_id')->toArray();
+
             $aprovadores[$setor[0]->nome] = $users;
         }
-
-        $aprovadoresSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                                        ->where('aprovador_setor.setor_id', '=', array_keys($setores)[0])
+        
+        $nomeDoPrimeiroSetorQuePossuiAprovador = (count($aprovadores)>0) ? array_keys($aprovadores)[0] : null;
+        if($nomeDoPrimeiroSetorQuePossuiAprovador != null) {
+            $idPrimeiroAprovador = array_keys($aprovadores[$nomeDoPrimeiroSetorQuePossuiAprovador])[0];
+            $aprovadorSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                        ->where('aprovador_setor.usuario_id', '=', $idPrimeiroAprovador)
                                         ->get()
                                         ->pluck('name', 'id');
+        }
     
         // Área de Interesse
         $setoresUsuarios = [];
@@ -77,7 +85,7 @@ class DocumentacaoController extends Controller
         $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
         return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
-                                            'aprovadores' => $aprovadores, 'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
+                                            'aprovadores' => $aprovadores, 'aprovadorSetorAtual' => $aprovadorSetorAtual,
                                             'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
@@ -140,7 +148,8 @@ class DocumentacaoController extends Controller
     }
 
 
-    public function validateData(DadosNovoDocumentoRequest $request) {        
+    public function validateData(DadosNovoDocumentoRequest $request) {     
+        dd($request->all());
         $setorDono               = $request->setor_dono_doc;
         $text_setorDono          = Setor::where('id', '=', $setorDono)->get();
 

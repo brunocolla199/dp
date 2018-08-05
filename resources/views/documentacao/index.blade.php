@@ -146,7 +146,7 @@
                                                         </div>
                                                         <div class="col-md-12">
 
-                                                            {!! Form::select('aprovador', $aprovadoresSetorAtual, '', ['class' => 'form-control  custom-select', 'id' => 'aprovadores']) !!}
+                                                            {!! Form::select('aprovador', $aprovadores, '', ['class' => 'form-control  custom-select', 'id' => 'aprovadores']) !!}
                                                         </div>
                                                     </div>
                                                 </div>    
