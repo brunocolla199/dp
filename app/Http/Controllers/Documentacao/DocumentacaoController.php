@@ -1418,6 +1418,8 @@ class DocumentacaoController extends Controller
             $docs_etapa4 = $clonedBaseQuery5->where('dados_documento.finalizado', '=', false)
                                             ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
                                             ->get();
+
+                                            dd($docs_etapa4);
             
             $aux_etapa4 = clone $docs_etapa4;
             foreach ($aux_etapa4 as $key => $value) {              
