@@ -1411,7 +1411,7 @@ class DocumentacaoController extends Controller
             $aux_etapa3 = clone $docs_etapa3;
             foreach ($aux_etapa3 as $key => $value) {
                 $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
-
+                
                 if( !in_array(Auth::user()->id, $usuariosDaAreaDeInteresseDoDocumento) ) $docs_etapa3->forget($key);
             }
 
@@ -1447,12 +1447,12 @@ class DocumentacaoController extends Controller
                     $documentos_NAOFinalizados[] = $docs_etapa1[$i]; 
 
 
-            if( is_array($docs_etapa3) && count($docs_etapa3) > 0 ) 
+            if( $docs_etapa3->count() > 0 && count($docs_etapa3) > 0 ) 
                 for ($i=0; $i < count($docs_etapa3); $i++) 
                     $documentos_NAOFinalizados[] = $docs_etapa3[$i]; 
 
 
-            if( is_array($docs_etapa4) && count($docs_etapa4) > 0 ) 
+            if( $docs_etapa4->count() > 0 && count($docs_etapa4) > 0 ) 
                 for ($i=0; $i < count($docs_etapa4); $i++) 
                     $documentos_NAOFinalizados[] = $docs_etapa4[$i]; 
 
