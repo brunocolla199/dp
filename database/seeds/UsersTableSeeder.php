@@ -23,7 +23,6 @@ class UsersTableSeeder extends Seeder
         $qualidade_speed->setor_id = 1;
         $qualidade_speed->password = bcrypt('Sp33dqu@18');
         $qualidade_speed->save();
-        */
 
         $qualidade2           = new User();
         $qualidade2->name     = "Celise Zilli";
@@ -56,6 +55,7 @@ class UsersTableSeeder extends Seeder
         $qualidade4->setor_id = 1;
         $qualidade4->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $qualidade4->save();
+        */
 
 
         // Diretores
@@ -103,6 +103,7 @@ class UsersTableSeeder extends Seeder
 
         // SETORES NORMAIS ABAIXO/
         
+        /*
         // Administrativo
         $administrativo1           = new User();
         $administrativo1->name     = "Administrativo I";
@@ -164,6 +165,7 @@ class UsersTableSeeder extends Seeder
         $pessoas_organizacao1->setor_id = Constants::$ID_SETOR_CAPITAL_HUMANO;
         $pessoas_organizacao1->password = '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm'; // secret
         $pessoas_organizacao1->save();
+        */
         
                 
     }
