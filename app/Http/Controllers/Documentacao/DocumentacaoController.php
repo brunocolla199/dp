@@ -58,6 +58,7 @@ class DocumentacaoController extends Controller
             $aprovadores[$setor[0]->nome] = $users;
         }
         
+        $aprovadorSetorAtual = null;
         $nomeDoPrimeiroSetorQuePossuiAprovador = (count($aprovadores)>0) ? array_keys($aprovadores)[0] : null;
         if($nomeDoPrimeiroSetorQuePossuiAprovador != null) {
             $idPrimeiroAprovador = array_keys($aprovadores[$nomeDoPrimeiroSetorQuePossuiAprovador])[0];
@@ -1418,8 +1419,6 @@ class DocumentacaoController extends Controller
             $docs_etapa4 = $clonedBaseQuery5->where('dados_documento.finalizado', '=', false)
                                             ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
                                             ->get();
-
-                                            dd($docs_etapa4);
             
             $aux_etapa4 = clone $docs_etapa4;
             foreach ($aux_etapa4 as $key => $value) {              
