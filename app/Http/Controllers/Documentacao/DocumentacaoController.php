@@ -1553,6 +1553,7 @@ class DocumentacaoController extends Controller
             for ($i=0; $i < count($docsFinalizados_restritos); $i++) 
                 $documentosFinalizados[] = $docsFinalizados_restritos[$i];  
 
+        dd($docsFinalizados_confidenciais);
         if( $docsFinalizados_confidenciais->count() > 0 && count($docsFinalizados_confidenciais) > 0 ) 
             for ($i=0; $i < count($docsFinalizados_confidenciais); $i++) 
                 $documentosFinalizados[] = $docsFinalizados_confidenciais[$i];  
