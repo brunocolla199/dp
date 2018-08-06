@@ -80,8 +80,10 @@ class Helpers {
     // Histórico
     function gravaHistoricoDocumento($texto, $idDoc) {
         $hDoc = new HistoricoDocumento();
-        $hDoc->descricao    = $texto;
-        $hDoc->documento_id = $idDoc;
+        $hDoc->descricao                = $texto;
+        $hDoc->id_usuario_responsavel   = Auth::user()->id;
+        $hDoc->nome_usuario_responsavel = Auth::user()->name;
+        $hDoc->documento_id             = $idDoc;
         $hDoc->save();
     }
 
@@ -94,8 +96,10 @@ class Helpers {
 
     function gravaHistoricoFormulario($texto, $idForm) {
         $hForm = new HistoricoFormulario();
-        $hForm->descricao    = $texto;
-        $hForm->formulario_id = $idForm;
+        $hForm->descricao               = $texto;
+        $hForm->id_usuario_responsavel  = Auth::user()->id;
+        $hForm->nome_usuario_responsavel= Auth::user()->name;
+        $hForm->formulario_id           = $idForm;
         $hForm->save();
     }
 

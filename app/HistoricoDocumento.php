@@ -10,7 +10,7 @@ class HistoricoDocumento extends Model
     protected $table = "historico_documento";
     
     protected $fillable = [
-        'id', 'descricao', 'documento_id'
+        'id', 'descricao', 'id_usuario_responsavel', 'nome_usuario_responsavel', 'documento_id'
     ];
 
 }

@@ -42,7 +42,7 @@
                                             <div class="col-md-3"></div>
                                             <div class="col-md-6">
                                                 <div class="row" style="font-size:14px">
-                                                    <div class="form-group">
+                                                    <div class="form-group col-md-12">
                                                         <?php \Carbon\Carbon::setLocale('pt_BR') ?>
                                                         
                                                         <ul class="timeline text-center">
@@ -52,7 +52,8 @@
                                                                         <i class="mdi mdi-file-document"></i>
                                                                     </div>
                                                                     <div class="timeline-panel">
-                                                                        <div class="timeline-heading"
+                                                                        <div class="timeline-heading">
+                                                                            <h4 class="timeline-title">{{ ($hist->nome_usuario_responsavel != null) ? $hist->nome_usuario_responsavel : 'Usuário Inválido' }}</h4>
                                                                             <p><small class="text-muted"><i class="fa fa-clock-o"></i> {{ $hist->created_at->diffForHumans() }}</small> </p>
                                                                         </div>
                                                                         <div class="timeline-body">
