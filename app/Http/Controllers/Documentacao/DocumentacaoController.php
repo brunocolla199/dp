@@ -1446,15 +1446,22 @@ class DocumentacaoController extends Controller
                 for ($i=0; $i < count($docs_etapa1); $i++) 
                     $documentos_NAOFinalizados[] = $docs_etapa1[$i]; 
 
-
             if( $docs_etapa3->count() > 0 && count($docs_etapa3) > 0 ) 
-                for ($i=0; $i < count($docs_etapa3); $i++) 
-                    $documentos_NAOFinalizados[] = $docs_etapa3[$i]; 
+                foreach($docs_etapa3 as $key => $value)
+                    $documentos_NAOFinalizados[] = $value;  
+
+            // if( $docs_etapa3->count() > 0 && count($docs_etapa3) > 0 ) 
+            //     for ($i=0; $i < count($docs_etapa3); $i++) 
+            //         $documentos_NAOFinalizados[] = $docs_etapa3[$i];    
 
 
             if( $docs_etapa4->count() > 0 && count($docs_etapa4) > 0 ) 
-                for ($i=0; $i < count($docs_etapa4); $i++) 
-                    $documentos_NAOFinalizados[] = $docs_etapa4[$i]; 
+                foreach($docs_etapa4 as $key => $value)
+                    $documentos_NAOFinalizados[] = $value; 
+
+            // if( $docs_etapa4->count() > 0 && count($docs_etapa4) > 0 ) 
+            //     for ($i=0; $i < count($docs_etapa4); $i++) 
+            //         $documentos_NAOFinalizados[] = $docs_etapa4[$i]; 
 
 
             if( count($docs_etapas_5_6) > 0 ) 
@@ -1550,17 +1557,21 @@ class DocumentacaoController extends Controller
                 $documentosFinalizados[] = $docsFinalizados_livres[$i]; 
 
         if( $docsFinalizados_restritos->count() > 0 && count($docsFinalizados_restritos) > 0 ) 
-            for ($i=0; $i < count($docsFinalizados_restritos); $i++) 
-                $documentosFinalizados[] = $docsFinalizados_restritos[$i];  
+            foreach($docsFinalizados_restritos as $key => $value)
+                $documentosFinalizados[] = $value;  
+
+        // if( $docsFinalizados_restritos->count() > 0 && count($docsFinalizados_restritos) > 0 ) 
+        //     for ($i=0; $i < count($docsFinalizados_restritos); $i++) 
+        //         $documentosFinalizados[] = $docsFinalizados_restritos[$i];  
 
         if( $docsFinalizados_confidenciais->count() > 0 && count($docsFinalizados_confidenciais) > 0 )     
             foreach($docsFinalizados_confidenciais as $key => $value)
-                dd($value);
+                $documentosFinalizados[] = $value; 
 
-                
-        if( $docsFinalizados_confidenciais->count() > 0 && count($docsFinalizados_confidenciais) > 0 ) 
-            for ($i=0; $i < count($docsFinalizados_confidenciais); $i++) 
-                $documentosFinalizados[] = $docsFinalizados_confidenciais[$i];  
+        // if( $docsFinalizados_confidenciais->count() > 0 && count($docsFinalizados_confidenciais) > 0 ) 
+        //     for ($i=0; $i < count($docsFinalizados_confidenciais); $i++) 
+        //         $documentosFinalizados[] = $docsFinalizados_confidenciais[$i];  
+
 
         // Criando array final para a listagem de documentos
         $docs = array();
