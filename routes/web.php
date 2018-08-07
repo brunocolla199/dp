@@ -34,6 +34,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/setores/retornaSetoresExcetoUm',  ['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
 	Route::post('ajax/upload',                          ['as' => 'ajax.upload.image',	                		'uses' => 'AjaxController@uploadEditorImage']);
 	Route::post('ajax/documentos/retornaFormularios',   ['as' => 'ajax.documentos.formularios',	                'uses' => 'AjaxController@getDocumentosFormularios']);
+	Route::post('ajax/documentos/salvaObservacao',	    ['as' => 'ajax.documentos.salvaObservacao',				'uses' => 'AjaxController@salvaObservacao']);
+	Route::post('ajax/documentos/getObservacoes',	    ['as' => 'ajax.documentos.getObservacoes',				'uses' => 'AjaxController@getObservacoes']);
 
 
     /*
@@ -65,7 +67,6 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('salva-lista-presenca',		['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
 		Route::post('resend-list',  			['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
 		Route::post('save-link-form',	     	['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
-
 	});
     
 	/*

@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Setor;
 use App\GrupoTreinamentoUsuario;
+use App\DocumentoObservacao;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class AjaxController extends Controller
 {
@@ -75,6 +77,7 @@ class AjaxController extends Controller
     }
 
 
+
     //Uploads (Imagens Ckeditor)
     public function uploadEditorImage(Request $request){
         $files = $request->files->all();
@@ -86,5 +89,26 @@ class AjaxController extends Controller
             "uploaded"=> true,
             "url"=> Storage::url($path)
         ]);
+    }
+
+
+
+    // Documentos
+    public function salvaObservacao(Request $request) {
+        $obs = new DocumentoObservacao();
+        $obs->observacao                = $request->obs;
+        $obs->nome_usuario_responsavel  = Auth::user()->name;
+        $obs->documento_id              = $request->document_id;
+        $obs->usuario_id                = Auth::user()->id;
+        $obs->save();
+        
+        return response()->json(['response' => $request->all()]);
+    }
+
+
+    public function getObservacoes(Request $request) {
+        $obs = DocumentoObservacao::where('documento_id', '=', $request->document_id)->orderBy('created_at', 'desc')->get()->toArray();
+
+        return response()->json(['response' => $obs]);
     }
 }

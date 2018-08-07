@@ -159,9 +159,7 @@
                                                 <div class="text-center">   
                                                     <br>
                                                     <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
-                                                    <!-- <a href="#" data-toggle="modal" data-target="#preview-form-modal"><br> -->
                                                         Visualizar    
-                                                    <!-- <i class="fa fa-download fa-2x"></i> -->
                                                     </a>
                                                 </div>
                                             </div>
@@ -305,6 +303,16 @@
                         @endif
 
 
+                        <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                        <div class="row mt-4">
+                            <div class="col-md-4">    
+                                <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                            </div>
+                            <div class="col-md-4">    
+                                <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -382,63 +390,76 @@
             </div>
             <!-- /.modal justificativa reprovação da lista de presença -->
 
-
-
-
-        </div>
-    </div>
-
-
- <!-- modal para prévisualizar documento -->
- <div id="preview-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg" style="max-width:825px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Pré-Visualização de Documento</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                </div>
-                <div class="modal-body">
-                
-                    @if($tipo_doc == 'IT')
-
-                        <div class="speed-header">
-                            <img src="/doc_templates/IT.png">
-                            <p> </p>
-                            <table style="position:absolute; top:50px; right:35px; width:450px; text-align:right;" >
-                                <tbody>
-                                    <tr>
-                                        <td colspan="3" align="right" ><span class="text-small" style="color:#ffffff"><strong>INSTRUÇÃO DE TRABALHO</strong></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" align="right" >  <span class="text-small" style="color:#ffffff">{{$nome}}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="text-small" style="color:#ffffff"><strong>CÓDIGO: {{$codigo}} </strong></span></td>
-                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 1</strong></span></td>
-                                        <td><span class="text-small" style="color:#ffffff"><strong>Data: {{ date("d/m/Y", strtotime( $doc_date)) }}</strong></span></td>
-                                    </tr>
-                                </tbody>
-                            </table> 
+            <!-- modal para salvar observação no documento -->
+            <div class="modal fade" id="modal-save-obs" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Salvar Observação</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        
+                        {{ Form::hidden('documento_id', $document_id, ['id' => 'document_id']) }}
+                        <div class="modal-body"> 
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12 control-label font-bold">
+                                        {!! Form::label('obsDocument', 'OBSERVAÇÃO:') !!}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {!! Form::textarea('obsDocument', null, ['class' => 'form-control', 'required' => 'required', 'id' => 'obsDocument']) !!}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        {!! $docData !!}
-
-                    @elseif($tipo_doc == 'DG')
-                    
-                    @elseif($tipo_doc == 'PG')
-
-                    @endif
-            
-            
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Cancelar</button>
+                            <button type="button" id="btn-save-obs" class="btn btn-success waves-effect">Gravar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
-                </div>
+                <!-- /.modal-dialog -->
             </div>
+            <!-- /.modal para salvar observação no documento -->
+
+             <!-- modal para visualizar as observações do documento -->
+             <div class="modal fade" id="modal-view-obs" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Observações do documento: <b>{{ $nome }}</b> </h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        
+                        <div class="modal-body"> 
+                            <div class="row">
+                                
+                                <div class="chat-box justify-content-center text-center" style="width: 100%;">
+
+                                    <!-- Listagem de Observações -->
+                                    <ul class="chat-list container-fluid" id="obs-list" style="width: 100%;">
+                                        
+                                    </ul>
+                                    
+                                </div>  
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal para visualizar as observações do documento -->
+
         </div>
     </div>
-    <!-- /.modal para prévisualizar documento -->
-
 
 @endsection
 
@@ -458,6 +479,59 @@
         $("#form-edit-document").append("<input type='hidden' name='docData' value='"+docData+"' >")
         $("#form-edit-document").submit();
     });
+
+    // Quando clicar para salvar observação, invoca Ajax
+    $("#btn-save-obs").click(function(){
+        var document_id = "{{$document_id}}";
+        var obsDoc = $("#obsDocument").val();
+        
+        if(obsDoc == null || obsDoc == '') {
+            showToast('Erro!', 'Por favor, preencha o campo de observação.', 'warning');
+        } else {
+            var obj = {'document_id': document_id, 'obs': obsDoc};        
+            ajaxMethod('POST', " {{ URL::route('ajax.documentos.salvaObservacao') }} ", obj).then(function(result) {
+                var data = result.response;
+                
+                $('#modal-save-obs').modal('toggle');
+                showToast('Sucesso!', 'A observação foi gravada com sucesso.', 'success');
+            }, function(err) {
+            });
+        }
+    });
+
+    // Toda vez que o modal para gravar observação for fechado, limpa o textarea
+    $('#modal-save-obs').on('hidden.bs.modal', function (e) {
+        $("#obsDocument").val('');
+    })
+
+    // Toda vez que o modal para visualizar observações for aberto, invoca Ajax para listar todas observações
+    $('#modal-view-obs').on('show.bs.modal', function (e) {
+        var document_id = "{{$document_id}}";
+        
+        var obj = {'document_id': document_id};        
+        ajaxMethod('POST', " {{ URL::route('ajax.documentos.getObservacoes') }} ", obj).then(function(result) {
+            $("#obs-list").empty();
+            var count = 0;
+            var data = result.response;
+            
+            data.forEach(function(key) {
+                var li_f = "";
+                var event = new Date(key.created_at);
+                var year = event.getFullYear(), month = event.getMonth()+1, date1 = event.getDate(), hour = event.getHours(), minutes = event.getMinutes();
+
+                var dateF = hour +":"+ minutes +" "+ date1 +"/"+ month +"/" + year;
+                if(count % 2 == 0) {
+                    li_f = '<li><div class="chat-content"><h5>' + key.nome_usuario_responsavel + '</h5><div class="box bg-light-info">' + key.observacao + '</div></div><div class="chat-time">' + dateF + '</div></li>' ;
+                } else {
+                    li_f = '<li class="odd"><div class="chat-content"><h5>' + key.nome_usuario_responsavel + '</h5><div class="box bg-light-inverse">' + key.observacao + '</div><br/></div><div class="chat-time">' + dateF + '</div></li>'; 
+                }
+
+                $("#obs-list").append(li_f);
+                count++;
+            });
+        }, function(err) {
+        });
+    })
 </script>
 
  @if($resp)

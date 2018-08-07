@@ -133,6 +133,11 @@
     background-color: #ffe082;
 }
 
+/* Forçando o conteúdo dos modais a ocupar 100% da div */
+div .slimScrollDiv {
+    width: 100%!important;
+}
+
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
 	border: 1px solid black;
