@@ -131,7 +131,7 @@ function initEditor(content, customCSS, base_path){
         
         for (var l in ol){
             if(typeof ol[l] == 'object' ){
-                console.log(ol[l]);
+                // console.log(ol[l]);
                 for(var o in ol[l]){
                     if(typeof ol[l][o] == 'object' && ol[l][o].hasAttribute('start')){
                         // console.log(ol[l][o]);
