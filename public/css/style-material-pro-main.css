@@ -5290,8 +5290,9 @@ use profile section
     padding: 35px 0;
     border-radius: 100%; }
     .user-profile .profile-img::before {
-      -webkit-animation: 2.5s blow 0s linear infinite;
-      animation: 2.5s blow 0s linear infinite;
+      /* ALTERAÇÕES SPEED - João (Remove animação no ícone de perfil) */
+      /* -webkit-animation: 2.5s blow 0s linear infinite;
+      animation: 2.5s blow 0s linear infinite; */
       position: absolute;
       content: '';
       width: 50px;
