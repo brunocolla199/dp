@@ -4,7 +4,6 @@
 	<div class="page-wrapper">
         <div class="container-fluid">
             
-
             <div class="row page-titles">
                 <div class="col-md-5 col-8 align-self-center">
                     <h3 class="text-themecolor m-b-0 m-t-0">BPMN 2.0</h3>

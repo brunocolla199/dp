@@ -157,10 +157,8 @@
 @endsection
 
 
-
-
-
 @section('footer')
+<script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
 <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
 <script>
         /*
@@ -417,8 +415,6 @@
                 this.qs2.cache();
             }
         });
-
-
 </script>
 
 @endsection

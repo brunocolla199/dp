@@ -591,7 +591,6 @@
     </script>
 
     <!-- MultiSelect -->
-    <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
     <script>
         jQuery(document).ready(function() {
 
