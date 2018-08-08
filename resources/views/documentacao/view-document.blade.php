@@ -472,7 +472,13 @@
 
 <script>
 
-    initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
+    var etapaDocumento = "{{$etapa_doc}}";
+    var etapaMinina = "{{Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM}}";
+    var etapaMaxima = "{{Constants::$ETAPA_WORKFLOW_APROVADOR_NUM}}";
+    
+    if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
+        initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
+    }
 
     $("#btn-save-document").click(function(){
         var docData = CKEDITOR.instances['speed-editor'].getData();
