@@ -30,7 +30,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            
+
                             @if( isset($setorDosAprovadores) )
                                 <h2>Definindo os aprovadores do setor <span class="text-primary"> {{ $text_agrupamento }} </span> </h2>
                                 <div class="col-md-12 alert alert-warning">
@@ -47,6 +47,7 @@
                             
                                 
                             <div class="mt-4">
+
                                 {!! Form::open(['route' => 'configuracoes.link.save', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
                                     
                                 
@@ -55,7 +56,7 @@
                                         {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_SETOR) !!}
                                         {!! Form::hidden('id_agrupamento', $setor->id) !!}
                                        
-                                        <select multiple id="optgroup" name="usersLinked[]" data-setor="{{$setor->id}}">
+                                        <select multiple id="optgroup" class="searchable" name="usersLinked[]" data-setor="{{$setor->id}}">
                                             @foreach($setoresUsuarios as $key => $su)
                                                 @if($key == $checkGrouping )
                                                     <optgroup label="{{$key}}">
@@ -154,3 +155,271 @@
         </div>
     </div>
 @endsection
+
+
+
+
+
+@section('footer')
+<script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
+<script>
+        /*
+        * 
+        * MultiSelect de SETOR
+        * 
+        */
+        $('#optgroup').multiSelect({
+            selectableOptgroup: true,
+            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            afterInit: function(ms){
+                var that = this,
+                    $selectableSearch = that.$selectableUl.prev(),
+                    $selectionSearch = that.$selectionUl.prev(),
+                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                .on('keydown', function(e){
+                if (e.which === 40){
+                    that.$selectableUl.focus();
+                    return false;
+                }
+                });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                .on('keydown', function(e){
+                if (e.which == 40){
+                    that.$selectionUl.focus();
+                    return false;
+                }
+                });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(values){
+                this.qs1.cache();
+                this.qs2.cache();
+                
+                window.sessionStorage.setItem("id_usuario_atual_desvinculacao", values[0]);
+                var id = $("#optgroup").data('setor');
+                var obj = {'id_setor': id};
+                ajaxMethod('POST', " {{ URL::route('ajax.setores.retornaSetoresExcetoUm') }} ", obj).then(function(result) {
+                    $("#novo_setor_do_usuario option").remove();
+                    
+                    Object.keys(result.response).forEach(function(key) {
+                        $('#novo_setor_do_usuario').append($('<option>', { 
+                            value: key,
+                            text : result.response[key]
+                        }));
+                    });
+                }, function(err) {
+                    console.log(err);
+                });
+
+                $("#new-sector-to-user").modal({
+                    backdrop: 'static',
+                    'keyboard': false
+                });
+            }
+        });
+
+
+        /*
+        * 
+        * MultiSelect de APROVADORES [DIRETORIA / GERÊNCIA old]
+        * 
+        */
+        $('#optgroup-aprovadores').multiSelect({ 
+            selectableOptgroup: true,
+            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            afterInit: function(ms){
+                var that = this,
+                    $selectableSearch = that.$selectableUl.prev(),
+                    $selectionSearch = that.$selectionUl.prev(),
+                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                .on('keydown', function(e){
+                if (e.which === 40){
+                    that.$selectableUl.focus();
+                    return false;
+                }
+                });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                .on('keydown', function(e){
+                if (e.which == 40){
+                    that.$selectionUl.focus();
+                    return false;
+                }
+                });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(values){
+                this.qs1.cache();
+                this.qs2.cache();
+                var id = $("#optgroup-aprovadores").data('setor');
+                var obj = {'id_setor': id, 'id_user': values[0], 'tipo_grupo': 'aprovadores'};
+
+                ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
+                    console.log(result);
+                }, function(err) {
+                });
+            }
+        });
+
+
+
+        /*
+        * 
+        * MultiSelect de GRUPOS DE TREINAMENTO
+        *
+        */
+        $('#optgroup-grupoT').multiSelect({
+            selectableOptgroup: true,
+            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            afterInit: function(ms){
+                var that = this,
+                    $selectableSearch = that.$selectableUl.prev(),
+                    $selectionSearch = that.$selectionUl.prev(),
+                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                .on('keydown', function(e){
+                if (e.which === 40){
+                    that.$selectableUl.focus();
+                    return false;
+                }
+                });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                .on('keydown', function(e){
+                if (e.which == 40){
+                    that.$selectionUl.focus();
+                    return false;
+                }
+                });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(values){
+                this.qs1.cache();
+                this.qs2.cache();
+                var id = $("#optgroup-grupoT").data('setor');
+                var obj = {'id_grupo': id, 'id_user': values[0], 'tipo_grupo': 'treinamento'};
+
+                ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
+                }, function(err) {
+                });
+            }
+        });
+
+
+        /*
+        * 
+        * MultiSelect de GRUPOS DE DIVULGAÇÃO
+        *
+        */
+        $('#optgroup-grupoD').multiSelect({
+            selectableOptgroup: true,
+            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            afterInit: function(ms){
+                var that = this,
+                    $selectableSearch = that.$selectableUl.prev(),
+                    $selectionSearch = that.$selectionUl.prev(),
+                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                .on('keydown', function(e){
+                if (e.which === 40){
+                    that.$selectableUl.focus();
+                    return false;
+                }
+                });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                .on('keydown', function(e){
+                if (e.which == 40){
+                    that.$selectionUl.focus();
+                    return false;
+                }
+                });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(values){
+                this.qs1.cache();
+                this.qs2.cache();
+                var id = $("#optgroup-grupoD").data('setor');
+                var obj = {'id_grupo': id, 'id_user': values[0], 'tipo_grupo': 'divulgacao'};
+
+                ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
+                }, function(err) {
+                });
+            }
+        });
+
+
+        /*
+        * 
+        * MultiSelect de NOVA ÁREA DE INTERESSE
+        *
+        */
+        $('#optgroup-newAreaDeInteresse').multiSelect({
+            selectableOptgroup: true,
+            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            afterInit: function(ms){
+                var that = this,
+                    $selectableSearch = that.$selectableUl.prev(),
+                    $selectionSearch = that.$selectionUl.prev(),
+                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                .on('keydown', function(e){
+                if (e.which === 40){
+                    that.$selectableUl.focus();
+                    return false;
+                }
+                });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                .on('keydown', function(e){
+                if (e.which == 40){
+                    that.$selectionUl.focus();
+                    return false;
+                }
+                });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(values){
+                this.qs1.cache();
+                this.qs2.cache();
+            }
+        });
+
+
+</script>
+
+@endsection
+

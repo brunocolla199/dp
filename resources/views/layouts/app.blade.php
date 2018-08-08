@@ -599,38 +599,6 @@
     <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
     <script>
         jQuery(document).ready(function() {
-            /*
-            * 
-            * MultiSelect de SETOR
-            * 
-            */
-            $('#optgroup').multiSelect({
-                selectableOptgroup: true,
-                
-                afterDeselect: function(values){
-                    window.sessionStorage.setItem("id_usuario_atual_desvinculacao", values[0]);
-
-                    var id = $("#optgroup").data('setor');
-                    var obj = {'id_setor': id};
-                    ajaxMethod('POST', " {{ URL::route('ajax.setores.retornaSetoresExcetoUm') }} ", obj).then(function(result) {
-                        $("#novo_setor_do_usuario option").remove();
-                        
-                        Object.keys(result.response).forEach(function(key) {
-                            $('#novo_setor_do_usuario').append($('<option>', { 
-                                value: key,
-                                text : result.response[key]
-                            }));
-                        });
-                    }, function(err) {
-                        console.log(err);
-                    });
-
-                    $("#new-sector-to-user").modal({
-                        backdrop: 'static',
-                        'keyboard': false
-                    });
-                }
-            });
 
             // 'Click' em "Alterar" no modal para definir um novo setor para o usuário
             $("#changeSectorUser").click(function() {
@@ -649,74 +617,6 @@
                 window.sessionStorage.clear();
                 location.reload();
             });
-
-
-            /*
-            * 
-            * MultiSelect de APROVADORES [DIRETORIA / GERÊNCIA old]
-            * 
-            */
-            $('#optgroup-aprovadores').multiSelect({ 
-                selectableOptgroup: true,
-
-                afterDeselect: function(values){
-                    var id = $("#optgroup-aprovadores").data('setor');
-                    var obj = {'id_setor': id, 'id_user': values[0], 'tipo_grupo': 'aprovadores'};
-
-                    ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
-                        console.log(result);
-                    }, function(err) {
-                    });
-                }
-            });
-
-
-
-            /*
-            * 
-            * MultiSelect de GRUPOS DE TREINAMENTO
-            *
-            */
-            $('#optgroup-grupoT').multiSelect({
-                selectableOptgroup: true,
-
-                afterDeselect: function(values){
-                    var id = $("#optgroup-grupoT").data('setor');
-                    var obj = {'id_grupo': id, 'id_user': values[0], 'tipo_grupo': 'treinamento'};
-
-                    ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
-                    }, function(err) {
-                    });
-                }
-            });
-
-
-            /*
-            * 
-            * MultiSelect de GRUPOS DE DIVULGAÇÃO
-            *
-            */
-            $('#optgroup-grupoD').multiSelect({
-                selectableOptgroup: true,
-
-                afterDeselect: function(values){
-                    var id = $("#optgroup-grupoD").data('setor');
-                    var obj = {'id_grupo': id, 'id_user': values[0], 'tipo_grupo': 'divulgacao'};
-
-                    ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
-                    }, function(err) {
-                    });
-                }
-            });
-
-
-            /*
-            * 
-            * MultiSelect de NOVA ÁREA DE INTERESSE
-            *
-            */
-            $('#optgroup-newAreaDeInteresse').multiSelect({selectableOptgroup: true});
-
         });
     </script>
 
