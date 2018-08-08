@@ -54,6 +54,10 @@
 
     <!-- Moments with locales [Tive que deixar aqui para reconhecer o script antes de carregar o conteúdo da página] -->
     <script src="{{ asset('plugins/moment/min/moment-with-locales.min.js') }}"></script>
+
+
+    <!-- JQUERY -->
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 </head>
 
 <body>
@@ -73,8 +77,6 @@
             <a href="#"><i class="fa fa-send" id="icon-overlay"></i></a>
         </div>
     </div>
-
-
 
 
     <!-- ============================================================== -->
@@ -167,6 +169,12 @@
 
 
         @if (!Auth::guest() && !Request::is('sobre') )
+            <script>
+                $('body').removeClass('fix-header');
+                $('body').removeClass('card-no-border');
+                $('body').removeClass('fix-sidebar');
+            </script>
+
             <!-- ============================================================== -->
             <!-- Left Sidebar - style you can find in sidebar.scss  -->
             <!-- ============================================================== -->
@@ -231,6 +239,13 @@
             <!-- ============================================================== -->
             
         @elseif(!Auth::guest() && Request::is('sobre'))
+            <script>
+                console.log("vai adicionar?");
+                $('body').addClass('fix-header');
+                $('body').addClass('card-no-border');
+                $('body').addClass('fix-sidebar');
+            </script>
+
             <!-- ============================================================== -->
             <!-- Left Sidebar - style you can find in sidebar.scss  -->
             <!-- ============================================================== -->
@@ -473,7 +488,6 @@
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->
-    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{{ asset('plugins/bootstrap/js/popper.min.js') }}"></script>
