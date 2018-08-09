@@ -54,6 +54,10 @@
 
     <!-- Moments with locales [Tive que deixar aqui para reconhecer o script antes de carregar o conteúdo da página] -->
     <script src="{{ asset('plugins/moment/min/moment-with-locales.min.js') }}"></script>
+
+
+    <!-- JQUERY -->
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 </head>
 
 <body>
@@ -73,8 +77,6 @@
             <a href="#"><i class="fa fa-send" id="icon-overlay"></i></a>
         </div>
     </div>
-
-
 
 
     <!-- ============================================================== -->
@@ -167,6 +169,12 @@
 
 
         @if (!Auth::guest() && !Request::is('sobre') )
+            <script>
+                $('body').removeClass('fix-header');
+                $('body').removeClass('card-no-border');
+                $('body').removeClass('fix-sidebar');
+            </script>
+
             <!-- ============================================================== -->
             <!-- Left Sidebar - style you can find in sidebar.scss  -->
             <!-- ============================================================== -->
@@ -231,6 +239,13 @@
             <!-- ============================================================== -->
             
         @elseif(!Auth::guest() && Request::is('sobre'))
+            <script>
+                console.log("vai adicionar?");
+                $('body').addClass('fix-header');
+                $('body').addClass('card-no-border');
+                $('body').addClass('fix-sidebar');
+            </script>
+
             <!-- ============================================================== -->
             <!-- Left Sidebar - style you can find in sidebar.scss  -->
             <!-- ============================================================== -->
@@ -240,39 +255,34 @@
                     <!-- Sidebar navigation-->
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
-                            <li class="nav-small-cap">DOCUMENTAÇÃO</li>
-                            <li><a href="#introducao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Introdução</span></a></li>
-                            <li><a href="#apresentacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Apresentação</span></a></li>
+                            <li><a href="#intro" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Introdução</span></a></li>
+                            
+                            <li class="nav-small-cap"> <span class="text-info">CONFIGURAÇÕES</span> </li>
                             <li><a href="#geral" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Geral</span></a></li>
-                            <li><a href="#acesso-ao-sistema" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Acesso ao sistema</span></a></li>
-                            <li><a href="#navegacao-no-sistema" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Navegação no sistema</span></a></li>
-                            <li><a href="#configuracoes" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Configurações </span></a></li>
-                            <li><a href="#setores-da-empresa" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Setores da empresa</span></a></li>
-                            <li><a href="#grupos-de-treinamento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Grupos de treinamento</span></a></li>
-                            <li><a href="#grupos-de-divulgacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Grupos de divulgação</span></a></li>
-                            <li><a href="#diretoria-gerencia" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Diretoria / Gerência</span></a></li>
-                            <li><a href="#padroes-de-codigos" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Padrões de Códigos</span></a></li>
-                            <li><a href="#documentos" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Documentos</span></a></li>
+                            <li><a href="#setores" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Setores</span></a></li>
+                            <li><a href="#grupos" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Grupos</span></a></li>
+                            <li><a href="#aprovadores" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Aprovadores</span></a></li>
+                            <li><a href="#padroes" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Padrões</span></a></li>
+
+                            <li class="nav-small-cap"> <span class="text-info">DOCUMENTOS</span> </li>
+                            <li><a href="#elaboracao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração</span></a></li>
+                            <li><a href="#criar" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Criar</span></a></li>
+                            <li><a href="#importar" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar</span></a></li>
+                            <li><a href="#editor" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Editor</span></a></li>
                             <li><a href="#qualidade" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
-                            <li><a href="#elaboracao-de-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração de documento</span></a></li>
-                            <li><a href="#area-de-interesse" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Área de Interesse</span></a></li>
+                            <li><a href="#areainteresse" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Área de Interesse</span></a></li>
                             <li><a href="#aprovador" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Aprovador</span></a></li>
-                            <li><a href="#upload-lista-de-presenca" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Upload Lista de Presença</span></a></li>
-                            <li><a href="#capital-humano" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Capital Humano</span></a></li>
-                            <li><a href="#divulgacao-do-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação do documento</span></a></li>
-                            <li><a href="#nivel-de-acesso-ao-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Nível de acesso ao documento</span></a></li>
-                            <li><a href="#edicao-de-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Edição de documento</span></a></li>
-                            <li><a href="#importar-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar documento</span></a></li>
-                            <li><a href="#criar-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Criar documento</span></a></li>
-                            <li><a href="#visualizacao-de-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização de documento</span></a></li>
-                            <li><a href="#status-do-documento" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Status do Documento</span></a></li>
-                            <li><a href="#formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Formulários</span></a></li>
-                            <li><a href="#elaboracao-de-formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração de formulários</span></a></li>
-                            <li><a href="#upload-de-formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Upload de formulários</span></a></li>
-                            <li><a href="#qualidade" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
-                            <li><a href="#visualizacao-de-formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização de formulários</span></a></li>
-                            <li><a href="#status-do-formulario" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Status do formulário</span></a></li>
-                            <li><a href="#divulgacao-do-formulario" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação do formulário</span></a></li>
+                            <li><a href="#listadepresenca" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Lista de Presença</span></a></li>
+                            <li><a href="#capital" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Capital Humano</span></a></li>
+                            <li><a href="#divulgacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>
+                            <li><a href="#visualizacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização</span></a></li>
+
+                            <li class="nav-small-cap"> <span class="text-info">FORMULÁRIOS</span> </li>
+                            <li><a href="#formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração</span></a></li>
+                            <li><a href="#importarform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar</span></a></li>
+                            <li><a href="#qualidadeform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
+                            <li><a href="#visualizacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização</span></a></li>
+                            <li><a href="#divulgacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>
                         </ul>
                     </nav>
                     <!-- End Sidebar navigation -->
@@ -478,7 +488,6 @@
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->
-    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{{ asset('plugins/bootstrap/js/popper.min.js') }}"></script>
