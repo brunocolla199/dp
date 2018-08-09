@@ -240,7 +240,6 @@
             
         @elseif(!Auth::guest() && Request::is('sobre'))
             <script>
-                console.log("vai adicionar?");
                 $('body').addClass('fix-header');
                 $('body').addClass('card-no-border');
                 $('body').addClass('fix-sidebar');
@@ -637,57 +636,62 @@
     <!-- Prism -->
     <script src="{{ asset('plugins/prism/prism.js') }}"></script>
     <script>
-    // This is for the sticky sidebar    
-    $("#sidebarnav").stick_in_parent({
-        offset_top: 100
-    });
-    $('#sidebarnav a').click(function() {
-        $('html, body').animate({
-            scrollTop: $($(this).attr('href')).offset().top - 100
-        }, 500);
-        return false;
-    });
-    // This is auto select left sidebar
-    // Cache selectors
-    // Cache selectors
-    var lastId,
-        topMenu = $("#sidebarnav"),
-        topMenuHeight = topMenu.outerHeight(),
-        // All list items
-        menuItems = topMenu.find("a"),
-        // Anchors corresponding to menu items
-        scrollItems = menuItems.map(function() {
-            var item = $($(this).attr("href"));
-            if (item.length) {
-                return item;
-            }
-        });
+        // Só deve executar isso se estiver na tela de "Sobre"
+        if(window.location.href.indexOf("sobre") > -1) {
+            
+            // This is for the sticky sidebar    
+            $("#sidebarnav").stick_in_parent({
+                offset_top: 100
+            });
+            $('#sidebarnav a').click(function() {
+                $('html, body').animate({
+                    scrollTop: $($(this).attr('href')).offset().top - 100
+                }, 500);
+                return false;
+            });
+            // This is auto select left sidebar
+            // Cache selectors
+            // Cache selectors
+            var lastId,
+                topMenu = $("#sidebarnav"),
+                topMenuHeight = topMenu.outerHeight(),
+                // All list items
+                menuItems = topMenu.find("a"),
+                // Anchors corresponding to menu items
+                scrollItems = menuItems.map(function() {
+                    var item = $($(this).attr("href"));
+                    if (item.length) {
+                        return item;
+                    }
+                });
 
-    // Bind click handler to menu items
+            // Bind click handler to menu items
 
 
-    // Bind to scroll
-    $(window).scroll(function() {
-        // Get container scroll position
-        var fromTop = $(this).scrollTop() + topMenuHeight - 250;
+            // Bind to scroll
+            $(window).scroll(function() {
+                // Get container scroll position
+                var fromTop = $(this).scrollTop() + topMenuHeight - 250;
 
-        // Get id of current scroll item
-        var cur = scrollItems.map(function() {
-            if ($(this).offset().top < fromTop)
-                return this;
-        });
-        // Get the id of the current element
-        cur = cur[cur.length - 1];
-        var id = cur && cur.length ? cur[0].id : "";
+                // Get id of current scroll item
+                var cur = scrollItems.map(function() {
+                    if ($(this).offset().top < fromTop)
+                        return this;
+                });
+                // Get the id of the current element
+                cur = cur[cur.length - 1];
+                var id = cur && cur.length ? cur[0].id : "";
 
-        if (lastId !== id) {
-            lastId = id;
-            // Set/remove active class
-            menuItems
-                .removeClass("active")
-                .filter("[href='#" + id + "']").addClass("active");
+                if (lastId !== id) {
+                    lastId = id;
+                    // Set/remove active class
+                    menuItems
+                        .removeClass("active")
+                        .filter("[href='#" + id + "']").addClass("active");
+                }
+            });   
+            
         }
-    });
     </script>
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->

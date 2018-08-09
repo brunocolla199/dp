@@ -73,6 +73,7 @@
                             </div>
                         </div>
 
+
                         @if($finalizado)
                             
                             <div class="row h-100">
@@ -193,18 +194,23 @@
                                 <!-- End Editor -->
                                     
                                 
-                                <div class="col-md-12">
-                                    <div class="pull-right">
-                                        <br>
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                                <div class="row mt-4">
+                                    <div class="col-md-3">    
+                                        <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                    </div>
+                                    <div class="col-md-3">    
+                                        <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                    </div>
+                                    <div class="col-md-3">
+                                    </div>
+                                    <div class="col-md-3 ">
                                         <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
                                     </div>
                                 </div>
-
                             {!! Form::close() !!}
 
-
-
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
 
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
@@ -240,10 +246,17 @@
                                 </div>
                             </div>
 
+                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                            <div class="row mt-4">
+                                <div class="col-md-3">    
+                                    <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                </div>
+                                <div class="col-md-3">    
+                                    <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                </div>
+                            </div>
 
-
-
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && $elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
                         
                             {{ Form::open(['route' => 'documentacao.resend-list', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
                                 <div class="row">
@@ -277,6 +290,19 @@
                                 </div>
                             {{ Form::close() }}
 
+
+                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                            <div class="row mt-4">
+                                <div class="col-md-3">    
+                                    <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                </div>
+                                <div class="col-md-3">    
+                                    <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                </div>
+                            </div>
+
+
+
                             <div class="col-md-12 mb-4">
                                 <hr>
                                 <span class="row mt-2 mb-2">
@@ -288,25 +314,27 @@
                                 <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
                             </div>
 
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO )
+                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && (Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
                             
-                            <div class="row mb-4">
-                                <div class="col-md-4"></div>
-                                <div class="col-md-4">
-                                    <div class="row">
-                                        <div class="col-md-5 mr-4">
-                                            <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modal-reject-list">REJEITAR <i class="fa fa-remove"></i></button>
-                                        </div>
-                                        <div class="col-md-5">    
-                                            {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
-                                                {{ Form::hidden('documento_id', $document_id) }}
-                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                            {{ Form::close() }}
+                            @if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                <div class="row mb-4">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <div class="col-md-5 mr-4">
+                                                <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modal-reject-list">REJEITAR <i class="fa fa-remove"></i></button>
+                                            </div>
+                                            <div class="col-md-5">    
+                                                {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('documento_id', $document_id) }}
+                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                    {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                {{ Form::close() }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
 
                             <div class="col-md-12 mb-4">
                                 <hr>
@@ -316,18 +344,19 @@
                                 <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
                             </div>
 
+                            
+                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                            <div class="row mt-4">
+                                <div class="col-md-3">    
+                                    <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                </div>
+                                <div class="col-md-3">    
+                                    <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                </div>
+                            </div>
+
                         @endif
-
-
-                        <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
-                        <div class="row mt-4">
-                            <div class="col-md-4">    
-                                <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
-                            </div>
-                            <div class="col-md-4">    
-                                <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
-                            </div>
-                        </div>
+                        
 
                     </div>
                 </div>
