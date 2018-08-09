@@ -424,11 +424,11 @@ class DocumentacaoController extends Controller
         $workflowDoc   = Workflow::where('documento_id', '=', $document_id)->get();
         $dadosDoc      = DadosDocumento::where('documento_id', '=', $document_id)->get();
         $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
-
+        $formsDoc      = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $document_id)->pluck('formulario.id as id');
         $listaPresenca = ListaPresenca::where('documento_id', '=', $document_id)->get();
+        $formularios   = Formulario::all()->pluck('nome', 'id');
         $filePath = null;
-
-        // if( count($listaPresenca) > 0 ) $filePath = \URL::to('/download/lista-presenca/'.$listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
+        
         if( count($listaPresenca) > 0 ) $filePath = \App\Classes\Helpers::instance()->getListaPresenca($listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
         
         if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
@@ -448,7 +448,7 @@ class DocumentacaoController extends Controller
             ob_end_clean();
         }
     
-        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado));
+        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc));
     }
 
     
@@ -459,14 +459,31 @@ class DocumentacaoController extends Controller
         $dadosDoc      = DadosDocumento::where('documento_id', '=', $document_id)->get();
         $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get(['nome_tipo', 'sigla']);
         $documento->codigo = $request->codigoDocumento;
+        $formularios   = Formulario::all()->pluck('nome', 'id');
+        
+        if(isset($request->formulariosAtreladosDocs) && count($request->formulariosAtreladosDocs) > 0 ) {
+            
+            DocumentoFormulario::where('documento_id', $request->document_id)->delete();
+            
+            foreach($request->formulariosAtreladosDocs as $key => $form) {
+                $documentoFormulario = new DocumentoFormulario();
+                $documentoFormulario->documento_id  = $document_id;
+                $documentoFormulario->formulario_id = $form;
+                $documentoFormulario->save();
+            }
+        } else {
+            DocumentoFormulario::where('documento_id', $request->document_id)->delete();
+        }
         
         if($documento->save()){
+            
+            $formsDoc = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $document_id)->pluck('formulario.id as id');
 
             Storage::disk('local')->put('uploads/'.$documento->nome.'.html', $request->docData);
                 
             $docData = trim(json_encode($request->docData), '"');
             
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado));
+            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc));
         }
 
     }
@@ -485,6 +502,18 @@ class DocumentacaoController extends Controller
                                             <meta charset="UTF-8" />
                                             <title>'.$documento[0]->codigo.'</title>
                                             <style>
+                                                [style="list-style-type: disc;"]{
+                                                    list-style-image:url('.public_path('plugins/ckeditor-document-editor/images/arrow.png').'!important;
+                                                }
+                                                
+                                                [style="list-style-type: circle;"]{
+                                                    list-style-image:url('.public_path('plugins/ckeditor-document-editor/images/circle.png').'!important;
+                                                }
+                                                
+                                                [style="list-style-type: square;"]{
+                                                    list-style-image:url('.public_path('plugins/ckeditor-document-editor/images/check2.png').'!important;
+                                                }
+
                                                 '.file_get_contents(public_path('plugins/ckeditor-document-editor/css/speed-pdf-style.css')).'
                                             </style>
                                             </head>
@@ -494,7 +523,7 @@ class DocumentacaoController extends Controller
                                                 <tbody>
                                                     <tr>
                                                         <td align="left">
-                                                            <span class="text-small" style="color:#0e3d5e; font-size:14px;">
+                                                            <span style="color:#0e3d5e; font-size:14px; text-transform: uppercase;">
                                                                 '.$documento[0]->nome.'
                                                             </span>
                                                         </td align="right">
@@ -581,7 +610,7 @@ class DocumentacaoController extends Controller
                                                 <tbody>
                                                     <tr>
                                                         <td align="left">
-                                                            <span class="text-small" style="color:#0e3d5e">
+                                                            <span style="color:#0e3d5e; text-transform: uppercase;">
                                                                 <strong>'.$documento[0]->nome.'</strong>
                                                             </span>
                                                         </td align="right">
@@ -694,13 +723,13 @@ class DocumentacaoController extends Controller
                 break;
         }
 
-        // echo $docHtmlContent;
-        // exit();
         
         $docHtmlContent .= Storage::get("uploads/".$documento[0]->nome.".html");
-        
+        echo $docHtmlContent;
+        dd(base_path());
+        exit();
 		$pdf = \App::make('dompdf.wrapper');
-		$pdf->loadHTML( str_replace('/ckfinder', public_path().'/ckfinder', $docHtmlContent));
+		$pdf->loadHTML( str_replace('/ckfinder', base_path().'/ckfinder', $docHtmlContent));
         return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->stream();
 
 
@@ -734,81 +763,6 @@ class DocumentacaoController extends Controller
                 break;
         }
     }
-
-
-    protected function createDocHeader($phpWord, $novoDocumento){
-        
-        $section = $phpWord->addSection(['marginTop'=>0]);
-        $header = $section->createHeader();
-
-        $tipoDocumento = TipoDocumento::where('id', '=', $novoDocumento['tipo_documento'])->get(['nome_tipo', 'sigla']);
-
-        switch ($tipoDocumento[0]->sigla) {
-            case 'PG':
-                
-            break;
-            
-            case 'IT':
-            
-                $header->addImage(public_path() . '/images/doc_headers/dpword_header_it.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
-
-                // Estilos da Tabela & Cabeçalho
-                $tableCellStyle 		= array('valign' => 'center');
-                $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-                $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
-        
-                // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-                $table_style = new \PhpOffice\PhpWord\Style\Table;
-                $table_style->setBorderSize(0);
-                $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-                $table_style->setWidth(3000);
-                $table_style->setAlignment('right');
-        
-                $table = $header->addTable($table_style);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('INSTRUÇÃO DE TRABALHO', $tableFontStyle);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
-                $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-                $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
-
-                return $section;
-            break;
-        
-            case 'DG':
-            
-                $header->addImage(public_path() . '/images/doc_headers/dpword_header_dg_vert.png', array('width'=>600, 'height'=>130, 'marginLeft'=>0,'marginTop'=>-100, 'positioning' => 'absolute', 'posHorizontal' => 'right'));
-
-                // Estilos da Tabela & Cabeçalho
-                $tableCellStyle 		= array('valign' => 'center');
-                $tableCellBkgStyle 		= array('bgColor' => 'E8EAF6');
-                $tableFontStyle 		= array('bold' => true, 'color'=>'ffffff', 'align'=>'right');
-        
-                // 'Forçando' estilo da tabela, porque ela estava perdendo as bordas quando este arquivo era salvo com 'storeAs' do Laravel
-                $table_style = new \PhpOffice\PhpWord\Style\Table;
-                $table_style->setBorderSize(0);
-                $table_style->setUnit(\PhpOffice\PhpWord\Style\Table::WIDTH_PERCENT);
-                $table_style->setWidth(3000);
-                $table_style->setAlignment('right');
-        
-                $table = $header->addTable($table_style);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('DIRETRIZ DE GESTÃO', $tableFontStyle);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText($novoDocumento['tituloDocumento'], $tableFontStyle);
-                $table->addRow();
-                $table->addCell(151, $tableCellStyle)->addText('Código:'.$novoDocumento['codigoDocumento'], $tableFontStyle);
-                $table->addCell(151, $tableCellStyle)->addText('Revisão:', $tableFontStyle);
-                $table->addCell(151, $tableCellStyle)->addText('Última Alter:'.date('d/m/Y'), $tableFontStyle);
-
-                return $section;
-
-            break;
-        }
-    }
-
 
     /*
     *  WORKFLOW      

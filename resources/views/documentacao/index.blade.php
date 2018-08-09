@@ -556,6 +556,8 @@
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
 
+
+    <!-- Formulário para visualizar o formulário ( dafuk ?????? )  -->
     {{ Form::open(['route' => 'formularios.view-formulario', 'target'=>'_blank', 'id'=>'form-view-formulario', 'method' => 'POST']) }}
         {{ Form::hidden('action', 'view') }}
     {{ Form::close() }}
@@ -570,7 +572,6 @@
 <script>
     
     function viewFormulario(id){
-        console.log(id);
         $("#form-view-formulario").append("<input type='hidden' name='formulario_id' value="+id+" >");
         $("#form-view-formulario").submit();
     }

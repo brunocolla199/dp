@@ -132,18 +132,18 @@
                                 <div class="col-md-12">
                                     <hr>
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3 small">
                                             <div class="form-group">
                                                 <div class="col-md-6 control-label font-bold">
                                                     {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
                                                 </div>
                                                 <div class="col-md-12">
-                                                    {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control', 'readonly']) !!}
+                                                    {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control ', 'readonly']) !!}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-3 small">
                                             <div class="form-group">
                                                 <div class="col-md-6 control-label font-bold">
                                                     {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
@@ -153,14 +153,30 @@
                                                 </div>
                                             </div>
                                         </div> 
-                                        <div class="col-md-4">
-                                            <div class="control-label font-bold text-center">
-                                                Pré-visualização do Documento<br>
-                                                <div class="text-center">   
-                                                    <br>
-                                                    <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
-                                                        Visualizar    
-                                                    </a>
+                                        <div class="col-md-3 small">
+                                            <div class="form-group">
+                                                <div class="col-md-6 control-label font-bold" style="margin-bottom:10px;">
+                                                    FORMULÁRIOS: 
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos">
+                                                        @foreach($formularios as $key => $form)
+                                                            <option value="{{ $key }}" >{{ $form }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 small">
+                                            <div class="form-group">
+                                                <div class="control-label font-bold text-uppercase text-center">
+                                                    Pré-visualização de Documento<br>
+                                                    <div class="text-center">   
+                                                        <br>
+                                                        <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
+                                                            Visualizar    
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div> 
@@ -461,6 +477,12 @@
         </div>
     </div>
 
+
+    <!-- Formulário para visualizar o formulário ( dafuk ?????? )  -->
+    {{ Form::open(['route' => 'formularios.view-formulario', 'target'=>'_blank', 'id'=>'form-view-formulario', 'method' => 'POST']) }}
+        {{ Form::hidden('action', 'view') }}
+    {{ Form::close() }}
+
 @endsection
 
 @section('footer')
@@ -479,6 +501,24 @@
     if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
         initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
     }
+
+    function viewFormulario(id){
+        $("#form-view-formulario").append("<input type='hidden' name='formulario_id' value="+id+" >");
+        $("#form-view-formulario").submit();
+    }
+
+    var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
+    var select = $(".select2-vinculos").select2({
+        templateSelection: function (d) { 
+            return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
+        },
+    });
+    console.log(forms);
+    select.val(forms);
+    select.trigger('change');   
+        
+     
+
 
     $("#btn-save-document").click(function(){
         var docData = CKEDITOR.instances['speed-editor'].getData();
