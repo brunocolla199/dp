@@ -500,24 +500,21 @@
     
     if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
         initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
+
+        var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
+        var select = $(".select2-vinculos").select2({
+            templateSelection: function (d) { 
+                return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
+            },
+        });
+        select.val(forms);
+        select.trigger('change');   
     }
 
     function viewFormulario(id){
         $("#form-view-formulario").append("<input type='hidden' name='formulario_id' value="+id+" >");
         $("#form-view-formulario").submit();
-    }
-
-    var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
-    var select = $(".select2-vinculos").select2({
-        templateSelection: function (d) { 
-            return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
-        },
-    });
-    console.log(forms);
-    select.val(forms);
-    select.trigger('change');   
-        
-     
+    }   
 
 
     $("#btn-save-document").click(function(){
