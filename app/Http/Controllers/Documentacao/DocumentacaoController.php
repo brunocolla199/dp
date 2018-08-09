@@ -1264,7 +1264,7 @@ class DocumentacaoController extends Controller
                 $list["finalizados"] = $arr2;
             }
         }
-        
+
         return $list;
     }
 
@@ -1532,7 +1532,6 @@ class DocumentacaoController extends Controller
                 $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
             }
         }
-        
         return $docs;
     }
 

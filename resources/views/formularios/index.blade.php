@@ -231,7 +231,7 @@
                                                                 <th>Título do Formulário</th>
                                                                 <th>Código</th>
                                                                 <th>Status</th>
-                                                                <th>Data Última Alteração</th>
+                                                                <th>Modificado</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>

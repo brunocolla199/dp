@@ -365,6 +365,7 @@
                                                                 <th>Código</th>
                                                                 <th>Tipo do Documento</th>
                                                                 <th>Status</th>
+                                                                <th>Modificado</th>
                                                                 <th>Validade</th>
                                                                 <th>Formulários</th>
                                                             </tr>
@@ -387,6 +388,7 @@
                                                                         <td>
                                                                             <p class="text-muted font-weight-bold"> {{ $doc->etapa }} </p>
                                                                         </td>
+                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
                                                                         <td>{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
                                                                         <td>
                                                                             <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false">
@@ -414,6 +416,7 @@
                                                                         <td>
                                                                             <p class="text-muted font-weight-bold text-success"> Finalizado </p>
                                                                         </td>
+                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
                                                                         <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                         <td>
                                                                             <a href="#" title="Vincular Formulários" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true">
