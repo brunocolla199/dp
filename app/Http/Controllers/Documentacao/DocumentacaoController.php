@@ -490,9 +490,12 @@ class DocumentacaoController extends Controller
 
 
     public function makeDocumentPdf($codigo){
-        $documento     = Documento::where('id', '=', $codigo)->get();
-        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
+        $documento      = Documento::where('id', '=', $codigo)->get();
+        $tipoDocumento  = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
+        $dadosDocumento = DadosDocumento::join('users', 'users.id', '=', 'dados_documento.aprovador_id')->where('documento_id', '=', $documento[0]->tipo_documento_id)->get(['aprovador_id', 'users.name as aprovador']);
         $docHtmlContent = "";
+
+        // dd($dadosDocumento);
 
         switch ($tipoDocumento[0]->sigla) {
             case 'DG':
@@ -549,7 +552,7 @@ class DocumentacaoController extends Controller
                                                     
                                                     <tbody>
                                                         <tr>
-                                                            <td><b>Aprovado Por:</b> Aprovador </td>
+                                                            <td><b>Aprovado Por:</b> '.$dadosDocumento[0]->aprovador.' </td>
                                                             <td><b>Código:</b> '.$documento[0]->codigo.'</td>
                                                         </tr>
                                                         <tr>
@@ -572,7 +575,7 @@ class DocumentacaoController extends Controller
                                                 <tbody>
                                                     <tr>
                                                         <td align="left">
-                                                            <b>Aprovado Por:</b> Aprovador<br> 
+                                                            <b>Aprovado Por:</b> '.$dadosDocumento[0]->aprovador.'<br> 
                                                             <b>Código:</b> '.$documento[0]->codigo.'
                                                         </td>
                                                         <td>
@@ -634,20 +637,17 @@ class DocumentacaoController extends Controller
                                                 <table>
                                                     <tbody>
                                                         <tr>
-                                                            <td><b>Aprovado Por:</b> Aprovador </td>
+                                                            <td><b>Aprovado Por:</b> '.$dadosDocumento[0]->aprovador.' </td>
                                                             <td><b>Código:</b> '.$documento[0]->codigo.'</td>
                                                         </tr>
                                                         <tr>
                                                             <td><b>Data:</b>'.date("d/m/Y", strtotime( $documento[0]->updated_at)).'</td>
-                                                            <td><b>Revisão:</b> 1</td>
+                                                            <td><b>Revisão:</b> '.$documento[0]->revisao.'</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
-
                                         </div>
-
-
                                         <div id="content">
                                             '.Storage::get("uploads/".$documento[0]->nome.".html").'
                                         </div>
@@ -657,7 +657,7 @@ class DocumentacaoController extends Controller
                                                     <tbody>
                                                         <tr>
                                                             <td align="left">
-                                                                <b>Aprovado Por:</b> Aprovador<br> 
+                                                                <b>Aprovado Por:</b> '.$dadosDocumento[0]->aprovador.'<br> 
                                                                 <b>Código:</b> '.$documento[0]->codigo.'
                                                             </td>
                                                             <td>
@@ -686,6 +686,9 @@ class DocumentacaoController extends Controller
                                             <title>'.$documento[0]->codigo.'</title>
                                             <style>
                                                 '.file_get_contents(public_path('plugins/ckeditor-document-editor/css/speed-pdf-style.css')).'
+                                                @page :first{
+                                                    margin: 105px 50px 0px 50px;
+                                                }
                                             </style>
                                             </head>
                                         <body>
@@ -733,8 +736,7 @@ class DocumentacaoController extends Controller
 		$pdf = \App::make('dompdf.wrapper');
 		$pdf->loadHTML( str_replace('/ckfinder', '/var/www/html/ckfinder', $docHtmlContent));
         return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->stream();
-
-
+    
     }
 
 
