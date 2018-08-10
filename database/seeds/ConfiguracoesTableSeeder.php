@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Configuracao;
+use App\User;
 use App\Classes\Constants;
 
 class ConfiguracoesTableSeeder extends Seeder
@@ -18,9 +19,15 @@ class ConfiguracoesTableSeeder extends Seeder
         $codigo->admin_setor_qualidade = 0;
         $codigo->save();
 
+
+
+
+        $user = User::where('username', '=', 'speedsoft')->get();
+        $idAdmin = ($user[0] != null) ? $user[0]->id : Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE;
+
         $codigo2 = new Configuracao();
         $codigo2->numero_padrao_codigo = "";
-        $codigo2->admin_setor_qualidade = Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE;
+        $codigo2->admin_setor_qualidade = $idAdmin;
         $codigo2->save();
     }
 }

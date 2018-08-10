@@ -370,32 +370,35 @@
                                                     {!! Form::close() !!}
                                                 </div>
 
-                                                <div class="col-md-6">
-                                                    {!! Form::open(['route' => 'configuracoes.save.quality-admin', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
-                                                        <div class="row">
-                                                            <div class="col-md-12 mb-4">
-                                                                <div class="alert alert-warning">
-                                                                    <span>Por favor, defina o usuário com privilégios do setor <b>Qualidade</b>. </span>
-                                                                    <small><b>Lembre-se:</b> este usuário é o único que poderá ver documentos confidenciais!</small>
+                                                <!-- Apenas o usuário que já é administrador da Qualidade pode ver essa parte. Aí, caso deseje, pode "repassar" seu cargo a outro usuário -->
+                                                @if(Auth::user()->id == $adminSetorQualidade)
+                                                    <div class="col-md-6">
+                                                        {!! Form::open(['route' => 'configuracoes.save.quality-admin', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
+                                                            <div class="row">
+                                                                <div class="col-md-12 mb-4">
+                                                                    <div class="alert alert-warning">
+                                                                        <span>Por favor, defina o usuário com privilégios do setor <b>Qualidade</b>. </span>
+                                                                        <small><b>Lembre-se:</b> este usuário é o único que poderá ver documentos confidenciais!</small>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
 
-                                                            <div class="col-md-12">
-                                                                <div class="form-group">
-                                                                    <div class="col-md-12 control-label font-bold">
-                                                                        {!! Form::label('userAdminQuality', 'Administrador - Setor Qualidade:') !!}
-                                                                    </div>
-                                                                    <div class="col-md-12">
-                                                                        {!! Form::select('userAdminQuality', $usuariosSetorQualidade, $adminSetorQualidade, ['class' => 'form-control  custom-select']) !!}
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="col-md-12 control-label font-bold">
+                                                                            {!! Form::label('userAdminQuality', 'Administrador - Setor Qualidade:') !!}
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            {!! Form::select('userAdminQuality', $usuariosSetorQualidade, $adminSetorQualidade, ['class' => 'form-control  custom-select']) !!}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-offset-8 pull-right col-md-4 mt-2">
-                                                            <button type="submit" class="btn btn-block btn-outline-success">Salvar</button>
-                                                        </div>
-                                                    {!! Form::close() !!}
-                                                </div>
+                                                            <div class="col-md-offset-8 pull-right col-md-4 mt-2">
+                                                                <button type="submit" class="btn btn-block btn-outline-success">Salvar</button>
+                                                            </div>
+                                                        {!! Form::close() !!}
+                                                    </div>
+                                                @endif
 
                                             </div>
 
