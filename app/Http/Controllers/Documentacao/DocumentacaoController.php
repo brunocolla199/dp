@@ -345,7 +345,6 @@ class DocumentacaoController extends Controller
         $documento->save();
         
         // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
-        dd($novoDocumento);
         $dados_documento = new DadosDocumento();
         $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
         $dados_documento->status                            = true;
