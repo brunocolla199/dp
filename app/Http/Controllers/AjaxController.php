@@ -7,6 +7,7 @@ use App\User;
 use App\Setor;
 use App\GrupoTreinamentoUsuario;
 use App\DocumentoObservacao;
+use App\DadosDocumento;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -110,5 +111,15 @@ class AjaxController extends Controller
         $obs = DocumentoObservacao::where('documento_id', '=', $request->document_id)->orderBy('created_at', 'desc')->get()->toArray();
 
         return response()->json(['response' => $obs]);
+    }
+
+
+    public function okJustifyRejectRequest(Request $request) {
+        $dadosDoc = DadosDocumento::where('documento_id', '=', $request->document_id)->get();
+        $dadosDoc[0]->id_usuario_solicitante = null;
+        $dadosDoc[0]->justificativa_rejeicao_revisao = null;
+        $dadosDoc[0]->save();
+        
+        return response()->json(['response' => 'success']);    
     }
 }

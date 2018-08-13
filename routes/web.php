@@ -26,16 +26,17 @@ Route::group(['middleware' => ['auth']], function() {
 	/*
 	* Rotas para requisições AJAX
 	*/
-	Route::get('ajax/usuarios/retornarUsuarios',  		['as' => 'retornarUsuarios', 	  						'uses' => 'AjaxController@getUsers']);
-	Route::post('ajax/usuarios/trocarSetor',  			['as' => 'ajax.usuarios.trocarSetor', 	  				'uses' => 'AjaxController@trocarSetor']);
-	Route::post('ajax/usuarios/removerDoGrupo',			['as' => 'ajax.usuarios.removerDoGrupo', 	  			'uses' => 'AjaxController@removerDoGrupo']);
-	Route::post('ajax/usuarios/aprovadoresPorSetor',	['as' => 'ajax.usuarios.aprovadoresPorSetor', 	  		'uses' => 'AjaxController@getAprovadoresPorSetor']);
-	Route::get('ajax/setores/retornarSetores',  		['as' => 'retornarSetores', 	  						'uses' => 'AjaxController@getSectors']);
-	Route::post('ajax/setores/retornaSetoresExcetoUm',  ['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
-	Route::post('ajax/upload',                          ['as' => 'ajax.upload.image',	                		'uses' => 'AjaxController@uploadEditorImage']);
-	Route::post('ajax/documentos/retornaFormularios',   ['as' => 'ajax.documentos.formularios',	                'uses' => 'AjaxController@getDocumentosFormularios']);
-	Route::post('ajax/documentos/salvaObservacao',	    ['as' => 'ajax.documentos.salvaObservacao',				'uses' => 'AjaxController@salvaObservacao']);
-	Route::post('ajax/documentos/getObservacoes',	    ['as' => 'ajax.documentos.getObservacoes',				'uses' => 'AjaxController@getObservacoes']);
+	Route::get('ajax/usuarios/retornarUsuarios',  			['as' => 'retornarUsuarios', 	  						'uses' => 'AjaxController@getUsers']);
+	Route::post('ajax/usuarios/trocarSetor',  				['as' => 'ajax.usuarios.trocarSetor', 	  				'uses' => 'AjaxController@trocarSetor']);
+	Route::post('ajax/usuarios/removerDoGrupo',				['as' => 'ajax.usuarios.removerDoGrupo', 	  			'uses' => 'AjaxController@removerDoGrupo']);
+	Route::post('ajax/usuarios/aprovadoresPorSetor',		['as' => 'ajax.usuarios.aprovadoresPorSetor', 	  		'uses' => 'AjaxController@getAprovadoresPorSetor']);
+	Route::get('ajax/setores/retornarSetores',  			['as' => 'retornarSetores', 	  						'uses' => 'AjaxController@getSectors']);
+	Route::post('ajax/setores/retornaSetoresExcetoUm',  	['as' => 'ajax.setores.retornaSetoresExcetoUm',			'uses' => 'AjaxController@retornaSetoresExcetoUm']);
+	Route::post('ajax/upload',                          	['as' => 'ajax.upload.image',	                		'uses' => 'AjaxController@uploadEditorImage']);
+	Route::post('ajax/documentos/retornaFormularios',   	['as' => 'ajax.documentos.formularios',	                'uses' => 'AjaxController@getDocumentosFormularios']);
+	Route::post('ajax/documentos/salvaObservacao',	    	['as' => 'ajax.documentos.salvaObservacao',				'uses' => 'AjaxController@salvaObservacao']);
+	Route::post('ajax/documentos/getObservacoes',	    	['as' => 'ajax.documentos.getObservacoes',				'uses' => 'AjaxController@getObservacoes']);
+	Route::post('ajax/documentos/okJustifyRejectRequest',	['as' => 'ajax.documentos.okJustifyRejectRequest',		'uses' => 'AjaxController@okJustifyRejectRequest']);
 
 
     /*
@@ -53,20 +54,22 @@ Route::group(['middleware' => ['auth']], function() {
 	* DOCUMENTAÇÃO
 	*/
 	Route::group(['prefix' => 'documentacao'], function() {
-		Route::get('',	       					['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
-		Route::post('validate-data',       		['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
-		Route::post('save-attached-document',   ['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
-		Route::post('save-new-document',        ['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
-		Route::post('view-document',   			['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
-		Route::post('save-edited-document',   	['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
-		Route::post('filter-documents-index',  	['as' => 'documentacao.filter-documents-index',	    	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsIndex']);
-		Route::get('make-doc/{doc}',  	        ['as' => 'documentacao.make-doc',	                    'uses' => 'Documentacao\DocumentacaoController@makeDocumentPdf']);
-		Route::post('approval-document',  		['as' => 'documentacao.approval-document',	    		'uses' => 'Documentacao\DocumentacaoController@approvalDocument']);
-		Route::post('reject-document',  		['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
-		Route::post('resend-document',  		['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
-		Route::post('salva-lista-presenca',		['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
-		Route::post('resend-list',  			['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
-		Route::post('save-link-form',	     	['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
+		Route::get('',	       						['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
+		Route::post('validate-data',       			['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
+		Route::post('save-attached-document',   	['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
+		Route::post('save-new-document',        	['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
+		Route::post('view-document',   				['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
+		Route::post('save-edited-document',   		['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
+		Route::post('filter-documents-index',  		['as' => 'documentacao.filter-documents-index',	    	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsIndex']);
+		Route::get('make-doc/{doc}',  	        	['as' => 'documentacao.make-doc',	                    'uses' => 'Documentacao\DocumentacaoController@makeDocumentPdf']);
+		Route::post('approval-document',  			['as' => 'documentacao.approval-document',	    		'uses' => 'Documentacao\DocumentacaoController@approvalDocument']);
+		Route::post('reject-document',  			['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
+		Route::post('resend-document',  			['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
+		Route::post('salva-lista-presenca',			['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
+		Route::post('resend-list',  				['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
+		Route::post('save-link-form',	     		['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
+		Route::post('request-review',	     		['as' => 'documentacao.request-review',          		'uses' => 'Documentacao\DocumentacaoController@requestReview']);
+		Route::post('decides-on-review-request',	['as' => 'documentacao.decides-on-review-request', 		'uses' => 'Documentacao\DocumentacaoController@decidesOnReviewRequest']);
 	});
     
 	/*

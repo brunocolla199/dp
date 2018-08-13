@@ -14,6 +14,7 @@ use App\Configuracao;
 use App\Classes\Constants;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Helpers {
 
@@ -103,6 +104,22 @@ class Helpers {
         $hForm->save();
     }
 
+
+
+    // Documentos
+    function getListAllReviewsDocument($nome) {
+        // dd($nome);
+        $arr = [];
+        $files = Storage::disk('local')->allFiles("uploads/");
+        foreach($files as $file) {
+            $part1 = explode("uploads/", $file)[1];
+            $final = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $part1)[0];
+            if($final == $nome) {
+                $arr[] = $part1;
+            }
+        }
+        return $arr;
+    }
 
 
 

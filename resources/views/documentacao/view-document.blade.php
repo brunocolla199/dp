@@ -13,7 +13,7 @@
             
 
             <div class="row page-titles">
-                <div class="col-md-8 col-8 align-self-center">
+                <div class="col-md-6 col-6 align-self-center">
                     <h3 class="text-themecolor m-b-0 m-t-0">Visualização de Documento</h3>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
@@ -24,6 +24,11 @@
                 <div class="col-3">
                     <button class="btn btn-lg btn-info" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Ver Linha do Tempo</button>
                 </div>
+                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                    <div class="col-3">
+                        <button class="btn btn-lg btn-warning" type="button" data-toggle="collapse" data-target="#revisoesDoc" aria-expanded="false" aria-controls="revisoesDoc">Revisões Anteriores</button>
+                    </div>
+                @endif
             </div>
             
             
@@ -73,126 +78,349 @@
                             </div>
                         </div>
 
+                        <!-- Revisões do Documento -->
+                        <div class="row">
+                            <div class="col col-centered">
+                                <div class="collapse multi-collapse" id="revisoesDoc">
+                                    <div class="card card-body text-center">
 
-                        @if($finalizado)
-                            
+                                        <div class="row">
+                                           <div class="col-md-12 col-sm-12 p-20">
+                                                <h3 class="card-title text-success">Revisões do documento: <b>{{ $nome }}</b></h3>
+                                                <div class="list-group">
+                                                    @foreach(\App\Classes\Helpers::instance()->getListAllReviewsDocument($nome) as $rev)
+                                                        <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="list-group-item" target="_blank">Revisão <b>{{ explode(".html", explode("_rev", $rev)[1])[0] }}</b>: {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $rev)[0] }}</a>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($necessita_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE)
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <center>
+                                        <div class="col-md-8">
+                                            <h3 class="text-info">Existe uma solicitação de revisão para este documento!</h3>
+                                            <h4 class="text-info">Por favor, informe o que você deseja fazer:</h4>
+
+                                            <div class="row mt-3">
+                                                <div class="col-md-2"></div>
+                                                
+                                                <div class="col-md-4">
+                                                    <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#reject-request-review-modal">REJEITAR <i class="fa fa-remove"></i></button>
+                                                </div>
+                                                <div class="col-md-4">    
+                                                    <button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#approves-request-review-modal" data-backdrop="static">APROVAR <i class="fa fa-check"></i></button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </center>
+                                    <hr class="mt-4">
+                                </div>
+                            </div>
+
                             <div class="row h-100">
                                 <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
-                        @elseif( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
+                        @else
 
-                            <!-- Div com os botões de aprovar ou rejeitar -->
-                            @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
-                                <div class="row">
-                                    <div class="col-md-12">
+                            @if($finalizado)
+                                
+                                <!-- // se o usuário que está vendo for o mesmo que realizou a solicitação de revisão e se a justificativa possui conteúdo, devo mostrar a div abaixo -->
+                                @if(   ($justificativa_rejeicao_revisao != null && $justificativa_rejeicao_revisao != "") &&  Auth::user()->id == $id_usuario_solicitante  ) 
+                                    <div class="col-md-12" id="justification-reject-review-div">
                                         <div class="row text-center">
-                                            @if( isset($justificativa) && $justificativa != "''")
-                                                <div class="col-md-8">
-                                                    <div class="ribbon-wrapper card ">
-                                                        <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
-                                                        <p class="ribbon-content"> {{ $justificativa }} </p>
-                                                    </div>
+                                            <div class="col-md-9">
+                                                <div class="ribbon-wrapper card ">
+                                                    <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO DA REVISÃO</div> 
+                                                    <p class="ribbon-content"><b>Qualidade:</b> {{ $justificativa_rejeicao_revisao }} </p>
                                                 </div>
-                                            @endif
-                                            <div class="col-md-4 align-middle">    
-                                                {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('documento_id', $document_id) }}
-                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                    {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                                {{ Form::close() }}
                                             </div>
+
+                                            <div class="col-md-3 d-flex flex-column">    
+                                                <button type="button" id="ok-justify-reject" class="btn btn-block btn-lg btn-secondary mt-3">Ok, entendi</button>
+                                            </div>
+
                                         </div>
                                     </div>
-                                </div>
-                            @elseif( \App\Classes\Helpers::instance()->checkPermissionsToApprove($etapa_doc, $document_id) )
-                                <div class="row">
-                                    <div class="col-md-4"></div>
-                                    <div class="col-md-4">
-                                        <div class="row">
-                                            <div class="col-md-5 mr-4">
-                                                <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target=".bs-example-modal-sm">REJEITAR <i class="fa fa-remove"></i></button>
-                                            </div>
-                                            <div class="col-md-5">    
-                                                {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('documento_id', $document_id) }}
-                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                    {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                                {{ Form::close() }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+                                @endif
+                                <!-- // ao fim, deve ter um botão "Entendido" que, ao ser clicado, dispara um AJAX e limpa o campo 'justificativa', para que a mensagem não apareça mais -->
 
-                            <!-- Campos do documento e o editor -->
-                            {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
-                                {{ csrf_field() }}
+                                <div class="row h-100">
+                                    <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
+                                </div>
 
-                                {!! Form::hidden('document_id', $document_id) !!}
-                                <div class="col-md-12">
-                                    <hr>
+                            @elseif( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
+
+                                <!-- Div com os botões de aprovar ou rejeitar -->
+                                @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
                                     <div class="row">
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="col-md-6 control-label font-bold">
-                                                    {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                        <div class="col-md-12">
+                                            <div class="row text-center">
+                                                <div class="col-md-8">
+                                                    @if( isset($justificativa) && $justificativa != "''" && $justificativa != "")
+                                                        <div class="ribbon-wrapper card ">
+                                                            <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
+                                                            <p class="ribbon-content"> {{ $justificativa }} </p>
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                                <div class="col-md-12">
-                                                    {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control ', 'readonly']) !!}
+                                                <div class="col-md-4 align-middle">    
+                                                    {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('documento_id', $document_id) }}
+                                                        {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                        {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                    {{ Form::close() }}
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                @elseif( \App\Classes\Helpers::instance()->checkPermissionsToApprove($etapa_doc, $document_id) )
+                                    <div class="row">
+                                        <div class="col-md-4"></div>
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-md-5 mr-4">
+                                                    <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target=".bs-example-modal-sm">REJEITAR <i class="fa fa-remove"></i></button>
+                                                </div>
+                                                <div class="col-md-5">    
+                                                    {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('documento_id', $document_id) }}
+                                                        {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                        {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                    {{ Form::close() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
 
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="col-md-6 control-label font-bold">
-                                                    {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
-                                                </div>
-                                                <div class="col-md-12">
-                                                    {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
-                                                </div>
-                                            </div>
-                                        </div> 
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="col-md-6 control-label font-bold" style="margin-bottom:10px;">
-                                                    FORMULÁRIOS: 
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos">
-                                                        @foreach($formularios as $key => $form)
-                                                            <option value="{{ $key }}" >{{ $form }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="control-label font-bold text-uppercase text-center">
-                                                    Pré-visualização de Documento<br>
-                                                    <div class="text-center">   
-                                                        <br>
-                                                        <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
-                                                            Visualizar    
-                                                        </a>
+                                <!-- Campos do documento e o editor -->
+                                {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
+                                    {{ csrf_field() }}
+
+                                    {!! Form::hidden('document_id', $document_id) !!}
+                                    <div class="col-md-12">
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold">
+                                                        {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control ', 'readonly']) !!}
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div> 
+
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold">
+                                                        {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold" style="margin-bottom:10px;">
+                                                        FORMULÁRIOS: 
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos">
+                                                            @foreach($formularios as $key => $form)
+                                                                <option value="{{ $key }}" >{{ $form }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="control-label font-bold text-uppercase text-center">
+                                                        Pré-visualização de Documento<br>
+                                                        <div class="text-center">   
+                                                            <br>
+                                                            <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
+                                                                Visualizar    
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Editor -->
+                                    <div class="container" >
+                                        <textarea id="speed-editor">
+                                            
+                                        </textarea>
+                                    </div>
+                                    <!-- End Editor -->
+                                        
+                                    
+                                    <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-3">    
+                                            <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                        </div>
+                                        <div class="col-md-3">    
+                                            <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                        </div>
+                                        <div class="col-md-3">
+                                        </div>
+                                        <div class="col-md-3 ">
+                                            <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
+                                        </div>
+                                    </div>
+                                {!! Form::close() !!}
+
+                            @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
+
+                                <div class="row">
+                                    <div class="col-md-3" style="border-right: 1px solid black;">
+                                        <div class="control-label font-bold text-center">
+                                            <h3>Pré-visualização do Documento</h3>
+                                            <div class="text-center">   
+                                                <br>
+                                                <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-lg btn-success"  target="_blank"> Visualizar </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        {!! Form::open(['route' => 'documentacao.salva-lista-presenca', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+                                            {{ csrf_field() }}
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h4 class="card-title"> Upload de lista de presença </h4>
+                                                    <label for="input-file-now">Por favor, anexe a lista de presença do documento <b>{{ $nome }}</b> .</label>
+                                                    {!! Form::hidden('documento_id', $document_id) !!}
+                                                    {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}
+                                                    
+                                                    {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-offset-2 col-md-3 pull-right">
+                                                    {!! Form::submit('Salvar Lista', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                                </div>
+                                            </div>
+
+                                        {!! Form::close() !!}
+                                    </div>
+                                </div>
+
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                                <div class="row mt-4">
+                                    <div class="col-md-3">    
+                                        <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                    </div>
+                                    <div class="col-md-3">    
+                                        <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                    </div>
+                                </div>
+
+                            @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
+                            
+                                {{ Form::open(['route' => 'documentacao.resend-list', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row text-center">
+                                                @if( isset($justificativa) && $justificativa != "''")
+                                                    <div class="col-md-8">
+                                                        <div class="ribbon-wrapper card ">
+                                                            <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO DA LISTA</div> 
+                                                            <p class="ribbon-content"> {{ $justificativa }} </p>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                <div class="col-md-4 align-middle">    
+                                                    {{ Form::hidden('documento_id', $document_id) }}
+                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                    {!! Form::button('REENVIAR LISTA <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card mt-3">
+                                        <div class="card-body">
+                                            <h4 class="card-title"> Substituição da lista de presença </h4>
+                                            <label for="input-file-now">Por favor, anexe a lista de presença <i>corrigida</i> do documento <b>{{ $nome }}</b> .</label>
+                                            {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}                                        
+                                            {!! Form::hidden('extensao', $extensao) !!}                                        
+                                            {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required'=>'required']) !!}
+                                        </div>
+                                    </div>
+                                {{ Form::close() }}
+
+
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                                <div class="row mt-4">
+                                    <div class="col-md-3">    
+                                        <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                    </div>
+                                    <div class="col-md-3">    
+                                        <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
                                     </div>
                                 </div>
 
 
-                                <!-- Editor -->
-                                <div class="container" >
-                                    <textarea id="speed-editor">
-                                        
-                                    </textarea>
+
+                                <div class="col-md-12 mb-4">
+                                    <hr>
+                                    <span class="row mt-2 mb-2">
+                                        <h3>Abaixo você pode visualizar a <span class="text-info">Lista Presença - {{$nome}}</span> que foi rejeitada:</h3>
+                                    </span>
                                 </div>
-                                <!-- End Editor -->
-                                    
+
+                                <div class="row">
+                                    <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                </div>
+
+                            @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && (Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
+                                
+                                @if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                    <div class="row mb-4">
+                                        <div class="col-md-4"></div>
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-md-5 mr-4">
+                                                    <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modal-reject-list">REJEITAR <i class="fa fa-remove"></i></button>
+                                                </div>
+                                                <div class="col-md-5">    
+                                                    {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('documento_id', $document_id) }}
+                                                        {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                        {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                    {{ Form::close() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="col-md-12 mb-4">
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                </div>
+
                                 
                                 <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
                                 <div class="row mt-4">
@@ -202,161 +430,12 @@
                                     <div class="col-md-3">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
                                     </div>
-                                    <div class="col-md-3">
-                                    </div>
-                                    <div class="col-md-3 ">
-                                        <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
-                                    </div>
-                                </div>
-                            {!! Form::close() !!}
-
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
-
-                            <div class="row">
-                                <div class="col-md-3" style="border-right: 1px solid black;">
-                                    <div class="control-label font-bold text-center">
-                                        <h3>Pré-visualização do Documento</h3>
-                                        <div class="text-center">   
-                                            <br>
-                                            <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-lg btn-success"  target="_blank"> Visualizar </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    {!! Form::open(['route' => 'documentacao.salva-lista-presenca', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
-                                        {{ csrf_field() }}
-
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h4 class="card-title"> Upload de lista de presença </h4>
-                                                <label for="input-file-now">Por favor, anexe a lista de presença do documento <b>{{ $nome }}</b> .</label>
-                                                {!! Form::hidden('documento_id', $document_id) !!}
-                                                {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}
-                                                
-                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="col-md-offset-2 col-md-3 pull-right">
-                                                {!! Form::submit('Salvar Lista', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
-                                            </div>
-                                        </div>
-
-                                    {!! Form::close() !!}
-                                </div>
-                            </div>
-
-                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
-                            <div class="row mt-4">
-                                <div class="col-md-3">    
-                                    <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
-                                </div>
-                                <div class="col-md-3">    
-                                    <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
-                                </div>
-                            </div>
-
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
-                        
-                            {{ Form::open(['route' => 'documentacao.resend-list', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="row text-center">
-                                            @if( isset($justificativa) && $justificativa != "''")
-                                                <div class="col-md-8">
-                                                    <div class="ribbon-wrapper card ">
-                                                        <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO DA LISTA</div> 
-                                                        <p class="ribbon-content"> {{ $justificativa }} </p>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                            <div class="col-md-4 align-middle">    
-                                                {{ Form::hidden('documento_id', $document_id) }}
-                                                {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                {!! Form::button('REENVIAR LISTA <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
 
-                                <div class="card mt-3">
-                                    <div class="card-body">
-                                        <h4 class="card-title"> Substituição da lista de presença </h4>
-                                        <label for="input-file-now">Por favor, anexe a lista de presença <i>corrigida</i> do documento <b>{{ $nome }}</b> .</label>
-                                        {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}                                        
-                                        {!! Form::hidden('extensao', $extensao) !!}                                        
-                                        {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required'=>'required']) !!}
-                                    </div>
-                                </div>
-                            {{ Form::close() }}
-
-
-                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
-                            <div class="row mt-4">
-                                <div class="col-md-3">    
-                                    <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
-                                </div>
-                                <div class="col-md-3">    
-                                    <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
-                                </div>
-                            </div>
-
-
-
-                            <div class="col-md-12 mb-4">
-                                <hr>
-                                <span class="row mt-2 mb-2">
-                                    <h3>Abaixo você pode visualizar a <span class="text-info">Lista Presença - {{$nome}}</span> que foi rejeitada:</h3>
-                                </span>
-                            </div>
-
-                            <div class="row">
-                                <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
-                            </div>
-
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && (Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
-                            
-                            @if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO)
-                                <div class="row mb-4">
-                                    <div class="col-md-4"></div>
-                                    <div class="col-md-4">
-                                        <div class="row">
-                                            <div class="col-md-5 mr-4">
-                                                <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#modal-reject-list">REJEITAR <i class="fa fa-remove"></i></button>
-                                            </div>
-                                            <div class="col-md-5">    
-                                                {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('documento_id', $document_id) }}
-                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                    {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
-                                                {{ Form::close() }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             @endif
-
-                            <div class="col-md-12 mb-4">
-                                <hr>
-                            </div>
-
-                            <div class="row">
-                                <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
-                            </div>
-
-                            
-                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
-                            <div class="row mt-4">
-                                <div class="col-md-3">    
-                                    <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
-                                </div>
-                                <div class="col-md-3">    
-                                    <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
-                                </div>
-                            </div>
-
-                        @endif
                         
+                        @endif
+
 
                     </div>
                 </div>
@@ -469,8 +548,8 @@
             </div>
             <!-- /.modal para salvar observação no documento -->
 
-             <!-- modal para visualizar as observações do documento -->
-             <div class="modal fade" id="modal-view-obs" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+            <!-- modal para visualizar as observações do documento -->
+            <div class="modal fade" id="modal-view-obs" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -502,6 +581,67 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal para visualizar as observações do documento -->
+
+
+
+            <!-- modal justificativa rejeição da requisição de revisão do documento -->
+            <div class="modal fade" id="reject-request-review-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Rejeitar requisição de revisão</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        {{ Form::open(['route' => 'documentacao.decides-on-review-request', 'method' => 'POST']) }}
+                            {{ Form::hidden('documento_id', $document_id) }}
+                            {{ Form::hidden('decisao', 'rejeitar') }}
+                            <div class="modal-body"> 
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-md-12 control-label font-bold">
+                                            {!! Form::label('justificativaReprovacaoDaRequisicao', 'JUSTIFICATIVA:') !!}
+                                        </div>
+                                        <div class="col-md-12">
+                                            {!! Form::textarea('justificativaReprovacaoDaRequisicao', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger waves-effect">Rejeitar</button>
+                            </div>
+                        {!! Form::close() !!}
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal justificativa rejeição da requisição de revisão do documento -->
+
+
+            <!-- Modal de confirmação - deseja mesmo aprovar a solicitação de revisão neste documento -->
+            <div class="modal fade bs-example-modal-sm" id="approves-request-review-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Deseja aprovar a solicitação e iniciar o <i>workflow</i> de revisão do documento ? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'documentacao.decides-on-review-request', 'method' => 'POST']) }}
+                                {{ Form::hidden('documento_id', $document_id) }}
+                                {{ Form::hidden('decisao', 'aprovar') }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {{ Form::close() }}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - ddeseja mesmo aprovar a solicitação de revisão neste documento -->
 
         </div>
     </div>
@@ -604,6 +744,17 @@
         }, function(err) {
         });
     })
+
+    // Quando o solicitante da revisão do documento aceitar a justificativa de rejeição da mesma
+    $("#ok-justify-reject").click(function() {
+        var document_id = "{{$document_id}}";
+        
+        var obj = {'document_id': document_id};        
+        ajaxMethod('POST', " {{ URL::route('ajax.documentos.okJustifyRejectRequest') }} ", obj).then(function(result) {
+            $("#justification-reject-review-div").hide(1000);
+        }, function(err) {
+        });
+    });
 </script>
 
  @if($resp)

@@ -245,7 +245,7 @@ class DocumentacaoController extends Controller
          //if (Input::file('doc_uploaded') != null) {
             $file = $request->file('doc_uploaded', 'local');
             $extensao = $file->getClientOriginalExtension();
-            $titulo   = $novoDocumento['tituloDocumento'];
+            $titulo   = $novoDocumento['tituloDocumento'] . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
             $codigo   = $novoDocumento['codigoDocumento'];
             $path     = $file->storeAs('/uploads', $titulo . "." . $extensao, 'local');
 
@@ -258,18 +258,22 @@ class DocumentacaoController extends Controller
             
             // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
             $dados_documento = new DadosDocumento();
-            $dados_documento->validade              = $novoDocumento['validadeDocumento'];
-            $dados_documento->status                = true;
-            $dados_documento->observacao            = "Documento Novo";
-            $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
-            $dados_documento->nivel_acesso          = $novoDocumento['nivel_acesso'];
-            $dados_documento->finalizado            = false;
-            $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
-            $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
-            $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
-            $dados_documento->elaborador_id         = Auth::user()->id;
-            $dados_documento->aprovador_id          = $novoDocumento['id_aprovador'];
-            $dados_documento->documento_id          = $documento->id; // id que acabou de ser inserido no 'save' acima
+            $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
+            $dados_documento->status                            = true;
+            $dados_documento->observacao                        = "Documento Novo";
+            $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];
+            $dados_documento->nivel_acesso                      = $novoDocumento['nivel_acesso'];
+            $dados_documento->finalizado                        = false;
+            $dados_documento->necessita_revisao                 = false;
+            $dados_documento->id_usuario_solicitante            = null;
+            $dados_documento->revisao                           = "00";
+            $dados_documento->justificativa_rejeicao_revisao    = null;
+            $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
+            $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
+            $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
+            $dados_documento->elaborador_id                     = Auth::user()->id;
+            $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
+            $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
             $dados_documento->save();
             
             // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
@@ -328,7 +332,7 @@ class DocumentacaoController extends Controller
         Storage::disk('local')->put('uploads/'.$titulo.'.html', $novoDocumento['docData']); 
 
         $documento = new Documento();
-        $documento->nome                 = $titulo;
+        $documento->nome                 = $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
         $documento->codigo               = $codigo;
         $documento->extensao             = $extensao;
         $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
@@ -336,18 +340,22 @@ class DocumentacaoController extends Controller
         
         // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
         $dados_documento = new DadosDocumento();
-        $dados_documento->validade              = $novoDocumento['validadeDocumento'];
-        $dados_documento->status                = true;
-        $dados_documento->observacao            = "Documento Novo";
-        $dados_documento->copia_controlada      = $novoDocumento['copiaControlada'];
-        $dados_documento->nivel_acesso          = $novoDocumento['nivel_acesso'];
-        $dados_documento->finalizado            = false;
-        $dados_documento->setor_id              = $novoDocumento['setor_dono_doc'];
-        $dados_documento->grupo_treinamento_id  = $novoDocumento['grupoTreinamento'];
-        $dados_documento->grupo_divulgacao_id   = $novoDocumento['grupoDivulgacao'];
-        $dados_documento->elaborador_id         = Auth::user()->id;
-        $dados_documento->aprovador_id          = $novoDocumento['id_aprovador'];
-        $dados_documento->documento_id          = $documento->id; // id que acabou de ser inserido no 'save' acima
+        $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
+        $dados_documento->status                            = true;
+        $dados_documento->observacao                        = "Documento Novo";
+        $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];
+        $dados_documento->nivel_acesso                      = $novoDocumento['nivel_acesso'];
+        $dados_documento->necessita_revisao                 = false;
+        $dados_documento->id_usuario_solicitante            = null;
+        $dados_documento->revisao                           = "00";
+        $dados_documento->justificativa_rejeicao_revisao    = null;
+        $dados_documento->finalizado                        = false;
+        $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
+        $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
+        $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
+        $dados_documento->elaborador_id                     = Auth::user()->id;
+        $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
+        $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
         $dados_documento->save();
         
         // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
@@ -413,6 +421,7 @@ class DocumentacaoController extends Controller
         return redirect()->route('documentacao')->with('link_success','message');
     }
 
+
     public function viewDocument(Request $request) {
         if( array_key_exists("notify_id", $request->all()) ) {
             \App\Classes\Helpers::instance()->atualizaNotificacaoVisualizada($request->notify_id);
@@ -448,7 +457,11 @@ class DocumentacaoController extends Controller
             ob_end_clean();
         }
     
-        return view('documentacao.view-document', array('nome'=>$documento[0]->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc));
+        return view('documentacao.view-document', array(
+            'nome'=>explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0], 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 
+            'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
+            'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
+            'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc));
     }
 
     
@@ -483,7 +496,11 @@ class DocumentacaoController extends Controller
                 
             $docData = trim(json_encode($request->docData), '"');
             
-            return view('documentacao.view-document', array('nome'=>$documento->nome, 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc));
+            return view('documentacao.view-document', array(
+                'nome'=>explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0], 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 
+                'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
+                'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
+                'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc));
         }
 
     }
@@ -492,7 +509,8 @@ class DocumentacaoController extends Controller
     public function makeDocumentPdf($codigo){
         $documento      = Documento::where('id', '=', $codigo)->get();
         $tipoDocumento  = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
-        $dadosDocumento = DadosDocumento::join('users', 'users.id', '=', 'dados_documento.aprovador_id')->where('documento_id', '=', $documento[0]->tipo_documento_id)->get(['aprovador_id', 'users.name as aprovador']);
+        // $dadosDocumento = DadosDocumento::join('users', 'users.id', '=', 'dados_documento.aprovador_id')->where('documento_id', '=', $documento[0]->tipo_documento_id)->get(['aprovador_id', 'users.name as aprovador', 'revisao']);
+        $dadosDocumento = DadosDocumento::join('users', 'users.id', '=', 'dados_documento.aprovador_id')->where('documento_id', '=', $documento[0]->id)->get(['aprovador_id', 'users.name as aprovador', 'revisao']);
         $docHtmlContent = "";
 
         // dd($dadosDocumento);
@@ -527,7 +545,7 @@ class DocumentacaoController extends Controller
                                                     <tr>
                                                         <td align="left">
                                                             <span style="color:#0e3d5e; font-size:14px; text-transform: uppercase;">
-                                                                '.$documento[0]->nome.'
+                                                                '.explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0].'
                                                             </span>
                                                         </td align="right">
                                                         <td>
@@ -544,7 +562,7 @@ class DocumentacaoController extends Controller
                                             
                                             <div class="pg-heading-info">
                                                 <br><br>
-                                                <h2>'.$documento[0]->nome.'</h2>
+                                                <h2>'.explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0].'</h2>
                                             </div>
 
                                             <div class="pg-info">
@@ -557,7 +575,7 @@ class DocumentacaoController extends Controller
                                                         </tr>
                                                         <tr>
                                                             <td><b>Data:</b>'.date("d/m/Y", strtotime( $documento[0]->updated_at)).'</td>
-                                                            <td><b>Revisão:</b> 0</td>
+                                                            <td><b>Revisão:</b> '.$dadosDocumento[0]->revisao.'</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -580,7 +598,7 @@ class DocumentacaoController extends Controller
                                                         </td>
                                                         <td>
                                                             <b>Data:</b>'.date("d/m/Y", strtotime( $documento[0]->updated_at)).'<br>
-                                                            <b>Revisão:</b> 0
+                                                            <b>Revisão:</b> '.$dadosDocumento[0]->revisao.'
                                                         </td>
                                                     </tr>
                                                     
@@ -614,7 +632,7 @@ class DocumentacaoController extends Controller
                                                     <tr>
                                                         <td align="left">
                                                             <span style="color:#0e3d5e; text-transform: uppercase;">
-                                                                <strong>'.$documento[0]->nome.'</strong>
+                                                                <strong>'.explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0].'</strong>
                                                             </span>
                                                         </td align="right">
                                                         <td>
@@ -630,7 +648,7 @@ class DocumentacaoController extends Controller
                                             <img width="819" height="580" src="'.public_path('/doc_templates/PG/first-page-bg.png').'">
                                             
                                             <div class="pg-heading-info">
-                                                <h1>'.$documento[0]->nome.'</h1>
+                                                <h1>'.explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0].'</h1>
                                             </div>
 
                                             <div class="pg-info">
@@ -662,7 +680,7 @@ class DocumentacaoController extends Controller
                                                             </td>
                                                             <td>
                                                                 <b>Data:</b>'.date("d/m/Y", strtotime( $documento[0]->updated_at)).'<br>
-                                                                <b>Revisão:</b> 0
+                                                                <b>Revisão:</b> '.$dadosDocumento[0]->revisao.'
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -706,11 +724,11 @@ class DocumentacaoController extends Controller
                                                         <td colspan="3"><span class="text-small" style="color:#ffffff"><strong>INSTRUÇÃO DE TRABALHO</strong></span></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="3"><span class="text-small" style="color:#ffffff">'.$documento[0]->nome.'</span></td>
+                                                        <td colspan="3"><span class="text-small" style="color:#ffffff">'.explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0].'</span></td>
                                                     </tr>
                                                     <tr>
                                                         <td><span class="text-small" style="color:#ffffff"><strong>Código: '.$documento[0]->codigo.' </strong></span></td>
-                                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: 0</strong></span></td>
+                                                        <td><span class="text-small" style="color:#ffffff"><strong>Revisão: '.$dadosDocumento[0]->revisao.'</strong></span></td>
                                                         <td><span class="text-small" style="color:#ffffff"><strong>Data: '. date("d/m/Y", strtotime( $documento[0]->updated_at)).'</strong></span></td>
                                                     </tr>
                                                 </tbody>
@@ -767,6 +785,99 @@ class DocumentacaoController extends Controller
                 break;
         }
     }
+
+
+    protected function requestReview(Request $request) {
+        $documento = Documento::where('id', '=', $request->document_id)->get();
+        $dados_documento = DadosDocumento::where('documento_id', '=', $documento[0]->id)->get();
+        
+        $dados_documento[0]->observacao = Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO;
+        $dados_documento[0]->necessita_revisao = true;
+        $dados_documento[0]->id_usuario_solicitante = Auth::user()->id;
+        $dados_documento[0]->save();
+
+        // Notificações
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("Existe uma solicitação de revisão para o documento " . $documento[0]->codigo . ".", true, $user->id, $documento[0]->id);
+        }
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO, $documento[0]->id);
+
+        return redirect()->route('documentacao')->with('request_review_success', 'message');
+    }
+
+
+    protected function decidesOnReviewRequest(Request $request) {
+        $decisao = $request->decisao;
+        $idDoc = $request->documento_id;
+
+        $documento = Documento::where('id', '=', $idDoc)->get();
+        $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+        $workflow  = Workflow::where('documento_id', '=', $idDoc)->get();
+
+        if($decisao == "aprovar") {
+            $revisaoAtual = $dadosDoc[0]->revisao;
+            $revisaoNova = (int) $revisaoAtual + 1;
+            $revisaoNova = ($revisaoNova <= 9) ? "0{$revisaoNova}" : $revisaoNova;
+
+            // Notificações
+            $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revisaoNova. " iniciada.", false, $user->id, $idDoc);
+            }
+
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " iniciou a revisão " .$revisaoNova. " .", true, $dadosDoc[0]->elaborador_id, $idDoc);
+            if($dadosDoc[0]->id_usuario_solicitante != $dadosDoc[0]->elaborador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " iniciou a revisão " .$revisaoNova. " .", false, $dadosDoc[0]->id_usuario_solicitante, $idDoc);
+
+            // Histórico
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA, $idDoc);
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
+
+
+            // dados_documento
+            $dadosDoc[0]->finalizado = false;
+            $dadosDoc[0]->observacao = Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA;
+            $dadosDoc[0]->necessita_revisao = false;
+            $dadosDoc[0]->id_usuario_solicitante = null;
+            $dadosDoc[0]->revisao = $revisaoNova;
+            $dadosDoc[0]->justificativa_rejeicao_revisao = null;
+            $dadosDoc[0]->save();
+
+            // workflow
+            $workflow[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
+            $workflow[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
+            $workflow[0]->save();
+
+
+            // Criando uma cópia do documento original para a nova revisão (isso será usado quando quiser ver todas as versões do doc)
+            if( Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html") ) {
+                $newName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0] . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova;
+                Storage::copy("uploads/".$documento[0]->nome.".html", "uploads/". $newName . ".html");
+                $documento[0]->nome = $newName;
+                $documento[0]->save();
+            }
+
+            return redirect()->route('documentacao')->with('approves_request_review_success', 'message');
+
+        } else if($decisao == "rejeitar") {
+            $dadosDoc[0]->observacao = Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_REJEITADA;
+            $dadosDoc[0]->necessita_revisao = false;
+            $dadosDoc[0]->justificativa_rejeicao_revisao = $request->justificativaReprovacaoDaRequisicao;
+            $dadosDoc[0]->save();
+
+            // Notificações
+            \App\Classes\Helpers::instance()->gravaNotificacao("A solicitação de revisão do documento " . $documento[0]->codigo . " foi rejeitada pelo setor Qualidade.", false, $dadosDoc[0]->id_usuario_solicitante, $documento[0]->id);
+
+            // Histórico
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_REJEITADA, $documento[0]->id);
+
+            return redirect()->route('documentacao')->with('reject_request_review_success', 'message');
+        }
+    }
+
+
 
     /*
     *  WORKFLOW      
@@ -1276,9 +1387,9 @@ class DocumentacaoController extends Controller
         $base_query = DB::table('documento')
                                 ->join('dados_documento',           'dados_documento.documento_id',             '=',    'documento.id')
                                 ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
-                                ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
+                                ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id') 
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
@@ -1299,7 +1410,7 @@ class DocumentacaoController extends Controller
                             ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
                             ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
                             ->select('documento.*', 
-                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id',
+                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao',
                                     'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                     'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                             );

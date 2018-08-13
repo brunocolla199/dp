@@ -22,6 +22,12 @@
 		<input type="hidden" name="status" id="status" value="reject_list_success">
     @elseif (session('resend_list_success'))
 		<input type="hidden" name="status" id="status" value="resend_list_success">
+    @elseif (session('request_review_success'))
+		<input type="hidden" name="status" id="status" value="request_review_success">
+    @elseif (session('reject_request_review_success'))
+		<input type="hidden" name="status" id="status" value="reject_request_review_success">
+    @elseif (session('approves_request_review_success'))
+		<input type="hidden" name="status" id="status" value="approves_request_review_success">
     @endif
 
     <script>
@@ -42,6 +48,12 @@
                 showToast('Sucesso!', 'A lista de presença foi rejeitada.', 'success');
             } else if(status == "resend_list_success") {
                 showToast('Sucesso!', 'A lista de presença foi reenviada ao Capital Humano.', 'success');
+            } else if(status == "request_review_success") {
+                showToast('Sucesso!', 'O seu pedido de revisão do documento foi enviado à Qualidade.', 'success');
+            } else if(status == "reject_request_review_success") {
+                showToast('Sucesso!', 'O pedido de revisão do documento foi rejeitado com sucesso.', 'success');
+            } else if(status == "approves_request_review_success") {
+                showToast('Sucesso!', 'O pedido de revisão do documento foi aprovado com sucesso e o workflow de revisão já está em andamento.', 'success');
             }
         });
     </script>
@@ -358,16 +370,17 @@
 
                                             <div class="row mt-5 margin-top-1percent">
                                                 <div class="table-responsive">
-                                                    <table class="table">
+                                                    <table class="table table-condensed">
                                                         <thead>
                                                             <tr>
                                                                 <th>Título do Documento</th>
-                                                                <th>Código</th>
+                                                                <th class="text-nowrap">Código</th>
+                                                                <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Tipo do Documento</th>
                                                                 <th>Status</th>
                                                                 <th>Modificado</th>
                                                                 <th>Validade</th>
-                                                                <th>Formulários</th>
+                                                                <th class="text-nowrap text-center">Ações</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -378,11 +391,13 @@
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $doc->id) }}
                                                                             <td>
-                                                                                {!! Form::submit($doc->nome, ['class' => 'a-href-submit']) !!}
+                                                                                {!! Form::submit( explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0], ['class' => 'a-href-submit']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td> {{ $doc->codigo }} </td>
+                                                                        <td class="text-nowrap"> {{ $doc->codigo }} </td>
+                                                                        
+                                                                        <td class="text-nowrap text-center"> {{ $doc->revisao }} </td>
 
                                                                         <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $doc->nome_tipo }} </td>
                                                                         <td>
@@ -390,11 +405,8 @@
                                                                         </td>
                                                                         <td>{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
                                                                         <td>{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
-                                                                        <td>
-                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false">
-                                                                                <i class="fa fa-exchange text-info"></i>
-                                                                                Vínculos
-                                                                            </a>
+                                                                        <td class="text-nowrap text-center">
+                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -403,14 +415,16 @@
                                                             @if( count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
                                                                     <tr>
-                                                                    {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $docF->id) }}
                                                                             <td>
-                                                                                {!! Form::submit($docF->nome, ['class' => 'a-href-submit']) !!}
+                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td> {{ $docF->codigo }} </td>
+                                                                        <td class="text-nowrap"> {{ $docF->codigo }} </td>
+
+                                                                        <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
                                                                         <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
                                                                         <td>
@@ -418,11 +432,14 @@
                                                                         </td>
                                                                         <td>{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
                                                                         <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
-                                                                        <td>
-                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true">
-                                                                                <i class="fa fa-exchange text-info"></i>
-                                                                                Vínculos
-                                                                            </a>
+                                                                        
+                                                                        <td class="text-nowrap text-center">
+                                                                            <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+
+                                                                            <!-- Só pode mostrar o botão se ainda não foi solicitada a revisão -->
+                                                                            @if( !$docF->necessita_revisao )
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a>
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -446,7 +463,7 @@
             <!-- End Page Content -->
             <!-- ============================================================== -->
             
-             <!-- Modal para vínculos com formulários -->
+            <!-- Modal para vínculos com formulários -->
             <div id="vinculos-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-lg">
                     
@@ -484,6 +501,29 @@
             <!-- /.modal para vínculos com formulários -->
 
 
+            <!-- Modal de confirmação - deseja mesmo solicitar uma revisão neste documento -->
+            <div class="modal fade bs-example-modal-sm" id="solicitar-revisao-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Deseja solicitar uma revisão neste documento? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'documentacao.request-review', 'method' => 'POST']) }}
+                                {{ Form::hidden('document_id', '', ['id' => 'document_id_request_review']) }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {!! Form::open() !!}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo solicitar uma revisão neste documento -->
+
+
             <script>
 
                 // Material Date picker   
@@ -517,6 +557,7 @@
                         $('#form-generate-document').append($(input));
                         $('#form-generate-document').submit();
                     });
+
                     $("#createDocument").click(function(){
                         var input = $("<input>").attr("type", "hidden").attr("name", "action").val("create");
                         $('#form-generate-document').append($(input));
@@ -547,6 +588,16 @@
                     // Chama trigger quando a página é recarregada
                     $("#setor_dono_doc").val( $("#setor_dono_doc").val() ).trigger("change");
 
+                    // Ao clicar no botão que abrirá o modal de confirmação para revisão do documento
+                    $(".btn-open-confirm-review").click(function(){
+                        var id = $(this).data('id');
+                        $("#document_id_request_review").val(id);
+                        
+                        $("#solicitar-revisao-modal").modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                    });
                 });
             </script>
 
@@ -570,85 +621,78 @@
 
 
 @section('footer')
-<script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
-<script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
-<script>
-    
-    function viewFormulario(id){
-        $("#form-view-formulario").append("<input type='hidden' name='formulario_id' value="+id+" >");
-        $("#form-view-formulario").submit();
-    }
-    
-    $(function(){
-
-        /*
-        * 
-        * MultiSelect de NOVA ÁREA DE INTERESSE
-        *
-        */
-        $('#optgroup-newAreaDeInteresse').multiSelect({
-            selectableOptgroup: true,
-            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
-            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
-            afterInit: function(ms){
-                var that = this,
-                    $selectableSearch = that.$selectableUl.prev(),
-                    $selectionSearch = that.$selectionUl.prev(),
-                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
-
-                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                .on('keydown', function(e){
-                if (e.which === 40){
-                    that.$selectableUl.focus();
-                    return false;
-                }
-                });
-
-                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                .on('keydown', function(e){
-                if (e.which == 40){
-                    that.$selectionUl.focus();
-                    return false;
-                }
-                });
-            },
-            afterSelect: function(){
-                this.qs1.cache();
-                this.qs2.cache();
-            },
-            afterDeselect: function(values){
-                this.qs1.cache();
-                this.qs2.cache();
-            }
-        });
-
-
-        $("[data-target='#vinculos-form-modal']").click(function(){
-            var forms = JSON.parse($(this).attr('data-forms'));
-            var id = $(this).attr('data-id');
-            var status = $(this).attr('data-finalizado');
-
-            $("#save-link-form").append("<input type='hidden' name='documento_id' value='"+id+"' >")
-            var select = $(".select2-vinculos").select2({
-                templateSelection: function (d) { 
-                    return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
-                },
-            });
-            select.val(forms);
-            select.trigger('change');   
-            
-            
-        });
+    <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
+    <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
+    <script>
         
-        $(".btn-save-link").click(function(){
-            $("#save-link-form").submit();
+        function viewFormulario(id){
+            $("#form-view-formulario").append("<input type='hidden' name='formulario_id' value="+id+" >");
+            $("#form-view-formulario").submit();
+        }
+        
+        $(function(){
+            /*
+            * 
+            * MultiSelect de NOVA ÁREA DE INTERESSE
+            *
+            */
+            $('#optgroup-newAreaDeInteresse').multiSelect({
+                selectableOptgroup: true,
+                selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                afterInit: function(ms){
+                    var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                    .on('keydown', function(e){
+                    if (e.which === 40){
+                        that.$selectableUl.focus();
+                        return false;
+                    }
+                    });
+
+                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                    .on('keydown', function(e){
+                    if (e.which == 40){
+                        that.$selectionUl.focus();
+                        return false;
+                    }
+                    });
+                },
+                afterSelect: function(){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                },
+                afterDeselect: function(values){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                }
+            });
+
+
+            $("[data-target='#vinculos-form-modal']").click(function(){
+                var forms = JSON.parse($(this).attr('data-forms'));
+                var id = $(this).attr('data-id');
+                var status = $(this).attr('data-finalizado');
+
+                $("#save-link-form").append("<input type='hidden' name='documento_id' value='"+id+"' >")
+                var select = $(".select2-vinculos").select2({
+                    templateSelection: function (d) { 
+                        return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
+                    },
+                });
+                select.val(forms);
+                select.trigger('change');   
+            });
+            
+            $(".btn-save-link").click(function(){
+                $("#save-link-form").submit();
+            });
+
         });
-
-    });
-     
-
-</script>
-
-
+    </script>
 @endsection

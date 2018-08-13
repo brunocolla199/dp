@@ -111,6 +111,12 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR                 = "Reenviado pelo Elaborador";
     
     public static $DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA          = "Aguardando lista de presença";
+
+    public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO                = "Solicitado revisão do documento";
+    
+    public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_REJEITADA      = "Solicitação de revisão do documento rejeitada";
+    
+    public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA       = "Solicitação de revisão do documento aprovada";
     
     
     // Extras
@@ -119,6 +125,8 @@ class Constants {
     public static $ID_SETOR_CAPITAL_HUMANO = 16; // Pessoas & Organização
     
     public static $ID_USUARIO_ADMIN_SETOR_QUALIDADE = 1; // [CELISE] Verificar se for importado do AD
+    
+    public static $SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS = "_rev";
 }
 
 

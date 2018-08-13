@@ -613,7 +613,8 @@
                                                        		<br/>Nesse momento o elaborador visualiza as informações sugeridas pela Qualidade, realiza as correções e segue com o Workflow, enviando novamente a Qualidade para análise.</p>
                                                        <p>
                                                        		<!--<img src="assets/images/Imagens/rejeicao.jpg" alt="template" class="img-responsive" /> -->
-                                                       		<img src="{{ asset('images/Imagens/rejeicao.jpg') }}" class="img-fluid" alt="Correção das sugestões">
+                                                            <!-- This path came wrong and I corrected -->
+                                                       		<img src="{{ asset('images/Imagens/rejeicaoo.jpg') }}" class="img-fluid" alt="Correção das sugestões">
                                                        	<p>
                                                     </div>
                                                 </div>
