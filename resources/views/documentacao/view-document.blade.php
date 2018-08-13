@@ -24,7 +24,8 @@
                 <div class="col-3">
                     <button class="btn btn-lg btn-info" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Ver Linha do Tempo</button>
                 </div>
-                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                <?php $revisoes = \App\Classes\Helpers::instance()->getListAllReviewsDocument($nome); ?>
+                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  count($revisoes) > 1)
                     <div class="col-3">
                         <button class="btn btn-lg btn-warning" type="button" data-toggle="collapse" data-target="#revisoesDoc" aria-expanded="false" aria-controls="revisoesDoc">Revisões Anteriores</button>
                     </div>
@@ -88,9 +89,16 @@
                                            <div class="col-md-12 col-sm-12 p-20">
                                                 <h3 class="card-title text-success">Revisões do documento: <b>{{ $nome }}</b></h3>
                                                 <div class="list-group">
-                                                    @foreach(\App\Classes\Helpers::instance()->getListAllReviewsDocument($nome) as $rev)
-                                                        <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="list-group-item" target="_blank">Revisão <b>{{ explode(".html", explode("_rev", $rev)[1])[0] }}</b>: {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $rev)[0] }}</a>
-                                                    @endforeach
+                                                    @if(count($revisoes) > 1)
+                                                        @foreach($revisoes as $rev)
+                                                            {!! Form::open(['route' => 'documentacao.make-doc-from-name', 'method' => 'POST', 'target' => '_blank']) !!}
+                                                                {!! Form::hidden('nome', $rev) !!}
+                                                                {!! Form::hidden('tipo_doc', $tipo_doc) !!}
+                                                                {!! Form::hidden('document_id', $document_id) !!}
+                                                                <button type="submit" class="list-group-item btn-block mt-3">  <span style="font-size: 20px">Revisão <b>{{ explode(".html", explode("_rev", $rev)[1])[0] }}</b>:</span> {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $rev)[0] }}  </button>
+                                                            {!! Form::close() !!}
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

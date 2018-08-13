@@ -28,6 +28,8 @@
 		<input type="hidden" name="status" id="status" value="reject_request_review_success">
     @elseif (session('approves_request_review_success'))
 		<input type="hidden" name="status" id="status" value="approves_request_review_success">
+    @elseif (session('document_name_already_exists'))
+		<input type="hidden" name="status" id="status" value="document_name_already_exists">
     @endif
 
     <script>
@@ -54,6 +56,8 @@
                 showToast('Sucesso!', 'O pedido de revisão do documento foi rejeitado com sucesso.', 'success');
             } else if(status == "approves_request_review_success") {
                 showToast('Sucesso!', 'O pedido de revisão do documento foi aprovado com sucesso e o workflow de revisão já está em andamento.', 'success');
+            } else if(status == "document_name_already_exists") {
+                showToast('Nome já existe!', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!', 'warning');
             }
         });
     </script>
@@ -274,6 +278,12 @@
                                                                 @foreach ($errors->all() as $error)
                                                                     <li>{{ $error }}</li>
                                                                 @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    @elseif (session('document_name_already_exists'))
+                                                        <div class="alert alert-warning">
+                                                            <ul>
+                                                                <li>{{ session('document_name_already_exists') }}</li>
                                                             </ul>
                                                         </div>
                                                     @endif
