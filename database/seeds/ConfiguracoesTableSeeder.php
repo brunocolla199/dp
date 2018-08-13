@@ -23,7 +23,7 @@ class ConfiguracoesTableSeeder extends Seeder
 
 
         $user = User::where('username', '=', 'speedsoft')->get();
-        $idAdmin = ($user[0] != null) ? $user[0]->id : Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE;
+        $idAdmin = ( count($user) > 0 && $user[0] != null) ? $user[0]->id : Constants::$ID_USUARIO_ADMIN_SETOR_QUALIDADE;
 
         $codigo2 = new Configuracao();
         $codigo2->numero_padrao_codigo = "";
