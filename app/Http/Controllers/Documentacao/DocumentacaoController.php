@@ -345,6 +345,7 @@ class DocumentacaoController extends Controller
         $documento->save();
         
         // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
+        dd($novoDocumento);
         $dados_documento = new DadosDocumento();
         $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
         $dados_documento->status                            = true;
@@ -1484,7 +1485,7 @@ class DocumentacaoController extends Controller
             \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
         } else {
             // U => Estamos em uma revisão do documento e já existe lista de presença, ou seja, é necessário deletar a antiga e subir a nova
-            
+
             // Exclui lista antiga
             Storage::disk('s3')->delete('lists/' . $listaPresenca[0]->nome .".". $listaPresenca[0]->extensao);
 
