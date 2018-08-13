@@ -64,7 +64,7 @@
                 </div>
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="">
-                        <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-xl pull-right m-l-10" data-toggle="tooltip" title="{{ count(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id )) }}">
+                        <button class="right-side-toggle waves-light btn-success btn btn-circle btn-xl pull-right m-l-10   btn-badge badge-top-right" data-count="{{ count(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id )) }}">
                             <i class="ti-comment-alt text-white"></i>
                         </button>
                     </div>

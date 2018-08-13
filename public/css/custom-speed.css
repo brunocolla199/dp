@@ -138,6 +138,36 @@ div .slimScrollDiv {
     width: 100%!important;
 }
 
+/* Badge de Notificação - Botão NOTIFICAÇÕES  */
+.btn-badge {
+    z-index: 9;
+}
+
+.btn-badge:before {
+    content: attr(data-count);
+    top: -7px;
+    left: -7px;
+    display: block;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+
+    position: absolute;
+    background: rgba(255, 0, 0);
+    height:2rem;
+    right:1.5rem;
+    width:2rem;
+    text-align: center;
+    line-height: 2rem;;
+    font-size: 1rem;
+    border-radius: 50%;
+    color:white;
+    border:1px solid red;
+}
+
+.btn-badge.badge-top-right:before {
+    left: auto;
+    right: -7px;
+}
+
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
 	border: 1px solid black;
