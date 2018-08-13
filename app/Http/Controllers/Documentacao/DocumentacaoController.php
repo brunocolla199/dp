@@ -766,9 +766,10 @@ class DocumentacaoController extends Controller
 
     public function makeDocumentPdfFromName(Request $request){
         // dd($request->all());
-        $nome = $request->nome;
-        $revisao = explode(".html", explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $nome)[1])[0];
-        $documento      = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')->where('documento.id', '=', $request->document_id)->get();
+        $nome      = $request->nome;
+        $revisao   = explode(".html", explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $nome)[1])[0];
+        $documento = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')->where('documento.id', '=', $request->document_id)->get();
+        $aprovador = User::where('id', '=', $documento[0]->aprovador_id)->get();
         $docHtmlContent = "";
 
         switch ($request->tipo_doc) {
@@ -826,7 +827,7 @@ class DocumentacaoController extends Controller
                                                     
                                                     <tbody>
                                                         <tr>
-                                                            <td><b>Aprovado Por:</b> '.$documento[0]->aprovador.' </td>
+                                                            <td><b>Aprovado Por:</b> '.$aprovador[0]->name.' </td>
                                                             <td><b>Código:</b> '.$documento[0]->codigo.'</td>
                                                         </tr>
                                                         <tr>
@@ -849,7 +850,7 @@ class DocumentacaoController extends Controller
                                                 <tbody>
                                                     <tr>
                                                         <td align="left">
-                                                            <b>Aprovado Por:</b> '.$documento[0]->aprovador.'<br> 
+                                                            <b>Aprovado Por:</b> '.$aprovador[0]->name.'<br> 
                                                             <b>Código:</b> '.$documento[0]->codigo.'
                                                         </td>
                                                         <td>
@@ -911,7 +912,7 @@ class DocumentacaoController extends Controller
                                                 <table>
                                                     <tbody>
                                                         <tr>
-                                                            <td><b>Aprovado Por:</b> '.$documento[0]->aprovador.' </td>
+                                                            <td><b>Aprovado Por:</b> '.$aprovador[0]->name.' </td>
                                                             <td><b>Código:</b> '.$documento[0]->codigo.'</td>
                                                         </tr>
                                                         <tr>
@@ -931,7 +932,7 @@ class DocumentacaoController extends Controller
                                                     <tbody>
                                                         <tr>
                                                             <td align="left">
-                                                                <b>Aprovado Por:</b> '.$documento[0]->aprovador.'<br> 
+                                                                <b>Aprovado Por:</b> '.$aprovador[0]->name.'<br> 
                                                                 <b>Código:</b> '.$documento[0]->codigo.'
                                                             </td>
                                                             <td>
