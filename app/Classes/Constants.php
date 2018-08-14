@@ -122,7 +122,7 @@ class Constants {
     // Extras
     public static $ID_SETOR_QUALIDADE = 1;
 
-    public static $ID_SETOR_CAPITAL_HUMANO = 16; // Pessoas & Organização
+    public static $ID_SETOR_CAPITAL_HUMANO = 14; // Pessoas & Organização
     
     public static $ID_USUARIO_ADMIN_SETOR_QUALIDADE = 1; // [CELISE] Verificar se for importado do AD
     
