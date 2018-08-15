@@ -107,6 +107,7 @@
                                         </ul>
                                         <!-- Tab panes -->
                                         <div class="tab-content">
+
                                             <div class="collapse" id="setores-empresa" role="tabpanel">
                                                 <div class="p-20">
                                                     <div class="row">                                                        
@@ -235,16 +236,18 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach($setoresEmpresa as $setor)
-                                                                        <tr>
-                                                                            <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
-                                                                            <td>{{ $setor->sigla }}</td>
-                                                                            <td>{{ $setor->descricao }}</td>
-                                                                            <td class="text-nowrap">
-                                                                                <center>
-                                                                                    <a href="{{ route('configuracoes.link.approver_sector', ['id' => $setor->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Definir Aprovadores"> <i class="fa fa-chain text-info"></i> </a>
-                                                                                </center>
-                                                                            </td>
-                                                                        </tr>
+                                                                        @if( $setor->nome != Constants::$NOME_SETOR_SEM_SETOR )
+                                                                            <tr>
+                                                                                <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
+                                                                                <td>{{ $setor->sigla }}</td>
+                                                                                <td>{{ $setor->descricao }}</td>
+                                                                                <td class="text-nowrap">
+                                                                                    <center>
+                                                                                        <a href="{{ route('configuracoes.link.approver_sector', ['id' => $setor->id]) }}" class="sa-warning" data-toggle="tooltip" data-original-title="Definir Aprovadores"> <i class="fa fa-chain text-info"></i> </a>
+                                                                                    </center>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endif
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -253,6 +256,7 @@
 
                                                 </div>
                                             </div>
+
                                         </div>
 
                                     </div>

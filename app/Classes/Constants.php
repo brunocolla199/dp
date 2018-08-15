@@ -23,6 +23,8 @@ class Constants {
     // Tipos de Setores
     public static $ID_TIPO_SETOR_SETOR_NORMAL   = 1;
     
+    public static $NOME_SETOR_SEM_SETOR         = "Sem Setor";
+    
     // public static $ID_TIPO_SETOR_DIRETORIA      = 2;
     
     // public static $ID_TIPO_SETOR_GERENCIA       = 3;
@@ -87,6 +89,8 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO               = "Lista de Presença aprovada pelo Capital Humano";
     
     public static $DESCRICAO_WORKFLOW_EM_TREINAMENTO                        = "Em treinamento";
+    
+    public static $DESCRICAO_WORKFLOW_EM_REVISAO                            = "Em revisão";
 
     public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO                   = "Documento divulgado";
     
@@ -117,6 +121,13 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_REJEITADA      = "Solicitação de revisão do documento rejeitada";
     
     public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA       = "Solicitação de revisão do documento aprovada";
+    
+    public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1             = "Revisão ";
+    public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_2             = " do documento foi cancelada.";
+    
+    public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_PARTE_1      = "Revisão ";
+    public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_PARTE_2      = " do documento foi restaurada.";
+
     
     
     // Extras

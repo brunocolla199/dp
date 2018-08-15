@@ -143,7 +143,7 @@ class ConfiguracoesController extends Controller
         $usersAndSectors = [];
         $grupoAtual      = [];
 
-        $allSectors = Setor::orderBy('nome')->get();
+        $allSectors = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get();
         foreach($allSectors as $key => $sector) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $sector->id)->get();
@@ -154,10 +154,10 @@ class ConfiguracoesController extends Controller
         }
 
         //Khalil was in here
-
+        /* // adiós y lamento, amigo
         $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
         $usersAndSectors['Sem Setor'] = $noSectorsUsers;
-        
+        */
         //Khalil is out
 
 
@@ -182,7 +182,7 @@ class ConfiguracoesController extends Controller
         $usersAndSectors = [];
         $grupoAtual      = [];
 
-        $allSectors = Setor::orderBy('nome')->get();
+        $allSectors = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get();
         foreach($allSectors as $key => $sector) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $sector->id)->get();
@@ -193,10 +193,10 @@ class ConfiguracoesController extends Controller
         }
 
         //Khalil was in here
-
+        /* // adiós y lamento, amigo
         $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
         $usersAndSectors['Sem Setor'] = $noSectorsUsers;
-        
+        */
         //Khalil is out
 
 
@@ -231,10 +231,11 @@ class ConfiguracoesController extends Controller
         }
         
         //Khalil was in here
-
-        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
-        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
         
+        $noSector_sector = Setor::where('nome', '=', Constants::$NOME_SETOR_SEM_SETOR)->get(); // D A F U K
+        $noSectorsUsers = User::whereNull('setor_id')->orWhere('setor_id', '=', $noSector_sector[0]->id)->get()->pluck('name', 'id');
+        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
+
         //Khalil is out
 
 
@@ -249,7 +250,7 @@ class ConfiguracoesController extends Controller
     public function linkApproverSector($id) {
         $usersAndSectors = [];
 
-        $allSectors = Setor::orderBy('nome')->get();
+        $allSectors = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get();
         foreach($allSectors as $key => $sector) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $sector->id)->get();
@@ -261,8 +262,10 @@ class ConfiguracoesController extends Controller
         
         //Khalil was in here
         // And the Big John had to come adjust
+        /* // adiós y lamento, amigo
         $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
         $usersAndSectors['Sem Setor'] = $noSectorsUsers;        
+        */
         //Khalil is out
         // Big John: "Given mission is accomplished mission"
 

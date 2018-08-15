@@ -48,7 +48,6 @@ class SetorTableSeeder extends Seeder
         /*
         * Setores "Normais" da empresa
         */
-
         $administrativo                 = new Setor();
         $administrativo->nome           = "Administrativo";
         $administrativo->sigla          = "ADM";
@@ -188,6 +187,16 @@ class SetorTableSeeder extends Seeder
         $transporte->descricao   = "Responsável em atuar com a rotina de operação de transporte.";
         $transporte->tipo_setor_id = Constants::$ID_TIPO_SETOR_SETOR_NORMAL;
         $transporte->save();
+        
+        /*
+        * Sem Setor - Criado para usuários que acabaram de ser importados do AD
+        */
+        $sem_setor              = new Setor();
+        $sem_setor->nome        = "Sem Setor";
+        $sem_setor->sigla       = "SS";
+        $sem_setor->descricao   = "Setor criado para vincular usuários que acabaram de ser importados do AD.";
+        $sem_setor->tipo_setor_id = Constants::$ID_TIPO_SETOR_SETOR_NORMAL;
+        $sem_setor->save();
 
 
     }

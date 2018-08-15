@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/documentos/salvaObservacao',	    	['as' => 'ajax.documentos.salvaObservacao',				'uses' => 'AjaxController@salvaObservacao']);
 	Route::post('ajax/documentos/getObservacoes',	    	['as' => 'ajax.documentos.getObservacoes',				'uses' => 'AjaxController@getObservacoes']);
 	Route::post('ajax/documentos/okJustifyRejectRequest',	['as' => 'ajax.documentos.okJustifyRejectRequest',		'uses' => 'AjaxController@okJustifyRejectRequest']);
+	Route::post('ajax/documentos/okJustifyCancelRequest',	['as' => 'ajax.documentos.okJustifyCancelRequest',		'uses' => 'AjaxController@okJustifyCancelRequest']);
 
 
     /*
@@ -71,6 +72,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('save-link-form',	     		['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
 		Route::post('request-review',	     		['as' => 'documentacao.request-review',          		'uses' => 'Documentacao\DocumentacaoController@requestReview']);
 		Route::post('decides-on-review-request',	['as' => 'documentacao.decides-on-review-request', 		'uses' => 'Documentacao\DocumentacaoController@decidesOnReviewRequest']);
+		Route::post('cancel-review',				['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
 	});
     
 	/*

@@ -35,6 +35,30 @@
             
             <!-- Start Page Content -->
             <div class="row">
+                
+                <!-- Card "Documento em Revisão" -->
+                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  !$necessita_revisao  &&  $em_revisao  )    
+                    <div class="col-md-12">
+                        <div class="card card-outline-info">
+                            <div class="card-header">
+                                <h4 class="m-b-0 text-white">Este documento está em revisão -  Validade: <b>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $validadeDoc)->format('d/m/Y') }}</b>  </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <p class="card-text">Você pode cancelar a revisão à qualquer momento clicando no botão ao lado.</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#confirm-cancel-review-modal" data-backdrop="static">Cancelar Revisão</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+
+                <!-- Card Principal -->
                 <div class="col-md-12 card" style="min-height: 600px">
                     <div class="card-body">
 
@@ -141,8 +165,8 @@
 
                             @if($finalizado)
                                 
-                                <!-- // se o usuário que está vendo for o mesmo que realizou a solicitação de revisão e se a justificativa possui conteúdo, devo mostrar a div abaixo -->
-                                @if(   ($justificativa_rejeicao_revisao != null && $justificativa_rejeicao_revisao != "") &&  Auth::user()->id == $id_usuario_solicitante  ) 
+                                <!-- Cards de justificativa para o solicitante de revisão: rejeição e cancelamento -->
+                                @if(  ($justificativa_rejeicao_revisao != null && $justificativa_rejeicao_revisao != "") &&  Auth::user()->id == $id_usuario_solicitante  &&  !$em_revisao ) 
                                     <div class="col-md-12" id="justification-reject-review-div">
                                         <div class="row text-center">
                                             <div class="col-md-9">
@@ -158,8 +182,23 @@
 
                                         </div>
                                     </div>
+                                @elseif( ($justificativa_cancelar_revisao != null && $justificativa_cancelar_revisao != "") &&  Auth::user()->id == $id_usuario_solicitante  &&  !$necessita_revisao )
+                                    <div class="col-md-12" id="justification-cancel-review-div">
+                                        <div class="row text-center">
+                                            <div class="col-md-9">
+                                                <div class="ribbon-wrapper card ">
+                                                    <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE CANCELAMENTO DA REVISÃO</div> 
+                                                    <p class="ribbon-content"><b>Qualidade:</b> {{ $justificativa_cancelar_revisao }} </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3 d-flex flex-column">    
+                                                <button type="button" id="ok-justify-cancel" class="btn btn-block btn-lg btn-secondary mt-3">Ok, entendi</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 @endif
-                                <!-- // ao fim, deve ter um botão "Entendido" que, ao ser clicado, dispara um AJAX e limpa o campo 'justificativa', para que a mensagem não apareça mais -->
 
                                 <div class="row h-100">
                                     <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
@@ -444,9 +483,9 @@
                         
                         @endif
 
-
                     </div>
                 </div>
+
             </div>
             <!-- End Page Content -->
 
@@ -651,6 +690,44 @@
             </div>
             <!-- /.Modal de confirmação - ddeseja mesmo aprovar a solicitação de revisão neste documento -->
 
+
+
+            <!-- Modal de confirmação - deseja mesmo cancelar a revisão do documento -->
+            <div class="modal fade bs-example-modal-sm" id="confirm-cancel-review-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Cancelar revisão</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        {{ Form::open(['route' => 'documentacao.cancel-review', 'method' => 'POST']) }}
+                            {{ Form::hidden('documento_id', $document_id) }}
+                            <div class="modal-body"> 
+                                Deseja, realmente, reverter todas alterações realizadas e cancelar a revisão deste documento ?
+                                <div class="row mt-3">
+                                    <div class="form-group">
+                                        <div class="col-md-12 control-label font-bold">
+                                            {!! Form::label('justificativaCancelamentoRevisao', 'JUSTIFICATIVA:') !!}
+                                        </div>
+                                        <div class="col-md-12">
+                                            {!! Form::textarea('justificativaCancelamentoRevisao', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger waves-effect">Rejeitar</button>
+                            </div>
+                        {{ Form::close() }}
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo cancelar a revisão do documento -->
+
+
         </div>
     </div>
 
@@ -760,6 +837,17 @@
         var obj = {'document_id': document_id};        
         ajaxMethod('POST', " {{ URL::route('ajax.documentos.okJustifyRejectRequest') }} ", obj).then(function(result) {
             $("#justification-reject-review-div").hide(1000);
+        }, function(err) {
+        });
+    });
+
+    // Quando o solicitante da revisão do documento aceitar a justificativa de cancelamento da mesma
+    $("#ok-justify-cancel").click(function() {
+        var document_id = "{{$document_id}}";
+        
+        var obj = {'document_id': document_id};        
+        ajaxMethod('POST', " {{ URL::route('ajax.documentos.okJustifyCancelRequest') }} ", obj).then(function(result) {
+            $("#justification-cancel-review-div").hide(1000);
         }, function(err) {
         });
     });

@@ -30,6 +30,8 @@
 		<input type="hidden" name="status" id="status" value="approves_request_review_success">
     @elseif (session('document_name_already_exists'))
 		<input type="hidden" name="status" id="status" value="document_name_already_exists">
+    @elseif (session('cancel_review_success'))
+		<input type="hidden" name="status" id="status" value="cancel_review_success">
     @endif
 
     <script>
@@ -58,6 +60,8 @@
                 showToast('Sucesso!', 'O pedido de revisão do documento foi aprovado com sucesso e o workflow de revisão já está em andamento.', 'success');
             } else if(status == "document_name_already_exists") {
                 showToast('Nome já existe!', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!', 'warning');
+            } else if(status == "cancel_review_success") {
+                showToast('Sucesso!', 'A revisão do documento foi cancelada com sucesso.', 'success');
             }
         });
     </script>
