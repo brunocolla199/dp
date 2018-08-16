@@ -170,8 +170,8 @@ class FormulariosController extends Controller
         $extensao = $file->getClientOriginalExtension();
         $titulo   = $request->tituloFormulario;
         $codigo   = $request->codigoFormulario;
-        // \Storage::disk('public_uploads')->putFileAs('/', $file, $titulo . "." . $extensao);
-        \Storage::disk('s3')->put('/formularios/'.$titulo . "." . $extensao, file_get_contents($file), 'private');
+        $filename =  \App\Classes\Helpers::instance()->escapeFilename($titulo).".".$extensao;
+        \Storage::disk('s3')->put('/formularios/'.$filename, file_get_contents($file), 'private');
 
         $formulario = new Formulario();
         $formulario->nome                 = $request->tituloFormulario;

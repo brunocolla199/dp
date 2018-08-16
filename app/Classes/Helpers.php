@@ -203,6 +203,11 @@ class Helpers {
     }
 
 
+    /*** Validando Filenames  ***/
+    public function escapeFilename($filename){
+        return str_replace('/', '-', str_replace('"', '', str_replace('\'', '', str_replace('\\', '', $filename))));
+    }
+
     public static function instance()  {
         return new Helpers();
     }

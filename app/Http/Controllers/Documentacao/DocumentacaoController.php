@@ -149,9 +149,12 @@ class DocumentacaoController extends Controller
     }
 
 
-    public function validateData(DadosNovoDocumentoRequest $request) {     
+    public function validateData(DadosNovoDocumentoRequest $request) { 
+        
+        $tituloDocumento = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
+
         $documentos = DB::table('documento')
-                            ->whereRaw("split_part(nome, '".Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS."', 1) = '" .$request->tituloDocumento. "'")
+                            ->whereRaw("split_part(nome, '".Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS."', 1) = '" .$tituloDocumento. "'")
                             ->get();
 
         if( $documentos->count() > 0 ) {
@@ -177,7 +180,6 @@ class DocumentacaoController extends Controller
             $copiaControlada         = ($request->copiaControlada) ? true : false;
             $text_copiaControlada    = ($request->copiaControlada) ? 'Sim' : 'Não';
     
-            $tituloDocumento         = $request->tituloDocumento;
             $validadeDocumento       = $request->validadeDocumento;
     
             $acao                    = $request->action;
@@ -251,7 +253,7 @@ class DocumentacaoController extends Controller
          //if (Input::file('doc_uploaded') != null) {
             $file = $request->file('doc_uploaded', 'local');
             $extensao = $file->getClientOriginalExtension();
-            $titulo   = $novoDocumento['tituloDocumento'] . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
+            $titulo   = \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']) . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
             $codigo   = $novoDocumento['codigoDocumento'];
             $path     = $file->storeAs('/uploads', $titulo . "." . $extensao, 'local');
 
@@ -333,14 +335,15 @@ class DocumentacaoController extends Controller
     public function saveNewDocument(Request $request) {         
         
         $novoDocumento = $request->all();
-        $titulo   = $novoDocumento['tituloDocumento'];
+        $titulo   =  \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']);
         $codigo   = $novoDocumento['codigoDocumento']; 
         $extensao = 'docx';
 
-        Storage::disk('local')->put('uploads/'.$titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.html', $novoDocumento['docData']); 
+        Storage::disk('local')->put('uploads/'. $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.html', $novoDocumento['docData']); 
 
         $documento = new Documento();
         $documento->nome                 = $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
+
         $documento->codigo               = $codigo;
         $documento->extensao             = $extensao;
         $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
@@ -1487,16 +1490,16 @@ class DocumentacaoController extends Controller
         $documento = Documento::where('id', '=', $idDoc)->get();
         $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
-        
+        $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
+
         // Exclui Lista antiga
-        // Storage::disk('local')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
         Storage::disk('s3')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
         
         // Salva nova lista de presença com o mesmo nome
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        // $path = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
         
+
         Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
         $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
 
@@ -1527,7 +1530,8 @@ class DocumentacaoController extends Controller
         $documento = Documento::where('id', '=', $idDoc)->get();
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        
+        $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
+
         $listaPresenca = ListaPresenca::where('documento_id', '=', $idDoc)->get();
         if($listaPresenca->count() <= 0) {
             // $path     = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
