@@ -1085,30 +1085,43 @@ class DocumentacaoController extends Controller
             $revisaoNova = ($revisaoNova <= 9) ? "0{$revisaoNova}" : $revisaoNova;
 
             // Notificações
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " iniciou a revisão " .$revisaoNova. " .", true, $dadosDoc[0]->elaborador_id, $idDoc);
-            if($dadosDoc[0]->id_usuario_solicitante != $dadosDoc[0]->elaborador_id  && $dadosDoc[0]->id_usuario_solicitante != $dadosDoc[0]->aprovador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " iniciou a revisão " .$revisaoNova. " .", false, $dadosDoc[0]->id_usuario_solicitante, $idDoc);
+            $elaborador = User::where('id', '=', $dadosDoc[0]->elaborador_id)->get();
+            $aprovador = User::where('id', '=', $dadosDoc[0]->aprovador_id)->get();
+            $usuarioSolicitanteRevisao = User::where('id', '=', $dadosDoc[0]->id_usuario_solicitante)->get();
+
+            /* Elaborador não recebe mais notificação porque o usuário que solicitou a revisão se tornará o elaborador do documento */
+            //\App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " iniciou a revisão " .$revisaoNova. " .", true, $dadosDoc[0]->elaborador_id, $idDoc);
 
             $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
             foreach ($usuariosSetorQualidade as $key => $user) {
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revisaoNova. " iniciada.", false, $user->id, $idDoc);
             }
             
-            $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
+            $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get();
             if( count($usuariosAreaInteresseDocumento) > 0 ) {
                 foreach ($usuariosAreaInteresseDocumento as $key => $value) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revisaoNova. " iniciada.", false, $value, $idDoc);
+                    $user = User::where('id', '=', $value->usuario_id)->get();
+                    if($user[0]->setor_id != Constants::$ID_SETOR_QUALIDADE) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revisaoNova. " iniciada.", false, $value->usuario_id, $idDoc);
                 }
             }
         
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revisaoNova. " iniciada.", false, $dadosDoc[0]->aprovador_id, $idDoc);
+            if( $aprovador[0]->setor_id != Constants::$ID_SETOR_QUALIDADE  &&  !$usuariosAreaInteresseDocumento->contains('usuario_id', $aprovador[0]->id) ) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revisaoNova. " iniciada.", false, $dadosDoc[0]->aprovador_id, $idDoc);
+            }
+
+            if( $usuarioSolicitanteRevisao[0]->setor_id != Constants::$ID_SETOR_QUALIDADE  &&  !$usuariosAreaInteresseDocumento->contains('usuario_id', $usuarioSolicitanteRevisao[0]->id) ) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " iniciou a revisão " .$revisaoNova. " .", false, $dadosDoc[0]->id_usuario_solicitante, $idDoc);
+            } 
 
 
             // Histórico
             \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA, $idDoc);
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Solicitação de revisão aprovada. Elaborador alterado de ". $elaborador[0]->name ." para ". $usuarioSolicitanteRevisao[0]->name .".", $idDoc);
             \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, $idDoc);
 
 
             // dados_documento
+            $dadosDoc[0]->elaborador_id = $usuarioSolicitanteRevisao[0]->id;
             $dadosDoc[0]->finalizado = false;
             $dadosDoc[0]->observacao = Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA;
             $dadosDoc[0]->necessita_revisao = false;
