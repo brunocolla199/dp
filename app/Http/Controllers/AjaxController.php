@@ -8,9 +8,11 @@ use App\Setor;
 use App\GrupoTreinamentoUsuario;
 use App\DocumentoObservacao;
 use App\DadosDocumento;
+use App\Anexo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use GuzzleHttp\Client;
 
 class AjaxController extends Controller
 {
@@ -132,4 +134,47 @@ class AjaxController extends Controller
         
         return response()->json(['response' => 'success']);    
     }
+
+
+
+    // Anexos
+    public function saveAttachment(Request $request) {
+        $file = $request->file('anexo_escolhido', 'local');
+        $nome = $request->nome_anexo;
+
+        $extensao  = $file->getClientOriginalExtension();
+        $hash      = rand(000000000000000, 999999999999999);
+
+        Storage::disk('s3')->put('/anexos/'.$hash . ".".$extensao, file_get_contents($file), 'private');
+
+        $anexo = new Anexo();
+        $anexo->nome = $nome;
+        $anexo->hash = $hash;
+        $anexo->extensao = $extensao;
+        $anexo->documento_id = $request->document_id;
+        $anexo->save();
+
+        return response()->json(['response' => 'success']);  
+    }
+
+
+    public function getAnexos(Request $request) {
+        $anexos = Anexo::where('documento_id', '=', $request->document_id)->get();
+        foreach ($anexos as $key => $value) {
+            $value['encodeFilePath'] = \App\Classes\Helpers::instance()->getAnexoAWSS3($value->hash .".". $value->extensao);
+        }
+        return response()->json(['response' => $anexos]);   
+    }
+
+
+    public function removeAttachment(Request $request) {
+        $anexo = Anexo::where('id', '=', $request->anexo_id)->where('documento_id', '=', $request->documento_id)->get();
+        $filename = $anexo[0]->hash . "." . $anexo[0]->extensao;
+
+        Storage::disk('s3')->delete('anexos/' . $filename);
+        $anexo[0]->delete();
+
+        return response()->json(['response' => 'success']);  
+    }
+
 }

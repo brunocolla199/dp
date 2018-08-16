@@ -161,6 +161,21 @@
                                 <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
+                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
+                            <div class="row mt-4">
+                                @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                    </div>
+                                @endif
+                                <div class="col-md-3">    
+                                </div>
+                                <div class="col-md-4">    
+                                </div>
+                                <div class="col-md-3 ">
+                                </div>
+                            </div>
+
                         @else
 
                             @if($finalizado)
@@ -202,6 +217,21 @@
 
                                 <div class="row h-100">
                                     <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
+                                </div>
+
+                                <!-- Qualidade e Elaborador sempre podem adicionar anexos -->
+                                <div class="row mt-4">
+                                    @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                        </div>
+                                    @endif
+                                    <div class="col-md-3">    
+                                    </div>
+                                    <div class="col-md-4">    
+                                    </div>
+                                    <div class="col-md-3 ">
+                                    </div>
                                 </div>
 
                             @elseif( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
@@ -318,15 +348,19 @@
                                     <!-- End Editor -->
                                         
                                     
-                                    <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+                                    
+                                    <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
                                     <div class="row mt-4">
+                                        @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                            </div>
+                                        @endif
                                         <div class="col-md-3">    
                                             <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
                                         </div>
-                                        <div class="col-md-3">    
+                                        <div class="col-md-4">    
                                             <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
-                                        </div>
-                                        <div class="col-md-3">
                                         </div>
                                         <div class="col-md-3 ">
                                             <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
@@ -370,13 +404,21 @@
                                     </div>
                                 </div>
 
-                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
                                 <div class="row mt-4">
+                                    @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                        </div>
+                                    @endif
                                     <div class="col-md-3">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
                                     </div>
-                                    <div class="col-md-3">    
+                                    <div class="col-md-4">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                    </div>
+                                    <div class="col-md-3 ">
                                     </div>
                                 </div>
 
@@ -415,13 +457,21 @@
                                 {{ Form::close() }}
 
 
-                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
                                 <div class="row mt-4">
+                                    @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                        </div>
+                                    @endif
                                     <div class="col-md-3">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
                                     </div>
-                                    <div class="col-md-3">    
+                                    <div class="col-md-4">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                    </div>
+                                    <div class="col-md-3 ">
                                     </div>
                                 </div>
 
@@ -468,16 +518,24 @@
                                     <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
                                 </div>
 
-                                
-                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações -->
+
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
                                 <div class="row mt-4">
+                                    @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                        </div>
+                                    @endif
                                     <div class="col-md-3">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
                                     </div>
-                                    <div class="col-md-3">    
+                                    <div class="col-md-4">    
                                         <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
                                     </div>
+                                    <div class="col-md-3 ">
+                                    </div>
                                 </div>
+
 
                             @endif
                         
@@ -688,7 +746,8 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.Modal de confirmação - ddeseja mesmo aprovar a solicitação de revisão neste documento -->
+            <!-- /.Modal de confirmação - deseja mesmo aprovar a solicitação de revisão neste documento -->
+
 
 
 
@@ -726,6 +785,105 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal de confirmação - deseja mesmo cancelar a revisão do documento -->
+            
+            
+            
+            <!-- Modal de Anexos -->
+            <div id="modal-anexos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="mySmallModalLabel">Anexos - <b>{{ $nome }}</b> </h4>
+                            <button type="button" id="btn-lista-anexos" class="btn btn-primary btn-circle" data-toggle="collapse" data-target="#lista-anexos-cadastrados" aria-expanded="false" aria-controls="lista-anexos-cadastrados" role="tab" style="cursor: pointer"><i class="fa fa-list" data-toggle="tooltip" data-original-title="Listar Anexos Cadastrados"  aria-hidden="true"></i></button>
+                        </div>
+                        
+                        <div class="modal-body"> 
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h6 class="alert alert-info alert-dismissible" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        Ações envolvendo anexos podem demorar um pouco. Após executar alguma ação, por favor, aguarde a mensagem de sucesso!
+                                    </h6>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="collapse" id="lista-anexos-cadastrados" role="tabpanel">
+                                        <h3>Listagem de Anexos do Documento</h3>
+                                        <div class="table-responsive">
+                                            <table class="table table-condensed">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-nowrap text-center">Título do Anexo</th>
+                                                        <th class="text-nowrap text-center">Data de Inserção</th>
+                                                        <th class="text-nowrap text-center">Remover</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="attachment-table-body">
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <hr style="border-top: 2px solid darkgray">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title"> Upload de anexo </h4>
+                                            {!! Form::open(['route' => 'ajax.anexos.save', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'id' => 'form-save-attachment']) !!}
+                                                <label for="input-file-now">Por favor, selecione o arquivo que você deseja anexar ao documento atual.</label>
+                                                {!! Form::file('anexo_escolhido', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'data-allowed-file-extensions'=>'pdf xlsx xls']) !!}
+
+                                                <div class="col-md-12 mt-3">
+                                                    <div class="col-md-9 pull-left">
+                                                        {!! Form::hidden('document_id', $document_id) !!}
+                                                        {!! Form::text('nome_anexo', null, ['class' => 'form-control', 'id' => 'nome_anexo', 'required' => 'required', 'placeholder' => 'Nome do Anexo']) !!} 
+                                                    </div>
+                                                    <div class="col-md-3 pull-right">
+                                                        {!! Form::submit('Salvar Anexo', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-attachment']) !!}
+                                                    </div>
+                                                </div>
+                                            {!! Form::close() !!}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+            </div>
+            <!-- /.Modal de Anexos -->
+
+
+
+             <!-- Modal de confirmação - deseja mesmo excluir o anexo -->
+             <div class="modal fade" id="confirm-delete-attachment" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Deseja realmente excluir o anexo selecionado ? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'ajax.anexos.removeAttachment', 'method' => 'POST', 'id' => 'delete-attachment']) }}
+                                {{ Form::hidden('documento_id', $document_id) }}
+                                {{ Form::hidden('anexo_id', null, ['id' => 'hidden_anexo_id_to_remove']) }}
+                                <button type="submit" id="btn-confirm-delete-attachment" class="btn btn-success waves-effect"> Sim </button>
+                            {{ Form::close() }}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo excluir o anexo -->
 
 
         </div>
@@ -851,6 +1009,82 @@
         }, function(err) {
         });
     });
+
+    // Função para salvar anexo
+    $("#form-save-attachment").submit(function(e){
+        e.preventDefault();
+
+        var form = $(this);
+        var formData = new FormData($(this)[0]);
+        var url = form.attr('action');
+        $.ajax({  
+             type: "POST",  
+             url: url,  
+             data: formData,
+             async: false,
+             cache: false,
+             contentType: false,
+             processData: false,
+             success: function(data) {
+                showToast('Sucesso!', 'O anexo foi salvo.', 'success');
+                $("#modal-anexos").modal('toggle');
+                $("#btn-lista-anexos").trigger('click');
+             }
+        }); 
+    });
+
+    // Toda vez que o modal de anexos for fechado, limpa os dois valores do form
+    $('#modal-anexos').on('hidden.bs.modal', function (e) {
+        $("#anexo_escolhido").val('');
+        $(".dropify-clear").trigger('click');
+        $("#nome_anexo").val('');
+    })
+
+    // Toda vez que a listagem de anexos do documento for aberta
+    $('#btn-lista-anexos').click(function () {
+        var document_id = "{{$document_id}}";
+        
+        var obj = {'document_id': document_id};        
+        ajaxMethod('POST', " {{ URL::route('ajax.anexos.getAnexos') }} ", obj).then(function(result) {
+            $("#attachment-table-body").empty();
+            var data = result.response;
+            
+            data.forEach(function(key) {
+                var event = new Date(key.created_at);
+                var year = event.getFullYear(), month = event.getMonth()+1, date1 = event.getDate(), hour = event.getHours(), minutes = event.getMinutes();
+                var dateF = hour +":"+ minutes +"  "+ date1 +"/"+ month +"/" + year;
+
+                var tr = '<tr>';
+                tr += '<td class="text-nowrap text-center"><a href="https://docs.google.com/viewer?url='+ key.encodeFilePath +'&embedded=true&chrome=false&dov=1" target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
+                tr += '</tr>';
+                $("#attachment-table-body").append(tr);
+            });
+        }, function(err) {
+        });
+    })
+
+    // Quando o botão para remover anexo é clicado, abre modal de confirmação
+    $(document).on("click", "#btn-delete-attachment-modal", function(){
+        var anexo_id = $(this).data("anexo-id");
+        $("#hidden_anexo_id_to_remove").val(anexo_id);
+
+        $("#confirm-delete-attachment").modal({ backdrop: false, keyboard: false});
+    });
+
+    // Se o usuário confirmar que deseja, realmente, excluir o anexo, invoca Ajax
+    $("#delete-attachment").submit(function(e){
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+        ajaxMethod('POST', url, form.serialize()).then(function(result) {
+            showToast('Sucesso!', 'O anexo foi removido.', 'success');
+            $("#confirm-delete-attachment").modal('toggle');
+            $("#btn-lista-anexos").trigger('click');
+        }, function(err) {
+        });
+    });
+
 </script>
 
  @if($resp)

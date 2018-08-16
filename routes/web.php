@@ -38,6 +38,9 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/documentos/getObservacoes',	    	['as' => 'ajax.documentos.getObservacoes',				'uses' => 'AjaxController@getObservacoes']);
 	Route::post('ajax/documentos/okJustifyRejectRequest',	['as' => 'ajax.documentos.okJustifyRejectRequest',		'uses' => 'AjaxController@okJustifyRejectRequest']);
 	Route::post('ajax/documentos/okJustifyCancelRequest',	['as' => 'ajax.documentos.okJustifyCancelRequest',		'uses' => 'AjaxController@okJustifyCancelRequest']);
+	Route::post('ajax/anexos/save',							['as' => 'ajax.anexos.save',							'uses' => 'AjaxController@saveAttachment']);
+	Route::post('ajax/anexos/getAnexos',					['as' => 'ajax.anexos.getAnexos',						'uses' => 'AjaxController@getAnexos']);
+	Route::post('ajax/anexos/removeAttachment',				['as' => 'ajax.anexos.removeAttachment',				'uses' => 'AjaxController@removeAttachment']);
 
 
     /*

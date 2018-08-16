@@ -202,6 +202,22 @@ class Helpers {
         return (string) $aws_req->getUri();
     }
 
+    public function getAnexoAWSS3($filename) {
+        $key = 'anexos/'.$filename;
+        $s3 = \Storage::disk('s3');
+        $client = $s3->getDriver()->getAdapter()->getClient();
+        $bucket = \Config::get('filesystems.disks.s3.bucket');
+        
+        $command = $client->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key' => $key,
+            'ResponseContentDisposition' => 'attachment; filename='.$key
+        ]);
+        
+        $aws_req = $client->createPresignedRequest($command, '+5 minutes');
+        return rawurlencode((string) $aws_req->getUri());
+    }
+
 
     /*** Validando Filenames  ***/
     public function escapeFilename($filename){
