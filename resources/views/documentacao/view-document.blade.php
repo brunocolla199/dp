@@ -861,7 +861,6 @@
             <!-- /.Modal de Anexos -->
 
 
-
              <!-- Modal de confirmação - deseja mesmo excluir o anexo -->
              <div class="modal fade" id="confirm-delete-attachment" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-sm">
@@ -1013,6 +1012,10 @@
     // Função para salvar anexo
     $("#form-save-attachment").submit(function(e){
         e.preventDefault();
+        if( $("#anexo_escolhido").val() == null  ||  $("#anexo_escolhido").val() == "" ) {
+            showToast('Opa!', 'Você precisa escolher um arquivo.', 'error');
+            return;
+        }        
 
         var form = $(this);
         var formData = new FormData($(this)[0]);
@@ -1031,6 +1034,16 @@
                 $("#btn-lista-anexos").trigger('click');
              }
         }); 
+    });
+
+    // Coloca o nome original do arquivo no campo do nome
+    $(document).on("change", "#anexo_escolhido", function(e){
+        var file = $("#anexo_escolhido")[0].files[0];
+        if(file) {
+            var completo = file.name;
+            var sem_extensao = completo.split('.')[0];
+            $("#nome_anexo").val(sem_extensao);
+        }  
     });
 
     // Toda vez que o modal de anexos for fechado, limpa os dois valores do form
