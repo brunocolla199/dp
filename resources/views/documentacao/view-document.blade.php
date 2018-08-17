@@ -789,7 +789,7 @@
             
             
             <!-- Modal de Anexos -->
-            <div id="modal-anexos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div id="modal-anexos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: auto">
                 <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                         <div class="modal-header">
