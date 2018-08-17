@@ -7,8 +7,12 @@ use App\User;
 use App\Setor;
 use App\GrupoTreinamentoUsuario;
 use App\DocumentoObservacao;
+use App\Documento;
 use App\DadosDocumento;
 use App\Anexo;
+use App\Classes\Constants;
+use App\AreaInteresseDocumento;
+use App\DocumentoFormulario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -132,6 +136,131 @@ class AjaxController extends Controller
         $dadosDoc[0]->save();
         
         return response()->json(['response' => 'success']);    
+    }
+
+
+    public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
+        $novoDocumento = $request->all();
+
+        $file = $request->file('doc_uploaded', 'local');
+        $extensao = $file->getClientOriginalExtension();
+        $titulo   = \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']) . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
+        $codigo   = $novoDocumento['codigoDocumento'];
+        $path     = $file->storeAs('/uploads', $titulo . "." . $extensao, 'local');
+        
+        $documento = new Documento();
+        $documento->nome                 = $titulo;
+        $documento->codigo               = $codigo;
+        $documento->extensao             = $extensao;
+        $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
+        $documento->save();
+        
+        
+        // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
+        $dados_documento = new DadosDocumento();
+        $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
+        $dados_documento->status                            = true;
+        $dados_documento->observacao                        = "Documento Novo";
+        $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];
+        $dados_documento->nivel_acesso                      = $novoDocumento['nivel_acesso'];
+        $dados_documento->necessita_revisao                 = false;
+        $dados_documento->id_usuario_solicitante            = null;
+        $dados_documento->revisao                           = "00";
+        $dados_documento->justificativa_rejeicao_revisao    = null;
+        $dados_documento->em_revisao                        = false;
+        $dados_documento->justificativa_cancelar_revisao    = null;
+        $dados_documento->finalizado                        = false;
+        $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
+        $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
+        $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
+        $dados_documento->elaborador_id                     = Auth::user()->id;
+        $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
+        $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
+        $dados_documento->save();
+        
+        // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
+        if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
+            foreach($novoDocumento['areaInteresse'] as $key => $user) {
+                $areaInteresseDocumento = new AreaInteresseDocumento();
+                $areaInteresseDocumento->documento_id  = $documento->id;
+                $areaInteresseDocumento->usuario_id  = $user;
+                $areaInteresseDocumento->save();
+            }
+        }
+
+        //Populando a tabela de vinculação Documento -> Formulários
+        if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
+            foreach($novoDocumento['formsAtrelados'] as $key => $form) {
+                $documentoFormulario = new DocumentoFormulario();
+                $documentoFormulario->documento_id  = $documento->id;
+                $documentoFormulario->formulario_id = $form;
+                $documentoFormulario->save();
+            }
+        }
+
+        return response()->json(['response' => $documento->id]);   
+    }
+
+
+    public function saveNewDocument(Request $request) {         
+        
+        $novoDocumento = $request->all();
+        $titulo   =  \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']);
+        $codigo   = $novoDocumento['codigoDocumento']; 
+        $extensao = 'docx';
+
+        Storage::disk('local')->put('uploads/'. $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.html', $novoDocumento['docData']); 
+
+        $documento = new Documento();
+        $documento->nome                 = $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
+        $documento->codigo               = $codigo;
+        $documento->extensao             = $extensao;
+        $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
+        $documento->save();
+        
+        // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
+        $dados_documento = new DadosDocumento();
+        $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
+        $dados_documento->status                            = true;
+        $dados_documento->observacao                        = "Documento Novo";
+        $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];
+        $dados_documento->nivel_acesso                      = $novoDocumento['nivel_acesso'];
+        $dados_documento->necessita_revisao                 = false;
+        $dados_documento->id_usuario_solicitante            = null;
+        $dados_documento->revisao                           = "00";
+        $dados_documento->justificativa_rejeicao_revisao    = null;
+        $dados_documento->em_revisao                        = false;
+        $dados_documento->justificativa_cancelar_revisao    = null;
+        $dados_documento->finalizado                        = false;
+        $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
+        $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
+        $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
+        $dados_documento->elaborador_id                     = Auth::user()->id;
+        $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
+        $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
+        $dados_documento->save();
+        
+        // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
+        if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
+            foreach($novoDocumento['areaInteresse'] as $key => $user) {
+                $areaInteresseDocumento = new AreaInteresseDocumento();
+                $areaInteresseDocumento->documento_id  = $documento->id;
+                $areaInteresseDocumento->usuario_id  = $user;
+                $areaInteresseDocumento->save();
+            }
+        }
+
+        //Populando a tabela de vinculação Documento -> Formulários
+        if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
+            foreach($novoDocumento['formsAtrelados'] as $key => $form) {
+                $documentoFormulario = new DocumentoFormulario();
+                $documentoFormulario->documento_id  = $documento->id;
+                $documentoFormulario->formulario_id = $form;
+                $documentoFormulario->save();
+            }
+        }
+
+        return response()->json(['response' => $documento->id]);   
     }
 
 

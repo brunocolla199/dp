@@ -38,6 +38,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/documentos/getObservacoes',	    	['as' => 'ajax.documentos.getObservacoes',				'uses' => 'AjaxController@getObservacoes']);
 	Route::post('ajax/documentos/okJustifyRejectRequest',	['as' => 'ajax.documentos.okJustifyRejectRequest',		'uses' => 'AjaxController@okJustifyRejectRequest']);
 	Route::post('ajax/documentos/okJustifyCancelRequest',	['as' => 'ajax.documentos.okJustifyCancelRequest',		'uses' => 'AjaxController@okJustifyCancelRequest']);
+	Route::post('ajax/documentos/saveAttachedDocument',   	['as' => 'ajax.documentos.saveAttachedDocument', 	    'uses' => 'AjaxController@saveAttachedDocument']);
+	Route::post('ajax/documentos/saveNewDocument',   		['as' => 'ajax.documentos.saveNewDocument', 	    	'uses' => 'AjaxController@saveNewDocument']);
 	Route::post('ajax/anexos/save',							['as' => 'ajax.anexos.save',							'uses' => 'AjaxController@saveAttachment']);
 	Route::post('ajax/anexos/getAnexos',					['as' => 'ajax.anexos.getAnexos',						'uses' => 'AjaxController@getAnexos']);
 	Route::post('ajax/anexos/removeAttachment',				['as' => 'ajax.anexos.removeAttachment',				'uses' => 'AjaxController@removeAttachment']);
@@ -48,20 +50,17 @@ Route::group(['middleware' => ['auth']], function() {
 	*/
 	Route::group(['prefix' => 'bpmn'], function() {
 		Route::get('',	       		['as' => 'bpmn', 	        		'uses' => 'BPMN\BPMNController@index']);
-		// Route::post('store', 		['as' => 'cargos.store', 		'uses' => 'CargosController@store']);
-		// Route::get('{id}/delete', 	['as' => 'cargos.delete', 		'uses' => 'CargosController@delete']);
-		// Route::get('{id}/edit', 	['as' => 'cargos.edit', 			'uses' => 'CargosController@edit']);
-		// Route::post('update', 		['as' => 'cargos.update', 		'uses' => 'CargosController@update']);
     });
-    
+	
+	
     /*
 	* DOCUMENTAÇÃO
 	*/
 	Route::group(['prefix' => 'documentacao'], function() {
 		Route::get('',	       						['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
 		Route::post('validate-data',       			['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
-		Route::post('save-attached-document',   	['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
-		Route::post('save-new-document',        	['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
+		// Route::post('save-attached-document',   	['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
+		// Route::post('save-new-document',        	['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
 		Route::post('view-document',   				['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
 		Route::post('save-edited-document',   		['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
 		Route::post('filter-documents-index',  		['as' => 'documentacao.filter-documents-index',	    	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsIndex']);
@@ -76,8 +75,10 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('request-review',	     		['as' => 'documentacao.request-review',          		'uses' => 'Documentacao\DocumentacaoController@requestReview']);
 		Route::post('decides-on-review-request',	['as' => 'documentacao.decides-on-review-request', 		'uses' => 'Documentacao\DocumentacaoController@decidesOnReviewRequest']);
 		Route::post('cancel-review',				['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
+		Route::post('save-attached-start-workflow',	['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
 	});
-    
+	
+	
 	/*
 	* FORMULÁRIOS
 	*/
@@ -93,6 +94,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('reject-form',  		  ['as' => 'formularios.reject-form',	    		'uses' => 'Formularios\FormulariosController@rejectForm']);
 		Route::post('resend-form',  		  ['as' => 'formularios.resend-form',	    		'uses' => 'Formularios\FormulariosController@resendForm']);
 	});
+
 
 	/*
 	* CONFIGURAÇÕES
@@ -112,6 +114,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
 	});
 
+
 	/*
 	* SOBRE
 	*/
@@ -119,6 +122,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('',	   ['as' => 'sobre',	'uses' => 'SobreController@index']);
 	});
 	
+
 	/*
 	* DOWNLOAD
 	*/

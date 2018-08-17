@@ -245,7 +245,7 @@ class DocumentacaoController extends Controller
 
     }
 
-
+    /*
     public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
         $novoDocumento = $request->all();
         
@@ -306,32 +306,13 @@ class DocumentacaoController extends Controller
                 }
             }
 
-            
-            // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
-            $workflow = new Workflow();
-            $workflow->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
-            $workflow->etapa        = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
-            $workflow->descricao    = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
-            $workflow->justificativa= "";
-            $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
-            $workflow->save();
-
-            // Gravar notificação para todos usuários do setor Qualidade sobre a importação do documento
-            $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-            foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $codigo . " foi importado e precisa ser revisado.", true, $user->id, $documento->id);
-            }
-
-            // Grava histórico do documento
-            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $documento->id);
-            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $documento->id);
-
          //}
         
         return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
     }
+    */
 
-
+    /*
     public function saveNewDocument(Request $request) {         
         
         $novoDocumento = $request->all();
@@ -390,27 +371,40 @@ class DocumentacaoController extends Controller
                 $documentoFormulario->save();
             }
         }
-        
-        // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
+
+        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
+    }
+    */
+
+
+    public function salvaAnexoElaboradorEIniciaWorkflow(Request $request) {
+        $documento = Documento::where('id', '=', $request->documento_id)->get();
+
         $workflow = new Workflow();
         $workflow->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
         $workflow->etapa        = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
         $workflow->descricao    = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
         $workflow->justificativa= "";
-        $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
+        $workflow->documento_id = $request->documento_id; // id que acabou de ser inserido no 'save' na tabela de documento
         $workflow->save();
 
-        // Gravar notificação para todos usuários do setor Qualidade sobre a criação do documento
+        // Gravar notificação para todos usuários do setor Qualidade sobre a importação do documento
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-        foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $codigo . " foi emitido e necessita ser revisado.", true, $user->id, $documento->id);
+        if($request->acao == "import") {
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi importado e precisa ser revisado.", true, $user->id, $request->documento_id);
+            }
+        } else {
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
+            }
         }
 
         // Grava histórico do documento
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $documento->id);
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $documento->id);
-
-        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $request->documento_id);
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $request->documento_id);
+        
+        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>''));
     }
 
 
@@ -460,7 +454,7 @@ class DocumentacaoController extends Controller
 
             $docPath = $storagePath."uploads/".$documento[0]->nome.".".$documento[0]->extensao;
 
-            $phpWord = \PhpOffice\PhpWord\IOFactory::load($docPath);
+            $phpWord = ($documento[0]->extensao == "docx") ? \PhpOffice\PhpWord\IOFactory::load($docPath) : \PhpOffice\PhpWord\IOFactory::load($docPath, 'MsDoc');
 
             $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
             
