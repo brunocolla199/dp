@@ -75,9 +75,23 @@
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>TÍTULO DO FORMULÁRIO: </b>{{ $tituloFormulario }}  </p>
                                 </div>
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>CÓDIGO: </b>{{ $codigoFormulario }}  </p>
-                                </div>
+                                
+                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                    <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -3%; margin-top: -0.5%;">
+                                        <div class="form-group row">
+                                            <label for="codigoFormulario" class="col-sm-3 text-right control-label col-form-label"><b>CÓDIGO: </b></label>
+                                            <div class="col-md-9">
+                                                <input name="codigoFormulario" id="codigoFormulario" type="text" class="form-control" value=" {{ $codigoFormulario }} " style="max-width: 50%; float: left; margin-left: -5%;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="col-md-6">
+                                        <p class="pull-left"><b>CÓDIGO: </b>{{ $codigoFormulario }}  </p>
+                                        <input name="codigoFormulario" id="codigoFormulario" type="hidden" value=" {{ $codigoFormulario }} ">
+                                    </div>
+                                @endif
+
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>SETOR: </b>{{ $text_setorDono }}  </p>
                                 </div>
@@ -86,8 +100,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>NÍVEL DE ACESSO: </b>{{ $nivelAcessoDocumento }}  </p>
-                                </div>
-
+                                </div>                                                                                 
+                                
                             </div>
                             
                            
@@ -110,55 +124,49 @@
                         <div class="card-body">
 
                             @if($acao == "import")
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12">
-                                    
-                                    <div class="col-md-12 mb-4">
-                                        @if ($errors->any())
-                                            <div class="alert alert-danger">
-                                                <ul>
-                                                    @foreach ($errors->all() as $error)
-                                                        <li>{{ $error }}</li>
-                                                    @endforeach
-                                                </ul>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12">
+                                        
+                                        <div class="col-md-12 mb-4">
+                                            @if ($errors->any())
+                                                <div class="alert alert-danger">
+                                                    <ul>
+                                                        @foreach ($errors->all() as $error)
+                                                            <li>{{ $error }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        {!! Form::open(['route' => 'formularios.save-attached-document', 'method' => 'POST', 'id' => 'form-upload-form', 'enctype' => 'multipart/form-data']) !!}
+                                            {{ csrf_field() }}
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h4 class="card-title"> Upload de formulários </h4>
+                                                    <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
+                                                    {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                    
+                                                    {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
+                                                    {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
+                                                    {!! Form::hidden('setor_dono_form',         $setorDono) !!}                                             
+                                                    {!! Form::hidden('tituloFormulario',        $tituloFormulario) !!}
+                                                </div>
                                             </div>
-                                        @endif
+                                            <div class="col-lg-12 col-md-12">
+                                                <div class="col-md-offset-2 col-md-3 pull-right">
+                                                    {!! Form::button('Salvar Formulário', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                                </div>
+                                                <div class="col-md-offset-2 col-md-3 pull-right">
+                                                    <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
+                                                </div>
+                                            </div>
+
+                                        {!! Form::close() !!}
+
                                     </div>
-
-                                    {!! Form::open(['route' => 'formularios.save-attached-document', 'method' => 'POST', 'id' => 'form-upload-document', 'enctype' => 'multipart/form-data']) !!}
-                                        {{ csrf_field() }}
-
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h4 class="card-title"> Upload de formulários </h4>
-                                                <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
-                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
-                                                
-                                                {!! Form::hidden('codigoFormulario',        $codigoFormulario) !!}
-                                                {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
-                                                {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
-                                                {!! Form::hidden('setor_dono_form',         $setorDono) !!}                                             
-                                                {!! Form::hidden('tituloFormulario',        $tituloFormulario) !!}
-
-                                            
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12">
-                                            <div class="col-md-offset-2 col-md-3 pull-right">
-                                                {!! Form::submit('Salvar Formulário', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
-                                            </div>
-                                            <div class="col-md-offset-2 col-md-3 pull-right">
-                                                <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
-                                            </div>
-                                        </div>
-
-                                    {!! Form::close() !!}
-
                                 </div>
-                            </div>
-
-                            @else
-
                             @endif
 
                         </div>
@@ -179,8 +187,9 @@
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
 
-     <!-- modal para prévisualizar formulário -->
-     <div id="preview-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    
+    <!-- modal para prévisualizar formulário -->
+    <div id="preview-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -219,9 +228,15 @@
                 $("#form-upload-new-form").append("<input type='hidden' name='formData' value='"+formData+"' >")
                 $("#form-upload-new-form").submit();
             });
+
+
+            // Click no botão para salvar formulário
+            $("#btn-save-document").click(function(){
+                var codigoFormulario = $("#codigoFormulario").val();
+
+                $("#form-upload-form").append("<input type='hidden' name='codigoFormulario' value='"+codigoFormulario+"' >")
+                $("#form-upload-form").submit();
+            });
         </script>
-
-
-
 
 @endsection
