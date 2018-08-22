@@ -428,7 +428,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="row text-center">
-                                                @if( isset($justificativa) && $justificativa != "''")
+                                                @if( isset($justificativa) && $justificativa != "")
                                                     <div class="col-md-8">
                                                         <div class="ribbon-wrapper card ">
                                                             <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO DA LISTA</div> 
