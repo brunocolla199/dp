@@ -9,6 +9,8 @@ use App\DadosDocumento;
 use App\AreaInteresseDocumento;
 use App\HistoricoDocumento;
 use App\HistoricoFormulario;
+use App\Formulario;
+use App\FormularioRevisao;
 use App\User;
 use App\Configuracao;
 use App\Classes\Constants;
@@ -123,6 +125,14 @@ class Helpers {
 
 
 
+    // Formulários
+    function getNameListAllFormRevisions($id) {
+        $revisoes = FormularioRevisao::where('formulario_id', '=', $id)->get()->pluck('nome_completo')->toArray();
+        return $revisoes;
+    }
+
+
+
     // Verificações
     function checkPermissionsToApprove($etapa, $idDoc) {
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
@@ -182,8 +192,24 @@ class Helpers {
             'ResponseContentDisposition' => 'attachment; filename='.$key
         ]);
         
-        $aws_req = $client->createPresignedRequest($command, '+1 minutes');
+        $aws_req = $client->createPresignedRequest($command, '+2 minutes');
         return (string) $aws_req->getUri();
+    }
+
+    public function getFormulariosComURLEncodeAWS($key){
+        $key = 'formularios/'.$key;
+        $s3 = \Storage::disk('s3');
+        $client = $s3->getDriver()->getAdapter()->getClient();
+        $bucket = \Config::get('filesystems.disks.s3.bucket');
+        
+        $command = $client->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key' => $key,
+            'ResponseContentDisposition' => 'attachment; filename='.$key
+        ]);
+        
+        $aws_req = $client->createPresignedRequest($command, '+2 minutes');
+        return rawurlencode((string) $aws_req->getUri());
     }
 
     public function getListaPresenca($key){
@@ -224,6 +250,8 @@ class Helpers {
         return str_replace('/', '-', str_replace('"', '', str_replace('\'', '', str_replace('\\', '', $filename))));
     }
 
+
+    
     public static function instance()  {
         return new Helpers();
     }

@@ -8,6 +8,12 @@
 		<input type="hidden" name="status" id="status" value="reject_success">
     @elseif (session('resend_success'))
 		<input type="hidden" name="status" id="status" value="resend_success">
+    @elseif (session('start_review_success'))
+		<input type="hidden" name="status" id="status" value="start_review_success">
+    @elseif (session('send_new_review_success'))
+		<input type="hidden" name="status" id="status" value="send_new_review_success">
+    @elseif (session('cancel_review_success'))
+		<input type="hidden" name="status" id="status" value="cancel_review_success">
     @endif
 
     <script>
@@ -20,6 +26,12 @@
                 showToast('Sucesso!', 'O Formulário foi rejeitado.', 'success');
             } else if(status == "resend_success") {
                 showToast('Sucesso!', 'O Formulário foi reenviado para a Qualidade.', 'success');
+            } else if(status == "start_review_success") {
+                showToast('Sucesso!', 'A revisão do formulário foi iniciada.', 'success');
+            } else if(status == "send_new_review_success") {
+                showToast('Sucesso!', 'A nova revisão do formulário foi enviada para a Qualidade.', 'success');
+            } else if(status == "cancel_review_success") {
+                showToast('Sucesso!', 'Revisão cancelada. Versão anterior do formulário restaurada com sucesso.', 'success');
             } 
         });
     </script>
@@ -230,8 +242,10 @@
                                                             <tr>
                                                                 <th>Título do Formulário</th>
                                                                 <th>Código</th>
+                                                                <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Status</th>
-                                                                <th>Modificado</th>
+                                                                <th class="text-nowrap text-center">Modificado</th>
+                                                                <th class="text-nowrap text-center">Ação</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -248,11 +262,16 @@
                                                                         {{ Form::close() }}
 
                                                                         <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+                                                                        
+                                                                        <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
                                                                         <td>
                                                                             <p class="text-muted font-weight-bold"> {{ $form->etapa }} </p>
                                                                         </td>
-                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                        
+                                                                        <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                        
+                                                                        <td class="text-nowrap text-center"></td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
@@ -270,10 +289,15 @@
 
                                                                         <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
 
+                                                                        <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
+
                                                                         <td>
                                                                             <p class="text-muted font-weight-bold text-success"> Finalizado </p>
                                                                         </td>
-                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                        
+                                                                        <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                        
+                                                                        <td class="text-nowrap text-center"> <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a> </td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif                                                            
@@ -292,6 +316,29 @@
                 </div>
             </div>
             <!-- End Page Content -->
+
+
+            <!-- Modal de confirmação - deseja mesmo solicitar uma revisão neste formulário -->
+            <div class="modal fade bs-example-modal-sm" id="solicitar-revisao-formulario-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Deseja solicitar uma revisão neste formulário? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'formularios.start-review', 'method' => 'POST']) }}
+                                {{ Form::hidden('form_id', '', ['id' => 'form_id_request_review']) }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {!! Form::open() !!}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo solicitar uma revisão neste formulário -->
 
 
         </div>
@@ -313,6 +360,17 @@
             var input = $("<input>").attr("type", "hidden").attr("name", "action").val("create");
             $('#form-save-new-document').append($(input));
             $('#form-save-new-document').submit();
+        });
+
+        // Ao clicar no botão que abrirá o modal de confirmação para revisão do documento
+        $(".btn-open-confirm-form-review").click(function(){
+            var id = $(this).data('id');
+            $("#form_id_request_review").val(id);
+            
+            $("#solicitar-revisao-formulario-modal").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
         });
     </script>
 

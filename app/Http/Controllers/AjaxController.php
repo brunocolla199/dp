@@ -13,6 +13,8 @@ use App\Anexo;
 use App\Classes\Constants;
 use App\AreaInteresseDocumento;
 use App\DocumentoFormulario;
+use App\Formulario;
+use App\FormularioRevisao;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -263,6 +265,26 @@ class AjaxController extends Controller
         return response()->json(['response' => $documento->id]);   
     }
 
+
+
+    // Formulários
+    public function okJustifyCancelFormReviewRequest(Request $request) {
+        $form = Formulario::where('id', '=', $request->form_id)->get();
+        $form[0]->id_usuario_solicitante = null;
+        $form[0]->justificativa_cancelar_revisao = null;
+        $form[0]->save();
+        
+        return response()->json(['response' => 'success']);    
+    }
+
+
+    function getFileListAllFormRevisions(Request $request) {
+        $revisoes = FormularioRevisao::where('formulario_id', '=', $request->form_id)->get();
+        foreach ($revisoes as $key => $value) {
+            $value['encodeFilePath'] = \App\Classes\Helpers::instance()->getFormulariosComURLEncodeAWS($value->nome_completo);
+        }
+        return response()->json(['response' => $revisoes]);  
+    }
 
 
     // Anexos

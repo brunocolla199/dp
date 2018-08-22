@@ -9,6 +9,8 @@ use App\GrupoDivulgacao;
 use App\Setor;
 use App\Documento;
 use App\Formulario;
+use App\DocumentoFormulario;
+use App\FormularioRevisao;
 use App\HistoricoFormulario;
 use App\NotificacaoFormulario;
 use App\TipoDocumento;
@@ -84,44 +86,6 @@ class FormulariosController extends Controller
 
     }
 
-    public function saveNewForm(Request $request){
-        
-        $formulario = new Formulario();
-        $formulario->nome                 = $request->tituloFormulario;
-        $formulario->codigo               = $request->codigoFormulario;
-        $formulario->conteudo             = $request->formData;
-        $formulario->setor_id             = $request->setor_dono_form;
-        $formulario->grupo_divulgacao_id  = $request->grupoDivulgacao;
-        $formulario->nivel_acesso         = $request->nivel_acesso;
-        $formulario->finalizado           = false;
-        $formulario->elaborador_id        = Auth::user()->id;
-        $formulario->tipo_documento_id    = Constants::$ID_TIPO_DOCUMENTO_FORMULARIO;
-        $formulario->save();
-
-         // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
-         $workflow = new WorkflowFormulario();
-         $workflow->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
-         $workflow->etapa        = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
-         $workflow->descricao    = "";
-         $workflow->justificativa= "";
-         $workflow->formulario_id = $formulario->id; // id que acabou de ser inserido no 'save' na tabela de formulário
-         $workflow->save();
-
-
-        // Gravar notificação para todos usuários do setor Qualidade sobre a criação do documento
-        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-        foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $codigo . " foi emitido e necessita ser revisado.", true, $user->id, $formulario->id);
-        }
-
-        // Grava histórico do documento
-        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $formulario->id);
-        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $formulario->id);
-
-         return View::make('formularios.define-formulario', array('overlay_sucesso' => 'valor'));
-    
-    }
-
     public function viewForm(Request $request){ 
         if( array_key_exists("notify_id", $request->all()) ) {
             \App\Classes\Helpers::instance()->atualizaNotificacaoFormVisualizada($request->notify_id);
@@ -130,9 +94,12 @@ class FormulariosController extends Controller
         $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();    
         $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->get();
         $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
-        ->join('users', 'users.id', '=', 'formulario.elaborador_id')
-        ->where('formulario_id', '=', $request->formulario_id)->orderby('finalizado')->get();
-        
+                                            ->join('users', 'users.id', '=', 'formulario.elaborador_id')
+                                            ->where('formulario_id', '=', $request->formulario_id)
+                                            ->orderby('finalizado')->get();
+
+        $filePath = ($formulario[0]->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario[0]->nome_completo_em_revisao : $formulario[0]->nome.".".$formulario[0]->extensao;
+
         return View::make('formularios.view-formulario', array(
             'nome'=>$formulario[0]->nome,  
             'acao'=>$request->action,  
@@ -140,29 +107,17 @@ class FormulariosController extends Controller
             'historico'=>$historico, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
-            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($formulario[0]->nome.".".$formulario[0]->extensao), 
+            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($filePath), 
             'formData'=>trim($formulario[0]->conteudo, '"'), 
             'etapa_form'=>$workflowForm[0]->etapa_num,
             'elaborador_id'=>$formulario[0]->elaborador_id,
             'finalizado'=>$formulario[0]->finalizado,
+            'em_revisao'=>$formulario[0]->em_revisao,
+            'justificativaRejeicaoForm'=>$workflowForm[0]->justificativa,
+            'id_usuario_solicitante'=>$formulario[0]->id_usuario_solicitante,
+            'justificativa_cancelar_revisao'=>$formulario[0]->justificativa_cancelar_revisao,
             'resp'=>false)
         );
-    }
-
-    public function saveEditForm(Request $request){
-        $formulario = Formulario::find($request->formulario_id);
-        $formulario->codigo = $request->codigoFormulario;
-        $formulario->conteudo = $request->formData;
-        if($formulario->save()){
-            return view('formularios.view-formulario',array(
-                    'nome'=>$formulario->nome,  
-                    'formulario_id'=>$request->formulario_id, 
-                    'codigo'=>$formulario->codigo, 
-                    'formData'=>trim($formulario->conteudo, '"'), 
-                    'resp'=>false
-                )
-            );
-        }
     }
 
     public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest  
@@ -170,19 +125,25 @@ class FormulariosController extends Controller
         $extensao = $file->getClientOriginalExtension();
         $titulo   = $request->tituloFormulario;
         $codigo   = $request->codigoFormulario;
-        $filename =  \App\Classes\Helpers::instance()->escapeFilename($titulo).".".$extensao;
-        \Storage::disk('s3')->put('/formularios/'.$filename, file_get_contents($file), 'private');
+        $filename =  \App\Classes\Helpers::instance()->escapeFilename($titulo);
+        \Storage::disk('s3')->put('/formularios/'.$filename .".". $extensao, file_get_contents($file), 'private');
 
         $formulario = new Formulario();
-        $formulario->nome                 = $request->tituloFormulario;
-        $formulario->codigo               = $request->codigoFormulario;
-        $formulario->extensao             = $extensao;
-        $formulario->setor_id             = $request->setor_dono_form;
-        $formulario->grupo_divulgacao_id  = $request->grupoDivulgacao;
-        $formulario->nivel_acesso         = $request->nivel_acesso;
-        $formulario->finalizado           = false;
-        $formulario->elaborador_id        = Auth::user()->id;
-        $formulario->tipo_documento_id    = Constants::$ID_TIPO_DOCUMENTO_FORMULARIO;
+        $formulario->nome                           = $filename;
+        $formulario->codigo                         = $request->codigoFormulario;
+        $formulario->extensao                       = $extensao;
+        $formulario->setor_id                       = $request->setor_dono_form;
+        $formulario->grupo_divulgacao_id            = $request->grupoDivulgacao;
+        $formulario->nivel_acesso                   = $request->nivel_acesso;
+        $formulario->finalizado                     = false;
+        $formulario->elaborador_id                  = Auth::user()->id;
+        $formulario->tipo_documento_id              = Constants::$ID_TIPO_DOCUMENTO_FORMULARIO;
+        $formulario->revisao                        = "00";
+        $formulario->em_revisao                     = false;
+        $formulario->id_usuario_solicitante         = null;
+        $formulario->nome_completo_finalizado       = null;
+        $formulario->nome_completo_em_revisao       = null;
+        $formulario->justificativa_cancelar_revisao = null;
         $formulario->save();
 
         // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
@@ -208,6 +169,122 @@ class FormulariosController extends Controller
         return View::make('formularios.define-formulario', array('overlay_sucesso' => 'valor'));
     }
 
+    public function startReview(Request $request) {
+        $alterarElaborador = false;
+        $nomeAntigoElaborador = "";
+        
+        $formulario = Formulario::where('id', '=', $request->form_id)->get();
+        
+        if($formulario[0]->elaborador_id != Auth::user()->id) {
+            $alterarElaborador = true;
+            $nomeAntigoElaborador = User::where('id', '=', $formulario[0]->elaborador_id)->get()[0]->name;
+        }
+        
+        if($alterarElaborador) $formulario[0]->elaborador_id = Auth::user()->id;
+        $formulario[0]->finalizado = false;
+        $formulario[0]->em_revisao = true;
+        $formulario[0]->id_usuario_solicitante = Auth::user()->id;
+        $formulario[0]->nome_completo_em_revisao = $formulario[0]->nome .".". $formulario[0]->extensao;
+        $formulario[0]->save();
+
+        $workflowForm                = WorkflowFormulario::where('formulario_id', '=', $request->form_id)->get();
+        $workflowForm[0]->etapa_num  = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
+        $workflowForm[0]->etapa      = Constants::$DESCRICAO_WORKFLOW_EM_REVISAO;
+        $workflowForm[0]->save();
+
+        // Gravar notificação para todos usuários do setor Qualidade sobre a criação do documento
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("Foi iniciado um processo de revisão no formulário " . $formulario[0]->codigo . ".", false, $user->id, $formulario[0]->id);
+        }
+
+        \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve sua revisão iniciada.", true, $formulario[0]->elaborador_id, $formulario[0]->id);
+
+        // Grava histórico do documento
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_FORM_REVISAO_INICIADA, $formulario[0]->id);
+        if($alterarElaborador) \App\Classes\Helpers::instance()->gravaHistoricoFormulario("Elaborador alterado de ". $nomeAntigoElaborador ." para ". Auth::user()->name .".", $formulario[0]->id);
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, $formulario[0]->id);
+
+        return redirect()->route('formularios')->with('start_review_success', 'msg');
+    }
+
+    public function sendNewReview(Request $request) {
+        $idForm     = $request->formulario_id;
+        $file       = $request->file('new_review_form', 'local');
+        $extensao   = $file->getClientOriginalExtension();
+        $formulario     = Formulario::where('id', '=', $idForm)->get();
+        $workflowForm   = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
+
+        $revisaoNova = (int) $formulario[0]->revisao + 1;
+        $revisaoNova = ($revisaoNova <= 9) ? "0{$revisaoNova}" : $revisaoNova;
+        $filename = ($request->newTituloFormulario == $formulario[0]->nome) ? $request->newTituloFormulario . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova : $request->newTituloFormulario;
+        $fullFilename = $filename .".". $extensao;
+
+        // Salva nova revisão do formulário (mantém o arquivo origianl e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
+        \Storage::disk('s3')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
+        
+        $formulario[0]->nome_completo_em_revisao = $fullFilename;
+        $formulario[0]->nome                     = $filename;
+        $formulario[0]->extensao                 = $extensao;
+        $formulario[0]->codigo                   = $request->newCodigoFormulario;
+        $formulario[0]->save();
+
+        $workflowForm[0]->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
+        $workflowForm[0]->etapa        = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
+        $workflowForm[0]->save();
+
+        // Notificações
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser analisado.", true, $user->id, $idForm);
+        }
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idForm);
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $idForm);
+
+        return redirect()->route('formularios')->with('send_new_review_success', 'msg');
+    }
+
+    public function cancelReview(Request $request) {
+        $idForm = $request->formulario_id;
+        $formulario = Formulario::where('id', '=', $idForm)->get();
+        $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $formulario[0]->revisao)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registor e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
+
+        // Notificações
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            if($user->id != $formulario[0]->elaborador_id) \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pela Qualidade.", false, $user->id, $idForm);
+        }
+        
+        \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pela Qualidade.", true, $formulario[0]->elaborador_id, $idForm);
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REVISAO_FORM_CANCELADA_FULL, $idForm);
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL, $idForm);
+        
+        // Excluindo arquivo anexado durante a revisão
+        \Storage::disk('s3')->delete('formularios/' . $formulario[0]->nome_completo_em_revisao);
+
+        // Restaurando versão anterior do form
+        $formulario[0]->nome                            = $revisaoAnteriorFormulario[0]->nome;
+        $formulario[0]->codigo                          = $revisaoAnteriorFormulario[0]->codigo;
+        $formulario[0]->extensao                        = $revisaoAnteriorFormulario[0]->extensao;
+        $formulario[0]->nivel_acesso                    = $revisaoAnteriorFormulario[0]->nivel_acesso;
+        $formulario[0]->finalizado                      = true;
+        $formulario[0]->tipo_documento_id               = $revisaoAnteriorFormulario[0]->tipo_documento_id;
+        $formulario[0]->elaborador_id                   = $revisaoAnteriorFormulario[0]->elaborador_id;
+        $formulario[0]->setor_id                        = $revisaoAnteriorFormulario[0]->setor_id;
+        $formulario[0]->grupo_divulgacao_id             = $revisaoAnteriorFormulario[0]->grupo_divulgacao_id;
+        $formulario[0]->em_revisao                      = false;
+        $formulario[0]->nome_completo_finalizado        = null;
+        $formulario[0]->nome_completo_em_revisao        = null;
+        $formulario[0]->justificativa_cancelar_revisao  = $request->justificativaCancelamentoRevisaoForm;
+        $formulario[0]->save();
+
+        return redirect()->route('formularios')->with('cancel_review_success', 'msg');
+    }
+
 
     /*
     *       
@@ -219,7 +296,6 @@ class FormulariosController extends Controller
 
         $formulario = Formulario::where('id', '=', $idForm)->get();
         $workflow_form = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
-      
         switch ($request->etapa_form) {
             case 1: // Elaborador
                 
@@ -227,22 +303,71 @@ class FormulariosController extends Controller
                 break;
 
             case 2: // Qualidade
+                $revisao = $formulario[0]->revisao;   
+                $nome_completo_finalizado = $formulario[0]->nome .".". $formulario[0]->extensao; // Vai ser utilizado para situações como: revisão do formulário demora para ser aprovada e, enquanto isso, quem não está presente na etapa que a REVISÃO DO FORMULÁRIO está, tem que ver a última versão aprovada
+                $newName = $formulario[0]->nome;
+                $newExtension = $formulario[0]->extensao;
+
+                // Uma revisão acabou de ser aprovada e não apenas um formulário que foi criado
+                if( isset($request->aprovacao_revisao) && $request->aprovacao_revisao == "aprovar") {
+                    $revisao = (int) $formulario[0]->revisao + 1;
+                    $revisao = ($revisao <= 9) ? "0{$revisao}" : $revisao;
+
+                    $nome_completo_finalizado = $formulario[0]->nome_completo_em_revisao;
+                    
+                    $arr = explode('.', $formulario[0]->nome_completo_em_revisao);
+                    $sliced = array_slice($arr, 0, -1);
+                    $newExtension = end( $arr );
+                    $newName = implode("", $sliced);
+                }
+
+                // Popula tabela que irá armazenar um "histórico" das revisões (quase como um backup das 'versões')
+                $formRevisao = new FormularioRevisao();
+                $formRevisao->codigo                    = $formulario[0]->codigo;  
+                $formRevisao->revisao                   = $revisao;   
+                $formRevisao->nome                      = $formulario[0]->nome;
+                $formRevisao->nome_completo             = $formulario[0]->nome .".". $formulario[0]->extensao;   
+                $formRevisao->extensao                  = $formulario[0]->extensao;
+                $formRevisao->nivel_acesso              = $formulario[0]->nivel_acesso;
+                $formRevisao->finalizado                = true;
+                
+                $documentosNecessitam = DocumentoFormulario::where('formulario_id', '=', $formulario[0]->id)->get()->pluck('documento_id');
+                $documentosNecessitam_TXT = null;
+                foreach ($documentosNecessitam as $key => $value) {
+                    if($documentosNecessitam_TXT == null) $documentosNecessitam_TXT = $value;
+                    else $documentosNecessitam_TXT .= ";" . $value;
+                }
+                
+                $formRevisao->documentos_necessitam     = $documentosNecessitam_TXT;             
+                $formRevisao->formulario_id             = $formulario[0]->id;             
+                $formRevisao->tipo_documento_id         = $formulario[0]->tipo_documento_id;             
+                $formRevisao->elaborador_id             = $formulario[0]->elaborador_id;             
+                $formRevisao->setor_id                  = $formulario[0]->setor_id;             
+                $formRevisao->grupo_divulgacao_id       = $formulario[0]->grupo_divulgacao_id;             
+                $formRevisao->save();             
+
+
+                // Segue as trolladas do Zyad...
+                $formulario[0]->nome = $newName;
+                $formulario[0]->extensao = $newExtension;
                 $formulario[0]->finalizado = true;
+                $formulario[0]->revisao = $revisao;
+                $formulario[0]->em_revisao = false;
+                $formulario[0]->nome_completo_finalizado = $nome_completo_finalizado;
                 $formulario[0]->save();
 
                 $workflow_form[0]->etapa = Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO;
                 $workflow_form[0]->save();
 
                 // Notificações
+                // Qualidade
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
                     \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $user->id, $idForm);
                 }
                 
-                $usuariosGrupoDivulgacao = GrupoDivulgacao::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.grupo_id', '=', 'grupo_divulgacao.id')->where('grupo_divulgacao.id', '=', $formulario[0]->grupo_divulgacao_id)->get();
-                // dd($usuariosGrupoDivulgacao);
-                
                 //Grupo de Divulgação
+                $usuariosGrupoDivulgacao = GrupoDivulgacao::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.grupo_id', '=', 'grupo_divulgacao.id')->where('grupo_divulgacao.id', '=', $formulario[0]->grupo_divulgacao_id)->get();
                 foreach ($usuariosGrupoDivulgacao as $key => $userG) {
                     \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade. (Início da Divulgação)", false, $userG->usuario_id, $idForm);
                 }
@@ -264,7 +389,6 @@ class FormulariosController extends Controller
         return redirect()->route('formularios')->with('approval_success', 'message');
     }
 
-
     protected function rejectForm(Request $request) {
         $idForm = $request->formulario_id;
 
@@ -272,18 +396,11 @@ class FormulariosController extends Controller
         $workflow_form = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
         
         switch ($request->etapa_form) {
-            case 1: // Elaborador
-                # code...
-                break;
-
             case 2: // Qualidade
 
-                // $formulario[0]->observacao = $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE;
-                // $formulario[0]->save();
-
                 $workflow_form[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
-                $workflow_form[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO_REVISAO;
-                $workflow_form[0]->justificativa = $request->justificativaReprovacaoDoc;
+                $workflow_form[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
+                $workflow_form[0]->justificativa = $request->justificativaReprovacaoForm;
                 $workflow_form[0]->save();
 
                 // Notificações
@@ -292,12 +409,11 @@ class FormulariosController extends Controller
                     \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formuláro " . $formulario[0]->codigo . " foi revisado e rejeitado pela Qualidade.", false, $user->id, $idForm);
                 }
 
-                //Elaborador
                 \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser corrigido.", true, $formulario[0]->elaborador_id, $idForm);
 
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE, $idForm);
-                \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO_REVISAO, $idForm);
+                \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idForm);
                 break;
             
             default: 
@@ -308,33 +424,41 @@ class FormulariosController extends Controller
         return redirect()->route('formularios')->with('reject_success', 'message');
     }
 
-
     protected function resendForm(Request $request) {
-        
         $idForm = $request->formulario_id;
+        $file   = $request->file('new_form', 'local');
+        $formulario     = Formulario::where('id', '=', $idForm)->get();
+        $workflow_form  = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
+        $filename = \App\Classes\Helpers::instance()->escapeFilename($formulario[0]->nome);
 
-        $documento = Documento::where('id', '=', $idForm)->get();
-        $workflow_form = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
+        // Exclui Formulário Antigo
+        \Storage::disk('s3')->delete('formularios/' . $formulario[0]->nome . "." . $formulario[0]->extensao);
 
-        // $formulario[0]->observacao = $DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR;
-        // $formulario[0]->save();
+        // Salva novo formulário com o mesmo nome
+        \Storage::disk('s3')->put('formularios/' . $filename . "." . $formulario[0]->extensao, file_get_contents($file), 'private');
         
-        $workflow_form[0]->etapa_num = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
-        $workflow_form[0]->etapa = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
+        $formulario[0]->nome = $filename;
+        $formulario[0]->save();
+
+        $workflow_form[0]->etapa_num     = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
+        $workflow_form[0]->etapa         = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
+        $workflow_form[0]->justificativa = '';
         $workflow_form[0]->save();
 
         // Notificações
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $documento[0]->codigo . " precisa ser analisado.", true, $user->id, $idForm);
+            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser analisado.", true, $user->id, $idForm);
         }
 
         // Histórico
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idForm);
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $idForm);
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idForm);
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $idForm);
+
 
         return redirect()->route('formularios')->with('resend_success', 'message');
     }
+
 
 
     public function buildCodDocument($n) {
@@ -388,6 +512,7 @@ class FormulariosController extends Controller
 
         } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE) {
             $formsNOTQualidade = $clonedBaseQuery3->where('formulario.finalizado', '=', false)
+                                                    ->where('formulario.elaborador_id', '=', Auth::user()->id)
                                                     ->where('workflow_formulario.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
                                                     ->get();
 

@@ -102,8 +102,6 @@ class Constants {
     
     public static $DESCRICAO_WORKFLOW_EM_ELABORACAO                         = "Em Elaboração";
 
-    public static $DESCRICAO_WORKFLOW_EM_ELABORACAO_REVISAO                 = "Em Elaboração / Revisão";
-
     public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Devolvido para correção pela Qualidade";
     
     public static $DESCRICAO_WORKFLOW_REJEITADO_AREA_INTERESSE              = "Devolvido para correção pela Área de Interesse";
@@ -125,8 +123,14 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1             = "Revisão ";
     public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_2             = " do documento foi cancelada.";
     
+    public static $DESCRICAO_WORKFLOW_REVISAO_FORM_CANCELADA_FULL           = "Revisão do formulário foi cancelada.";
+    
     public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_PARTE_1      = "Revisão ";
     public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_PARTE_2      = " do documento foi restaurada.";
+    
+    public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL    = "Revisão anterior do formulário foi restaurada.";
+
+    public static $DESCRICAO_WORKFLOW_FORM_REVISAO_INICIADA                 = "Revisão do formulário iniciada";
 
     
     
