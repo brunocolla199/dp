@@ -327,14 +327,16 @@
                     <div class="row mb-4">
 
                         @if (!Auth::guest())
-                        
 
                             @if( count(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id )) <= 0 )
                                 <div class="col-md-12 mb-4">
                                     Não há nenhuma nova notificação para ser visualizada.
                                 </div>
                             @else
-                                @foreach(\App\Classes\Helpers::instance()->getNotifications( Auth::user()->id ) as $notificacao)
+                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                {{ Form::close() }}
+
+                                @foreach( \App\Classes\Helpers::instance()->getNotifications( Auth::user()->id ) as $notificacao )
                                     @if($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_INSTRUCAO_DE_TRABALHO)
                                         <div class="col-md-12">
                                             <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
@@ -390,11 +392,6 @@
                                         <div class="col-md-12">
                                             <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
                                                 
-                                                <!--
-                                                    -- 
-                                                    Aqui será necessário mudar a rota e direcionar para edição ou aprovação de FORMULÁRIO 
-                                                    --
-                                                -->
                                                 {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
                                                     {{ Form::hidden('notify_id', $notificacao->id) }}
                                                     {{ Form::hidden('formulario_id', $notificacao->doc_id) }}
@@ -403,8 +400,7 @@
                                                             {{ $notificacao->codigo }}
                                                         </div>
                                                     </button>  
-                                                    {{ Form::close() }}
-                                                
+                                                {{ Form::close() }}
 
                                                 <p class="ribbon-content"> {{ $notificacao->texto }} </p>
                                             </div>
