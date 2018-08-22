@@ -159,42 +159,6 @@
 
                             @else
 
-                            <h3>Novo Formulário:</h3>
-                            <!-- Formbuilder -->
-                            <div class="container" >
-                                <section id="main_content" class="inner">
-                                    <form class="build-form clearfix"></form>
-                                </section>
-                            </div>
-                            <!-- End Formbuilder -->
-                                    
-                            {!! Form::open(['route' => 'formularios.save-new-form', 'method' => 'POST', 'id' => 'form-upload-new-form', 'enctype' => 'multipart/form-data']) !!}
-                                {{ csrf_field() }}
-                            
-                                {!! Form::hidden('codigoFormulario',        $codigoFormulario) !!}
-                                {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
-                                {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
-                                {!! Form::hidden('setor_dono_form',         $setorDono) !!}                                             
-                                {!! Form::hidden('tituloFormulario',        $tituloFormulario) !!}
-                                
-                            {!! Form::close() !!}
-      
-
-                            <div class="col-lg-12 col-md-12">
-                                <br>
-                                <div class="col-md-offset-2 col-md-3 pull-right">
-                                    <input type="button" id="btn-save-new-form" class="btn btn-lg btn-success" value="Salvar Formulário">
-                                </div>
-                                <div class=" col-md-3 pull-right">
-                                    <button id="renderForm" data-toggle="modal" data-target="#preview-form-modal" class="btn waves-effect waves-light btn-block btn-lg btn-primary">Pré-visualizar </button>
-                                </div>
-                                <div class="col-md-offset-2 col-md-3 pull-right">
-                                    <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
-                                </div>
-                            </div>
-
-
-
                             @endif
 
                         </div>
