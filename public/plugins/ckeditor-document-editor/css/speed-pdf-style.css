@@ -32,10 +32,11 @@ left:-55px;
 width: 850px;
 font-size: 10px;
 height: 70px;
-/* border: 2px solid pink; */
 }
 
 #content {
+top:70px;
+position: relative;
 }
 
 footer {
