@@ -593,7 +593,7 @@ class DocumentacaoController extends Controller
                                         </div>
 
 
-                                        <div id="content">
+                                        <div>
                                             '.Storage::get("uploads/".$documento[0]->nome.".html").'
                                         </div>
                                 
@@ -675,7 +675,7 @@ class DocumentacaoController extends Controller
                                                 </table>
                                             </div>
                                         </div>
-                                        <div id="content">
+                                        <div>
                                             '.Storage::get("uploads/".$documento[0]->nome.".html").'
                                         </div>
                                 
