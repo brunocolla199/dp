@@ -399,7 +399,7 @@
                                                         </thead>
                                                         <tbody>
 
-                                                            @if( count($documentos_nao_finalizados) > 0 )
+                                                            @if( $documentos_nao_finalizados != null && count($documentos_nao_finalizados) > 0 )
                                                                 @foreach($documentos_nao_finalizados as $doc)
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
@@ -426,7 +426,7 @@
                                                                 @endforeach
                                                             @endif
 
-                                                            @if( count($documentos_finalizados) > 0 )
+                                                            @if( $documentos_finalizados != null && count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
