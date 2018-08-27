@@ -41,6 +41,6 @@ class SendEmailsJob implements ShouldQueue
      */
     public function handle(Mail $mail)
     {
-        $mail::to("julio.ceron@live.com")->send(new NecessitaRevisao($this->documento, $this->responsavelPelaAcao, $this->tipo, $this->assunto));
+        $mail::to($this->destinatarios)->send(new NecessitaRevisao($this->documento, $this->responsavelPelaAcao, $this->tipo, $this->assunto));
     }
 }
