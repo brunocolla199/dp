@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NecessitaRevisao;
+
 class Helpers {
 
     // Notificações
@@ -249,6 +252,103 @@ class Helpers {
     public function escapeFilename($filename){
         return str_replace('/', '-', str_replace('"', '', str_replace('\'', '', str_replace('\\', '', $filename))));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    /*
+    *   E M A I L S
+    */
+    
+    // ----> Documentos
+
+    // Documento foi rejeitado no Workflow e precisa ser corrigido
+    public function sendDocumentoNecessitaSerCorrigido() {
+
+    }
+
+    // Documento irá vencer
+    public function sendDocumentoVaiVencer() {
+
+    }
+
+    // O Workflow do documento foi finalizado (Revisão/Elaboração)
+    public function sendDocumentoDivulgado() {
+
+    }
+
+    // O documento foi recebido e precisa ser analisado/revisado/aprovado
+    public function sendDocumentoNecessitaRevisao($destinatarios, $documento, $responsavelPelaAcao) {
+        $dataFile = [];
+        $dataFile['codigo'] = $documento->codigo;
+        $dataFile['nome'] = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0];
+
+        Mail::to($destinatarios)->send(new NecessitaRevisao($documento, $responsavelPelaAcao, "O documento", "Novo documento para aprovação"));
+        return true;
+    }
+
+    // O documento possui cópia controlada
+    public function sendDocumentoPossuiCopiaControlada() {
+
+    }
+
+
+    // ----> Listas de Presença
+
+    // Lista de presença foi rejeitada pelo Capital Humano e deve ser readicionada
+    public function sendListaDePresencaNecessitaSerReadicionada() {
+
+    }
+
+    // Existe uma nova lista de presença para ser analisada/revisada/aprovada
+    public function sendListaDePresencaNecessitaRevisao($destinatarios, $lista, $responsavelPelaAcao) {
+        $dataFile = [];
+        $dataFile['codigo'] = $lista->nome;
+
+        Mail::to($destinatarios)->send(new NecessitaRevisao($documento, $responsavelPelaAcao, "A lista de presença", "Nova lista de presença para aprovação"));
+        return true;
+    }
+
+
+    // ----> Formulários
+
+    // Formulário foi rejeitado no Workflow e precisa ser corrigido
+    public function sendFormularioNecessitaSerCorrigido() {
+
+    }
+
+    // O Workflow do formulário foi finalizado (Revisão/Elaboração)
+    public function sendFormularioDivulgado() {
+
+    }
+
+    // O formulário foi recebido e precisa ser analisado/revisado/aprovado
+    public function sendFormularioNecessitaRevisao() {
+        $dataFile = [];
+        $dataFile['codigo'] = $lista->nome;
+
+        Mail::to($destinatarios)->send(new NecessitaRevisao($documento, $responsavelPelaAcao, "A lista de presença", "Nova lista de presença para aprovação"));
+        return true;
+    }
+
+
 
 
     

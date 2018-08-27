@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NecessitaRevisao;
+
 class DocumentacaoController extends Controller
 {
     
@@ -395,9 +398,19 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi importado e precisa ser revisado.", true, $user->id, $request->documento_id);
             }
         } else {
-            foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
-            }
+            $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->get();
+            
+            // ----> Bombando
+            // \App\Classes\Helpers::instance()->sendDocumentoNecessitaRevisao($usuariosSetorQualidade, $documento[0], $responsavelPelaAcao[0]);
+            
+            
+            return (new \App\Mail\NecessitaRevisao($dataFile, $responsavelPelaAcao[0], "O documento"))->render();
+            
+            dd("Verifica lá!");
+
+            // foreach ($usuariosSetorQualidade as $key => $user) {
+            //     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
+            // }
         }
 
         // Grava histórico do documento
