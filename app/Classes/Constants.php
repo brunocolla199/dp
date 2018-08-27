@@ -142,6 +142,8 @@ class Constants {
     public static $ID_USUARIO_ADMIN_SETOR_QUALIDADE = 1; // [CELISE] Verificar se for importado do AD
     
     public static $SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS = "_rev";
+ 
+    public static $URL_SISTEMA_PRODUCAO = "http://18.209.80.61/qualidade_prod/login";
 }
 
 
