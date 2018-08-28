@@ -28,9 +28,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NecessitaRevisao;
+use App\Jobs\SendEmailsJob;
 
 class DocumentacaoController extends Controller
 {
@@ -381,7 +380,9 @@ class DocumentacaoController extends Controller
 
 
     public function salvaAnexoElaboradorEIniciaWorkflow(Request $request) {
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
         $documento = Documento::where('id', '=', $request->documento_id)->get();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get();
 
         $workflow = new Workflow();
         $workflow->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
@@ -397,21 +398,18 @@ class DocumentacaoController extends Controller
             foreach ($usuariosSetorQualidade as $key => $user) {
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi importado e precisa ser revisado.", true, $user->id, $request->documento_id);
             }
-        } else {
-            $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->get();
-            
-            // ----> Bombando
-            // \App\Classes\Helpers::instance()->sendDocumentoNecessitaRevisao($usuariosSetorQualidade, $documento[0], $responsavelPelaAcao[0]);
-            
-            
-            return (new \App\Mail\NecessitaRevisao($dataFile, $responsavelPelaAcao[0], "O documento"))->render();
-            
-            dd("Verifica lá!");
-
-            // foreach ($usuariosSetorQualidade as $key => $user) {
-            //     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
-            // }
+        } else {            
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
+            }
         }
+            
+        // [E-mail -> (4)]
+        $icon = "info";
+        $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+        $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
         // Grava histórico do documento
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $request->documento_id);
@@ -1235,11 +1233,13 @@ class DocumentacaoController extends Controller
     *  WORKFLOW      
     */
     protected function approvalDocument(Request $request) {
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
         $idDoc = $request->documento_id;
 
         $documento = Documento::where('id', '=', $idDoc)->get();
         $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get();
         
         switch ($request->etapa_doc) {
             case 1: // Elaborador
@@ -1250,7 +1250,7 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->observacao = "Aprovado pela Qualidade";
                 $dados_doc[0]->save();
 
-                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
+                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')->where('documento_id', '=', $idDoc)->select('usuario_id', 'name', 'username', 'email', 'setor_id')->get();
                 if( count($usuariosAreaInteresseDocumento) > 0  ) {
                     $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM;
                     $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
@@ -1262,9 +1262,16 @@ class DocumentacaoController extends Controller
                         \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $user->id, $idDoc);
                     }
 
-                    foreach ($usuariosAreaInteresseDocumento as $key => $value) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $value, $idDoc);
+                    foreach ($usuariosAreaInteresseDocumento as $key => $user) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $user->usuario_id, $idDoc);
                     }
+
+                    // [E-mail -> (4)]
+                    $icon = "info";
+                    $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
+                    $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+                    $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+                    $this->dispatch(new SendEmailsJob($usuariosAreaInteresseDocumento, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
                     // Histórico
                     \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE, $idDoc);
@@ -1283,6 +1290,14 @@ class DocumentacaoController extends Controller
 
                     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $dados_doc[0]->aprovador_id, $idDoc);
 
+                    // [E-mail -> (4)]
+                    $aprovador = User::where('id', '=', $dados_doc[0]->aprovador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                    $icon = "info";
+                    $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
+                    $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+                    $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+                    $this->dispatch(new SendEmailsJob($aprovador, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
                     // Histórico
                     \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE, $idDoc);
                     \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR, $idDoc);
@@ -1299,6 +1314,14 @@ class DocumentacaoController extends Controller
 
                 // Notificações
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $dados_doc[0]->aprovador_id, $idDoc);
+
+                // [E-mail -> (4)]
+                $aprovador = User::where('id', '=', $dados_doc[0]->aprovador_id)->get();
+                $icon = "info";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
+                $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+                $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+                $this->dispatch(new SendEmailsJob($aprovador, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_AREA_DE_INTERESSE, $idDoc);
@@ -1331,24 +1354,41 @@ class DocumentacaoController extends Controller
                 // Notificações
                 \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->elaborador_id, $idDoc);
 
-                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
                     \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
                 }
 
-                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
+                $usuariosAreaInteresseDocumento = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
                 if( count($usuariosAreaInteresseDocumento) > 0  ) {
-                    foreach ($usuariosAreaInteresseDocumento as $key => $idUser) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $idUser, $idDoc);
+                    foreach ($usuariosAreaInteresseDocumento as $key => $user) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
                     }
                 }
 
                 \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->aprovador_id, $idDoc);
 
-                $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
-                foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $idUser, $idDoc);
+                $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                foreach ($usuariosSetorCapitalHumano as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
                 }
+
+                // [E-mail -> (3)]  
+                $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                $aprovador = User::where('id', '=', $dados_doc[0]->aprovador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                $setor = Setor::where('id', '=', $dados_doc[0]->setor_id)->select('nome')->get();
+                $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get();
+
+                $mergeOne = $usuariosSetorQualidade->merge($usuariosSetorCapitalHumano);
+                $mergeTwo = $mergeOne->merge($elaborador);
+                $mergeThree = $mergeTwo->merge($aprovador);
+                $allUsersInvolved = $mergeThree->merge($usuariosAreaInteresseDocumento);
+
+                $icon = "success";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " foi divulgado.";
+                $labelF2 = "Setor do documento: "; $valueF2 = $setor[0]->nome;
+                $labelF3 = "Nível de acesso do documento: "; $valueF3 = $dados_doc[0]->nivel_acesso; $label2_F3 = " / Tipo do documento: "; $value2_F3 = $tipoDocumento[0]->nome_tipo;
+                $this->dispatch(new SendEmailsJob($allUsersInvolved, "Documento divulgado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
 
                 // Notificação específica para documentos que possuem Cópia Controlada
@@ -1356,6 +1396,13 @@ class DocumentacaoController extends Controller
                     foreach ($usuariosSetorQualidade as $key => $user) {
                         \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita de Cópia Controlada.", true, $user->id, $idDoc);
                     }
+
+                    // [E-mail -> (5)]
+                    $icon = "info";
+                    $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " possui cópia controlada.";
+                    $labelF2 = "Este documento necessita de "; $valueF2 = "cópia controlada";
+                    $labelF3 = ""; $valueF3 = "Não esqueça!"; $label2_F3 = ""; $value2_F3 = "";
+                    $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Cópia controlada necessária",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
                 }
 
                 // Histórico
@@ -1369,11 +1416,13 @@ class DocumentacaoController extends Controller
 
 
     protected function rejectDocument(Request $request) {
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
         $idDoc = $request->documento_id;
-
+        
         $documento = Documento::where('id', '=', $idDoc)->get();
         $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+        $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
         
         switch ($request->etapa_doc) {
             case 1: // Elaborador
@@ -1397,6 +1446,14 @@ class DocumentacaoController extends Controller
 
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Qualidade).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
+
+                // [E-mail -> (1)]  
+                $icon = "error";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " foi rejeitado.";
+                $labelF2 = "Foram solicitadas mudanças no arquivo."; $valueF2 = " Visualize a justificativa!";
+                $labelF3 = "Usuário solicitante: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = " / Solicitado por: "; $value2_F3 = "Setor " . $responsavelPelaAcao[0]->nome;
+                $this->dispatch(new SendEmailsJob($elaborador, "Documento rejeitado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
@@ -1419,6 +1476,13 @@ class DocumentacaoController extends Controller
 
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Área de Interesse).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
+                // [E-mail -> (1)]  
+                $icon = "error";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " foi rejeitado.";
+                $labelF2 = "Foram solicitadas mudanças no arquivo."; $valueF2 = " Visualize a justificativa!";
+                $labelF3 = "Usuário solicitante: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = " / Solicitado por: "; $value2_F3 = "Área de Interesse";
+                $this->dispatch(new SendEmailsJob($elaborador, "Documento rejeitado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_AREA_INTERESSE, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
@@ -1440,6 +1504,13 @@ class DocumentacaoController extends Controller
                 }
 
                 \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pelo Aprovador).", true, $dados_doc[0]->elaborador_id, $idDoc);
+
+                // [E-mail -> (1)]  
+                $icon = "error";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " foi rejeitado.";
+                $labelF2 = "Foram solicitadas mudanças no arquivo."; $valueF2 = " Visualize a justificativa!";
+                $labelF3 = "Usuário solicitante: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = " / Solicitado por: "; $value2_F3 = "Aprovador";
+                $this->dispatch(new SendEmailsJob($elaborador, "Documento rejeitado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_APROVADOR, $idDoc);
@@ -1464,6 +1535,13 @@ class DocumentacaoController extends Controller
 
                 \App\Classes\Helpers::instance()->gravaNotificacao("A lista de presença do documento " . $documento[0]->codigo . " precisa ser corrigida (rejeitada pelo Capital Humano).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
+                // [E-mail -> (6)]  
+                $icon = "error";
+                $contentF1_P1 = "A lista de presença "; $codeF1 = ""; $contentF1_P2 = "foi rejeitada.";
+                $labelF2 = "A rejeição foi realizada pelo setor: "; $valueF2 = $responsavelPelaAcao[0]->nome;
+                $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
+                $this->dispatch(new SendEmailsJob($elaborador, "Lista de presença rejeitada",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_CAPITAL_HUMANO, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
@@ -1477,6 +1555,7 @@ class DocumentacaoController extends Controller
 
 
     protected function resendDocument(Request $request) {
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
         $idDoc = $request->documento_id;
 
         $documento = Documento::where('id', '=', $idDoc)->get();
@@ -1496,6 +1575,14 @@ class DocumentacaoController extends Controller
         foreach ($usuariosSetorQualidade as $key => $user) {
             \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $user->id, $idDoc);
         }
+
+        // [E-mail -> (4)]
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get();
+        $icon = "info";
+        $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+        $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idDoc);
@@ -1532,10 +1619,18 @@ class DocumentacaoController extends Controller
         $workflow_doc[0]->save();
 
         // Notificações
-        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
-        foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença reanalisada.", true, $idUser, $idDoc);
+        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        foreach ($usuariosSetorCapitalHumano as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença reanalisada.", true, $user->id, $idDoc);
         }
+
+        // [E-mail -> (7)]      
+        $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('name')->get();
+        $icon = "info";
+        $contentF1_P1 = "A lista de presença"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
+        $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
+        $this->dispatch(new SendEmailsJob($usuariosSetorCapitalHumano, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idDoc);
@@ -1554,9 +1649,8 @@ class DocumentacaoController extends Controller
 
         $listaPresenca = ListaPresenca::where('documento_id', '=', $idDoc)->get();
         if($listaPresenca->count() <= 0) {
-            // $path     = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
             Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
-            // $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
+
             $lista = new ListaPresenca();
             $lista->nome            = $request->nome_lista;
             $lista->extensao        = $extensao;
@@ -1575,10 +1669,18 @@ class DocumentacaoController extends Controller
             $workflow_doc[0]->save();
     
             // Notificações
-            $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
-            foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $idUser, $idDoc);
+            $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            foreach ($usuariosSetorCapitalHumano as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $user->id, $idDoc);
             }
+
+            // [E-mail -> (7)]      
+            $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('name')->get();
+            $icon = "info";
+            $contentF1_P1 = "A lista de presença"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
+            $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
+            $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
+            $this->dispatch(new SendEmailsJob($usuariosSetorCapitalHumano, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
     
             // Histórico
             \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
@@ -1603,10 +1705,18 @@ class DocumentacaoController extends Controller
             $workflow_doc[0]->save();
 
             // Notificações
-            $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->get()->pluck('id');
-            foreach ($usuariosSetorCapitalHumano as $key => $idUser) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $idUser, $idDoc);
+            $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            foreach ($usuariosSetorCapitalHumano as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $user->id, $idDoc);
             }
+
+            // [E-mail -> (7)]      
+            $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('name')->get();
+            $icon = "info";
+            $contentF1_P1 = "A lista de presença"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
+            $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
+            $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
+            $this->dispatch(new SendEmailsJob($usuariosSetorCapitalHumano, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
     
             // Histórico
             \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);

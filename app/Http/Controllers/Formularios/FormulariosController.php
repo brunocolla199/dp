@@ -23,7 +23,8 @@ use App\Classes\Constants;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendEmailsJob;
 
 class FormulariosController extends Controller
 {
@@ -161,6 +162,16 @@ class FormulariosController extends Controller
         foreach ($usuariosSetorQualidade as $key => $user) {
             \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $codigo . " foi emitido e necessita ser revisado.", true, $user->id, $formulario->id);
         }
+
+        // [E-mail -> (10)]
+        $setor = Setor::where('id', '=', $formulario->setor_id)->select('nome')->get();
+        $elaborador = User::where('id', '=', $formulario->elaborador_id)->select('name')->get();
+
+        $icon = "info";
+        $contentF1_P1 = "O formulário "; $codeF1 = $formulario->codigo; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
+        $labelF3 = "Enviado por: "; $valueF3 = $elaborador[0]->name; $label2_F3 = ""; $value2_F3 = "";
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
         
         // Grava histórico do documento
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $formulario->id);
@@ -239,6 +250,16 @@ class FormulariosController extends Controller
             \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser analisado.", true, $user->id, $idForm);
         }
 
+        // [E-mail -> (10)]
+        $setor = Setor::where('id', '=', $formulario[0]->setor_id)->select('nome')->get();
+        $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('name')->get();
+
+        $icon = "info";
+        $contentF1_P1 = "O formulário "; $codeF1 = $formulario[0]->codigo; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
+        $labelF3 = "Enviado por: "; $valueF3 = $elaborador[0]->name; $label2_F3 = ""; $value2_F3 = "";
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idForm);
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, $idForm);
@@ -285,6 +306,17 @@ class FormulariosController extends Controller
         return redirect()->route('formularios')->with('cancel_review_success', 'msg');
     }
 
+    public function makeObsoleteForm(Request $request) {
+        dd("Em manutenção!!");
+    }
+
+    public function makeActiveForm(Request $request) {
+        dd("Em manutenção!!");
+    }
+
+    public function viewObsoleteForm(Request $request) {
+        dd("Em manutenção!!");
+    }
 
     /*
     *       
@@ -296,6 +328,7 @@ class FormulariosController extends Controller
 
         $formulario = Formulario::where('id', '=', $idForm)->get();
         $workflow_form = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
+
         switch ($request->etapa_form) {
             case 1: // Elaborador
                 
@@ -361,19 +394,37 @@ class FormulariosController extends Controller
 
                 // Notificações
                 // Qualidade
-                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
                     \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $user->id, $idForm);
                 }
                 
                 //Grupo de Divulgação
-                $usuariosGrupoDivulgacao = GrupoDivulgacao::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.grupo_id', '=', 'grupo_divulgacao.id')->where('grupo_divulgacao.id', '=', $formulario[0]->grupo_divulgacao_id)->get();
+                $usuariosGrupoDivulgacao = User::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.usuario_id', '=', 'users.id')
+                                                    ->join('grupo_divulgacao', 'grupo_divulgacao.id', '=', 'grupo_divulgacao_usuario.grupo_id')
+                                                    ->where('grupo_divulgacao.id', '=', $formulario[0]->grupo_divulgacao_id)
+                                                    ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();               
                 foreach ($usuariosGrupoDivulgacao as $key => $userG) {
-                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade. (Início da Divulgação)", false, $userG->usuario_id, $idForm);
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade. (Início da Divulgação)", false, $userG->id, $idForm);
                 }
 
                 //Elaborador
                 \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $formulario[0]->elaborador_id, $idForm);
+
+                
+                // [E-mail -> (9)]
+                $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                $setor = Setor::where('id', '=', $formulario[0]->setor_id)->select('nome')->get();
+
+                $mergeOne = $usuariosSetorQualidade->merge($usuariosGrupoDivulgacao);
+                $allUsersInvolved = $mergeOne->merge($elaborador);
+
+                $icon = "success";
+                $contentF1_P1 = "O formulário "; $codeF1 = $formulario[0]->codigo; $contentF1_P2 = " foi divulgado.";
+                $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
+                $labelF3 = "Nível de acesso do formulário: "; $valueF3 = $formulario[0]->nivel_acesso; $label2_F3 = ""; $value2_F3 = "";
+                $this->dispatch(new SendEmailsJob($allUsersInvolved, "Formulário divulgado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                
 
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE, $idForm);
@@ -390,6 +441,7 @@ class FormulariosController extends Controller
     }
 
     protected function rejectForm(Request $request) {
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
         $idForm = $request->formulario_id;
 
         $formulario = Formulario::where('id', '=', $idForm)->get();
@@ -410,6 +462,15 @@ class FormulariosController extends Controller
                 }
 
                 \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser corrigido.", true, $formulario[0]->elaborador_id, $idForm);
+
+                // [E-mail -> (8)]  
+                $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+
+                $icon = "error";
+                $contentF1_P1 = "O formulário "; $codeF1 = $formulario[0]->codigo; $contentF1_P2 = "foi rejeitado.";
+                $labelF2 = "Foram solicitadas mudanças no arquivo. "; $valueF2 = "Visualize a justificativa!";
+                $labelF3 = "Usuário solicitante: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = " / Solicitado por: "; $value2_F3 = "Setor " . $responsavelPelaAcao[0]->nome;
+                $this->dispatch(new SendEmailsJob($elaborador, "Formulário rejeitado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE, $idForm);
@@ -450,6 +511,17 @@ class FormulariosController extends Controller
         foreach ($usuariosSetorQualidade as $key => $user) {
             \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser analisado.", true, $user->id, $idForm);
         }
+
+        // [E-mail -> (10)]
+        $setor = Setor::where('id', '=', $formulario[0]->setor_id)->select('nome')->get();
+        $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('name')->get();
+
+        $icon = "info";
+        $contentF1_P1 = "O formulário "; $codeF1 = $formulario[0]->codigo; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
+        $labelF3 = "Enviado por: "; $valueF3 = $elaborador[0]->name; $label2_F3 = ""; $value2_F3 = "";
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idForm);

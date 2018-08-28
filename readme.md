@@ -35,3 +35,4 @@ Para isso execute o seguinte comando no terminal:
 Para executar em modo de produção, é necessário configurar um `supervisor`, para isso você deve que seguir os passos conforme descrito na própria documentaçao do laravel disponível em [Doc-Supervisor](https://laravel.com/docs/5.5/queues#supervisor-configuration)
 
 
+**NOTE:** Rodar _php artisan migrate_
