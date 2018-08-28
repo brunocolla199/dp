@@ -27,13 +27,16 @@
 ?>
 
 <?php
+
     require_once( dirname(__FILE__) . '/config.php' );
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
 
     $filename;
 
+    $folder        = $_GET["folder"];
     $externalUrl = $_GET["fileUrl"];
+    
     if (!empty($externalUrl))
     {
         $filename = DoUpload($externalUrl);
@@ -43,6 +46,10 @@
         $filename = basename($_GET["fileID"]);
     }
     $createExt = $_GET["fileExt"];
+    
+    if(!empty($folder)){
+        $filename = $folder."/".$filename;   
+    }
 
     if (!empty($createExt))
     {
@@ -52,6 +59,7 @@
         header('Location: ' . $new_url, true);
         exit;
     }
+
 
     $fileuri = FileUri($filename, true);
     $fileuriUser = FileUri($filename);
@@ -155,11 +163,11 @@
             <?php
                 if (!file_exists(getStoragePath($filename))) {
                     // echo "alert('".getStoragePath($filename)."'); return;";
-                    echo "alert('File not found'); return;";
+                    // echo "alert('File not found'); return;";
                 }
             ?>
 
-            var user = [{id:"0","name":"Jonn Smith"}, {id:"1","name":"Mark Pottato"}, {id:"2","name":"Hamish Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];
+            var user = [{id:"0","name":"Speed"}];
             var type = "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : ($_GET["type"] == "desktop" ? "desktop" : ""))) ?>";
             if (type == "") {
                 type = new RegExp("<?php echo $GLOBALS['MOBILE_REGEX'] ?>", "i").test(window.navigator.userAgent) ? "mobile" : "desktop";

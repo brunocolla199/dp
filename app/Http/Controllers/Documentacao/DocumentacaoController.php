@@ -28,7 +28,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NecessitaRevisao;
 
@@ -232,9 +231,10 @@ class DocumentacaoController extends Controller
             // Concatena e gera o código final
             $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla . "-" : "";
             $codigo_final .= $codigo;
-    
-            $docData = File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".html"); 
-    
+
+            //Copiando modelo de documento para ser editado!
+            Storage::disk('speed_office')->put($tituloDocumento.".docx", File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".docx"));
+
             return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
                                                             'nivelAcessoDocumento' => $nivelAcessoDocumento,
                                                             'aprovador' => $aprovador, 'text_aprovador' => $text_aprovador[0]->name,
@@ -243,7 +243,7 @@ class DocumentacaoController extends Controller
                                                             'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
                                                             'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
                                                             'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
-                                                            'acao' => $acao, 'areaInteresse' => $areaInteresse, 'docData'=>$docData, 'formsAtrelados'=>$request->formulariosAtrelados, 'text_formsAtrelados'=>$text_formsAtrelados ]);
+                                                            'acao' => $acao, 'areaInteresse' => $areaInteresse, 'formsAtrelados'=>$request->formulariosAtrelados, 'text_formsAtrelados'=>$text_formsAtrelados ]);
         }
 
     }
@@ -404,9 +404,9 @@ class DocumentacaoController extends Controller
             // \App\Classes\Helpers::instance()->sendDocumentoNecessitaRevisao($usuariosSetorQualidade, $documento[0], $responsavelPelaAcao[0]);
             
             
-            return (new \App\Mail\NecessitaRevisao($dataFile, $responsavelPelaAcao[0], "O documento"))->render();
+            // return (new \App\Mail\NecessitaRevisao($dataFile, $responsavelPelaAcao[0], "O documento"))->render();
             
-            dd("Verifica lá!");
+            // dd("Verifica lá!");
 
             // foreach ($usuariosSetorQualidade as $key => $user) {
             //     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
@@ -458,24 +458,10 @@ class DocumentacaoController extends Controller
         $formularios   = Formulario::all()->pluck('nome', 'id');
         $filePath = null;
         
-        if( count($listaPresenca) > 0 ) $filePath = \App\Classes\Helpers::instance()->getListaPresenca($listaPresenca[0]->nome.".".$listaPresenca[0]->extensao);
-        
-        if(Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html")){
-            $documento->docData = trim(json_encode(Storage::get("uploads/".$documento[0]->nome.".html")), '"');
-        } else {
-            $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
-
-            $docPath = $storagePath."uploads/".$documento[0]->nome.".".$documento[0]->extensao;
-
-            $phpWord = ($documento[0]->extensao == "docx") ? \PhpOffice\PhpWord\IOFactory::load($docPath) : \PhpOffice\PhpWord\IOFactory::load($docPath, 'MsDoc');
-
-            $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-            
-            ob_start();
-            $htmlWriter->save('php://output');
-            $documento->docData = json_encode($this->extractHtmlDoc(ob_get_contents(), 'body'));
-            ob_end_clean();
-        }
+        if( count($listaPresenca) > 0 ) $filePath = $listaPresenca[0]->nome.".".$listaPresenca[0]->extensao;        
+        $storagePath = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix();
+        $docPath = $storagePath.$documento[0]->nome.".".$documento[0]->extensao;
+        $documento->docData = "";
     
         return view('documentacao.view-document', array(
             'nome'=>explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0], 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 
@@ -513,7 +499,7 @@ class DocumentacaoController extends Controller
             
             $formsDoc = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $document_id)->pluck('formulario.id as id');
 
-            Storage::disk('local')->put('uploads/'.$documento->nome.'.html', $request->docData);
+            // Storage::disk('local')->put('uploads/'.$documento->nome.'.html', $request->docData);
                 
             $docData = trim(json_encode($request->docData), '"');
             
@@ -1144,9 +1130,9 @@ class DocumentacaoController extends Controller
 
 
             // Criando uma cópia do documento original para a nova revisão (isso será usado quando quiser ver todas as versões do doc)
-            if( Storage::disk('local')->exists("uploads/".$documento[0]->nome.".html") ) {
+            if( Storage::disk('speed_office')->exists($documento[0]->nome.".".$documento[0]->extensao) ) {
                 $newName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0] . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova;
-                Storage::copy("uploads/".$documento[0]->nome.".html", "uploads/". $newName . ".html");
+                Storage::copy("uploads/".$documento[0]->nome.".".$documento[0]->extensao, "uploads/". $newName .".".$documento[0]->extensao);
                 $documento[0]->nome = $newName;
                 $documento[0]->save();
             }
@@ -1202,7 +1188,7 @@ class DocumentacaoController extends Controller
         $workflow[0]->save();
 
         // < Excluindo o arquivo físico da revisão que acabou de ser cancelada >
-        Storage::disk('local')->delete("uploads/".$nomeCompletoDoc.".html");
+        Storage::disk('speed_office')->delete($nomeCompletoDoc.".".$documento[0]->extensao);
 
         // Notificações
         \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc[0]->elaborador_id, $idDoc);
@@ -1513,14 +1499,14 @@ class DocumentacaoController extends Controller
         $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
 
         // Exclui Lista antiga
-        Storage::disk('s3')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
+        Storage::disk('speed_office')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
         
         // Salva nova lista de presença com o mesmo nome
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
         
 
-        Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
+        Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
         $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
 
         $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
@@ -1555,7 +1541,7 @@ class DocumentacaoController extends Controller
         $listaPresenca = ListaPresenca::where('documento_id', '=', $idDoc)->get();
         if($listaPresenca->count() <= 0) {
             // $path     = $file->storeAs('/lists', $request->nome_lista . "." . $extensao, 'local');
-            Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
+            Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
             // $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
             $lista = new ListaPresenca();
             $lista->nome            = $request->nome_lista;
@@ -1586,10 +1572,10 @@ class DocumentacaoController extends Controller
             // U => Estamos em uma revisão do documento e já existe lista de presença, ou seja, é necessário deletar a antiga e subir a nova
 
             // Exclui lista antiga
-            Storage::disk('s3')->delete('lists/' . $listaPresenca[0]->nome .".". $listaPresenca[0]->extensao);
+            Storage::disk('speed_office')->delete('lists/' . $listaPresenca[0]->nome .".". $listaPresenca[0]->extensao);
 
             // Salva lista nova
-            Storage::disk('s3')->put('/lists/'.$request->nome_lista . ".". $extensao, file_get_contents($file), 'private');
+            Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".". $extensao, file_get_contents($file), 'private');
 
             // Atualiza tabela no B.D.
             $listaPresenca[0]->nome      = $request->nome_lista;

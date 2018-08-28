@@ -540,3 +540,273 @@ Track START
 _GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:17:"IMPORT_rev00.docx";s:11:"userAddress";s:7:"Storage";}
 InputStream data: a:4:{s:3:"key";s:10:"4007271834";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:1:"0";}}}
 track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:26:"FR.xlsxformularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:26:"FR.xlsxformularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"1857520759";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:9:"435353402";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:9:"435353402";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:9:"435353402";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:19:"formularios/FR.xlsx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:9:"435353402";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:1:"0";i:1;s:17:"uid-1535467915556";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535467915556";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535467915556";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:1:"0";i:1;s:17:"uid-1535467989573";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535467989573";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:1:"0";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535467989573";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:1:"0";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535467997552";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:1:"0";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:17:"uid-1535468160737";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535468160737";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535468160737";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:17:"uid-1535468223155";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535468223155";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535468223155";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:17:"uid-1535473722102";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535473722102";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535473722102";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:17:"uid-1535474037253";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535474037253";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535474037253";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:17:"uid-1535474104919";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535474104919";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535474104919";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:2:{i:0;s:17:"uid-1535474131227";i:1;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535474131227";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2575312478";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535467997552";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535474131227";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:9:{s:3:"key";s:10:"2575312478";s:6:"status";i:2;s:3:"url";s:163:"http://documentserver/cache/files/2575312478_8095/output.docx/output.docx?md5=zwU5RfQCjaRMNmkt6oyKyg==&expires=1535476034&disposition=attachment&ooname=output.docx";s:10:"changesurl";s:162:"http://documentserver/cache/files/2575312478_8095/changes.zip/changes.zip?md5=N04jSSGxvc0l2GkkBv9JUw==&expires=1535476034&disposition=attachment&ooname=output.zip";s:7:"history";a:2:{s:13:"serverVersion";s:5:"5.1.5";s:7:"changes";a:3:{i:0;a:2:{s:7:"created";s:19:"2018-08-28 14:03:52";s:4:"user";a:2:{s:2:"id";s:1:"0";s:4:"name";s:10:"Jonn Smith";}}i:1;a:2:{s:7:"created";s:19:"2018-08-28 14:57:15";s:4:"user";a:2:{s:2:"id";s:17:"uid-1535468223155";s:4:"name";s:8:"Anônimo";}}i:2;a:2:{s:7:"created";s:19:"2018-08-28 16:32:25";s:4:"user";a:2:{s:2:"id";s:17:"uid-1535473722102";s:4:"name";s:8:"Anônimo";}}}}s:5:"users";a:1:{i:0;s:17:"uid-1535473722102";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535467997552";}}s:8:"lastsave";s:24:"2018-08-28T16:32:26.204Z";s:11:"notmodified";b:0;}
+track result: a:3:{s:5:"error";i:0;s:1:"c";s:5:"saved";s:6:"status";i:1;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2959799151";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535478160742";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535478160742";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:22:"BRUNO_VIADO_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"2959799151";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535478160742";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:8:"PGG.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:8:"PGG.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:9:"374360432";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535484578974";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535484578974";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:8:"PGG.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:8:"PGG.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:9:"374360432";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535484578974";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:9:"575914277";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535484977209";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535484977209";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2352585925";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535486130411";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535486130411";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:9:{s:3:"key";s:9:"575914277";s:6:"status";i:2;s:3:"url";s:162:"http://documentserver/cache/files/575914277_9937/output.docx/output.docx?md5=ejp06pr1RhwSpU7I6wtzWg==&expires=1535487035&disposition=attachment&ooname=output.docx";s:10:"changesurl";s:161:"http://documentserver/cache/files/575914277_9937/changes.zip/changes.zip?md5=29xhRGlaRfXQxdF2RqpiAg==&expires=1535487035&disposition=attachment&ooname=output.zip";s:7:"history";a:2:{s:13:"serverVersion";s:5:"5.1.5";s:7:"changes";a:1:{i:0;a:2:{s:7:"created";s:19:"2018-08-28 19:36:49";s:4:"user";a:2:{s:2:"id";s:17:"uid-1535484977209";s:4:"name";s:8:"Anônimo";}}}}s:5:"users";a:1:{i:0;s:17:"uid-1535484977209";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535484977209";}}s:8:"lastsave";s:24:"2018-08-28T19:37:18.491Z";s:11:"notmodified";b:0;}
+track result: a:3:{s:5:"error";i:0;s:1:"c";s:5:"saved";s:6:"status";i:1;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"2352585925";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535486130411";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:9:"794081714";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535486658451";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535486658451";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:11:"NEW_IT.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:9:"794081714";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535486658451";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:15:"JOAO_VIADO.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:15:"JOAO_VIADO.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"1590727003";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535487012103";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535487012103";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:15:"JOAO_VIADO.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:15:"JOAO_VIADO.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"1590727003";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535487012103";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2803664502";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535487112783";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535487112783";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"2803664502";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535487112783";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2803664502";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535487153642";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535487153642";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"2803664502";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535487153642";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2803664502";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535487353870";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535487353870";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"2803664502";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535487353870";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2803664502";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535489128957";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535489128957";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"2803664502";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535489128957";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2803664502";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535489146228";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535489146228";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"2803664502";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535489164229";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535489164229";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:9:{s:3:"key";s:10:"2803664502";s:6:"status";i:2;s:3:"url";s:163:"http://documentserver/cache/files/2803664502_1636/output.docx/output.docx?md5=74dmghiq36cbExcAambWag==&expires=1535490091&disposition=attachment&ooname=output.docx";s:10:"changesurl";s:162:"http://documentserver/cache/files/2803664502_1636/changes.zip/changes.zip?md5=Eazoz0AQ4D_ZzJaEysbwsg==&expires=1535490091&disposition=attachment&ooname=output.zip";s:7:"history";a:2:{s:13:"serverVersion";s:5:"5.1.5";s:7:"changes";a:1:{i:0;a:2:{s:7:"created";s:19:"2018-08-28 20:45:58";s:4:"user";a:2:{s:2:"id";s:17:"uid-1535489146228";s:4:"name";s:8:"Anônimo";}}}}s:5:"users";a:1:{i:0;s:17:"uid-1535489146228";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535489164229";}}s:8:"lastsave";s:24:"2018-08-28T20:45:58.455Z";s:11:"notmodified";b:0;}
+track result: a:3:{s:5:"error";i:0;s:1:"c";s:5:"saved";s:6:"status";i:1;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:9:"252189622";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535489207282";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535489207282";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:16:"TESTE_rev00.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:9:"252189622";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535489207282";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:18:"NEW_CREATE_DG.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:18:"NEW_CREATE_DG.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:4:{s:3:"key";s:10:"3379442377";s:6:"status";i:1;s:5:"users";a:1:{i:0;s:17:"uid-1535489235454";}s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:1;s:6:"userid";s:17:"uid-1535489235454";}}}
+track result: a:1:{s:5:"error";i:0;}
+a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:18:"NEW_CREATE_DG.docx";s:11:"userAddress";s:7:"Storage";}
+Track START
+_GET params: a:3:{s:4:"type";s:5:"track";s:8:"fileName";s:18:"NEW_CREATE_DG.docx";s:11:"userAddress";s:7:"Storage";}
+InputStream data: a:3:{s:3:"key";s:10:"3379442377";s:6:"status";i:4;s:7:"actions";a:1:{i:0;a:2:{s:4:"type";i:0;s:6:"userid";s:17:"uid-1535489235454";}}}
+track result: a:1:{s:5:"error";i:0;}

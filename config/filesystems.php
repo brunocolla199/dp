@@ -61,6 +61,12 @@ return [
             'visibility' => 'public',
         ],
 
+        'speed_office' => [
+            'driver' => 'local',
+            'root' => public_path('plugins/onlyoffice-php/Storage/'),
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key'    => env('S3_KEY'),

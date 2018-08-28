@@ -148,8 +148,10 @@ class AjaxController extends Controller
         $extensao = $file->getClientOriginalExtension();
         $titulo   = \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']) . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
         $codigo   = $novoDocumento['codigoDocumento'];
-        $path     = $file->storeAs('/uploads', $titulo . "." . $extensao, 'local');
+        // $path     = $file->storeAs($titulo . "." . $extensao, 'speed_office');
+        $path     = Storage::disk('speed_office')->putFileAs('', $file, $titulo.".".$extensao);
         
+
         $documento = new Documento();
         $documento->nome                 = $titulo;
         $documento->codigo               = $codigo;
@@ -211,7 +213,7 @@ class AjaxController extends Controller
         $codigo   = $novoDocumento['codigoDocumento']; 
         $extensao = 'docx';
 
-        Storage::disk('local')->put('uploads/'. $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.html', $novoDocumento['docData']); 
+        Storage::disk('speed_office')->move($novoDocumento['tituloDocumento'].'.docx', $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx'); 
 
         $documento = new Documento();
         $documento->nome                 = $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
