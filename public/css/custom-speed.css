@@ -210,3 +210,7 @@ div .slimScrollDiv {
     margin-top:10px;
     min-height: 38px;
 }
+
+#speed-onlyoffice-editor{
+    min-height: 600px;
+}
