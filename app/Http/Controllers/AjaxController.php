@@ -148,7 +148,6 @@ class AjaxController extends Controller
         $extensao = $file->getClientOriginalExtension();
         $titulo   = \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']) . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
         $codigo   = $novoDocumento['codigoDocumento'];
-        // $path     = $file->storeAs($titulo . "." . $extensao, 'speed_office');
         $path     = Storage::disk('speed_office')->putFileAs('', $file, $titulo.".".$extensao);
         
 
