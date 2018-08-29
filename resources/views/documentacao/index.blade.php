@@ -389,7 +389,6 @@
                                                             <tr>
                                                                 <th>Título do Documento</th>
                                                                 <th class="text-nowrap">Código</th>
-                                                                <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Tipo do Documento</th>
                                                                 <th>Status</th>
                                                                 <th>Modificado</th>
@@ -410,8 +409,6 @@
                                                                         {{ Form::close() }}
 
                                                                         <td class="text-nowrap"> {{ $doc->codigo }} </td>
-                                                                        
-                                                                        <td class="text-nowrap text-center"> {{ $doc->revisao }} </td>
 
                                                                         <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $doc->nome_tipo }} </td>
                                                                         <td>
@@ -437,8 +434,6 @@
                                                                         {{ Form::close() }}
 
                                                                         <td class="text-nowrap"> {{ $docF->codigo }} </td>
-
-                                                                        <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
                                                                         <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
                                                                         <td>
