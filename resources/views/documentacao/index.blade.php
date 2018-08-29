@@ -383,12 +383,12 @@
 
 
                                             <div class="row mt-5 margin-top-1percent">
-                                                <div class="table-responsive">
+                                                <div class="table-responsive class="text-nowrap"">
                                                     <table class="table table-condensed">
                                                         <thead>
                                                             <tr>
-                                                                <th>Título do Documento</th>
-                                                                <th class="text-nowrap">Código</th>
+                                                                <th class="text-wrap">Título do Documento</th>
+                                                                <th class="text-wrap">Código</th>
                                                                 <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Tipo do Documento</th>
                                                                 <th>Status</th>
@@ -404,7 +404,7 @@
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $doc->id) }}
-                                                                            <td>
+                                                                            <td class="text-wrap">
                                                                                 {!! Form::submit( explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0], ['class' => 'a-href-submit']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}

@@ -158,7 +158,8 @@
                             </div>
 
                             <div class="row h-100">
-                                <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
+                                <!-- <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe> -->
+                                <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
                             <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
@@ -216,7 +217,8 @@
                                 @endif
 
                                 <div class="row h-100">
-                                    <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe>
+                                    <!-- <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe> -->
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                                 </div>
 
                                 <!-- Qualidade e Elaborador sempre podem adicionar anexos -->
@@ -328,7 +330,8 @@
                                                         Pré-visualização de Documento<br>
                                                         <div class="text-center">   
                                                             <br>
-                                                            <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank">
+                                                            <!-- <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank"> -->
+                                                            <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">
                                                                 Visualizar    
                                                             </a>
                                                         </div>
@@ -341,9 +344,9 @@
 
                                     <!-- Editor -->
                                     <div class="container" >
-                                        <textarea id="speed-editor">
-                                            
-                                        </textarea>
+                                        
+                                        <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath }}"> </iframe>
+
                                     </div>
                                     <!-- End Editor -->
                                         
@@ -376,7 +379,8 @@
                                             <h3>Pré-visualização do Documento</h3>
                                             <div class="text-center">   
                                                 <br>
-                                                <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-lg btn-success"  target="_blank"> Visualizar </a>
+                                                <!-- <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-lg btn-success"  target="_blank"> Visualizar </a> -->
+                                                <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" target="_blank"> Visualizar </a>
                                             </div>
                                         </div>
                                     </div>
@@ -485,7 +489,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=embedded&user=&fileID=').$filePath }}" style="width:100%; height:500px;" frameborder="0"></iframe>
                                 </div>
 
                             @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && (Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
@@ -515,7 +519,8 @@
                                 </div>
 
                                 <div class="row">
-                                    <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                    <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe> -->
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=embedded&user=&fileID=').$filePath }}" style="width:100%; height:500px;" frameborder="0"></iframe>
                                 </div>
 
 
@@ -910,7 +915,7 @@
     var etapaMaxima = "{{Constants::$ETAPA_WORKFLOW_APROVADOR_NUM}}";
     
     if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
-        initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
+        // initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
 
         var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
         var select = $(".select2-vinculos").select2({
@@ -929,8 +934,11 @@
 
 
     $("#btn-save-document").click(function(){
-        var docData = CKEDITOR.instances['speed-editor'].getData();
-        $("#form-edit-document").append("<input type='hidden' name='docData' value='"+docData+"' >")
+        // var btn_only_office = $("#fm-btn-save");
+        // btn_only_office.trigger('click');
+
+        // var docData = CKEDITOR.instances['speed-editor'].getData();
+        // $("#form-edit-document").append("<input type='hidden' name='docData' value='"+docData+"' >")
         $("#form-edit-document").submit();
     });
 
@@ -1068,7 +1076,7 @@
                 var dateF = hour +":"+ minutes +"  "+ date1 +"/"+ month +"/" + year;
 
                 var tr = '<tr>';
-                tr += '<td class="text-nowrap text-center"><a href="https://docs.google.com/viewer?url='+ key.encodeFilePath +'&embedded=true&chrome=false&dov=1" target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
+                tr += '<td class="text-nowrap text-center"><a href="{{ asset("plugins/onlyoffice-php/doceditor.php?type=embedded&folder=anexos&fileID=") }}'+key.encodeFilePath+' " target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
                 tr += '</tr>';
                 $("#attachment-table-body").append(tr);
             });
