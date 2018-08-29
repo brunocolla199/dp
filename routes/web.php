@@ -96,6 +96,9 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('start-review',	      	  ['as' => 'formularios.start-review',     	  		'uses' => 'Formularios\FormulariosController@startReview']);
 		Route::post('send-new-review',	      ['as' => 'formularios.send-new-review', 	  		'uses' => 'Formularios\FormulariosController@sendNewReview']);
 		Route::post('cancel-review',		  ['as' => 'formularios.cancel-review', 			'uses' => 'Formularios\FormulariosController@cancelReview']);
+		Route::post('make-obsolete-form',	  ['as' => 'formularios.make-obsolete-form',		'uses' => 'Formularios\FormulariosController@makeObsoleteForm']);
+		Route::post('make-active-form',	  	  ['as' => 'formularios.make-active-form',			'uses' => 'Formularios\FormulariosController@makeActiveForm']);
+		Route::post('view-obsolete-form',	  ['as' => 'formularios.view-obsolete-form',		'uses' => 'Formularios\FormulariosController@viewObsoleteForm']);
 	});
 
 

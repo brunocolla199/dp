@@ -307,15 +307,54 @@ class FormulariosController extends Controller
     }
 
     public function makeObsoleteForm(Request $request) {
-        dd("Em manutenção!!");
+        $formulario = Formulario::where('id', '=', $request->form_id)->first();
+        $formulario->obsoleto = true;
+        $formulario->save();
+
+        $vinculoComDocumentos = DocumentoFormulario::where('formulario_id', '=', $request->form_id)->get();
+        foreach ($vinculoComDocumentos as $key => $value) {
+            $value->delete();
+        }
+
+        return redirect()->route('formularios')->with('make_obsolete_form', 'msg');
     }
 
     public function makeActiveForm(Request $request) {
-        dd("Em manutenção!!");
+        $formulario = Formulario::where('id', '=', $request->form_id)->first();
+        $formulario->obsoleto = false;
+        $formulario->save();
+
+        return redirect()->route('formularios')->with('make_active_form', 'msg');
     }
 
     public function viewObsoleteForm(Request $request) {
-        dd("Em manutenção!!");
+        $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();    
+        $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->get();
+        $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
+                                            ->join('users', 'users.id', '=', 'formulario.elaborador_id')
+                                            ->where('formulario_id', '=', $request->formulario_id)
+                                            ->orderby('finalizado')->get();
+
+        $filePath = ($formulario[0]->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario[0]->nome_completo_em_revisao : $formulario[0]->nome.".".$formulario[0]->extensao;
+
+        return View::make('formularios.view-obsolete-form', array(
+            'nome'=>$formulario[0]->nome,  
+            'acao'=>$request->action,  
+            'formulario_id'=>$request->formulario_id, 
+            'historico'=>$historico, 
+            'codigo'=>$formulario[0]->codigo, 
+            'extensao'=>$formulario[0]->extensao,
+            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($filePath), 
+            'formData'=>trim($formulario[0]->conteudo, '"'), 
+            'etapa_form'=>$workflowForm[0]->etapa_num,
+            'elaborador_id'=>$formulario[0]->elaborador_id,
+            'finalizado'=>$formulario[0]->finalizado,
+            'em_revisao'=>$formulario[0]->em_revisao,
+            'justificativaRejeicaoForm'=>$workflowForm[0]->justificativa,
+            'id_usuario_solicitante'=>$formulario[0]->id_usuario_solicitante,
+            'justificativa_cancelar_revisao'=>$formulario[0]->justificativa_cancelar_revisao,
+            'resp'=>false)
+        );
     }
 
     /*
