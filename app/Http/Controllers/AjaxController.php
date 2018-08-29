@@ -283,7 +283,7 @@ class AjaxController extends Controller
     function getFileListAllFormRevisions(Request $request) {
         $revisoes = FormularioRevisao::where('formulario_id', '=', $request->form_id)->get();
         foreach ($revisoes as $key => $value) {
-            $value['encodeFilePath'] = \App\Classes\Helpers::instance()->getFormulariosComURLEncodeAWS($value->nome_completo);
+            $value['encodeFilePath'] = $value->nome_completo;
         }
         return response()->json(['response' => $revisoes]);  
     }
@@ -297,7 +297,7 @@ class AjaxController extends Controller
         $extensao  = $file->getClientOriginalExtension();
         $hash      = rand(000000000000000, 999999999999999);
 
-        Storage::disk('s3')->put('/anexos/'.$hash . ".".$extensao, file_get_contents($file), 'private');
+        Storage::disk('speed_office')->put('/anexos/'.$hash . ".".$extensao, file_get_contents($file), 'private');
 
         $anexo = new Anexo();
         $anexo->nome = $nome;
@@ -313,7 +313,7 @@ class AjaxController extends Controller
     public function getAnexos(Request $request) {
         $anexos = Anexo::where('documento_id', '=', $request->document_id)->get();
         foreach ($anexos as $key => $value) {
-            $value['encodeFilePath'] = \App\Classes\Helpers::instance()->getAnexoAWSS3($value->hash .".". $value->extensao);
+            $value['encodeFilePath'] = $value->hash .".". $value->extensao;
         }
         return response()->json(['response' => $anexos]);   
     }
@@ -323,7 +323,7 @@ class AjaxController extends Controller
         $anexo = Anexo::where('id', '=', $request->anexo_id)->where('documento_id', '=', $request->documento_id)->get();
         $filename = $anexo[0]->hash . "." . $anexo[0]->extensao;
 
-        Storage::disk('s3')->delete('anexos/' . $filename);
+        Storage::disk('speed_office')->delete('anexos/' . $filename);
         $anexo[0]->delete();
 
         return response()->json(['response' => 'success']);  

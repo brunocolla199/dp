@@ -113,11 +113,10 @@ class Helpers {
 
     // Documentos
     function getListAllReviewsDocument($nome) {
-        // dd($nome);
         $arr = [];
-        $files = Storage::disk('local')->allFiles("uploads/");
+        $files = Storage::disk('speed_office')->allFiles();
         foreach($files as $file) {
-            $part1 = explode("uploads/", $file)[1];
+            $part1 = $file;
             $final = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $part1)[0];
             if($final == $nome) {
                 $arr[] = $part1;

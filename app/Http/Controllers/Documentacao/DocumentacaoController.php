@@ -1504,7 +1504,6 @@ class DocumentacaoController extends Controller
         // Salva nova lista de presença com o mesmo nome
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        
 
         Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
         $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
