@@ -383,7 +383,7 @@
 
 
                                             <div class="row mt-5 margin-top-1percent">
-                                                <div class="table-responsive">
+                                                <div class="table-responsive class="text-nowrap"">
                                                     <table class="table table-condensed">
                                                         <thead>
                                                             <tr>
@@ -403,7 +403,7 @@
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $doc->id) }}
-                                                                            <td>
+                                                                            <td class="text-wrap">
                                                                                 {!! Form::submit( explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0], ['class' => 'a-href-submit']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}

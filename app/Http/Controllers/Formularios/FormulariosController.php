@@ -108,7 +108,7 @@ class FormulariosController extends Controller
             'historico'=>$historico, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
-            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($filePath), 
+            'filePath'=> $filePath, 
             'formData'=>trim($formulario[0]->conteudo, '"'), 
             'etapa_form'=>$workflowForm[0]->etapa_num,
             'elaborador_id'=>$formulario[0]->elaborador_id,
@@ -127,7 +127,7 @@ class FormulariosController extends Controller
         $titulo   = $request->tituloFormulario;
         $codigo   = $request->codigoFormulario;
         $filename =  \App\Classes\Helpers::instance()->escapeFilename($titulo);
-        \Storage::disk('s3')->put('/formularios/'.$filename .".". $extensao, file_get_contents($file), 'private');
+        \Storage::disk('speed_office')->put('/formularios/'.$filename .".". $extensao, file_get_contents($file), 'private');
 
         $formulario = new Formulario();
         $formulario->nome                           = $filename;
@@ -232,7 +232,7 @@ class FormulariosController extends Controller
         $fullFilename = $filename .".". $extensao;
 
         // Salva nova revisão do formulário (mantém o arquivo origianl e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
-        \Storage::disk('s3')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
+        \Storage::disk('speed_office')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
         
         $formulario[0]->nome_completo_em_revisao = $fullFilename;
         $formulario[0]->nome                     = $filename;
@@ -285,7 +285,7 @@ class FormulariosController extends Controller
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL, $idForm);
         
         // Excluindo arquivo anexado durante a revisão
-        \Storage::disk('s3')->delete('formularios/' . $formulario[0]->nome_completo_em_revisao);
+        \Storage::disk('speed_office')->delete('formularios/' . $formulario[0]->nome_completo_em_revisao);
 
         // Restaurando versão anterior do form
         $formulario[0]->nome                            = $revisaoAnteriorFormulario[0]->nome;
@@ -532,10 +532,10 @@ class FormulariosController extends Controller
         $filename = \App\Classes\Helpers::instance()->escapeFilename($formulario[0]->nome);
 
         // Exclui Formulário Antigo
-        \Storage::disk('s3')->delete('formularios/' . $formulario[0]->nome . "." . $formulario[0]->extensao);
+        \Storage::disk('speed_office')->delete('formularios/' . $formulario[0]->nome . "." . $formulario[0]->extensao);
 
         // Salva novo formulário com o mesmo nome
-        \Storage::disk('s3')->put('formularios/' . $filename . "." . $formulario[0]->extensao, file_get_contents($file), 'private');
+        \Storage::disk('speed_office')->put('formularios/' . $filename . "." . $formulario[0]->extensao, file_get_contents($file), 'private');
         
         $formulario[0]->nome = $filename;
         $formulario[0]->save();

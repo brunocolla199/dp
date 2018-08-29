@@ -175,7 +175,6 @@
                                                     {!! Form::hidden('tituloDocumento',         $tituloDocumento) !!}
                                                     {!! Form::hidden('codigoDocumento',         $codigoDocumento) !!}
                                                     {!! Form::hidden('validadeDocumento',       $validadeDocumento) !!}
-                                                    {!! Form::hidden('docData',                 "") !!}
 
                                                     @if( count($areaInteresse) > 0 )
                                                         @foreach($areaInteresse as $usuariosInteresse)
@@ -208,8 +207,8 @@
                                 <h3>Novo Documento:</h3>
 
                                 <!-- Editor -->
-                                <div class="container" >
-                                    <textarea id="speed-editor"></textarea>
+                                <div class="container">
+                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$tituloDocumento.'.docx' }}"> </iframe>
                                 </div>
                                 <!-- End Editor -->
                                         
@@ -381,27 +380,17 @@
 
 
 @section('footer')
-
-    <script src="https://cdn.ckeditor.com/4.8.0/full-all/ckeditor.js"></script>
-    <script src="{{ asset('plugins/ckeditor-document-editor/initEditor.js') }}"></script>
-
     <script>
 
         $(document).ready(function(){
             var main = "{{ isset($overlay_sucesso) ? true : false }}";
             if(!main) {
 
-
                 //Iniciando Speed Editor
                 var acao = "{{ isset($acao) ? $acao : ''}}";
-                if(acao == "create") {
-                    initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
-                }
 
                 // [CRIAÇÃO] Ao clicar para salvar documento que foi criado na ferramenta (salva doc e retorna para salvar anexo)
                 $("#btn-save-new-document").click(function(){
-                    var docData = CKEDITOR.instances['speed-editor'].getData();
-                    $("#form-upload-new-document").append("<input type='hidden' name='docData' value='"+docData+"' >");
                     
                     var form = $("#form-upload-new-document");
                     var formData = new FormData( $("#form-upload-new-document")[0] );
@@ -515,7 +504,7 @@
                             var dateF = hour +":"+ minutes +"  "+ date1 +"/"+ month +"/" + year;
 
                             var tr = '<tr>';
-                            tr += '<td class="text-nowrap text-center"><a href="https://docs.google.com/viewer?url='+ key.encodeFilePath +'&embedded=true&chrome=false&dov=1" target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
+                            tr += '<td class="text-nowrap text-center"><a href="{{ asset("plugins/onlyoffice-php/doceditor.php?type=embedded&folder=anexos&fileID=") }}'+key.encodeFilePath+'" target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
                             tr += '</tr>';
                             $("#attachment-table-body").append(tr);
                         });

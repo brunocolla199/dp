@@ -261,7 +261,8 @@
 
                             <div class="row">
                                 <div class="col-md-8">
-                                    <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                    <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
                                 </div>
                                     
                                 <div class="col-md-4" style="font-size:14px; height: 800px; overflow-y: scroll;">
@@ -445,7 +446,6 @@
     // Toda vez que a listagem de revicões do formulário for aberta
     $('#btnRevisoesForm').click(function () {
         var form_id = "{{$formulario_id}}";
-        
         var obj = {'form_id': form_id};        
         ajaxMethod('POST', " {{ URL::route('ajax.formularios.getFilesFormRevisions') }} ", obj).then(function(result) {
             $("#reviews-list-div").empty();
@@ -454,9 +454,8 @@
             
             data.forEach(function(key) {
                 var a = '<a href="';
-                a += 'https://docs.google.com/viewer?url='+ key.encodeFilePath +'&embedded=true&chrome=false&dov=1" class="list-group-item mt-3" target="_blank"> <span style="font-size: 150%">Revisão <b>' +key.revisao+ '</b></span>:  ' + key.nome; 
+                a += '{{ asset("plugins/onlyoffice-php/doceditor.php?type=embedded&folder=formularios&fileID=") }}'+key.encodeFilePath+'" class="list-group-item mt-3" target="_blank"> <span style="font-size: 150%">Revisão <b>' +key.revisao+ '</b></span>:  ' + key.nome; 
                 a += '</a>';
-                console.log(key.nome_completo);
                 $("#reviews-list-div").append(a);
             });
         }, function(err) {
