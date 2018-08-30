@@ -1,58 +1,63 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
 
-## About Laravel
+## CONFIGURAÇÕES - FILA DE E-MAILS
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+Para o envio de e-mails, a aplicação adota filas de processos utilizando o banco de dados, ou seja, toda vez que um e-mail precisar ser enviado, ele ficara em fila em uma tabela `jobs` no banco de dados, caso houver algum erro ou problema com o processo de envio, esse processo será repetido 3 vezes, se mesmo assim não for possível concluir com sucesso o processo, o mesmo é movido para uma tabela `failed_jobs`, onde será possível analisar os dados e identificar o que não permite a conclusão do processo.
+Para disparar e-mails utilizando filas:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1 - Importar o job
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+    use App\Jobs\SendEmailsJob;
 
-## Learning Laravel
+2 - Utilize o seguinte trecho de código:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+    $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, $documento[0], $responsavelPelaAcao[0], $tipo, $assunto));
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
 
-## Laravel Sponsors
+* verificar se o arquivo `.env` possuí a seguinte propriedade
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+        QUEUE_DRIVER=database
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Pulse Storm](http://www.pulsestorm.net/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
 
-## Contributing
+## EXECUÇÃO
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Para que os emails que estão em fila sejam executados, é necessário que algum processo do servidor fique monitorando a fila, para isso, é preciso observar qual o ambiente que a aplicação está sendo executada. 
 
-## Security Vulnerabilities
+### EXECUÇÃO LOCALHOST
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Para executar no ambiente local, é necessário manter o processo de fila sendo executado, caso contrário os e-mails ficarão em fila e não serão enviados.
+Para isso execute o seguinte comando no terminal:
 
-## License
+    php artisan queue:work --daemon --sleep=3 --tries=3
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### EXECUÇÃO PRODUÇÃO
+
+Para executar em modo de produção, é necessário configurar um `supervisor`, para isso você deve que seguir os passos conforme descrito na própria documentaçao do laravel disponível em [Doc-Supervisor](https://laravel.com/docs/5.5/queues#supervisor-configuration)
+
+    1.  easy_install supervisor
+    2.  apt-get install supervisor
+    3.  apt-get update
+    4.  cd /etc/supervisor/conf.d/
+    5.  ls
+    6.  nano laravel-worker.conf
+
+            [program:laravel-worker]
+            process_name=%(program_name)s_%(process_num)02d
+            command=php /home/ubuntu/dpworld-qualidade/artisan queue:work --daemon --sleep=3 --tries=3
+            user=root
+            autostart=true
+            autorestart=true
+            numprocs=10
+            redirect_stderr=true
+            stdout_logfile=/home/ubuntu/dpworld-qualidade/laravel-queue-worker.log
+    
+    7.   service supervisor restart
+    8.   cd ..
+    9.   chmod -R 777 *
+    10.  sudo supervisorctl reread
+    11.  sudo supervisorctl update
+    12.  sudo supervisorctl start laravel-worker:*
+
+
+
+**NOTE:** Rodar _php artisan migrate_

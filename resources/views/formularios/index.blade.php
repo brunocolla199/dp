@@ -14,6 +14,10 @@
 		<input type="hidden" name="status" id="status" value="send_new_review_success">
     @elseif (session('cancel_review_success'))
 		<input type="hidden" name="status" id="status" value="cancel_review_success">
+    @elseif (session('make_obsolete_form'))
+		<input type="hidden" name="status" id="status" value="make_obsolete_form">
+    @elseif (session('make_active_form'))
+		<input type="hidden" name="status" id="status" value="make_active_form">
     @endif
 
     <script>
@@ -32,6 +36,10 @@
                 showToast('Sucesso!', 'A nova revisão do formulário foi enviada para a Qualidade.', 'success');
             } else if(status == "cancel_review_success") {
                 showToast('Sucesso!', 'Revisão cancelada. Versão anterior do formulário restaurada com sucesso.', 'success');
+            } else if(status == "make_obsolete_form") {
+                showToast('Sucesso!', 'O formulário foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
+            } else if(status == "make_active_form") {
+                showToast('Sucesso!', 'O formulário foi ativado com sucesso!', 'success');
             } 
         });
     </script>
@@ -65,11 +73,12 @@
                     <div class="card">
                         <div class="card-body">
                             
-							 <!-- Nav tabs -->
-                             <ul class="nav nav-tabs nav-fill customtab" role="tablist">
+							<!-- Nav tabs -->
+                            <ul class="nav nav-tabs nav-fill customtab" role="tablist">
                                 <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#novoForm" role="tab"><h3 class="hidden-xs-down">NOVO FORMULÁRIO</h3></a> </li>
                                 <li class="nav-item"> <a class="nav-link font-bold active" data-toggle="tab" href="#verForms" role="tab"><h3 class="hidden-xs-down">VISUALIZAR FORMULÁRIOS</h3></a> </li>
                             </ul>
+
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div class="tab-pane p-20" id="novoForm" role="tabpanel">
@@ -185,7 +194,6 @@
                                     </div>
                                 </div>
 
-
                                 <div class="tab-pane active" id="verForms" role="tabpanel">
                                     <div class="p-20">
                                         <div class="col-md-12">
@@ -245,7 +253,7 @@
                                                                 <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Status</th>
                                                                 <th class="text-nowrap text-center">Modificado</th>
-                                                                <th class="text-nowrap text-center">Ação</th>
+                                                                <th class="text-nowrap text-center">Ações</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -265,9 +273,7 @@
                                                                         
                                                                         <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
-                                                                        <td>
-                                                                            <p class="text-muted font-weight-bold"> {{ $form->etapa }} </p>
-                                                                        </td>
+                                                                        <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
                                                                         
                                                                         <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                         
@@ -278,27 +284,58 @@
 
                                                             @if( is_array($formularios) && array_key_exists("finalizados", $formularios) && count($formularios['finalizados']) > 0 )
                                                                 @foreach($formularios['finalizados'] as $form)
-                                                                    <tr>
-                                                                        {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
-                                                                            {{ Form::hidden('formulario_id', $form->id) }}
-                                                                            {{ Form::hidden('action', 'view') }}
-                                                                            <td>
-                                                                                {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+
+                                                                    @if( $form->obsoleto )
+                                                                        <tr>
+                                                                            {{ Form::open(['route' => 'formularios.view-obsolete-form', 'method' => 'POST']) }}
+                                                                                {{ Form::hidden('formulario_id', $form->id) }}
+                                                                                <td>
+                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                                </td>
+                                                                            {{ Form::close() }}
+
+                                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+
+                                                                            <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
+
+                                                                            <td><p class="font-weight-bold text-danger"> Obsoleto </p></td>
+                                                                            
+                                                                            <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                            
+                                                                            <td class="text-nowrap text-center"> 
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                    <a href="javascript:void(0)" class="btn-ativar-formulario-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-success fa-2x" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
+                                                                                @endif
                                                                             </td>
-                                                                        {{ Form::close() }}
+                                                                        </tr>
+                                                                    @elseif( !$form->obsoleto )
+                                                                        <tr>
+                                                                            {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                                                {{ Form::hidden('formulario_id', $form->id) }}
+                                                                                {{ Form::hidden('action', 'view') }}
+                                                                                <td>
+                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                                </td>
+                                                                            {{ Form::close() }}
 
-                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+                                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
 
-                                                                        <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
+                                                                            <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
-                                                                        <td>
-                                                                            <p class="text-muted font-weight-bold text-success"> Finalizado </p>
-                                                                        </td>
-                                                                        
-                                                                        <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
-                                                                        
-                                                                        <td class="text-nowrap text-center"> <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a> </td>
-                                                                    </tr>
+                                                                            <td><p class="font-weight-bold text-success"> Finalizado </p></td>
+                                                                            
+                                                                            <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                            
+                                                                            <td class="text-nowrap text-center"> 
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a> 
+
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                    <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger fa-2x" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+
                                                                 @endforeach
                                                             @endif                                                            
 
@@ -331,7 +368,7 @@
                             {{ Form::open(['route' => 'formularios.start-review', 'method' => 'POST']) }}
                                 {{ Form::hidden('form_id', '', ['id' => 'form_id_request_review']) }}
                                 <button type="submit" class="btn btn-success waves-effect"> Sim </button>
-                            {!! Form::open() !!}
+                            {!! Form::close() !!}
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -339,6 +376,50 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal de confirmação - deseja mesmo solicitar uma revisão neste formulário -->
+
+            <!-- Modal de confirmação - deseja mesmo tornar o formulário obsoleto -->
+            <div class="modal fade" id="tornar-formulario-obsoleto-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Tem certeza que deseja tornar o formulário obsoleto? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'formularios.make-obsolete-form', 'method' => 'POST']) }}
+                                {{ Form::hidden('form_id', '', ['id' => 'form_id_make_obsolete_form']) }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo tornar o formulário obsoleto -->
+            
+            <!-- Modal de confirmação - deseja mesmo ativar o formulário -->
+            <div class="modal fade" id="ativar-formulario-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Tem certeza que deseja ativar o formulário ? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'formularios.make-active-form', 'method' => 'POST']) }}
+                                {{ Form::hidden('form_id', '', ['id' => 'form_id_make_active_form']) }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo ativar o formulário -->
 
 
         </div>
@@ -362,12 +443,34 @@
             $('#form-save-new-document').submit();
         });
 
-        // Ao clicar no botão que abrirá o modal de confirmação para revisão do documento
+        // Ao clicar no botão que abrirá o modal de confirmação para revisão do formulário
         $(".btn-open-confirm-form-review").click(function(){
             var id = $(this).data('id');
             $("#form_id_request_review").val(id);
             
             $("#solicitar-revisao-formulario-modal").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+        });
+
+        // Ao clicar no botão que abrirá o modal de confirmação para tornar o formulário obsoleto
+        $(".btn-tornar-formulario-obsoleto-modal").click(function(){
+            var id = $(this).data('id');
+            $("#form_id_make_obsolete_form").val(id);
+            
+            $("#tornar-formulario-obsoleto-modal").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+        });
+
+        // Ao clicar no botão que abrirá o modal de confirmação para tornar o formulário obsoleto
+        $(".btn-ativar-formulario-modal").click(function(){
+            var id = $(this).data('id');
+            $("#form_id_make_active_form").val(id);
+            
+            $("#ativar-formulario-modal").modal({
                 backdrop: 'static',
                 keyboard: false
             });
