@@ -102,7 +102,7 @@
                                                         <div class="card-body">
                                                             <h4 class="card-title"> Upload de formulário corrigido </h4>
                                                             <label for="input-file-now">Por favor, anexe a versão corrigida do formulário  <b>{{ $nome }}</b> .</label>                                                            
-                                                            {!! Form::file('new_form', ['class' => 'dropify', 'id' => 'new_form', 'data-allowed-file-extensions'=>'pdf xlsx xls', 'required' => 'required']) !!}
+                                                            {!! Form::file('new_form', ['class' => 'dropify', 'id' => 'new_form', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -132,7 +132,7 @@
                                                         <div class="card-body">
                                                             <h4 class="card-title"> Upload da nova revisão do formulário </h4>
                                                             <label for="input-file-now">Por favor, anexe a nova revisão do formulário  <b>{{ $nome }}</b> .</label>                                                            
-                                                            {!! Form::file('new_review_form', ['class' => 'dropify', 'id' => 'new_form', 'data-allowed-file-extensions'=>'pdf xlsx xls', 'required' => 'required']) !!}
+                                                            {!! Form::file('new_review_form', ['class' => 'dropify', 'id' => 'new_form', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
