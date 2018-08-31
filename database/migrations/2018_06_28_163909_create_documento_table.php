@@ -15,7 +15,7 @@ class CreateDocumentoTable extends Migration
     {
         Schema::create('documento', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nome', 80);
+            $table->string('nome', 200);
             $table->string('codigo', 80);
             $table->string('extensao', 10);
             $table->integer('tipo_documento_id')->unsigned();
