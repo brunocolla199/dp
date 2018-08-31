@@ -168,6 +168,15 @@ div .slimScrollDiv {
     right: -7px;
 }
 
+/* Força frases muito grande a quebrarem */
+.force-break-word {
+    white-space: pre-wrap; /* css-3 */    
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */    
+    white-space: -o-pre-wrap; /* Opera 7 */    
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+    
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
 	border: 1px solid black;
