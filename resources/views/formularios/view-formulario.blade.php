@@ -262,7 +262,7 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
-                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').rawurlencode($filePath) }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
                                 </div>
                                     
                                 <div class="col-md-4" style="font-size:14px; height: 800px; overflow-y: scroll;">
