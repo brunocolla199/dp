@@ -171,7 +171,7 @@ class FormulariosController extends Controller
         $contentF1_P1 = "O formulário "; $codeF1 = $formulario->codigo; $contentF1_P2 = " requer análise.";
         $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
         $labelF3 = "Enviado por: "; $valueF3 = $elaborador[0]->name; $label2_F3 = ""; $value2_F3 = "";
-        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        // $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
         
         // Grava histórico do documento
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $formulario->id);
