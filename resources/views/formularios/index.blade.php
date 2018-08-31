@@ -245,7 +245,7 @@
 
                                             <div class="row mt-5 margin-top-1percent">
                                                 <div class="table-responsive">
-                                                    <table class="table">
+                                                    <table class="table" style="table-layout: fixed">
                                                         <thead>
                                                             <tr>
                                                                 <th>Título do Formulário</th>
@@ -265,7 +265,7 @@
                                                                             {{ Form::hidden('formulario_id', $form->id) }}
                                                                             {{ Form::hidden('action', 'view') }}
                                                                             <td>
-                                                                                {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                                {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
@@ -290,7 +290,7 @@
                                                                             {{ Form::open(['route' => 'formularios.view-obsolete-form', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 <td>
-                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
@@ -314,7 +314,7 @@
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 {{ Form::hidden('action', 'view') }}
                                                                                 <td>
-                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit']) !!}
+                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 

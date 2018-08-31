@@ -384,7 +384,7 @@
 
                                             <div class="row mt-5 margin-top-1percent">
                                                 <div class="table-responsive class="text-nowrap"">
-                                                    <table class="table table-condensed">
+                                                    <table class="table table-condensed" style="table-layout: fixed">
                                                         <thead>
                                                             <tr>
                                                                 <th>Título do Documento</th>
@@ -403,8 +403,8 @@
                                                                     <tr>
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $doc->id) }}
-                                                                            <td class="text-wrap">
-                                                                                {!! Form::submit( explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0], ['class' => 'a-href-submit']) !!}
+                                                                            <td>
+                                                                                {!! Form::submit( explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
@@ -429,7 +429,7 @@
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $docF->id) }}
                                                                             <td>
-                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit']) !!}
+                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
