@@ -143,7 +143,7 @@ class Constants {
     
     public static $SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS = "_rev";
  
-    public static $URL_SISTEMA_PRODUCAO = "http://dpws1sva013/qualidade_prod/login";
+    public static $URL_SISTEMA_PRODUCAO = "http://dpws1sva013/qualidade/login";
 }
 
 
