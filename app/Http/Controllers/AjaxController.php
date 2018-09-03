@@ -15,6 +15,8 @@ use App\AreaInteresseDocumento;
 use App\DocumentoFormulario;
 use App\Formulario;
 use App\FormularioRevisao;
+use App\Notificacao;
+use App\NotificacaoFormulario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -326,6 +328,22 @@ class AjaxController extends Controller
         $anexo[0]->delete();
 
         return response()->json(['response' => 'success']);  
+    }
+    
+    
+    
+    // Notificações
+    public function cleanAll(Request $request) {
+        $docNotifications = Notificacao::where('usuario_id', '=', Auth::user()->id)->get();
+        foreach ($docNotifications as $key => $value) {
+            $value->delete();
+        }
+        
+        $formNotifications = NotificacaoFormulario::where('usuario_id', '=', Auth::user()->id)->get();
+        foreach ($formNotifications as $key => $value) {
+            $value->delete();
+        }
+        return response()->json(['response' => $formNotifications]);  
     }
 
 }
