@@ -184,7 +184,7 @@
                     <!-- User profile -->
                     
                     <!-- <div class="user-profile" style="background: url({{ asset('images/background/work.jpg') }}) no-repeat;"> -->
-                    <div class="user-profile" style="background: url({{ asset('images/background/Imagem_Usuário.png') }}) no-repeat center; top: -1%;">
+                    <div class="user-profile" style="background: url({{ asset('images/background/Imagem_Usuário.png') }}) no-repeat center; ">
                         <!-- User profile image -->
                         <div class="profile-img" style="height: 130px;"> </div>
                         <!-- User profile text-->
