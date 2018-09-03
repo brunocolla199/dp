@@ -184,7 +184,7 @@
                     <!-- User profile -->
                     
                     <!-- <div class="user-profile" style="background: url({{ asset('images/background/work.jpg') }}) no-repeat;"> -->
-                    <div class="user-profile" style="background: url({{ asset('images/background/Imagem_Usuário.png') }}) no-repeat center; top: -1%;">
+                    <div class="user-profile" style="background: url({{ asset('images/background/Imagem_Usuário.png') }}) no-repeat center; ">
                         <!-- User profile image -->
                         <div class="profile-img" style="height: 130px;"> </div>
                         <!-- User profile text-->
@@ -333,6 +333,8 @@
                                     Não há nenhuma nova notificação para ser visualizada.
                                 </div>
                             @else
+                                <button id="btn-clean-notifications" class="btn btn-block btn-secondary btn-round mt-2 mb-4"> <i class ="fa fa-check-circle"></i> Marcar todas como lidas</button>
+
                                 {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                 {{ Form::close() }}
 
@@ -688,6 +690,20 @@
             });   
             
         }
+    </script>
+
+    <!-- Ajax Notificações -->
+    <script>
+        $("#btn-clean-notifications").click(function(){
+            ajaxMethod('POST', " {{ URL::route('ajax.notificacoes.cleanAll') }} ", null).then(function(result) {
+                location.reload();
+                
+                // showToast('Sucesso!', 'Todas notificações foram visualizadas.', 'success');
+                // $(".right-sidebar").slideDown(50);
+                // $(".right-sidebar").toggleClass("shw-rside");
+            }, function(err) {
+            });
+        });
     </script>
 
     <!-- Scripts | Este é o script padrão/principal criado pelo próprio Laravel -->

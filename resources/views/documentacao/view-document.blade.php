@@ -376,7 +376,7 @@
                                             <h3>Pré-visualização do Documento</h3>
                                             <div class="text-center">   
                                                 <br>
-                                                <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" target="_blank"> Visualizar </a>
+                                                <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-lg btn-success" target="_blank"> Visualizar </a>
                                             </div>
                                         </div>
                                     </div>
