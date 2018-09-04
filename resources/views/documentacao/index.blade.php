@@ -434,7 +434,7 @@
                                                             @if( $documentos_finalizados != null && count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
 
-                                                                    @if( $docF->obsoleto )
+                                                                    @if( $docF->obsoleto && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                         <tr>
                                                                             {{ Form::open(['route' => 'documentacao.view-obsolete-doc', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('document_id', $docF->id) }}
@@ -454,9 +454,7 @@
                                                                             <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                             
                                                                             <td class="text-nowrap text-center">
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                    <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Documento"></i> </a> 
-                                                                                @endif
+                                                                                <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Documento"></i> </a> 
                                                                             </td>
                                                                         </tr>
                                                                     @elseif( !$docF->obsoleto )

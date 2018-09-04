@@ -285,7 +285,7 @@
                                                             @if( is_array($formularios) && array_key_exists("finalizados", $formularios) && count($formularios['finalizados']) > 0 )
                                                                 @foreach($formularios['finalizados'] as $form)
 
-                                                                    @if( $form->obsoleto )
+                                                                    @if( $form->obsoleto && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                         <tr>
                                                                             {{ Form::open(['route' => 'formularios.view-obsolete-form', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
@@ -303,9 +303,7 @@
                                                                             <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                             
                                                                             <td class="text-nowrap text-center"> 
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                    <a href="javascript:void(0)" class="btn-ativar-formulario-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-success fa-2x" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
-                                                                                @endif
+                                                                                <a href="javascript:void(0)" class="btn-ativar-formulario-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-success fa-2x" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
                                                                             </td>
                                                                         </tr>
                                                                     @elseif( !$form->obsoleto )
