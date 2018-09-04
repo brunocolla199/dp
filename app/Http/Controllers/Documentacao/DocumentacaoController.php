@@ -999,12 +999,18 @@ class DocumentacaoController extends Controller
 
         
         // Notificações para todos os usuários envolvidos com o documento [Se for doc restrito, todos do setor tem que receber notificação? Se for doc confidencial, só o administrador da qualidade? Capital Humano deve receber?]
+        $allUsersInvolved = null;
         $usuariosSetorQualidade = null;
         $usuariosSetorCapitalHumano = null;
         $usuariosAreaInteresseDocumento = null;
 
         $elaborador = User::where('id', '=', $dadosDoc->elaborador_id)->get();
-        if($dadosDoc->elaborador_id != $dadosDoc->aprovador_id) $aprovador = User::where('id', '=', $dadosDoc->aprovador_id)->get();
+        if($dadosDoc->elaborador_id != $dadosDoc->aprovador_id) {
+            $aprovador = User::where('id', '=', $dadosDoc->aprovador_id)->get();
+            $allUsersInvolved = $elaborador->merge($aprovador);
+        } else {
+            $allUsersInvolved = $elaborador;
+        }
 
         if($dadosDoc->nivel_acesso !=  Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL ) {
             $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)
@@ -1032,7 +1038,7 @@ class DocumentacaoController extends Controller
                                                 ->where('users.id', '!=', $dadosDoc->aprovador_id)
                                                 ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
 
-        $allUsersInvolved = $elaborador->merge($aprovador);
+        
         if($usuariosSetorQualidade != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorQualidade);
         if($usuariosSetorCapitalHumano != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorCapitalHumano);
         if($usuariosAreaInteresseDocumento != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosAreaInteresseDocumento);
