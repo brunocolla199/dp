@@ -309,11 +309,11 @@ class FormulariosController extends Controller
     public function makeObsoleteForm(Request $request) {
         $formulario = Formulario::where('id', '=', $request->form_id)->first();
         $formulario->obsoleto = true;
-        // $formulario->save();
+        $formulario->save();
 
         $vinculoComDocumentos = DocumentoFormulario::where('formulario_id', '=', $request->form_id)->get();
         foreach ($vinculoComDocumentos as $key => $value) {
-            // $value->delete();
+            $value->delete();
         }
 
         // Notificações para todos os usuários envolvidos com o formulário                       
