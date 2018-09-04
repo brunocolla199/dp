@@ -79,6 +79,9 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('decides-on-review-request',	['as' => 'documentacao.decides-on-review-request', 		'uses' => 'Documentacao\DocumentacaoController@decidesOnReviewRequest']);
 		Route::post('cancel-review',				['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
 		Route::post('save-attached-start-workflow',	['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
+		Route::post('make-obsolete-doc',	  		['as' => 'documentacao.make-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@makeObsoleteDoc']);
+		Route::post('make-active-doc',	  	  		['as' => 'documentacao.make-active-doc',				'uses' => 'Documentacao\DocumentacaoController@makeActiveDoc']);
+		Route::post('view-obsolete-doc',	  		['as' => 'documentacao.view-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@viewObsoleteDoc']);
 	});
 	
 	

@@ -985,36 +985,29 @@ class DocumentacaoController extends Controller
 
 
     public function makeObsoleteDoc(Request $request) {
-       /*
         $dadosDoc = DadosDocumento::where('documento_id', '=', $request->doc_id)->first();
         $dadosDoc->obsoleto = true;
-        // $dadosDoc->save();
+        $dadosDoc->save();
 
         $vinculoComFormularios = DocumentoFormulario::where('documento_id', '=', $request->doc_id)->get();
         foreach ($vinculoComFormularios as $key => $value) {
-            // $value->delete();
+            $value->delete();
         }
 
-       
-        
-        // return redirect()->route('documentacao')->with('make_obsolete_doc', 'msg');
-        */
+        return redirect()->route('documentacao')->with('make_obsolete_doc', 'msg');
     }
 
     
     public function makeActiveDoc(Request $request) {
-        /*
         $dadosDoc = DadosDocumento::where('documento_id', '=', $request->doc_id)->first();
         $dadosDoc->obsoleto = false;
         $dadosDoc->save();
 
         return redirect()->route('documentacao')->with('make_active_doc', 'msg');
-        */
     }
 
 
     public function viewObsoleteDoc(Request $request) {
-        /*
         $document_id = $request->document_id;
         
         $documento     = Documento::where('id', '=', $document_id)->get();
@@ -1037,7 +1030,6 @@ class DocumentacaoController extends Controller
             'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
             'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'em_revisao' => $dadosDoc[0]->em_revisao, 'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao, 
             'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc ));
-            */
     }
 
 

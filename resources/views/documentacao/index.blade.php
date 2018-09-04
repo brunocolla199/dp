@@ -32,6 +32,10 @@
 		<input type="hidden" name="status" id="status" value="document_name_already_exists">
     @elseif (session('cancel_review_success'))
 		<input type="hidden" name="status" id="status" value="cancel_review_success">
+    @elseif (session('make_obsolete_doc'))
+		<input type="hidden" name="status" id="status" value="make_obsolete_doc">
+    @elseif (session('make_active_doc'))
+		<input type="hidden" name="status" id="status" value="make_active_doc">
     @endif
 
     <script>
@@ -62,6 +66,10 @@
                 showToast('Nome já existe!', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!', 'warning');
             } else if(status == "cancel_review_success") {
                 showToast('Sucesso!', 'A revisão do documento foi cancelada com sucesso.', 'success');
+            } else if(status == "make_obsolete_doc") {
+                showToast('Sucesso!', 'O documento foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
+            } else if(status == "make_active_doc") {
+                showToast('Sucesso!', 'O documento foi ativado com sucesso!', 'success');
             }
         });
     </script>
@@ -425,32 +433,64 @@
 
                                                             @if( $documentos_finalizados != null && count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
-                                                                    <tr>
-                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                                            {{ Form::hidden('document_id', $docF->id) }}
-                                                                            <td>
-                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+
+                                                                    @if( $docF->obsoleto )
+                                                                        <tr>
+                                                                            {{ Form::open(['route' => 'documentacao.view-obsolete-doc', 'method' => 'POST']) }}
+                                                                                {{ Form::hidden('document_id', $docF->id) }}
+                                                                                <td>
+                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                                </td>
+                                                                            {{ Form::close() }}
+
+                                                                            <td class="text-nowrap"> {{ $docF->codigo }} </td>
+
+                                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
+                                                                            
+                                                                            <td><p class="font-weight-bold text-danger"> Obsoleto </p></td>
+
+                                                                            <td>{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
+
+                                                                            <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
+                                                                            
+                                                                            <td class="text-nowrap text-center">
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                    <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
+                                                                                @endif
                                                                             </td>
-                                                                        {{ Form::close() }}
+                                                                        </tr>
+                                                                    @elseif( !$docF->obsoleto )
+                                                                        <tr>
+                                                                            {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                                {{ Form::hidden('document_id', $docF->id) }}
+                                                                                <td>
+                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                                </td>
+                                                                            {{ Form::close() }}
 
-                                                                        <td class="text-nowrap"> {{ $docF->codigo }} </td>
+                                                                            <td class="text-nowrap"> {{ $docF->codigo }} </td>
 
-                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
-                                                                        <td>
-                                                                            <p class="text-muted font-weight-bold text-success"> Finalizado </p>
-                                                                        </td>
-                                                                        <td>{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
-                                                                        <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
-                                                                        
-                                                                        <td class="text-nowrap text-center">
-                                                                            <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+                                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
 
-                                                                            <!-- Só pode mostrar o botão se ainda não foi solicitada a revisão -->
-                                                                            @if( !$docF->necessita_revisao )
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a>
-                                                                            @endif
-                                                                        </td>
-                                                                    </tr>
+                                                                            <td><p class="text-muted font-weight-bold text-success"> Finalizado </p> </td>
+
+                                                                            <td>{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
+                                                                            <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
+                                                                            
+                                                                            <td class="text-nowrap text-center">
+                                                                                <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+
+                                                                                @if( !$docF->necessita_revisao )
+                                                                                    <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a>
+                                                                                @endif
+
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                    <a href="javascript:void(0)" class="btn-tornar-documento-obsoleto-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-danger" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                    
                                                                 @endforeach
                                                             @endif
 
@@ -523,7 +563,7 @@
                             {{ Form::open(['route' => 'documentacao.request-review', 'method' => 'POST']) }}
                                 {{ Form::hidden('document_id', '', ['id' => 'document_id_request_review']) }}
                                 <button type="submit" class="btn btn-success waves-effect"> Sim </button>
-                            {!! Form::open() !!}
+                            {!! Form::close() !!}
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -531,6 +571,51 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal de confirmação - deseja mesmo solicitar uma revisão neste documento -->
+
+
+            <!-- Modal de confirmação - deseja mesmo tornar o documento obsoleto -->
+            <div class="modal fade" id="tornar-documento-obsoleto-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Tem certeza que deseja tornar o documento obsoleto? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'documentacao.make-obsolete-doc', 'method' => 'POST']) }}
+                                {{ Form::hidden('doc_id', '', ['id' => 'form_id_make_obsolete_doc']) }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo tornar o documento obsoleto -->
+            
+            <!-- Modal de confirmação - deseja mesmo ativar o documento -->
+            <div class="modal fade" id="ativar-documento-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body"> 
+                            Tem certeza que deseja ativar o documento ? 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
+
+                            {{ Form::open(['route' => 'documentacao.make-active-doc', 'method' => 'POST']) }}
+                                {{ Form::hidden('doc_id', '', ['id' => 'form_id_make_active_doc']) }}
+                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.Modal de confirmação - deseja mesmo ativar o documento -->
 
 
             <script>
@@ -603,6 +688,28 @@
                         $("#document_id_request_review").val(id);
                         
                         $("#solicitar-revisao-modal").modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                    });
+
+                    // Ao clicar no botão que abrirá o modal de confirmação para tornar o formulário obsoleto
+                    $(".btn-tornar-documento-obsoleto-modal").click(function(){
+                        var id = $(this).data('id');
+                        $("#form_id_make_obsolete_doc").val(id);
+                        
+                        $("#tornar-documento-obsoleto-modal").modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                    });
+
+                    // Ao clicar no botão que abrirá o modal de confirmação para ativar o formulário 
+                    $(".btn-ativar-documento-modal").click(function(){
+                        var id = $(this).data('id');
+                        $("#form_id_make_active_doc").val(id);
+                        
+                        $("#ativar-documento-modal").modal({
                             backdrop: 'static',
                             keyboard: false
                         });
