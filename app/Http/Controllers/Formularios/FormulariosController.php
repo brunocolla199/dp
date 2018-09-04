@@ -316,6 +316,9 @@ class FormulariosController extends Controller
             $value->delete();
         }
 
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_FORM_MARCADO_COMO_OBSOLETO, $request->form_id);
+
         return redirect()->route('formularios')->with('make_obsolete_form', 'msg');
     }
 

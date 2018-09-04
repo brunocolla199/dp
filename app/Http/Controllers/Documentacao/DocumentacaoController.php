@@ -994,6 +994,9 @@ class DocumentacaoController extends Controller
             $value->delete();
         }
 
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO, $request->doc_id);
+
         return redirect()->route('documentacao')->with('make_obsolete_doc', 'msg');
     }
 
