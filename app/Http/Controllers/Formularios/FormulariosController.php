@@ -316,6 +316,30 @@ class FormulariosController extends Controller
             $value->delete();
         }
 
+        // Notificações para todos os usuários envolvidos com o formulário                       
+        $elaborador = User::where('id', '=', $formulario->elaborador_id)->get();
+
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->where('id', '!=', $elaborador[0]->id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+
+        $usuariosGrupoDivulgacao = User::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.usuario_id', '=', 'users.id')
+                                            ->join('grupo_divulgacao', 'grupo_divulgacao.id', '=', 'grupo_divulgacao_usuario.grupo_id')
+                                            ->where('grupo_divulgacao.id', '=', $formulario->grupo_divulgacao_id)
+                                            ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();   
+
+        $allUsersInvolved = $elaborador;
+        if($usuariosSetorQualidade != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorQualidade);
+        if($usuariosGrupoDivulgacao != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosGrupoDivulgacao);
+
+        foreach ($allUsersInvolved as $key => $value) {
+            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario->codigo . " foi marcado como obsoleto.", false, $value->id, $formulario->id);
+        }
+        
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_FORM_MARCADO_COMO_OBSOLETO, $request->form_id);
+
         return redirect()->route('formularios')->with('make_obsolete_form', 'msg');
     }
 
@@ -344,7 +368,7 @@ class FormulariosController extends Controller
             'historico'=>$historico, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
-            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($filePath), 
+            'filePath'=> $filePath, 
             'formData'=>trim($formulario[0]->conteudo, '"'), 
             'etapa_form'=>$workflowForm[0]->etapa_num,
             'elaborador_id'=>$formulario[0]->elaborador_id,

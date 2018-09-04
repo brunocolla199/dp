@@ -131,6 +131,10 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL    = "Revisão anterior do formulário foi restaurada.";
 
     public static $DESCRICAO_WORKFLOW_FORM_REVISAO_INICIADA                 = "Revisão do formulário iniciada";
+    
+    public static $DESCRICAO_WORKFLOW_FORM_MARCADO_COMO_OBSOLETO            = "Marcou o formulário como obsoleto.";
+
+    public static $DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO             = "Marcou o documento como obsoleto.";
 
     
     

@@ -985,6 +985,105 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function makeObsoleteDoc(Request $request) {
+        $config = Configuracao::where('id', '=', 2)->get();
+        $documento = Documento::where('id', '=', $request->doc_id)->first();
+        $dadosDoc = DadosDocumento::where('documento_id', '=', $request->doc_id)->first();
+        $dadosDoc->obsoleto = true;
+        $dadosDoc->save();
+
+        $vinculoComFormularios = DocumentoFormulario::where('documento_id', '=', $request->doc_id)->get();
+        foreach ($vinculoComFormularios as $key => $value) {
+            $value->delete();
+        }
+
+        
+        // Notificações para todos os usuários envolvidos com o documento [Se for doc restrito, todos do setor tem que receber notificação? Se for doc confidencial, só o administrador da qualidade? Capital Humano deve receber?]
+        $usuariosSetorQualidade = null;
+        $usuariosSetorCapitalHumano = null;
+        $usuariosAreaInteresseDocumento = null;
+
+        $elaborador = User::where('id', '=', $dadosDoc->elaborador_id)->get();
+        if($dadosDoc->elaborador_id != $dadosDoc->aprovador_id) $aprovador = User::where('id', '=', $dadosDoc->aprovador_id)->get();
+
+        if($dadosDoc->nivel_acesso !=  Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL ) {
+            $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        } else {
+            $usuariosSetorQualidade = User::where('id', '=', $config[0]->admin_setor_qualidade)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        }
+
+        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                            ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();        
+        
+        $usuariosAreaInteresseDocumento = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')
+                                                ->where('area_interesse_documento.documento_id', '=', $request->doc_id)
+                                                ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                                ->where('users.setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                                ->where('users.id', '!=', $elaborador[0]->id)
+                                                ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                                ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
+
+        $allUsersInvolved = $elaborador->merge($aprovador);
+        if($usuariosSetorQualidade != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorQualidade);
+        if($usuariosSetorCapitalHumano != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorCapitalHumano);
+        if($usuariosAreaInteresseDocumento != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosAreaInteresseDocumento);
+
+        foreach ($allUsersInvolved as $key => $value) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " foi marcado como obsoleto.", false, $value->id, $documento->id);
+        }
+       
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO, $request->doc_id);
+
+        return redirect()->route('documentacao')->with('make_obsolete_doc', 'msg');
+    }
+
+    
+    public function makeActiveDoc(Request $request) {
+        $dadosDoc = DadosDocumento::where('documento_id', '=', $request->doc_id)->first();
+        $dadosDoc->obsoleto = false;
+        $dadosDoc->save();
+
+        return redirect()->route('documentacao')->with('make_active_doc', 'msg');
+    }
+
+
+    public function viewObsoleteDoc(Request $request) {
+        $document_id = $request->document_id;
+        
+        $documento     = Documento::where('id', '=', $document_id)->get();
+        $workflowDoc   = Workflow::where('documento_id', '=', $document_id)->get();
+        $dadosDoc      = DadosDocumento::where('documento_id', '=', $document_id)->get();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get(['nome_tipo', 'sigla']);
+        $formsDoc      = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $document_id)->pluck('formulario.id as id');
+        $listaPresenca = ListaPresenca::where('documento_id', '=', $document_id)->get();
+        $formularios   = Formulario::all()->pluck('nome', 'id');
+        $filePath = null;
+        
+        if( count($listaPresenca) > 0 ) $filePath = $listaPresenca[0]->nome.".".$listaPresenca[0]->extensao;        
+        $storagePath = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix();
+        $docPath = $storagePath.$documento[0]->nome.".".$documento[0]->extensao;
+        $documento->docData = "";
+    
+        return view('documentacao.view-obsolete-document', array(
+            'nome'=>explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0], 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$documento[0]->nome.".".$documento[0]->extensao, 'document_id'=>$document_id, 
+            'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
+            'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
+            'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'em_revisao' => $dadosDoc[0]->em_revisao, 'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao, 
+            'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc ));
+    }
+
+
 
     /*
     *  WORKFLOW      
@@ -1364,7 +1463,7 @@ class DocumentacaoController extends Controller
         $extensao = $file->getClientOriginalExtension();
 
         Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
-        $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
+        // $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
 
         $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
         $dados_doc[0]->save();
@@ -1638,7 +1737,7 @@ class DocumentacaoController extends Controller
                                 ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
                                 ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id') 
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );
@@ -1659,7 +1758,7 @@ class DocumentacaoController extends Controller
                             ->join('workflow',                  'workflow.documento_id',                    '=',    'documento.id')
                             ->join('tipo_documento',            'tipo_documento.id',                        '=',    'documento.tipo_documento_id')
                             ->select('documento.*', 
-                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao',
+                                    'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto',
                                     'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                     'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                             );
