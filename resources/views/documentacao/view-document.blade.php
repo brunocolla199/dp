@@ -158,7 +158,6 @@
                             </div>
 
                             <div class="row h-100">
-                                <!-- <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe> -->
                                 <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
@@ -217,7 +216,6 @@
                                 @endif
 
                                 <div class="row h-100">
-                                    <!-- <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe> -->
                                     <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                                 </div>
 
@@ -330,7 +328,6 @@
                                                         Pré-visualização de Documento<br>
                                                         <div class="text-center">   
                                                             <br>
-                                                            <!-- <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-success"  target="_blank"> -->
                                                             <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">
                                                                 Visualizar    
                                                             </a>
@@ -379,7 +376,6 @@
                                             <h3>Pré-visualização do Documento</h3>
                                             <div class="text-center">   
                                                 <br>
-                                                <!-- <a href="{{url('documentacao/make-doc/'.$document_id)}}" class="btn btn-lg btn-success"  target="_blank"> Visualizar </a> -->
                                                 <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-lg btn-success" target="_blank"> Visualizar </a>
                                             </div>
                                         </div>
@@ -489,7 +485,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=embedded&user=&fileID=').$filePath }}" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=embedded&folder=lists&user=&fileID=').$filePath }}" style="width:100%; height:500px;" frameborder="0"></iframe>
                                 </div>
 
                             @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && (Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
@@ -520,7 +516,7 @@
 
                                 <div class="row">
                                     <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; height:500px;" frameborder="0"></iframe> -->
-                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=embedded&user=&fileID=').$filePath }}" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=embedded&folder=lists&user=&fileID=').$filePath }}" style="width:100%; height:500px;" frameborder="0"></iframe>
                                 </div>
 
 
