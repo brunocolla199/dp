@@ -368,7 +368,7 @@ class FormulariosController extends Controller
             'historico'=>$historico, 
             'codigo'=>$formulario[0]->codigo, 
             'extensao'=>$formulario[0]->extensao,
-            'filePath'=> \App\Classes\Helpers::instance()->getFormulariosAWS($filePath), 
+            'filePath'=> $filePath, 
             'formData'=>trim($formulario[0]->conteudo, '"'), 
             'etapa_form'=>$workflowForm[0]->etapa_num,
             'elaborador_id'=>$formulario[0]->elaborador_id,
