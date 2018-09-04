@@ -985,6 +985,8 @@ class DocumentacaoController extends Controller
 
 
     public function makeObsoleteDoc(Request $request) {
+        $config = Configuracao::where('id', '=', 2)->get();
+        $documento = Documento::where('id', '=', $request->doc_id)->first();
         $dadosDoc = DadosDocumento::where('documento_id', '=', $request->doc_id)->first();
         $dadosDoc->obsoleto = true;
         $dadosDoc->save();
@@ -993,6 +995,51 @@ class DocumentacaoController extends Controller
         foreach ($vinculoComFormularios as $key => $value) {
             $value->delete();
         }
+
+        
+        // Notificações para todos os usuários envolvidos com o documento [Se for doc restrito, todos do setor tem que receber notificação? Se for doc confidencial, só o administrador da qualidade? Capital Humano deve receber?]
+        $usuariosSetorQualidade = null;
+        $usuariosSetorCapitalHumano = null;
+        $usuariosAreaInteresseDocumento = null;
+
+        $elaborador = User::where('id', '=', $dadosDoc->elaborador_id)->get();
+        if($dadosDoc->elaborador_id != $dadosDoc->aprovador_id) $aprovador = User::where('id', '=', $dadosDoc->aprovador_id)->get();
+
+        if($dadosDoc->nivel_acesso !=  Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL ) {
+            $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        } else {
+            $usuariosSetorQualidade = User::where('id', '=', $config[0]->admin_setor_qualidade)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        }
+
+        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                            ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                            ->where('users.id', '!=', $elaborador[0]->id)
+                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();        
+        
+        $usuariosAreaInteresseDocumento = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')
+                                                ->where('area_interesse_documento.documento_id', '=', $request->doc_id)
+                                                ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                                ->where('users.setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                                ->where('users.id', '!=', $elaborador[0]->id)
+                                                ->where('users.id', '!=', $dadosDoc->aprovador_id)
+                                                ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
+
+        $allUsersInvolved = $elaborador->merge($aprovador);
+        if($usuariosSetorQualidade != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorQualidade);
+        if($usuariosSetorCapitalHumano != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorCapitalHumano);
+        if($usuariosAreaInteresseDocumento != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosAreaInteresseDocumento);
+
+        foreach ($allUsersInvolved as $key => $value) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " foi marcado como obsoleto.", false, $value->id, $documento->id);
+        }
+       
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO, $request->doc_id);
