@@ -152,7 +152,8 @@ class DocumentacaoController extends Controller
 
 
     public function validateData(DadosNovoDocumentoRequest $request) { 
-        
+
+
         $tituloDocumento = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
 
         $documentos = DB::table('documento')
@@ -233,7 +234,7 @@ class DocumentacaoController extends Controller
             $codigo_final .= $codigo;
 
             //Copiando modelo de documento para ser editado!
-            Storage::disk('speed_office')->put($tituloDocumento.".docx", File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".docx"));
+            Storage::disk('speed_office')->put($tituloDocumento . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx', File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".docx"));
 
             return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
                                                             'nivelAcessoDocumento' => $nivelAcessoDocumento,
@@ -243,7 +244,7 @@ class DocumentacaoController extends Controller
                                                             'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
                                                             'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
                                                             'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
-                                                            'acao' => $acao, 'areaInteresse' => $areaInteresse, 'formsAtrelados'=>$request->formulariosAtrelados, 'text_formsAtrelados'=>$text_formsAtrelados ]);
+                                                            'acao' => $acao, 'areaInteresse' => $areaInteresse, 'formsAtrelados'=>$request->formulariosAtrelados, 'text_formsAtrelados'=>$text_formsAtrelados, 'docPath'=>$tituloDocumento.Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS.'00.docx' ]);
         }
 
     }
@@ -410,7 +411,7 @@ class DocumentacaoController extends Controller
         $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
         $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
         $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
-        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        //$this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
         // Grava histórico do documento
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $request->documento_id);
@@ -1998,6 +1999,183 @@ class DocumentacaoController extends Controller
 
     private function cmp($a, $b) {
         return strcmp($a->nome, $b->nome);
+    }
+
+    public function importDocs(){
+
+        $files_dg =  Storage::disk('local')->allfiles('uploads/DG/');
+        $files_pg =  Storage::disk('local')->allfiles('uploads/PG/');
+        $files_it =  Storage::disk('local')->allfiles('uploads/IT');
+        
+        $id_grupoDivulgacao  = 1;
+        $id_grupoTreinamento = 1;
+
+        // dd($files_dg);
+        
+        foreach($files_dg as $key => $file_d ){
+            
+            $titulo  = str_replace('.docx', '', explode('uploads/DG/', $file_d)[1]);
+            $codigo  = explode(' ', $titulo)[0];
+            $revisao = explode('Rev.', $titulo)[1];
+            $titulo  = str_replace('Rev.', '_rev', $titulo);
+            // echo ($titulo)."<br>";
+            // echo ($codigo)."<br>";
+            // echo ($revisao)."<br>";
+            // dd($titulo);
+        
+
+            $documento = new Documento();
+            $documento->nome                = $titulo;
+            $documento->codigo              = $codigo;
+            $documento->extensao            = 'docx';
+            $documento->tipo_documento_id   = 3;
+            $documento->save();
+
+            $dados_documento = new DadosDocumento();
+            $dados_documento->validade                          = '2018-08-29';
+            $dados_documento->status                            = true;
+            $dados_documento->observacao                        = "Documento Finalizado (Importação)";
+            $dados_documento->copia_controlada                  = false;
+            $dados_documento->nivel_acesso                      = 'Livre';
+            $dados_documento->necessita_revisao                 = false;
+            $dados_documento->id_usuario_solicitante            = null;
+            $dados_documento->revisao                           = $revisao;
+            $dados_documento->justificativa_rejeicao_revisao    = null;
+            $dados_documento->em_revisao                        = false;
+            $dados_documento->justificativa_cancelar_revisao    = null;
+            $dados_documento->finalizado                        = true;
+            $dados_documento->setor_id                          = 01;
+            $dados_documento->grupo_treinamento_id              = $id_grupoTreinamento;
+            $dados_documento->grupo_divulgacao_id               = $id_grupoDivulgacao;
+            $dados_documento->elaborador_id                     = 1;
+            $dados_documento->aprovador_id                      = 1;
+            $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
+            $dados_documento->save();
+            
+            // dd($dados_documento);
+            
+            //WorkFlow
+            $workflow = new Workflow();
+            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+            $workflow->etapa         = "";
+            $workflow->descricao     = "Documento Importado Rotina Speed";
+            $workflow->justificativa = "";
+            $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
+            $workflow->save();
+
+            //historico
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Documento Importado", $documento->id);
+
+            Storage::disk('speed_office')->put($titulo.".docx", Storage::disk('local')->get($file_d));
+            
+        }
+
+        foreach($files_pg as $key => $file_p ){
+            
+            $titulo  = str_replace('.docx', '', explode('uploads/PG/', $file_p)[1]);
+            $codigo  = explode(' ', $titulo)[0];
+            $revisao = explode('Rev.', $titulo)[1];
+            $titulo  = str_replace('Rev.', '_rev', $titulo);
+           
+
+            $documento = new Documento();
+            $documento->nome                = $titulo;
+            $documento->codigo              = $codigo;
+            $documento->extensao            = 'docx';
+            $documento->tipo_documento_id   = 2;
+            $documento->save();
+
+            $dados_documento = new DadosDocumento();
+            $dados_documento->validade                          = '2018-08-29';
+            $dados_documento->status                            = true;
+            $dados_documento->observacao                        = "Documento Finalizado (Importação)";
+            $dados_documento->copia_controlada                  = false;
+            $dados_documento->nivel_acesso                      = 'Livre';
+            $dados_documento->necessita_revisao                 = false;
+            $dados_documento->id_usuario_solicitante            = null;
+            $dados_documento->revisao                           = $revisao;
+            $dados_documento->justificativa_rejeicao_revisao    = null;
+            $dados_documento->em_revisao                        = false;
+            $dados_documento->justificativa_cancelar_revisao    = null;
+            $dados_documento->finalizado                        = true;
+            $dados_documento->setor_id                          = 01;
+            $dados_documento->grupo_treinamento_id              = $id_grupoTreinamento;
+            $dados_documento->grupo_divulgacao_id               = $id_grupoDivulgacao;
+            $dados_documento->elaborador_id                     = 1;
+            $dados_documento->aprovador_id                      = 1;
+            $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
+            $dados_documento->save();
+            
+            //WorkFlow
+            $workflow = new Workflow();
+            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+            $workflow->etapa         = "";
+            $workflow->descricao     = "Documento Importado Rotina Speed";
+            $workflow->justificativa = "";
+            $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
+            $workflow->save();
+
+            //historico
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Documento Importado", $documento->id);
+
+            Storage::disk('speed_office')->put($titulo.".docx", Storage::disk('local')->get($file_p));
+            
+        }
+        
+
+        foreach($files_it as $key => $file_it){
+            
+            $titulo  = str_replace('.docx', '', explode('uploads/IT/', $file_it)[1]);
+
+            $codigo  = explode(' ', $titulo)[0];
+            $revisao = explode('Rev.', $titulo)[1];
+            $titulo  = str_replace('Rev.', '_rev', $titulo);
+
+            $documento = new Documento();
+            $documento->nome                = $titulo;
+            $documento->codigo              = $codigo;
+            $documento->extensao            = 'docx';
+            $documento->tipo_documento_id   = 1;
+            $documento->save();
+
+            $dados_documento = new DadosDocumento();
+            $dados_documento->validade                          = '2018-08-29';
+            $dados_documento->status                            = true;
+            $dados_documento->observacao                        = "Documento Finalizado (Importação)";
+            $dados_documento->copia_controlada                  = false;
+            $dados_documento->nivel_acesso                      = 'Livre';
+            $dados_documento->necessita_revisao                 = false;
+            $dados_documento->id_usuario_solicitante            = null;
+            $dados_documento->revisao                           = $revisao;
+            $dados_documento->justificativa_rejeicao_revisao    = null;
+            $dados_documento->em_revisao                        = false;
+            $dados_documento->justificativa_cancelar_revisao    = null;
+            $dados_documento->finalizado                        = true;
+            $dados_documento->setor_id                          = 01;
+            $dados_documento->grupo_treinamento_id              = $id_grupoTreinamento;
+            $dados_documento->grupo_divulgacao_id               = $id_grupoDivulgacao;
+            $dados_documento->elaborador_id                     = 1;
+            $dados_documento->aprovador_id                      = 1;
+            $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
+            $dados_documento->save();
+            
+            //WorkFlow
+            $workflow = new Workflow();
+            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+            $workflow->etapa         = "";
+            $workflow->descricao     = "Documento Importado Rotina Speed";
+            $workflow->justificativa = "";
+            $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
+            $workflow->save();
+
+            //Historico
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Documento Importado", $documento->id);
+
+            Storage::disk('speed_office')->put($titulo.".docx", Storage::disk('local')->get($file_it));
+            
+        }
+
+        dd($files_it);
     }
 
 }

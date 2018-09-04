@@ -214,7 +214,7 @@ class AjaxController extends Controller
         $codigo   = $novoDocumento['codigoDocumento']; 
         $extensao = 'docx';
 
-        Storage::disk('speed_office')->move($titulo.'.docx', $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx'); 
+        // Storage::disk('speed_office')->move($titulo.'.docx', $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx'); 
 
         $documento = new Documento();
         $documento->nome                 = $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";

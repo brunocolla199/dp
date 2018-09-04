@@ -208,7 +208,7 @@
 
                                 <!-- Editor -->
                                 <div class="container">
-                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$tituloDocumento.'.docx' }}"> </iframe>
+                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath }}"> </iframe>
                                 </div>
                                 <!-- End Editor -->
                                         
@@ -384,6 +384,7 @@
 
         $(document).ready(function(){
             var main = "{{ isset($overlay_sucesso) ? true : false }}";
+            console.log(main);
             if(!main) {
 
                 //Iniciando Speed Editor
