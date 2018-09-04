@@ -51,7 +51,7 @@
                                 <div class="card-body">
                                     <h3>2 Acesso ao sistema</h3>
                                     <p>
-                                        <br/> O sistema é compatível com os navegadores Chrome (preferencialmente) e Firefox. Para acessar segue link completo de acesso: <code>http://18.209.80.61/qualidade_prod/login</code></p>
+                                        <br/> O sistema é compatível com os navegadores Chrome (preferencialmente) e Firefox. Para acessar segue link completo de acesso: <code>http://dpws1sva013/qualidade/login</code></p>
                                     <p>
 										<br/> Para realizar o login, deve-se informar login de usuário e senha. Clique em <code>ENTRAR.</code> </p>
 										<div class="alert alert-warning">NOTE: O usuário e senha para realizar login na aplicação foram integrados com o AD.</div>
@@ -285,15 +285,22 @@
                                         <br/> <li>Título do Documento: descrição do nome do documento. </a></li>
                                         <br/> <li>Atrelar aos Formulários: opção para selecionar os formulários que estarão vinculados ao documentos que está sendo elaborado. </a></li>
                                    </p>
-                                   		<div class="alert alert-warning">NOTE: <li>Código do Documento: será gerado automaticamente pela aplicação. </a></li>.</div>
+                                   		<div class="alert alert-warning">NOTA: <li>Código do Documento: será gerado automaticamente pela aplicação. </a></li>.</div>
  								   <p>
  										<br/> Após preencher todos os campos o Elaborador poderá: </p>
                                    <p>
                                    		<br/> <li>Criar um documento através do Editor da aplicação. </a></li>
                                    		<br/> <li>Importar um documento já existente. </a></li>  
                                    <p>
-                                   		<br/> O Elaborador insere as informações no documento, e após deve clicar em <code> Salvar Documento</code>, nesse momento o documento é encaminhado para o próximo setor para análise do documento. 
+                                   		<br/> O Elaborador insere as informações no documento, e após deve clicar em <code> Salvar Documento</code>, nesse momento é aberta a tela para realizar a inclusão de anexos.	
+ 								   <p>
+										<!--<img src="assets/images/Imagens/anexos.jpg" alt="template" class="img-responsive" /> -->
+                                   		<img src="{{ asset('images/Imagens/anexos.jpg') }}" class="img-fluid" alt="Envio do Documento a Qualidade"> 
                                    <p>
+                                   		<br/> Após realiar a inclusão dos anexos ao documento, deve clicar em <code> Concluir e Enviar à Qualidade</code>, nesse momento o documento é encaminhado para o próximo setor para análise do documento. 
+                                   <p>
+                                   		<div class="alert alert-warning">NOTA: <li>A inclusão de anexos aos documentos não é obrigatória.</a></li>.</div>
+
                                    		<!--<img src="assets/images/Imagens/envio_documento.jpg" alt="template" class="img-responsive" /> -->
                                    		<img src="{{ asset('images/Imagens/envio_documento.jpg') }}" class="img-fluid" alt="Envio do Documento a Qualidade">                                         
                                </div>
@@ -337,245 +344,12 @@
                                  <div class="card" id="editor">
                                     <div class="card-body">
                                         <h3>15. Editor </h3>
-                              	
-                                         <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.1. Formatação do Texto</h3>
                                                <p> 
-                                                	<br/> Para realizar a alteração da formatação do texto como Normal e Título, deve-se selecionar o texto que será realizado a alteração e clicar no campo conforme tela abaixo.</p>
+                                                	<br/> Para realizar a edição de um documento, deve-se selecionar o texto que serpa realizado a alteração e após clicar sobre a opção que será utilizada. Como por exemplo: Alteração de cor, alteração de fonte, tamanho da letra, etc. </p>
                                                <p>
-                                               		<!-- <img src="assets/images/Imagens/formatacaokk.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/formatacao.jpg') }}" class="img-fluid" alt="Formatação do Texto">
+                                               		<!-- <img src="assets/images/Imagens/editor.jpg" alt="template" class="img-responsive" /> -->
+                                               		<img src="{{ asset('images/Imagens/editor.jpg') }}" class="img-fluid" alt="Formatação do Texto">
                                                <p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.2. Fontes</h3>
-                                               <p> 
-                                                	<br/> Para realizar a alteração da fonte do documento, deve-se selecionar o texto que será realizado a alteração na fonte e clicar no campo "Fonte" para escolha da nova fonte. Conforme tela abaixo.</p>
-                                               <p>
-                                               		<!-- <img src="assets/images/Imagens/fonte.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/fonte.jpg') }}" class="img-fluid" alt="Fonte">
-                                               <p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.3. Tamanho</h3>
-                                               <p> 
-                                                	<br/> Para realizar a alteração do tamanho da fonte do documento, deve-se selecionar o texto que será realizado a alteração do tamanho da fonte e clicar no campo "Tamanho" para escolha do novo tamanho. Conforme tela abaixo.</p>
-                                               <p>
-                                               		<!-- <img src="assets/images/Imagens/tamanho.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/tamanho.jpg') }}" class="img-fluid" alt="Tamanho">
-                                               <p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.4. Negrito, Itálico, Sublinhado e Tachado</h3>
-                                               <p> 
-                                                	<br/> Para realizar a alteração do texto do documento, deve-se selecionar o texto e clicar nas opções conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!-- <img src="assets/images/Imagens/negrito.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/negrito.jpg') }}" class="img-fluid" alt="Negrito, Itálico, Sublinado e Tachado">
-                                               <p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.5. Alterar Cor</h3>
-                                               <p> 
-                                                	<br/> Para realizar a alteração da cor do texto no documento, deve-se selecionar o texto e clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!-- <img src="assets/images/Imagens/cor.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/cor.jpg') }}" class="img-fluid" alt="Alteração de Cor">
-                                               <p>
-                           
-                                                <div class="card" id="editor">
-                                                    <div class="card-body">
-                                                        <h3>15.5.1. Personalização da Cor</h3>
-                                                       <p> 
-                                                        	<br/> Para selecionar uma cor diferenciada das apresentadas na paleta de cores, deve-se clicar na opção <code>"Mais Cores..."</code>, e informar o código da cor conforme imagem abaixo. Lebrando que sempre antes do código deve ser informado o sinal <code>#</code> para compor o código, no campo "Cor Selecionada" trará a cor conforme o código digitado.</p>
-
-                    										<br/> <li>Exemplo: #173A64 </a></li> </p>
-                                                        
-                                                       <p>
-                                                       		<!-- <img src="assets/images/Imagens/personalizar.jpg" alt="template" class="img-responsive" /> -->
-                                                       		<img src="{{ asset('images/Imagens/personalizar.jpg') }}" class="img-fluid" alt="Personalização da Cor">
-                                                       <p>
-                                                    </div>
-                                                </div>
-                             	            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.6. Alterar cor de fundo do texto</h3>
-                                               <p> 
-                                                	<br/> Para realizar a alteração do fundo do texto, deve-se selecionar o texto e clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!-- <img src="assets/images/Imagens/fundo.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/fundo.jpg') }}" class="img-fluid" alt="Alteração da cor de fundo do texto">
-                                               <p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.7. Alinhamento do Texto</h3>
-                                               <p> 
-                                                	<br/> Para realizar o alinhamento do texto, deve-se selecionar o texto e clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!-- <img src="assets/images/Imagens/alinhamento.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/alinhamento.jpg') }}" class="img-fluid" alt="Alinhamento do Texto">
-                                               <p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.8. Lista Numerada</h3>
-                                               <p> 
-                                                	<br/> Para realizar a inserção da lista numerada no corpo do documento, deve-se clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/lista.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/lista.jpg') }}" class="img-fluid" alt="Lista Numerada">
-                                               <p>
-                                               		<br/> Funções disponíveis na lista numerada:</p>
-                                               		<br/> <li>Tab: Ao pressionar o Tab do teclado a numeração avança a sequência exemplo. </a></li> </p>
-                                               		<!--<img src="assets/images/Imagens/lista_tab.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/lista_tab.jpg') }}" class="img-fluid" alt="Lista Numerada com Tab"> </p>
-                                               		<br/> <li>Enter: Ao pressionar o Enter do teclado a numeração retrocede a sequência exemplo. </a></li> </p>
-                                               		<!--<img src="assets/images/Imagens/lista_enter.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/lista_enter.jpg') }}" class="img-fluid" alt="Lista Numerada COm Enter"> </p>
-                                               		<br/> <li>Shift+Enter: Ao pressionar o Shift+Enter do teclado épossível incluir texto entre a sequência de numeração, conforme exemplo abaixo. </a></li> </p>
-                                               		<!--<img src="assets/images/Imagens/lista_shift_enter.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/lista_shift_enter.jpg') }}" class="img-fluid" alt="Lista Numerada Shift+Enter"> </p>
-                                               <p>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.9. Marcadores</h3>
-                                               <p> 
-                                                	<br/> Para realizar a inserção de marcadores no corpo do documento, deve-se clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/marcadores.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/marcadores.jpg') }}" class="img-fluid" alt="Marcadores">
-                                               <p>
-
-                                                <div class="card" id="editor">
-                                                    <div class="card-body">
-                                                        <h3>15.9.1 Alteração do Marcador</h3>
-                                                       <p> 
-                                                        	<br/> Para realizar a alteração do marcador deve-se clicar sobre o marcado e acessar as propriedades, conforme imagem abaixo.</p>
-                                                       <p>
-                                                       		<!--<img src="assets/images/Imagens/alterar_marcador.jpg" alt="template" class="img-responsive" /> -->
-                                                       		<img src="{{ asset('images/Imagens/alterar_marcador.jpg') }}" class="img-fluid" alt="Alteração do Marcador">
-                                                       <p>  
-
-                                                       		<br/> Após selecionar o tipo do marcador.</p>
-                                                       		<!--<img src="assets/images/Imagens/tipo_marcador.jpg" alt="template" class="img-responsive" /> -->
-                                                       		<img src="{{ asset('images/Imagens/tipo_marcador.jpg') }}" class="img-fluid" alt="Tipo do Marcador">
-                                                       	<p>
-                                                       		<br/> Clique em ok.</p> 	
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.10. Recuo do Texto</h3>
-                                               <p> 
-                                                	<br/> Para realizar o recuo do texto, deve-se clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/recuo.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/recuo.jpg') }}" class="img-fluid" alt="Recuo do Texto">
-                                              
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.11. Inserir Imagem</h3>
-                                              <p> 
-                                                	<br/> Para realizar a inclusão de imagem no corpo do documento, deve-se clicar na opção conforme imagem abaixo.</p>
-                                              <p>
-                                               		<!--<img src="assets/images/Imagens/imagem.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/imagem.jpg') }}" class="img-fluid" alt="Inserção de Imagem">
-                                              <p>
-                                              		<br/> Abrirá a tela para selecionar a imagem.</p>
-                                              <p>
-                                              		<!--<img src="assets/images/Imagens/selecionar.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/selecionar.jpg') }}" class="img-fluid" alt="Seleção de Imagem">
-                                              <p>
-                                              		<br/> Ao clicar em Localizar no Servidor, será mostrado em tela as imagens já utilizadas em outros documentos, para carregar uma nova imagem clique em <code>Enviar Arquivo </code> -> Selecione a imagem -> <code>Abrir </code>. </p>
-                                              <p>
-                                              		<!--<img src="assets/images/Imagens/enviar_imagem.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/enviar_imagem.jpg') }}" class="img-fluid" alt="Envio da Imagem">
-                                              <p>
-                                               		<br/> A imagem será carregada na tela e após deve-se clicar sob a imagem e clicar no botão Usar.</p>
-                                              <p>
-                                              		<!--<img src="assets/images/Imagens/usar_imagem.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/usar_imagem.jpg') }}" class="img-fluid" alt="Usar Imagem">
-                                              <p>
-                                              		<br/> A imagem será carregada na tela para ajustar largura, altura, etc. Após clique em "Ok", para a imagem ser atribuída ao documento.</p>
-                                              <p>
-                                              		<!--<img src="assets/images/Imagens/ajustar_imagem.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/ajustar_imagem.jpg') }}" class="img-fluid" alt="Ajustar Imagem">
-                                              </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.12. Inserir Tabela</h3>
-                                               <p> 
-                                                	<br/> Para realizar a inclusão de tabela no corpo do documento, deve-se clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/tabela.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/tabela.jpg') }}" class="img-fluid" alt="Inserção de Tabela">
-                                               <p>
-                                               		<br/> Abrirá a tela para informar total de linhas e colunas a ser atribuidas a tabela que está sendo criada. </p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/linhas_tabela.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/linhas_tabela.jpg') }}" class="img-fluid" alt="Definição da Tabela">
-                                               <p>
-                                               		<br/> Após clique em Ok. </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.13. Quebra de Página</h3>
-                                               <p> 
-                                                	<br/> Para realizar a quebra de página, deve-se clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/quebra.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/quebra.jpg') }}" class="img-fluid" alt="Quebra de Página">
-                                               <p>
-                                               		
-                                            </div>
-                                        </div>
-
-                                        <div class="card" id="editor">
-                                            <div class="card-body">
-                                                <h3>15.14. Inserir Caractere Especial</h3>
-                                               <p> 
-                                                	<br/> Para realizar a inserção de uma caractere especial, deve-se clicar na opção conforme imagem abaixo.</p>
-                                               <p>
-                                               		<!--<img src="assets/images/Imagens/caractere.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/caractere.jpg') }}" class="img-fluid" alt="Caractere Especial">
-                                               <p>
-                                               		
                                             </div>
                                         </div>
 
@@ -613,8 +387,7 @@
                                                        		<br/>Nesse momento o elaborador visualiza as informações sugeridas pela Qualidade, realiza as correções e segue com o Workflow, enviando novamente a Qualidade para análise.</p>
                                                        <p>
                                                        		<!--<img src="assets/images/Imagens/rejeicao.jpg" alt="template" class="img-responsive" /> -->
-                                                            <!-- This path came wrong and I corrected -->
-                                                       		<img src="{{ asset('images/Imagens/rejeicaoo.jpg') }}" class="img-fluid" alt="Correção das sugestões">
+                                                       		<img src="{{ asset('images/Imagens/rejeicao.jpg') }}" class="img-fluid" alt="Correção das sugestões">
                                                        	<p>
                                                     </div>
                                                 </div>
@@ -627,6 +400,42 @@
                                                        <p>
                                                        		<!--<img src="assets/images/Imagens/aprovado.jpg" alt="template" class="img-responsive" /> -->
                                                        		<img src="{{ asset('images/Imagens/aprovado.jpg') }}" class="img-fluid" alt="Documento Aprovado">
+                                                       <p>
+                                                    </div>
+                                                </div> 
+
+                                                <div class="card" id="qualidade">
+                                                    <div class="card-body">
+                                                        <h3>16.3 Tornar Obsoleto</h3>
+                                                       <p> 
+                                                        	<br/> Para tornar um documento obsoleto,  o usuário deve clicar em Tornar Obsoleto, nesse momento o sistema mostrará em tela uma mensagem de confirmação para tornar o documento obsoleto ou não.</p>
+                                                       <p>
+                                                       		<!--<img src="assets/images/Imagens/tornar_obsoleto.jpg" alt="template" class="img-responsive" /> -->
+                                                       		<img src="{{ asset('images/Imagens/tornar_obsoleto.jpg') }}" class="img-fluid" alt="Documento Obsoleto">
+                                                       <p>
+                                                    </div>
+                                                </div> 
+
+                                                <div class="card" id="qualidade">
+                                                    <div class="card-body">
+                                                        <h3>16.4 Desfazer Obsoleto</h3>
+                                                       <p> 
+                                                        	<br/> Para desfazer o documento que está obsoleto,  o usuário deve clicar em Ativar Documento, nesse momento o sistema mostrará em tela uma mensagem de confirmação para ativar o documento.</p>
+                                                       <p>
+                                                       		<!--<img src="assets/images/Imagens/desfazer_obsoleto.jpg" alt="template" class="img-responsive" /> -->
+                                                       		<img src="{{ asset('images/Imagens/desfazer_obsoleto.jpg') }}" class="img-fluid" alt="Documento Obsoleto">
+                                                       <p>
+                                                    </div>
+                                                </div> 
+
+                                                 <div class="card" id="qualidade">
+                                                    <div class="card-body">
+                                                        <h3>16.5 Víncular Formulários</h3>
+                                                       <p> 
+                                                        	<br/> Para realizar a vinculação de formulários a documentos, o usuário deve clicar em Víncular Formulários, nesse momento o sistema mostrará em tela uma mensagem de confirmação para ativar o documento.</p>
+                                                       <p>
+                                                       		<!--<img src="assets/images/Imagens/vincular_form.jpg" alt="template" class="img-responsive" /> -->
+                                                       		<img src="{{ asset('images/Imagens/vincular_form.jpg') }}" class="img-fluid" alt="Víncular Formulário">
                                                        <p>
                                                     </div>
                                                 </div> 
@@ -669,18 +478,18 @@
                                             </div>
                                         </div> 
 
-                                        <div class="card" id="capital">
+                                        <div class="card" id="pessoas">
                                             <div class="card-body">
-                                                <h3>20. Capital Humano</h3>
+                                                <h3>20. Pessoas & Organizações</h3>
                                                <p> 
-                                                	<br/> Após o Elaborador realizar o upload da lista de presença, o Capital Humano deve realizar a análise. O Capital Humano será avisado quando receber uma nova lista de presença para ser analisada.</p>
+                                                	<br/> Após o Elaborador realizar o upload da lista de presença, o setor de Pessoas deve realizar a análise. O setor de Pessoas será avisado quando receber uma nova lista de presença para ser analisada.</p>
                                                <p>
                                                		<br/> É possível através da notificação acessar o documento para realizar a análise. </p>
                                                <p>
                                                		<!--<img src="assets/images/Imagens/aprovacao_lista.jpg" alt="template" class="img-responsive" /> -->
                                                		<img src="{{ asset('images/Imagens/aprovacao_lista.jpg') }}" class="img-fluid" alt="Aprovação da Lista de Presença">
                                                <p>
-                                               		<br/> O Capital Humano poderá Rejeitar ou Aprovar a lista de presença.</p>
+                                               		<br/> O setor de Pessoas poderá Rejeitar ou Aprovar a lista de presença.</p>
                                                		<div class="alert alert-info">Rejeitar: será habilitado uma caixa para informar a justificativa da rejeição e a lista retorna ao Elaborador para ajustes.</p>
                                                     Aprovar: será realizado a divulgação do documento. </p>
                                                     </div>         
@@ -691,7 +500,7 @@
                                             <div class="card-body">
                                                 <h3>21. Divulgação </h3>
                                                <p> 
-                                                	<br/> Após o Capital Humano realizar a aprovação da lista de presença, o Workflow de elaboração do documento é finalizado e dispara uma notificação aos envolvidos na elaboração do documento.</p>
+                                                	<br/> Após o setor de Pessoas realizar a aprovação da lista de presença, o Workflow de elaboração do documento é finalizado e dispara uma notificação aos envolvidos na elaboração do documento.</p>
                                                <p>
                                                		
                                                		<!--<img src="assets/images/Imagens/divulgacao.jpg" alt="template" class="img-responsive" /> -->
@@ -737,9 +546,44 @@
                                             </div>
                                         </div> 
 
+                                        <div class="card" id="revisao">
+                                            <div class="card-body">
+                                                <h3>23. Revisão </h3>
+                                                <p> 
+                                            	    <br/> Para realizar a revisão de um documento, deve-se acessar <code> Documentação </code> -> <code> Visualizar Documento </code> -> <code> Ações </code> -> <code> Solicitar Revisão </code>.</p>
+                                                <p>
+                                                   		
+                                                    <!--<img src="assets/images/Imagens/revisao.jpg" alt="template" class="img-responsive" /> -->
+                                                    <img src="{{ asset('images/Imagens/revisao.jpg') }}" class="img-fluid" alt="Revisão Documento">
+                                                <p>
+                                                    <br/> Qualquer usuário que tem acesso ao documento pode realizar a solicitação de revisão. Ao solicitar a revisão o usuário se torna o elaborador do documento. E nesse momento se inicia o fluxo do Workflow.</p>
+                                           
+										<div class="card" id="revisao">
+                                            <div class="card-body">
+                                                <h3>23.1 Cancelar Revisão </h3>
+                                                <p> 
+                                            	    <br/> Para realizar o cancelamento de uma, deve-se acessar <code> Documentação </code> -> <code> Visualizar Documento </code> e acessar o documento, onde mostrará a opção para realizar o cancelamento da revisão.</p>
+                                                <p>
+                                                   		
+                                                    <!--<img src="assets/images/Imagens/cancelar_revisao.jpg" alt="template" class="img-responsive" /> -->
+                                                    <img src="{{ asset('images/Imagens/cancelar_revisao.jpg') }}" class="img-fluid" alt="Cancelar Revisão">
+                                                <p>
+                                                    <br/> Ao clicar em <code> Cancelar Revisão </code>, o usuário deverá informar uma justificativa para o cancelamento. </p>
+
+													<!--<img src="assets/images/Imagens/justificativa_revisao.jpg" alt="template" class="img-responsive" /> -->
+                                                    <img src="{{ asset('images/Imagens/justificativa_revisao.jpg') }}" class="img-fluid" alt="Justificativa Revisão">
+
+                                                </p>
+                                                	<div class="alert alert-warning">NOTA: <li>Somente os usuários da Qualidade tem permissão para cancelar a revisão de um documento. </a></li>.</div>
+                                                </p>
+                                            </div>
+                                        	</div>
+    									</div>
+                                        	</div>
+
                                         <div class="card" id="formularios">
                                             <div class="card-body">
-                                                <h3>23. Elaboração </h3>
+                                                <h3>24. Elaboração </h3>
                                                 <p> 
                                                     <br/> A elaboração de formulário está disponível no menu <code> Formulário </code> -> <code> Novo Formulário </code>.</p>
                                                 <p>
@@ -757,10 +601,9 @@
                                             </div>
                                         </div> 
 
-
-                                         <div class="card" id="importarform">
+                                        <div class="card" id="importarform">
                                             <div class="card-body">	
-                                                <h3>24.Importar </h3>
+                                                <h3>25.Importar </h3>
                                                <p> 
                                                 	<br/> Ao informar todos os campos para criação do formulário, o Elaborador  deve clicar em <code> Importar Formulário </code>.</p>
                                                <p>
@@ -774,13 +617,14 @@
                                                <p>
                                                		<br/>O Elaborador deve selecionar o arquivo e clicar em "Salvar Formulário", onde será encaminhado ao setor da Qualidade para análise. </p>
                                                <p>
+                                               		<!--<img src="assets/images/Imagens/elaboracao_form"template" class="img-responsive" /> -->
                                                		<img src="{{ asset('images/Imagens/elaboracao_form.jpg') }}" class="img-fluid" alt="Elaboração Formulário">
                                             </div>
                                         </div> 
 
                                         <div class="card" id="qualidadeform">
                                             <div class="card-body">	
-                                                <h3>25.Qualidade </h3>
+                                                <h3>26.Qualidade </h3>
                                                <p> 
                                                 	<br/> A Qualidade será notificada que recebeu um novo formulário para análise. Conforme imagem abaixo.</p>
                                                <p>
@@ -799,12 +643,36 @@
                                                     Aprovar: será realizado a divulgação do formulário. </p>
                                                     </div>  
 
+                                             <div class="card" id="qualidadeform">
+                                                    <div class="card-body">
+                                                        <h3>26.1 Tornar Obsoleto</h3>
+                                                       <p> 
+                                                        	<br/> Para tornar um formulário obsoleto,  o usuário deve clicar em Tornar Obsoleto, nesse momento o sistema mostrará em tela uma mensagem de confirmação para tornar o formulário obsoleto ou não.</p>
+                                                       <p>
+                                                       		<!--<img src="assets/images/Imagens/tornar_obsoleto_form.jpg" alt="template" class="img-responsive" /> -->
+                                                       		<img src="{{ asset('images/Imagens/tornar_obsoleto_form.jpg') }}" class="img-fluid" alt="Formulário Obsoleto">
+                                                       <p>
+                                                    </div>
+                                                </div> 
+
+                                                <div class="card" id="qualidadeform">
+                                                    <div class="card-body">
+                                                        <h3>26.2 Desfazer Obsoleto</h3>
+                                                       <p> 
+                                                        	<br/> Para desfazer o formulário que está obsoleto,  o usuário deve clicar em Ativar Formulário, nesse momento o sistema mostrará em tela uma mensagem de confirmação para ativar o formulário.</p>
+                                                       <p>
+                                                       		<!--<img src="assets/images/Imagens/desfazer_obsoleto_form.jpg" alt="template" class="img-responsive" /> -->
+                                                       		<img src="{{ asset('images/Imagens/desfazer_obsoleto_form.jpg') }}" class="img-fluid" alt="Formulário Obsoleto">
+                                                       <p>
+                                                    </div>
+                                                </div> 
+
                                             </div>
                                         </div>
 
                                         <div class="card" id="visualizacaoform">
                                             <div class="card-body">	
-                                                <h3>26. Visualização </h3>
+                                                <h3>27. Visualização </h3>
                                                 <p> 
                                                     <br/> Para visualizar os formulários existentes na aplicação, deve-se acessar <code> Formulários </code> -> <code> Visualizar Formulários </code>.</p>
                                                 <p>
@@ -813,7 +681,7 @@
 
                                                 <div class="card" id="visualizacaoform">
                                                     <div class="card-body">	
-                                                        <h3>26.1 Status </h3>
+                                                        <h3>27.1 Status </h3>
                                                         <p> 
                                                             <br/> Para visualizar o status dos formulários, deve-se acessar <code> Formulários </code> -> <code> Visualizar Formulários </code>.</p>
                                                         <p>
@@ -829,9 +697,22 @@
                                             </div>
                             	        </div>
 
+                            	        <div class="card" id="revisaoform">
+                                            <div class="card-body">
+                                                 <h3>28. Revisão </h3>
+                                                <p> 
+                                                	<br/> Para realizar a revisão de um formulário, deve-se acessar <code> Formulários </code> -> <code> Visualizar Formulários </code> -> <code> Ações </code> -> <code> Solicitar Revisão </code>.</p>
+                                                <p>
+                                                    <!--<img src="assets/images/Imagens/revisao_form.jpg" alt="template" class="img-responsive" /> -->
+                                                    <img src="{{ asset('images/Imagens/revisao_form.jpg') }}" class="img-fluid" alt="Revisão Formulário">
+                                                <p>
+                                                    <br/> Qualquer usuário que tem acesso ao formulário pode realizar a solicitação de revisão. Ao solicitar a revisão o usuário se torna o elaborador do formulário. E nesse momento se inicia o fluxo do Workflow.</p>
+                                            </div>
+                                        </div>
+
                                        	<div class="card" id="divulgacaoform">
                                             <div class="card-body">	
-                                                <h3>27. Divulgação </h3>
+                                                <h3>29. Divulgação </h3>
                                                <p> 
                                                 	<br/> Após a Qualidade realizar a aprovação o formulário, o Workflow de elaboração do formulário é finalizado e dispara uma notificação aos envolvidos na elaboração do formulário.</p>
                                                <p>

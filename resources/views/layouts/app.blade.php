@@ -272,9 +272,10 @@
                             <li><a href="#areainteresse" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Área de Interesse</span></a></li>
                             <li><a href="#aprovador" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Aprovador</span></a></li>
                             <li><a href="#listadepresenca" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Lista de Presença</span></a></li>
-                            <li><a href="#capital" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Capital Humano</span></a></li>
+                            <li><a href="#pessoas" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">P & O</span></a></li>
                             <li><a href="#divulgacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>
                             <li><a href="#visualizacao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização</span></a></li>
+                            <li><a href="#revisao" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Revisão</span></a></li>
 
                             <li class="nav-small-cap"> <span class="text-info">FORMULÁRIOS</span> </li>
                             <li><a href="#formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração</span></a></li>
@@ -282,6 +283,8 @@
                             <li><a href="#qualidadeform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
                             <li><a href="#visualizacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização</span></a></li>
                             <li><a href="#divulgacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>
+                            <li><a href="#revisaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Revisão</span></a></li>
+
                         </ul>
                     </nav>
                     <!-- End Sidebar navigation -->
