@@ -465,7 +465,7 @@
             });
         });
 
-        // Ao clicar no botão que abrirá o modal de confirmação para tornar o formulário obsoleto
+        // Ao clicar no botão que abrirá o modal de confirmação para ativar o formulário 
         $(".btn-ativar-formulario-modal").click(function(){
             var id = $(this).data('id');
             $("#form_id_make_active_form").val(id);
