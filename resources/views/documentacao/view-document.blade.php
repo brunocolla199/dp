@@ -342,7 +342,7 @@
                                     <!-- Editor -->
                                     <div class="container" >
                                         
-                                        <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath }}"> </iframe>
+                                        <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
 
                                     </div>
                                     <!-- End Editor -->
@@ -888,7 +888,7 @@
 
         </div>
     </div>
-
+    
 
     <!-- Formulário para visualizar o formulário ( dafuk ?????? )  -->
     {{ Form::open(['route' => 'formularios.view-formulario', 'target'=>'_blank', 'id'=>'form-view-formulario', 'method' => 'POST']) }}
@@ -899,11 +899,6 @@
 
 @section('footer')
 
-<script src="https://cdn.ckeditor.com/4.8.0/full-all/ckeditor.js"></script>
-<script src="{{ asset('plugins/ckeditor-document-editor/ckeditorConfig.js') }}"></script>
-<script src="{{ asset('plugins/ckeditor-document-editor/initEditor.js') }}"></script>
-<script src="{{ asset('plugins/ckeditor-document-editor/translate/pt-br.js') }}"></script>
-
 <script>
 
     var etapaDocumento = "{{$etapa_doc}}";
@@ -911,7 +906,6 @@
     var etapaMaxima = "{{Constants::$ETAPA_WORKFLOW_APROVADOR_NUM}}";
     
     if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
-        // initEditor('{!! $docData !!}', '{{ asset("plugins/ckeditor-document-editor/css/speed-editor.css") }}', '{!! url("/") !!}');
 
         var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
         var select = $(".select2-vinculos").select2({
@@ -919,6 +913,7 @@
                 return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
             },
         });
+        
         select.val(forms);
         select.trigger('change');   
     }
@@ -930,11 +925,6 @@
 
 
     $("#btn-save-document").click(function(){
-        // var btn_only_office = $("#fm-btn-save");
-        // btn_only_office.trigger('click');
-
-        // var docData = CKEDITOR.instances['speed-editor'].getData();
-        // $("#form-edit-document").append("<input type='hidden' name='docData' value='"+docData+"' >")
         $("#form-edit-document").submit();
     });
 

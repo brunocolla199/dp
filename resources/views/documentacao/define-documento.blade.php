@@ -208,7 +208,7 @@
 
                                 <!-- Editor -->
                                 <div class="container">
-                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath }}"> </iframe>
+                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                                 </div>
                                 <!-- End Editor -->
                                         
@@ -384,7 +384,7 @@
 
         $(document).ready(function(){
             var main = "{{ isset($overlay_sucesso) ? true : false }}";
-            console.log(main);
+
             if(!main) {
 
                 //Iniciando Speed Editor
