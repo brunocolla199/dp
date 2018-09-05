@@ -411,7 +411,7 @@ class DocumentacaoController extends Controller
         $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
         $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
         $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
-        //$this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
         // Grava histórico do documento
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EMISSAO, $request->documento_id);
