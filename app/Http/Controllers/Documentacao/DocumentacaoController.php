@@ -201,37 +201,53 @@ class DocumentacaoController extends Controller
     
             // Define código do documento
             if($text_tipo_documento[0]->sigla == "IT") { // Incremento depende do setor (cada setor tem seu incremento)
-                $qtdDocs = DB::table('documento')
+                $lastDoc = DB::table('documento')
                             ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
                             ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
-                            ->select('documento.id')
+                            ->select('documento.id', 'documento.codigo')
                             ->where('documento.tipo_documento_id', '=', $tipo_documento)
                             ->where('dados_documento.setor_id', '=', $setorDono)
-                            ->get()->count();
-    
-                if( count($qtdDocs) <= 0 )  {
+                            ->orderBy('id', 'desc')
+                            ->get()->first();
+
+                if( empty($lastDoc) ) { // Ainda não existe documento para esse setor...
                     $codigo = $this->buildCodDocument(1);
-                } else { 
-                    $codigo = $this->buildCodDocument($qtdDocs + 1);
+                } else {
+                    $arr = explode("-", $lastDoc->codigo);
+                    if( count($arr) != 3) { // Houve algum erro ao criar o código do último documento desse setor...
+                        $codigo = $this->buildCodDocument(1);
+                    } else {
+                        $lastCode = (int) $arr[2];
+                        $codigo = $this->buildCodDocument($lastCode + 1);
+                    }
                 }
-    
+
             } else { // Incremento único (independente de setor)
-                $qtdDocs = DB::table('documento')
+                $lastDoc2 = DB::table('documento')
                             ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
-                            ->select('documento.id')
+                            ->select('documento.id', 'documento.codigo')
                             ->where('documento.tipo_documento_id', '=', $tipo_documento)
-                            ->get()->count();
-    
-                if( count($qtdDocs) <= 0 )  {
+                            ->orderBy('id', 'desc')
+                            ->get()->first();
+
+                if( empty($lastDoc2) ) { // Ainda não existe documento deste tipo...
                     $codigo = $this->buildCodDocument(1);
                 } else { 
-                    $codigo = $this->buildCodDocument($qtdDocs + 1);
+                    $arr = explode("-", $lastDoc2->codigo);
+                    if( count($arr) != 2) { // Houve algum erro ao criar o código do último documento desse tipo...
+                        $codigo = $this->buildCodDocument(1);
+                    } else {
+                        $lastCode = (int) $arr[1];
+                        $codigo = $this->buildCodDocument($lastCode + 1);
+                    }
                 }
             }
-    
+
             // Concatena e gera o código final
             $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla . "-" : "";
             $codigo_final .= $codigo;
+
+            dd($codigo_final);
 
             //Copiando modelo de documento para ser editado!
             Storage::disk('speed_office')->put($tituloDocumento . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx', File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".docx"));
@@ -1601,7 +1617,7 @@ class DocumentacaoController extends Controller
             $codigo = ( strlen($n) <= 1 ) ? str_pad($n, 2, '0', STR_PAD_LEFT) : $n;      
         } else if( strlen($padrao) == 3 ) {
             if( strlen($n) <= 1 ) $codigo = str_pad($n, 3, '0', STR_PAD_LEFT);
-            else if( strlen($n) == 2 ) $codigo = str_pad($n, 2, '0', STR_PAD_LEFT);
+            else if( strlen($n) == 2 ) $codigo = str_pad($n, 3, '0', STR_PAD_LEFT);
             else $codigo = $n;
         } else  {
             $valor = $n + ".01";
