@@ -247,8 +247,6 @@ class DocumentacaoController extends Controller
             $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla . "-" : "";
             $codigo_final .= $codigo;
 
-            dd($codigo_final);
-
             //Copiando modelo de documento para ser editado!
             Storage::disk('speed_office')->put($tituloDocumento . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx', File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".docx"));
 
@@ -1816,7 +1814,7 @@ class DocumentacaoController extends Controller
                 for ($i=0; $i < count($documentos_NAOFinalizados_Confidenciais); $i++) 
                     $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_Confidenciais[$i]; 
 
-        } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE && Auth::user()->setor_id != Constants::$ID_SETOR_CAPITAL_HUMANO ) {
+        } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE ) { //  && Auth::user()->setor_id != Constants::$ID_SETOR_CAPITAL_HUMANO
 
             $docs_etapa1 = $clonedBaseQuery4->where('dados_documento.finalizado', '=', false)
                                             ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
@@ -1871,33 +1869,25 @@ class DocumentacaoController extends Controller
                 foreach($docs_etapa3 as $key => $value)
                     $documentos_NAOFinalizados[] = $value;  
 
-            // if( $docs_etapa3->count() > 0 && count($docs_etapa3) > 0 ) 
-            //     for ($i=0; $i < count($docs_etapa3); $i++) 
-            //         $documentos_NAOFinalizados[] = $docs_etapa3[$i];    
-
-
             if( $docs_etapa4->count() > 0 && count($docs_etapa4) > 0 ) 
                 foreach($docs_etapa4 as $key => $value)
                     $documentos_NAOFinalizados[] = $value; 
-
-            // if( $docs_etapa4->count() > 0 && count($docs_etapa4) > 0 ) 
-            //     for ($i=0; $i < count($docs_etapa4); $i++) 
-            //         $documentos_NAOFinalizados[] = $docs_etapa4[$i]; 
-
 
             if( count($docs_etapas_5_6) > 0 ) 
                 for ($i=0; $i < count($docs_etapas_5_6); $i++) 
                     $documentos_NAOFinalizados[] = $docs_etapas_5_6[$i]; 
 
-            
-        } else if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO) {
-            $docs_etapa7 = $clonedBaseQuery7->where('dados_documento.finalizado', '=', false)
-                                            ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)
-                                            ->get();
-
-            if( count($docs_etapa7) > 0 ) 
-                for ($i=0; $i < count($docs_etapa7); $i++) 
-                    $documentos_NAOFinalizados[] = $docs_etapa7[$i];  
+         
+            // Além de tudo isso, se for um usuário do Capital Humano, precisa listar os docs na etapa 7
+            if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO) {
+                $docs_etapa7 = $clonedBaseQuery7->where('dados_documento.finalizado', '=', false)
+                                                ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)
+                                                ->get();
+    
+                if( count($docs_etapa7) > 0 ) 
+                    for ($i=0; $i < count($docs_etapa7); $i++) 
+                        $documentos_NAOFinalizados[] = $docs_etapa7[$i];  
+            }
         }
 
         
@@ -1981,17 +1971,9 @@ class DocumentacaoController extends Controller
             foreach($docsFinalizados_restritos as $key => $value)
                 $documentosFinalizados[] = $value;  
 
-        // if( $docsFinalizados_restritos->count() > 0 && count($docsFinalizados_restritos) > 0 ) 
-        //     for ($i=0; $i < count($docsFinalizados_restritos); $i++) 
-        //         $documentosFinalizados[] = $docsFinalizados_restritos[$i];  
-
         if( $docsFinalizados_confidenciais->count() > 0 && count($docsFinalizados_confidenciais) > 0 )     
             foreach($docsFinalizados_confidenciais as $key => $value)
                 $documentosFinalizados[] = $value; 
-
-        // if( $docsFinalizados_confidenciais->count() > 0 && count($docsFinalizados_confidenciais) > 0 ) 
-        //     for ($i=0; $i < count($docsFinalizados_confidenciais); $i++) 
-        //         $documentosFinalizados[] = $docsFinalizados_confidenciais[$i];  
 
 
         // Criando array final para a listagem de documentos
@@ -2015,6 +1997,7 @@ class DocumentacaoController extends Controller
                 $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
             }
         }
+        
         return $docs;
     }
 
