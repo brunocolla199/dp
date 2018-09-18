@@ -180,6 +180,13 @@
 
                             @if($finalizado)
                                 
+                                @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                <div class="col-md-12 text-right">
+                                    <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                </div>
+                                <br>
+                                @endif
+
                                 <!-- Cards de justificativa para o solicitante de revisão: rejeição e cancelamento -->
                                 @if(  ($justificativa_rejeicao_revisao != null && $justificativa_rejeicao_revisao != "") &&  Auth::user()->id == $id_usuario_solicitante  &&  !$em_revisao ) 
                                     <div class="col-md-12" id="justification-reject-review-div">

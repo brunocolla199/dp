@@ -207,7 +207,7 @@
                             @if(Auth::user()->id == $id_usuario_solicitante  &&  $finalizado  &&  $justificativa_cancelar_revisao != null)
                                 <div class="col-md-12" id="justification-cancel-form-review-div">
                                     <div class="row text-center">
-                                        <div class="col-md-9">
+                                        <div class="col-md-9">  
                                             <div class="ribbon-wrapper card ">
                                                 <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE CANCELAMENTO DA REVISÃO</div> 
                                                 <p class="ribbon-content"><b>Qualidade:</b> {{ $justificativa_cancelar_revisao }} </p>
@@ -222,6 +222,15 @@
                                 </div>
                             @endif
 
+                             @if($finalizado)
+                                
+                                @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                <div class="col-md-12 text-right">
+                                    <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').$filePath }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                </div>
+                                <br>
+                                @endif
+                            @endif
 
                             <div class="col-md-12">
                                 <hr>
@@ -262,7 +271,7 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
-                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').rawurlencode($filePath) }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
                                 </div>
                                     
                                 <div class="col-md-4" style="font-size:14px; height: 800px; overflow-y: scroll;">
