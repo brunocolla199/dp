@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailsJob;
 
+
 class DocumentacaoController extends Controller
 {
     
@@ -152,7 +153,6 @@ class DocumentacaoController extends Controller
 
 
     public function validateData(DadosNovoDocumentoRequest $request) { 
-
 
         $tituloDocumento = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
 
@@ -1104,6 +1104,71 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function editInfo($id) {        
+        // Documento
+        $documento = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
+                                ->where('documento.id', '=', $id)
+                                ->select('documento.id', 'nome', 'codigo', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'copia_controlada', 'validade', 'setor_id')->first();
+
+        // Área de Interesse
+        $setoresUsuarios = [];
+        $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
+        foreach($todosSetores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
+
+        $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')
+                                                                    ->join('setor', 'setor.id', '=', 'users.setor_id')
+                                                                    ->where('documento_id', '=', $id)->select('usuario_id')->get()->pluck('usuario_id')->toArray();
+
+        // Aprovadores, Grupos de Interesse e de Divulgação
+        $aprovadores = AprovadorSetor::join('users', 'users.id', '=', 'usuario_id')->where('aprovador_setor.setor_id', '=', $documento->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
+        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+
+        return view('documentacao.update-info', array( 'documento'=>$documento, 'usuariosAreaInteresseDocumento'=>$usuariosAreaInteresseDocumento, 'setoresUsuarios'=>$setoresUsuarios, 
+                                                        'aprovadores'=>$aprovadores, 'gruposTreinamento'=>$gruposTreinamento, 'gruposDivulgacao'=>$gruposDivulgacao  ) );
+    }
+
+
+    public function updateInfo(Request $request) {
+        $idDoc = (int) $request->doc_id;
+        $dadosDoc = DadosDocumento::where('documento_id', '=', $idDoc)->select('id', 'copia_controlada', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'validade')->first();
+      
+        // dados_documento
+        $dadosDoc->copia_controlada = ($request->copiaControlada == "false") ? false : true;
+
+        if($dadosDoc->aprovador_id != $request->aprovador) $dadosDoc->aprovador_id = $request->aprovador;
+        
+        if($dadosDoc->grupo_treinamento_id != $request->grupoTreinamento) $dadosDoc->grupo_treinamento_id = (int) $request->grupoTreinamento;
+        
+        if($dadosDoc->grupo_divulgacao_id != $request->grupoDivulgacao) $dadosDoc->grupo_divulgacao_id = (int) $request->grupoDivulgacao;
+        
+        $dadosDoc->validade = $request->validadeDocumento;
+        $dadosDoc->save();
+
+
+        // area_interesse_documento
+        $deletedRows = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->delete();
+        $novaAreaInteresse = $request->areaInteresse;
+        if( is_array($novaAreaInteresse) && count($novaAreaInteresse) > 0 ) {
+            foreach($novaAreaInteresse as $key => $user) {
+                $areaInteresseDocumento = new AreaInteresseDocumento();
+                $areaInteresseDocumento->documento_id  = $idDoc;
+                $areaInteresseDocumento->usuario_id  = $user;
+                $areaInteresseDocumento->save();
+            }
+        }
+
+        return redirect()->route('documentacao')->with('update_info_success', 'msg');
+    }
+
+
 
     /*
     *  WORKFLOW      
@@ -2005,6 +2070,7 @@ class DocumentacaoController extends Controller
     private function cmp($a, $b) {
         return strcmp($a->nome, $b->nome);
     }
+
 
     public function importDocs(){
 

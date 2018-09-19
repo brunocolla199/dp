@@ -36,6 +36,8 @@
 		<input type="hidden" name="status" id="status" value="make_obsolete_doc">
     @elseif (session('make_active_doc'))
 		<input type="hidden" name="status" id="status" value="make_active_doc">
+    @elseif (session('update_info_success'))
+		<input type="hidden" name="status" id="status" value="update_info_success">
     @endif
 
     <script>
@@ -70,6 +72,8 @@
                 showToast('Sucesso!', 'O documento foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
             } else if(status == "make_active_doc") {
                 showToast('Sucesso!', 'O documento foi ativado com sucesso!', 'success');
+            } else if(status == "update_info_success") {
+                showToast('Sucesso!', 'As informações do documento foram atualizadas com sucesso!', 'success');
             }
         });
     </script>
@@ -281,7 +285,7 @@
                                                 </div>           
                                             </div>
 
-                                            <!-- Linha 5 -->
+                                            <!-- Linha 7 -->
                                             <div class="row">
                                                 <div class="col-md-12 mb-4">
                                                     @if ($errors->any())
@@ -424,8 +428,13 @@
                                                                         </td>
                                                                         <td>{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
                                                                         <td>{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
+                                                                        
                                                                         <td class="text-nowrap text-center">
-                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $doc->elaborador_id && $doc->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ) )
+                                                                                <a href="{{ route('documentacao.edit-info', ['id' => $doc->id]) }}"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                            @endif
+
+                                                                            <a href="#" title="Vincular Formulários" class="ml-3" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -476,6 +485,10 @@
                                                                             <td>{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                             
                                                                             <td class="text-nowrap text-center">
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                    <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                                @endif
+                                                                                
                                                                                 <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
 
                                                                                 @if( !$docF->necessita_revisao )
