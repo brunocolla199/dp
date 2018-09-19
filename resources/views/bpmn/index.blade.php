@@ -28,15 +28,14 @@
                     <div class="card">
                         <div class="card-body">
                             
-							<h3>BPMN 2.0</h3>
+							<h3>BPMN 2.0 Modeler</h3>
+                            <iframe src="{{ url('plugins/bpmn/index.html') }}" class="resp-iframe"></iframe>
 
                         </div>
                     </div>
                 </div>
             </div>
             <!-- End Page Content -->
-
-
         </div>
     </div>
 @endsection
