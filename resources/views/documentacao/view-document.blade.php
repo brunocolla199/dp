@@ -182,7 +182,7 @@
                                 
                                 @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                 <div class="col-md-12 text-right">
-                                    <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                    <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'.$docPath }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
                                 </div>
                                 <br>
                                 @endif
