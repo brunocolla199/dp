@@ -19,6 +19,7 @@ use App\Formulario;
 use App\DocumentoFormulario;
 use App\ListaPresenca;
 use App\AprovadorSetor;
+use App\UsuarioExtra;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
 use Illuminate\Support\Facades\View;
@@ -1108,7 +1109,7 @@ class DocumentacaoController extends Controller
         // Documento
         $documento = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
                                 ->where('documento.id', '=', $id)
-                                ->select('documento.id', 'nome', 'codigo', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'copia_controlada', 'validade', 'setor_id')->first();
+                                ->select('documento.id', 'nome', 'codigo', 'nivel_acesso', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'copia_controlada', 'validade', 'setor_id')->first();
 
         // Área de Interesse
         $setoresUsuarios = [];
@@ -1123,8 +1124,11 @@ class DocumentacaoController extends Controller
         }
 
         $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')
-                                                                    ->join('setor', 'setor.id', '=', 'users.setor_id')
                                                                     ->where('documento_id', '=', $id)->select('usuario_id')->get()->pluck('usuario_id')->toArray();
+        
+        // Usuários Extras
+        $usuariosExtraDocumento = UsuarioExtra::join('users', 'users.id', '=', 'usuario_extra.usuario_id')
+                                                 ->where('usuario_extra.documento_id', '=', $id)->select('usuario_id')->get()->pluck('usuario_id')->toArray();
 
         // Aprovadores, Grupos de Interesse e de Divulgação
         $aprovadores = AprovadorSetor::join('users', 'users.id', '=', 'usuario_id')->where('aprovador_setor.setor_id', '=', $documento->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
@@ -1132,7 +1136,7 @@ class DocumentacaoController extends Controller
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
 
         return view('documentacao.update-info', array( 'documento'=>$documento, 'usuariosAreaInteresseDocumento'=>$usuariosAreaInteresseDocumento, 'setoresUsuarios'=>$setoresUsuarios, 
-                                                        'aprovadores'=>$aprovadores, 'gruposTreinamento'=>$gruposTreinamento, 'gruposDivulgacao'=>$gruposDivulgacao  ) );
+                                                        'usuariosExtraDocumento'=>$usuariosExtraDocumento, 'aprovadores'=>$aprovadores, 'gruposTreinamento'=>$gruposTreinamento, 'gruposDivulgacao'=>$gruposDivulgacao  ) );
     }
 
 
@@ -1162,6 +1166,18 @@ class DocumentacaoController extends Controller
                 $areaInteresseDocumento->documento_id  = $idDoc;
                 $areaInteresseDocumento->usuario_id  = $user;
                 $areaInteresseDocumento->save();
+            }
+        }
+
+        // usuario_extra
+        $deletedRows2 = UsuarioExtra::where('documento_id', '=', $idDoc)->delete();
+        $novosUsuariosExtra = $request->extraUsers;
+        if( is_array($novosUsuariosExtra) && count($novosUsuariosExtra) > 0 ) {
+            foreach($novosUsuariosExtra as $key => $user) {
+                $usuarioExtra = new UsuarioExtra();
+                $usuarioExtra->documento_id  = $idDoc;
+                $usuarioExtra->usuario_id  = $user;
+                $usuarioExtra->save();
             }
         }
 
@@ -1977,16 +1993,16 @@ class DocumentacaoController extends Controller
             $aux_docsFinalizados_restritos = clone $docsFinalizados_restritos;
             foreach ($aux_docsFinalizados_restritos as $key => $value) {
                 $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
+                
+                $usuariosExtraDoDocumento = UsuarioExtra::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
 
                 $usuariosAprovadoresDoSetorDonoDoDocumento = User::select('users.id', 'users.name')
                                                                     ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
                                                                     ->where('aprovador_setor.setor_id', '=', $value->setor_id)
-                                                                    ->get()
-                                                                    ->pluck('name', 'id')
-                                                                    ->toArray();
+                                                                    ->get()->pluck('name', 'id')->toArray();
                 
-                // lista para todos os envolvidos na criação do doc (elaborador, qualidade, área de interesse e grupo de aprovadores) e para todos os membros do setor dono do documento
-                if( $value->elaborador_id == $I_U  ||  $SI_U == Constants::$ID_SETOR_QUALIDADE  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento))  ||  $SI_U == $value->setor_id ) {
+                // lista para todos os envolvidos na criação do doc (elaborador, qualidade, área de interesse e grupo de aprovadores) e para todos os membros do setor dono do documento  + e para todos os usuários extras que alguém da qualidade definir
+                if( $value->elaborador_id == $I_U  ||  $SI_U == Constants::$ID_SETOR_QUALIDADE  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, $usuariosExtraDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento))  ||  $SI_U == $value->setor_id ) {
                     continue;
                 } else {
                     $docsFinalizados_restritos->forget($key);
@@ -2011,6 +2027,8 @@ class DocumentacaoController extends Controller
             foreach ($aux_docsFinalizados_confidenciais as $key => $value) {
                 $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
 
+                $usuariosExtraDoDocumento = UsuarioExtra::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
+
                 $usuariosAprovadoresDoSetorDonoDoDocumento = User::select('users.id', 'users.name')
                                                                     ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
                                                                     ->where('aprovador_setor.setor_id', '=', $value->setor_id)
@@ -2018,8 +2036,8 @@ class DocumentacaoController extends Controller
                                                                     ->pluck('name', 'id')
                                                                     ->toArray();
                 
-                // Lista para o elaborador, para o usuário ADMIN da Qualidade, para todos os membros da área de interesse e para o grupo de aprovadores
-                if( $value->elaborador_id == $I_U  ||  $I_U == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento)) ) {
+                // Lista para o elaborador, para o usuário ADMIN da Qualidade, para todos os membros da área de interesse e para o grupo de aprovadores  + e para todos os usuários extras que alguém da qualidade definir
+                if( $value->elaborador_id == $I_U  ||  $I_U == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, $usuariosExtraDoDocumento) ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento)) ) {
                     continue;
                 } else {
                     $docsFinalizados_confidenciais->forget($key);

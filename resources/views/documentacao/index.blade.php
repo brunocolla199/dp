@@ -395,7 +395,7 @@
 
 
                                             <div class="row mt-5 margin-top-1percent">
-                                                <div class="table-responsive class="text-nowrap"">
+                                                <div class="table-responsive">
                                                     <table class="table table-condensed" style="table-layout: fixed">
                                                         <thead>
                                                             <tr>

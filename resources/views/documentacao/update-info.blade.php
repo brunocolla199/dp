@@ -95,7 +95,37 @@
                                     </div>                                                    
                                 </div>
 
-                                <!-- Linha 4 --> 
+
+                                @if( $documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_RESTRITO || $documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL )
+                                    <!-- Linha 4 -->
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <div class="col-md-10 control-label font-bold">
+                                                    {!! Form::label('extraUsers', 'USUÁRIOS EXTRAS:') !!}
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <select multiple id="optgroup-newExtraUsers" name="extraUsers[]">
+                                                        @foreach($setoresUsuarios as $key => $su)
+                                                            <optgroup label="{{ $key }}">
+                                                                @foreach($su as $key2 => $user)
+                                                                    @if( in_array($key2, $usuariosExtraDocumento) )
+                                                                        <option selected value="{{ $key2 }}">{{ $user }}</option>
+                                                                    @else
+                                                                        <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                    @endif
+                                                                @endforeach
+                                                            </optgroup>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>   
+                                        </div>                                                    
+                                    </div>
+                                @endif
+
+
+                                <!-- Linha 5 --> 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -119,7 +149,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Linha 5 --> 
+                                <!-- Linha 6 --> 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -167,6 +197,49 @@
             *
             */
             $('#optgroup-newAreaDeInteresse-update').multiSelect({
+                selectableOptgroup: true,
+                selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                afterInit: function(ms){
+                    var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                    .on('keydown', function(e){
+                    if (e.which === 40){
+                        that.$selectableUl.focus();
+                        return false;
+                    }
+                    });
+
+                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                    .on('keydown', function(e){
+                    if (e.which == 40){
+                        that.$selectionUl.focus();
+                        return false;
+                    }
+                    });
+                },
+                afterSelect: function(){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                },
+                afterDeselect: function(values){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                }
+            });
+
+
+            /*
+            * 
+            * MultiSelect de USUÁRIOS EXTRAS (Para poder permitir outras pessoas de ver o documento)
+            *
+            */
+            $('#optgroup-newExtraUsers').multiSelect({
                 selectableOptgroup: true,
                 selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
                 selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
