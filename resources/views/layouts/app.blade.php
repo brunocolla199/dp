@@ -344,68 +344,92 @@
                                 @foreach( \App\Classes\Helpers::instance()->getNotifications( Auth::user()->id ) as $notificacao )
                                     @if($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_INSTRUCAO_DE_TRABALHO)
                                         <div class="col-md-12">
-                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
-                                                
-                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
-                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
-                                                    <button type="submit" class="a-href-submit" style="color: white">
-                                                        <div class="ribbon ribbon-bookmark ribbon-success">
-                                                            {{ $notificacao->codigo }}
-                                                        </div>
-                                                    </button>  
-                                                {{ Form::close() }}
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}" style="cursor: default">
+
+                                                @if( $notificacao->necessita_interacao )
+                                                    {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                        {{ Form::hidden('notify_id', $notificacao->id) }}
+                                                        <button type="submit" class="a-href-submit" style="color: white">
+                                                            <div class="ribbon ribbon-bookmark ribbon-success">
+                                                                {{ $notificacao->codigo }}
+                                                            </div>
+                                                        </button>  
+                                                    {{ Form::close() }}
+                                                @else
+                                                    <div class="ribbon ribbon-bookmark ribbon-success">
+                                                        {{ $notificacao->codigo }}
+                                                    </div>
+                                                @endif
 
                                                 <p class="ribbon-content"> {{ $notificacao->texto }} </p>
                                             </div>
                                         </div>
                                     @elseif($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_PROCEDIMENTO_DE_GESTAO)
                                         <div class="col-md-12">
-                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}" style="cursor: default">
                                                 
-                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
-                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
-                                                    <button type="submit" class="a-href-submit" style="color: white">
-                                                        <div class="ribbon ribbon-bookmark ribbon-info">
-                                                            {{ $notificacao->codigo }}
-                                                        </div>
-                                                    </button>  
-                                                {{ Form::close() }}
+                                                @if( $notificacao->necessita_interacao )
+                                                    {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                        {{ Form::hidden('notify_id', $notificacao->id) }}
+                                                        <button type="submit" class="a-href-submit" style="color: white">
+                                                            <div class="ribbon ribbon-bookmark ribbon-info">
+                                                                {{ $notificacao->codigo }}
+                                                            </div>
+                                                        </button>  
+                                                    {{ Form::close() }}
+                                                @else
+                                                    <div class="ribbon ribbon-bookmark ribbon-info">
+                                                        {{ $notificacao->codigo }}
+                                                    </div>
+                                                @endif
 
                                                 <p class="ribbon-content"> {{ $notificacao->texto }} </p>
                                             </div>
                                         </div>
                                     @elseif($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_DIRETRIZES_DE_GESTAO)
                                         <div class="col-md-12">
-                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
-                                                
-                                                {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('document_id', $notificacao->doc_id) }}
-                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
-                                                    <button type="submit" class="a-href-submit" style="color: white">
-                                                        <div class="ribbon ribbon-bookmark ribbon-primary">
-                                                            {{ $notificacao->codigo }}
-                                                        </div>
-                                                    </button>  
-                                                {{ Form::close() }}
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}" style="cursor: default">
+
+                                                @if( $notificacao->necessita_interacao )
+                                                    {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('document_id', $notificacao->doc_id) }}
+                                                        {{ Form::hidden('notify_id', $notificacao->id) }}
+                                                        <button type="submit" class="a-href-submit" style="color: white">
+                                                            <div class="ribbon ribbon-bookmark ribbon-primary">
+                                                                {{ $notificacao->codigo }}
+                                                            </div>
+                                                        </button>  
+                                                    {{ Form::close() }}
+                                                @else
+                                                    <div class="ribbon ribbon-bookmark ribbon-primary">
+                                                        {{ $notificacao->codigo }}
+                                                    </div>
+                                                @endif
 
                                                 <p class="ribbon-content"> {{ $notificacao->texto }} </p>
                                             </div>
                                         </div>
                                     @elseif($notificacao->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)
                                         <div class="col-md-12">
-                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}">
-                                                
-                                                {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
-                                                    {{ Form::hidden('notify_id', $notificacao->id) }}
-                                                    {{ Form::hidden('formulario_id', $notificacao->doc_id) }}
-                                                    <button type="submit" class="a-href-submit" style="color: white">
-                                                        <div class="ribbon ribbon-bookmark ribbon-warning">
-                                                            {{ $notificacao->codigo }}
-                                                        </div>
-                                                    </button>  
-                                                {{ Form::close() }}
+                                            <div class="ribbon-wrapper card  {{ ($notificacao->necessita_interacao) ? 'bkg-color-need-interaction' : '' }}" style="cursor: default">
+
+                                                @if( $notificacao->necessita_interacao )
+                                                    {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                        {{ Form::hidden('notify_id', $notificacao->id) }}
+                                                        {{ Form::hidden('formulario_id', $notificacao->doc_id) }}
+                                                        <button type="submit" class="a-href-submit" style="color: white">
+                                                            <div class="ribbon ribbon-bookmark ribbon-warning">
+                                                                {{ $notificacao->codigo }}
+                                                            </div>
+                                                        </button>  
+                                                    {{ Form::close() }}
+                                                @else
+                                                    <div class="ribbon ribbon-bookmark ribbon-warning">
+                                                        {{ $notificacao->codigo }}
+                                                    </div>
+                                                @endif
 
                                                 <p class="ribbon-content"> {{ $notificacao->texto }} </p>
                                             </div>

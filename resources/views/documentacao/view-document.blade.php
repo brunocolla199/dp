@@ -10,11 +10,10 @@
 
 	<div class="page-wrapper">
         <div class="container-fluid">
-            
 
             <div class="row page-titles">
                 <div class="col-md-6 col-6 align-self-center">
-                    <h3 class="text-themecolor m-b-0 m-t-0">Visualização de Documento</h3>
+                    <h3 class="text-themecolor m-b-0 m-t-0">Visualização de Documento </h3>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="{{ URL::route('documentacao') }}">Documentação</a></li>
@@ -181,10 +180,10 @@
                             @if($finalizado)
                                 
                                 @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                <div class="col-md-12 text-right">
-                                    <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
-                                </div>
-                                <br>
+                                    <div class="col-md-12 text-right">
+                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                    </div>
+                                    <br>
                                 @endif
 
                                 <!-- Cards de justificativa para o solicitante de revisão: rejeição e cancelamento -->
@@ -348,31 +347,35 @@
 
                                     <!-- Editor -->
                                     <div class="container" >
-                                        
-                                        <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
-
+                                        @if( $documentoEhEditavel )    
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                        @else
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                        @endif
                                     </div>
                                     <!-- End Editor -->
                                         
                                     
                                     
                                     <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
-                                    <div class="row mt-4">
-                                        @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                    @if( $documentoEhEditavel )
+                                        <div class="row mt-4">
+                                            @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                                </div>
+                                            @endif
+                                            <div class="col-md-3">    
+                                                <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
                                             </div>
-                                        @endif
-                                        <div class="col-md-3">    
-                                            <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
+                                            <div class="col-md-4">    
+                                                <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
+                                            </div>
+                                            <div class="col-md-3 ">
+                                                <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
+                                            </div>
                                         </div>
-                                        <div class="col-md-4">    
-                                            <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
-                                        </div>
-                                        <div class="col-md-3 ">
-                                            <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
-                                        </div>
-                                    </div>
+                                    @endif
                                 {!! Form::close() !!}
 
                             @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
@@ -410,7 +413,6 @@
                                         {!! Form::close() !!}
                                     </div>
                                 </div>
-
 
                                 <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
                                 <div class="row mt-4">
@@ -544,6 +546,13 @@
                                     </div>
                                 </div>
 
+                            @else
+
+                                <!-- Editor -->
+                                <div class="container" >
+                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                </div>
+                                <!-- End Editor -->
 
                             @endif
                         
@@ -695,8 +704,6 @@
             </div>
             <!-- /.modal para visualizar as observações do documento -->
 
-
-
             <!-- modal justificativa rejeição da requisição de revisão do documento -->
             <div class="modal fade" id="reject-request-review-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-sm">
@@ -732,7 +739,6 @@
             </div>
             <!-- /.modal justificativa rejeição da requisição de revisão do documento -->
 
-
             <!-- Modal de confirmação - deseja mesmo aprovar a solicitação de revisão neste documento -->
             <div class="modal fade bs-example-modal-sm" id="approves-request-review-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-sm">
@@ -755,9 +761,6 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal de confirmação - deseja mesmo aprovar a solicitação de revisão neste documento -->
-
-
-
 
             <!-- Modal de confirmação - deseja mesmo cancelar a revisão do documento -->
             <div class="modal fade bs-example-modal-sm" id="confirm-cancel-review-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
@@ -793,8 +796,6 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal de confirmação - deseja mesmo cancelar a revisão do documento -->
-            
-            
             
             <!-- Modal de Anexos -->
             <div id="modal-anexos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: auto">
@@ -868,9 +869,8 @@
             </div>
             <!-- /.Modal de Anexos -->
 
-
-             <!-- Modal de confirmação - deseja mesmo excluir o anexo -->
-             <div class="modal fade" id="confirm-delete-attachment" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+            <!-- Modal de confirmação - deseja mesmo excluir o anexo -->
+            <div class="modal fade" id="confirm-delete-attachment" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body"> 

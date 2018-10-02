@@ -149,7 +149,8 @@ class Helpers {
                 if($dados_doc[0]->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL) {
                     if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) return true;
                 } else {
-                    return true;
+                    if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ) return true;
+                    else return false;
                 }
                 break;
 
