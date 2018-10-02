@@ -162,14 +162,7 @@ class Helpers {
                 break;
 
             case 4: // Aprovadores            
-                $usuariosAprovadoresDocumentoAtual = User::select('users.id', 'users.name')
-                                                            ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                                                            ->where('aprovador_setor.setor_id', '=', $dados_doc[0]->setor_id)
-                                                            ->get()
-                                                            ->pluck('name', 'id')
-                                                            ->toArray();
-                
-                if( in_array(Auth::user()->id, array_keys($usuariosAprovadoresDocumentoAtual)) ) return true;
+                if( Auth::user()->id == $dados_doc[0]->aprovador_id ) return true;
                 break;
             
             default: // (7) Capital Humano
