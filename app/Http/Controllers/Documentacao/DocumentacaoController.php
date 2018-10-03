@@ -2015,7 +2015,7 @@ class DocumentacaoController extends Controller
 
 
         // Se for do Setor Qualidade, seguindo as regras atuais, todos os documentos restritos devem ser listados
-        if( $ID_USUARIO != Constants::$ID_SETOR_QUALIDADE ) {
+        if( $ID_SETOR_USUARIO != Constants::$ID_SETOR_QUALIDADE ) {
             $aux_docsFinalizadosRestritos = clone $docsFinalizadosRestritos;
             foreach ($aux_docsFinalizadosRestritos as $key => $value) {
                 $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
