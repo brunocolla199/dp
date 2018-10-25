@@ -146,7 +146,7 @@
                                                 <div class="card-body">
                                                     <h4 class="card-title"> Upload de formulários </h4>
                                                     <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
-                                                    {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                    {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'required' => 'required', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
                                                     
                                                     {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
                                                     {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
@@ -232,6 +232,15 @@
 
             // Click no botão para salvar formulário
             $("#btn-save-document").click(function(){
+                var valueInputFile = $("#input-file-now").val();
+                if( !valueInputFile ) {
+                    showToast('Opa!', 'Importe um documento antes de salvar!', 'warning');
+                    return;
+                }
+
+                $(this).prop('disable', true).attr('disabled', 'disabled');
+
+
                 var codigoFormulario = $("#codigoFormulario").val();
 
                 $("#form-upload-form").append("<input type='hidden' name='codigoFormulario' value='"+codigoFormulario+"' >")
