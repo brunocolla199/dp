@@ -67,7 +67,6 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('view-document',   				['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
 		Route::post('save-edited-document',   		['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
 		Route::post('filter-documents-index',  		['as' => 'documentacao.filter-documents-index',	    	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsIndex']);
-		Route::get('make-doc/{doc}',  	        	['as' => 'documentacao.make-doc',	                    'uses' => 'Documentacao\DocumentacaoController@makeDocumentPdf']);
 		Route::post('make-doc-from-name',        	['as' => 'documentacao.make-doc-from-name',             'uses' => 'Documentacao\DocumentacaoController@makeDocumentPdfFromName']);
 		Route::post('approval-document',  			['as' => 'documentacao.approval-document',	    		'uses' => 'Documentacao\DocumentacaoController@approvalDocument']);
 		Route::post('reject-document',  			['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
