@@ -2355,54 +2355,6 @@ class DocumentacaoController extends Controller
         
         return $documentos_NAOFinalizados;
     }
-
-
-    public function fixDocsName(){
-
-        $docs = Documento::all();
-
-        
-        foreach($docs as $key => $doc){
-            $storagePath              = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix();
-            $estadoDoDocumento        = $this->defineVisualizacaoDaRevisaoAtualOuDaUltimaVigente($doc->id);
-            $nomeDocumentoComExtensao = $estadoDoDocumento["nomeFinal"]; 
-            $docPath                  = $storagePath . $nomeDocumentoComExtensao;
-
-            $name = explode(" ", $nomeDocumentoComExtensao, 2)[1];
-            $name_pieces = explode(" ", $name);
-            
-            foreach($name_pieces as $key2 => $piece){    
-                if($piece == '-' || preg_match("/^[0-9]{2}\.[0-9]{2}\.[0-9]{4}$/", $piece) || preg_match("/^[0-9]{2}|[0-9]{4}$/", $piece) ){
-                    unset($name_pieces[$key2]);
-                }
-            }
-
-            $newName    = str_replace("  ", " ", implode($name_pieces, " "));
-            $newNameSQL = str_replace(".docx", "", str_replace("  ", " ", implode($name_pieces, " ")));
-            
-            //Atualizando banco
-            $query = DB::statement("UPDATE documento SET nome = '{$newNameSQL}' WHERE id = '{$doc->id}'");
-
-            $mvCmd = "mv '".$docPath. "' '".$storagePath.$newName."'";
-            exec($mvCmd);
-
-            $this->print_($query);
-            $this->print_($mvCmd);
-
-            
-
-
-        }
-
-    }
-
-    public function print_($vl)
-        {
-            echo '<pre>';
-            print_r($vl);
-            echo '</pre>';
-        }
-
     
 
 }
