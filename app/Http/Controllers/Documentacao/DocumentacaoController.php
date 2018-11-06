@@ -2355,8 +2355,6 @@ class DocumentacaoController extends Controller
         
         return $documentos_NAOFinalizados;
     }
-
-
     
 
 }
