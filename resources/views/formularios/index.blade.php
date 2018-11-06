@@ -248,12 +248,13 @@
                                                     <table class="table" style="table-layout: fixed">
                                                         <thead>
                                                             <tr>
+                                                                <th class="text-nowrap text-center">Ações</th>
                                                                 <th>Título do Formulário</th>
                                                                 <th>Código</th>
                                                                 <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Status</th>
-                                                                <th class="text-nowrap text-center">Modificado</th>
-                                                                <th class="text-nowrap text-center">Ações</th>
+                                                                <th class="text-center">Data Emissão</th>
+                                                                <th class="text-center">Modificado</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -261,6 +262,8 @@
                                                             @if( is_array($formularios) && array_key_exists("nao_finalizados", $formularios) && count($formularios['nao_finalizados']) > 0 )
                                                                 @foreach($formularios['nao_finalizados'] as $form)
                                                                     <tr>
+                                                                        <td class="text-nowrap text-center"></td>
+
                                                                         {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('formulario_id', $form->id) }}
                                                                             {{ Form::hidden('action', 'view') }}
@@ -275,9 +278,9 @@
 
                                                                         <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
                                                                         
-                                                                        <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                        <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
                                                                         
-                                                                        <td class="text-nowrap text-center"></td>
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
@@ -287,6 +290,10 @@
 
                                                                     @if( $form->obsoleto && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                         <tr>
+                                                                            <td class="text-nowrap text-center"> 
+                                                                                <a href="javascript:void(0)" class="btn-ativar-formulario-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-success fa-2x" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
+                                                                            </td>
+
                                                                             {{ Form::open(['route' => 'formularios.view-obsolete-form', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 <td>
@@ -300,14 +307,20 @@
 
                                                                             <td><p class="font-weight-bold text-danger"> Obsoleto </p></td>
                                                                             
-                                                                            <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
-                                                                            
-                                                                            <td class="text-nowrap text-center"> 
-                                                                                <a href="javascript:void(0)" class="btn-ativar-formulario-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-success fa-2x" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
-                                                                            </td>
+                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+
+                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                         </tr>
                                                                     @elseif( !$form->obsoleto )
                                                                         <tr>
+                                                                            <td class="text-nowrap text-center"> 
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a> 
+
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                    <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger fa-2x" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
+                                                                                @endif
+                                                                            </td>
+                                                                            
                                                                             {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 {{ Form::hidden('action', 'view') }}
@@ -322,15 +335,9 @@
 
                                                                             <td><p class="font-weight-bold text-success"> Finalizado </p></td>
                                                                             
-                                                                            <td class="text-nowrap text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
+                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
                                                                             
-                                                                            <td class="text-nowrap text-center"> 
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a> 
-
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                    <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger fa-2x" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
-                                                                                @endif
-                                                                            </td>
+                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                         </tr>
                                                                     @endif
 
