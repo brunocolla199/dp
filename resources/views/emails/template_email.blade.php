@@ -623,7 +623,7 @@
                                                                               <![endif]-->
                                                                               <div style="color:#555555;line-height:120%;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                                                  <div style="font-size:12px;line-height:14px;color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><span style="font-size: 15px; line-height: 18px; color: rgb(23, 58, 100);">E-mails para contato:</span></p>
+                                                                                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><span style="font-size: 15px; line-height: 18px; color: rgb(23, 58, 100);">E-mail para contato:</span></p>
                                                                                  </div>
                                                                               </div>
                                                                               <!--[if mso]>
@@ -640,24 +640,7 @@
                                                                               <![endif]-->
                                                                               <div style="color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:200%; padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
                                                                                  <div style="font-size:12px;line-height:24px;color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="font-size: 11px; line-height: 22px; color: rgb(197, 31, 65);"><span style="line-height: 22px; font-size: 11px;">celise.zilli@dpworld.com</span></span></p>
-                                                                                 </div>
-                                                                              </div>
-                                                                              <!--[if mso]>
-                                                                           </td>
-                                                                        </tr>
-                                                                     </table>
-                                                                     <![endif]-->
-                                                                  </div>
-                                                                  <div class="">
-                                                                     <!--[if mso]>
-                                                                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                                                        <tr>
-                                                                           <td style="padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
-                                                                              <![endif]-->
-                                                                              <div style="color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:200%; padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
-                                                                                 <div style="font-size:12px;line-height:24px;color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="font-size: 11px; line-height: 22px; color: rgb(197, 31, 65);"><span style="line-height: 22px; font-size: 11px;">jessica.magalhaes@dpworld.com</span></span></p>
+                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="font-size: 11px; line-height: 22px; color: rgb(197, 31, 65);"><span style="line-height: 22px; font-size: 11px;">qualidade.ssz@dpworld.com</span></span></p>
                                                                                  </div>
                                                                               </div>
                                                                               <!--[if mso]>
