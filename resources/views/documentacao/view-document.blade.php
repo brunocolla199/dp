@@ -539,6 +539,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-12 text-right">
+                                        <a href="{{ asset('plugins/onlyoffice-php/Storage/lists').'/'. substr($filePath, strrpos($filePath, '/'))  }}" target="_blank" id="down-doc" class="btn col-md-3 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                    </div>
                                 @endif
 
                                 <div class="col-md-12 mb-4">

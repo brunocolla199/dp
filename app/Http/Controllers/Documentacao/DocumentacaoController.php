@@ -1406,6 +1406,7 @@ class DocumentacaoController extends Controller
         $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
         $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
         $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
+        $listaPresenca = ListaPresenca::where('documento_id', '=', $idDoc)->get();
 
         // Exclui Lista antiga
         Storage::disk('speed_office')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
@@ -1416,6 +1417,9 @@ class DocumentacaoController extends Controller
 
         Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
         // $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
+
+        $listaPresenca[0]->extensao = $extensao;
+        $listaPresenca[0]->save();
 
         $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
         $dados_doc[0]->save();
