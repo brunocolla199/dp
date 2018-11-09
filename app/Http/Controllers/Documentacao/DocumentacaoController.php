@@ -43,6 +43,8 @@ class DocumentacaoController extends Controller
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
+        $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
         
         // Aprovadores
         $aprovadores = array();
@@ -95,7 +97,8 @@ class DocumentacaoController extends Controller
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
                                             'formularios' => $formularios,
-                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados ]);
+                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados,
+                                            'nivel_acesso' => $nivel_acesso, 'status' => $status ]);
     }
 
 
@@ -106,6 +109,8 @@ class DocumentacaoController extends Controller
         $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
+        $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
 
         // Aprovadores
         $aprovadores = array();
@@ -149,7 +154,8 @@ class DocumentacaoController extends Controller
                                             'setores' => $setores, 
                                             'setoresUsuarios' => $setoresUsuarios, 
                                             'formularios' => $formularios,
-                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados ]);
+                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados,
+                                            'nivel_acesso' => $nivel_acesso, 'status' => $status ]);
     }
 
 
@@ -752,7 +758,7 @@ class DocumentacaoController extends Controller
 
             // workflow
             $workflow[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
-            $workflow[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_REVISAO;
+            $workflow[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_EM_REVISAO;
             $workflow[0]->save();
 
 
@@ -811,7 +817,7 @@ class DocumentacaoController extends Controller
 
         // < Workflow > [Por prevenção, coloca na etapa 7 - pois isso não fará diferença enquanto o documento estiver como 'finalizado'] 
         $workflow[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-        $workflow[0]->etapa = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
+        $workflow[0]->etapa     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
         $workflow[0]->save();
 
         // < Excluindo o arquivo físico da revisão que acabou de ser cancelada >
@@ -1053,7 +1059,7 @@ class DocumentacaoController extends Controller
                 $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')->where('documento_id', '=', $idDoc)->select('usuario_id', 'name', 'username', 'email', 'setor_id')->get();
                 if( count($usuariosAreaInteresseDocumento) > 0  ) {
                     $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM;
-                    $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
+                    $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
                     $workflow_doc[0]->save();
 
                     // Notificações
@@ -1079,7 +1085,7 @@ class DocumentacaoController extends Controller
 
                 } else {
                     $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_APROVADOR_NUM;
-                    $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR;
+                    $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR;
                     $workflow_doc[0]->save();
 
                     // Notificações
@@ -1109,7 +1115,7 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_APROVADOR_NUM;
-                $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT;
+                $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT;
                 $workflow_doc[0]->save();
 
                 // Notificações
@@ -1133,7 +1139,7 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
-                $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
+                $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
                 $workflow_doc[0]->save();
 
                 // Notificações
@@ -1236,7 +1242,7 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
-                $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
+                $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
                 $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
                 $workflow_doc[0]->save();
 
@@ -1266,7 +1272,7 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
-                $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
+                $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
                 $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
                 $workflow_doc[0]->save();
 
@@ -1325,7 +1331,7 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM;
-                $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT;
+                $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT;
                 $workflow_doc[0]->justificativa = $request->justificativaReprovacaoLista;
                 $workflow_doc[0]->save();
 
@@ -1368,7 +1374,7 @@ class DocumentacaoController extends Controller
         $dados_doc[0]->save();
         
         $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
-        $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
+        $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
         $workflow_doc[0]->justificativa = '';
         $workflow_doc[0]->save();
 
@@ -1415,7 +1421,7 @@ class DocumentacaoController extends Controller
         $dados_doc[0]->save();
         
         $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-        $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
+        $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
         $workflow_doc[0]->justificativa = '';
         $workflow_doc[0]->save();
 
@@ -1465,7 +1471,7 @@ class DocumentacaoController extends Controller
     
             $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
             $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-            $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
+            $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
             $workflow_doc[0]->save();
     
             // Notificações
@@ -1566,7 +1572,8 @@ class DocumentacaoController extends Controller
         $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
         $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
-        // Filtros
+        /** Filtros */
+        // Se a busca foi realizada pelo nome do documento, aplica o filtro somente com esse valor e, portanto, cai no else
         if(null == $req['search_tituloDocumento'] || "" == $req['search_tituloDocumento']) {
             $arr1 = array();
             $arr2 = array();
@@ -1576,20 +1583,18 @@ class DocumentacaoController extends Controller
                     $add = false;
 
                     if( $value->tipo_documento_id == $req['search_tipoDocumento']) { 
-                        $add = true;           
+                        $add = true;    
 
-                        /*
-                        if($req['search_aprovador'] != null) {
-                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
+                        if($req['search_grupoDivulgacao'] != null) {
+                            if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
                             else continue;
                         }
-                        */
                         if($req['search_grupoTreinamento'] != null) {
                             if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
                             else continue;
                         }
-                        if($req['search_grupoDivulgacao'] != null) {
-                            if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
+                        if($req['search_setor'] != null) {
+                            if($value->setor_id == $req['search_setor']) $add = true;
                             else continue;
                         }
                         if($req['search_validadeDocumento'] != null) {
@@ -1599,10 +1604,22 @@ class DocumentacaoController extends Controller
                             if($value->validade == $dateFmt) $add = true;
                             else continue;
                         }
-                        if($req['search_setor'] != null) {
-                            if($value->setor_id == $req['search_setor']) $add = true;
+                        if($req['search_nivel_acesso'] != null) {
+                            if($value->nivel_acesso == $req['search_nivel_acesso']) $add = true;
                             else continue;
                         }
+                        if($req['search_status'] != null) {
+                            if($value->etapa == $req['search_status']) $add = true;
+                            else continue;
+                        }
+
+
+                        /*
+                        if($req['search_aprovador'] != null) {
+                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
+                            else continue;
+                        }
+                        */
                     } 
 
                     if($add) $arr1[] = $value; 
@@ -1618,31 +1635,40 @@ class DocumentacaoController extends Controller
                     if( $value->tipo_documento_id == $req['search_tipoDocumento']) {    
                         $add = true;
                         
-                        /*
-                        if($req['search_aprovador'] != null) {
-                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
-                            else continue;
-                        }
-                        */
-                        if($req['search_grupoTreinamento'] != null) {
-                            if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
-                            else continue;
-                        }
                         if($req['search_grupoDivulgacao'] != null) {
                             if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
                             else continue;
                         }
-                        if($req['search_validadeDocumento'] != null) {
-                            $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
-                            $dateFmt = $date->format('Y-m-d');
-
-                            if($value->validade == $dateFmt) $add = true;
+                        if($req['search_grupoTreinamento'] != null) {
+                            if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
                             else continue;
                         }
                         if($req['search_setor'] != null) {
                             if($value->setor_id == $req['search_setor']) $add = true;
                             else continue;
                         }
+                        if($req['search_validadeDocumento'] != null) {
+                            $date = \DateTime::createFromFormat('d/n/Y', $req['search_validadeDocumento']);
+                            $dateFmt = $date->format('Y-m-d');
+                            
+                            if($value->validade == $dateFmt) $add = true;
+                            else continue;
+                        }
+                        if($req['search_nivel_acesso'] != null) {
+                            if($value->nivel_acesso == $req['search_nivel_acesso']) $add = true;
+                            else continue;
+                        }
+                        if($req['search_status'] != null) {
+                            if($value->etapa == $req['search_status']) $add = true;
+                            else continue;
+                        }
+                        
+                        /*
+                        if($req['search_aprovador'] != null) {
+                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
+                            else continue;
+                        }
+                        */
                     } 
 
                     if($add) $arr2[] = $value; 

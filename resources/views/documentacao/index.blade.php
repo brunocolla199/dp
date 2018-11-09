@@ -338,8 +338,8 @@
                                                 <h4>FILTROS</h4>
                                                 <div class="col-md-12">
 
-                                                    {!! Form::open(['route' => 'documentacao.filter-documents-index', 'class' => 'form-horizontal']) !!}
-                                                        <div class="row">
+                                                    {!! Form::open(['route' => 'documentacao.filter-documents-index', 'class' => 'form-horizontal', 'style' => 'width: 96%']) !!}
+                                                        <div class="row" style="width: 109%">
                                                             <div class="col-md-4" >
                                                                 <div class="row ">
                                                                     {!! Form::select('search_tipoDocumento', $tipoDocumentos, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
@@ -356,26 +356,38 @@
                                                                 </div>
                                                             </div>
                                                         </div>  
-                                                        <div class="row margin-top-1percent">
+                                                        <div class="row margin-top-1percent" style="width: 109%">
                                                             <div class="col-md-4">
                                                                 <div class="row">
                                                                     {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-4">
                                                                 <div class="row">
-                                                                    <div class="input-group">
-                                                                        {!! Form::text('search_validadeDocumento', null, ['class' => 'form-control', 'id' => 'mdate_search', 'placeholder'=>'- Validade -', 'style' => 'width: 96%']) !!}
+                                                                    <div class="input-group" style="width: 96%">
+                                                                        {!! Form::text('search_validadeDocumento', null, ['class' => 'form-control', 'id' => 'mdate_search', 'placeholder'=>'- Validade -']) !!}
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-5">
+                                                            <div class="col-md-4">
                                                                 <div class="row">
-                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -', 'style' => 'width: 93.5%; margin-left:2.5%']) !!}
+                                                                    {!! Form::select('search_nivel_acesso', array(null => '- Nível de Acesso -') + $nivel_acesso, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="row margin-top-1percent">    
+                                                        <div class="row margin-top-1percent" style="width: 109%">    
+                                                            <div class="col-md-5">
+                                                                <div class="row">
+                                                                    {!! Form::select('search_status', array(null => '- Status -') + $status, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <div class="row">
+                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -', 'style' => 'width: 95%; margin-left:2.5%']) !!}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row margin-top-1percent" style="width: 109%">    
                                                             <div class="col-md-6"> </div>
                                                             <div class="col-md-6">
                                                                 <div class="row">
@@ -406,6 +418,7 @@
                                                                 <th class="text-center">Tipo do Documento</th>
                                                                 <th class="text-center">Status</th>
                                                                 <th class="text-center">Data Emissão</th>
+                                                                <th class="text-center">Nível Acesso</th>
                                                                 <th class="text-center">Modificado</th>
                                                                 <th class="text-center">Validade</th>
                                                             </tr>
@@ -440,6 +453,8 @@
 
                                                                         <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->created_at)) }}</td>
 
+                                                                        <td class="text-center">{{ $doc->nivel_acesso }}</td>
+
                                                                         <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
 
                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
@@ -472,6 +487,8 @@
                                                                             <td class="text-center"><p class="font-weight-bold text-danger"> Obsoleto </p></td>
 
                                                                             <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
+
+                                                                            <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
                                                                             <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
 
@@ -511,6 +528,8 @@
                                                                             <td class="text-center"><p class="text-muted font-weight-bold text-success"> Finalizado </p> </td>
 
                                                                             <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
+
+                                                                            <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
                                                                             <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
 
