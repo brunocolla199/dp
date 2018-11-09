@@ -1916,10 +1916,11 @@ class DocumentacaoController extends Controller
                         ->where('dados_documento.revisao', '=', '00')
                         ->where('dados_documento.em_revisao', '=', false);
 
+        $cloneBaseQueryEtapa1Elaborador       = clone $baseQueryLocal;
         $cloneBaseQueryEtapa2Qualidade        = clone $baseQueryLocal;
         $cloneBaseQueryEtapa3AreaDeInteresse  = clone $baseQueryLocal;
         $cloneBaseQueryEtapa4Aprovadores      = clone $baseQueryLocal;
-        $cloneBaseQueryEtapas5e6Elaborador    = clone $baseQueryLocal; // Etapa 1 "não existe" em processo de criação
+        $cloneBaseQueryEtapas5e6Elaborador    = clone $baseQueryLocal; // Etapa 1 "não existe" em processo de criação [EXISTE SIM HEUHEUHE]
         $cloneBaseQueryEtapa7CapitalHumano    = clone $baseQueryLocal;
         $cloneBaseQueryTodasEtapasMaioresQue2 = clone $baseQueryLocal;
 
@@ -1930,18 +1931,31 @@ class DocumentacaoController extends Controller
             if( Auth::user()->id == $idUsuarioAdminSetorQualidade->admin_setor_qualidade )  {
                 $etapa2 = $cloneBaseQueryEtapa2Qualidade->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM)->get();
 
+                $etapa1 = $cloneBaseQueryEtapa1Elaborador->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)->get();
+
                 $todasEtapasMaioresQue2 = $cloneBaseQueryTodasEtapasMaioresQue2->where('workflow.etapa_num', '>', Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM)->get();
             } else {
                 $etapa2 = $cloneBaseQueryEtapa2Qualidade->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM)
                                                         ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)->get();
+
+                $etapa1 = $cloneBaseQueryEtapa1Elaborador->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
+                                                         ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)->get();
 
                 $todasEtapasMaioresQue2 = $cloneBaseQueryTodasEtapasMaioresQue2->where('workflow.etapa_num', '>', Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM)
                                                                                 ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)->get();
             }            
 
             $documentosEmCriacao[] = $etapa2->values()->all();
+            $documentosEmCriacao[] = $etapa1->values()->all();
             $documentosEmCriacao[] = $todasEtapasMaioresQue2->values()->all();
         } else {
+            // Documentos em Criação - Etapa 1
+            $etapa1 = $cloneBaseQueryEtapa1Elaborador->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
+                                                      ->where('elaborador_id', '=', Auth::user()->id)->get();
+
+            if( $etapa1->count() > 0 ) $documentosEmCriacao[] = $etapa1->values()->all();
+
+
             // Documentos em Criação - Etapa 3
             $etapa3 = $cloneBaseQueryEtapa3AreaDeInteresse->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)->get();
 
