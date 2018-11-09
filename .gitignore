@@ -25,3 +25,17 @@ yarn-error.log
 /.idea
 /storage/*.key
 
+# zyad gay
+public/plugins/onlyoffice-php/logs/
+public/plugins/onlyoffice-php/Storage/
+
+public/lists/
+vendor/
+
+composer.json
+composer.lock
+config/auth.php
+database/seeds/UsersTableSeeder.php
+public/plugins/onlyoffice-php/config.php
+public/plugins/onlyoffice-php/doceditor.php
+public/plugins/onlyoffice-php/logs/webedior-ajax.log
