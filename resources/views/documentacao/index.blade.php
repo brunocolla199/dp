@@ -499,9 +499,9 @@
                                                                             <td class="text-nowrap text-center">
                                                                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                                     <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+
+                                                                                    <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                                 @endif
-                                                                                
-                                                                                <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
 
                                                                                 @if( !$docF->necessita_revisao )
                                                                                     <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a>

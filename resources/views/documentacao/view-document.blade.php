@@ -180,9 +180,31 @@
                             @if($finalizado)
                                 
                                 @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                    <div class="col-md-12 text-right">
-                                        <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="col-md-12 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold" style="margin-bottom:10px;">
+                                                        FORMULÁRIOS: 
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos-docFinalizado">
+                                                            @foreach($formularios as $key => $form)
+                                                                <option value="{{ $key }}" >{{ $form }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mt-4 pull-right">
+                                            <button class="btn col-md-12 btn-success" id="btn-save-forms-doc-finalizado"> <i class="mdi mdi-content-save"></i> Salvar Formulários</button>
+                                        </div>
+                                        <div class="col-md-3 mt-4 pull-right">
+                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-12 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                        </div>
                                     </div>
+
                                     <br>
                                 @endif
 
@@ -908,12 +930,24 @@
 
 <script>
 
-    var etapaDocumento = "{{$etapa_doc}}";
-    var etapaMinina = "{{Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM}}";
-    var etapaMaxima = "{{Constants::$ETAPA_WORKFLOW_APROVADOR_NUM}}";
+    var etapaDocumento  = "{{$etapa_doc}}";
+    var etapaMinina     = "{{Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM}}";
+    var etapaMaxima     = "{{Constants::$ETAPA_WORKFLOW_APROVADOR_NUM}}";
+    var finalizado      = "{{$finalizado}}";
     
-    if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
+    if( finalizado ) {
+        var forms = JSON.parse($(".select2-vinculos-docFinalizado").attr('data-forms'));
+        var select = $(".select2-vinculos-docFinalizado").select2({
+            templateSelection: function (d) { 
+                return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
+            },
+        });
+        
+        select.val(forms);
+        select.trigger('change');   
+    }
 
+    if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
         var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
         var select = $(".select2-vinculos").select2({
             templateSelection: function (d) { 
@@ -952,6 +986,19 @@
             }, function(err) {
             });
         }
+    });
+
+    // Quando deseja salvar formulário em um documento que está finalizado
+    $("#btn-save-forms-doc-finalizado").click(function(){
+        var document_id = "{{$document_id}}";
+        var forms = $(".select2-vinculos-docFinalizado").val();
+
+        var obj = {'document_id': document_id, 'forms': forms, '_token': "{{ csrf_token() }}"};        
+        ajaxMethod('POST', " {{ URL::route('ajax.documentos.refreshFormsLinked') }} ", obj).then(function(result) {
+            console.log(result);
+            showToast('Sucesso!', 'Formulários vinculados ao documento atualizados com sucesso.', 'success');
+        }, function(err) {
+        });
     });
 
     // Toda vez que o modal para gravar observação for fechado, limpa o textarea

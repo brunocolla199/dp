@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/documentos/okJustifyCancelRequest',					['as' => 'ajax.documentos.okJustifyCancelRequest',					'uses' => 'AjaxController@okJustifyCancelRequest']);
 	Route::post('ajax/documentos/saveAttachedDocument',   					['as' => 'ajax.documentos.saveAttachedDocument', 	    			'uses' => 'AjaxController@saveAttachedDocument']);
 	Route::post('ajax/documentos/saveNewDocument',   						['as' => 'ajax.documentos.saveNewDocument', 	    				'uses' => 'AjaxController@saveNewDocument']);
+	Route::post('ajax/documentos/refreshFormsLinked',   					['as' => 'ajax.documentos.refreshFormsLinked', 	    				'uses' => 'AjaxController@refreshFormsLinked']);
 	Route::post('ajax/anexos/save',											['as' => 'ajax.anexos.save',										'uses' => 'AjaxController@saveAttachment']);
 	Route::post('ajax/anexos/getAnexos',									['as' => 'ajax.anexos.getAnexos',									'uses' => 'AjaxController@getAnexos']);
 	Route::post('ajax/anexos/removeAttachment',								['as' => 'ajax.anexos.removeAttachment',							'uses' => 'AjaxController@removeAttachment']);
