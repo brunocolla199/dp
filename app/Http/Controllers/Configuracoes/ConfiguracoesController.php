@@ -23,6 +23,8 @@ class ConfiguracoesController extends Controller
 {
     
     public function index() {
+        $usuariosCadastrados = User::orderBy('name')->select('id', 'name', 'username', 'email', 'permissao_elaborador')->get();
+
         $setoresEmpresa = DB::table('setor')
                             ->join('tipo_setor', 'tipo_setor.id', '=', 'setor.tipo_setor_id')
                             ->select('setor.*', 'tipo_setor.nome AS nome_tipo')
@@ -43,9 +45,9 @@ class ConfiguracoesController extends Controller
         $configs = Configuracao::all();
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
 
-        return view('configuracoes.index', ['setoresEmpresa' => $setoresEmpresa, 'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao,
-                                            'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'adminSetorQualidade' => $configs[1]->admin_setor_qualidade,
-                                             'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
+        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'gruposTreinamento' => $gruposTreinamento, 
+                                            'gruposDivulgacao' => $gruposDivulgacao, 'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 
+                                            'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
 
 

@@ -85,7 +85,8 @@
                             
                              <!-- Nav tabs -->
                              <ul class="nav nav-tabs nav-fill customtab" role="tablist">
-                                <li class="nav-item"> <a class="nav-link font-bold active" data-toggle="tab" href="#agrupamentos" role="tab"><h3 class="hidden-xs-down">AGRUPAMENTOS</h3></a> </li>
+                                <li class="nav-item"> <a class="nav-link font-bold active" data-toggle="tab" href="#usuarios" role="tab"><h3 class="hidden-xs-down">USUÁRIOS</h3></a> </li>  
+                                <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#agrupamentos" role="tab"><h3 class="hidden-xs-down">AGRUPAMENTOS</h3></a> </li>
                                 <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#novoAgrupamento" role="tab"><h3 class="hidden-xs-down">NOVO AGRUPAMENTO</h3></a> </li>
                                 <li class="nav-item"> <a class="nav-link font-bold" data-toggle="tab" href="#padroes" role="tab"><h3 class="hidden-xs-down">PADRÕES</h3></a> </li>
                             </ul>
@@ -93,9 +94,49 @@
                             <div class="tab-content">
 
                                 <!-- 
+                                    /* TAB - Usuários */ 
+                                -->
+                                <div class="tab-pane active" id="usuarios" role="tabpanel">
+                                    <div class="p-20">
+
+                                        <div class="row mt-2 margin-top-1percent">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center">Nome</th>
+                                                            <th class="text-center">E-mail</th>
+                                                            <th class="text-center">Login de Usuário</th>
+                                                            <th class="text-center text-nowrap">Permissão de Elaborador</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($usuariosCadastrados as $usuario)
+                                                            <tr>
+                                                                <td class="text-center"><a href="javascript:void(0)">{{ $usuario->name }}</a></td> 
+                                                                <td class="text-center">{{ $usuario->email }}</td>
+                                                                <td class="text-center">{{ $usuario->username }}</td>
+                                                                <td class="text-center text-nowrap">
+                                                                    <div class="switch">
+                                                                        <label>DESABILITADA
+                                                                            <input type="checkbox" class="switch-elaborador" data-user-id="{{ $usuario->id }}" {{ ($usuario->permissao_elaborador) ? 'checked' : '' }} ><span class="lever switch-col-light-blue"></span>HABILITADA
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- 
                                     /* TAB - Agrupamentos */ 
                                 -->
-                                <div class="tab-pane active" id="agrupamentos" role="tabpanel">
+                                <div class="tab-pane" id="agrupamentos" role="tabpanel">
                                     <div class="p-20">
                                         
                                         <!-- Nav tabs -->
@@ -556,6 +597,7 @@
 
 
             <script type="text/javascript" language="javascript">
+
                 // Click para abrir modal de editar setor
                 $(document).on("click", ".open-edit-sector-modal", function () {
                     var id = $(this).data('id');
@@ -594,6 +636,37 @@
                         $(this).removeClass('speed-subtab-custom');
                     });
                     $(this).addClass('speed-subtab-custom');
+                });
+
+                // Click no switch de permissão de elaborador
+                $(".switch-elaborador").change(function(evt) {
+                    var user_id = $(this).data("user-id");
+                    var obj = {'user_id': user_id, 'valor_permissao_elaborador': this.checked, '_token': "{{ csrf_token() }}"};
+                    var url = "{{ URL::route('ajax.usuarios.permissaoElaborador') }}";
+
+                    if(this.checked) {
+                        $.ajax({  
+                            type: "POST",  
+                            url: url,  
+                            dataTypé: "JSON",
+                            data: obj,
+                            success: function(data) {
+                                console.log(data);
+                                showToast('Sucesso!', 'Usuário agora possui permissão de elaborador.', 'success');
+                            }
+                        }); 
+                    } else {
+                        $.ajax({  
+                            type: "POST",  
+                            url: url,  
+                            dataTypé: "JSON",
+                            data: obj,
+                            success: function(data) {
+                                console.log(data);
+                                showToast('Sucesso!', 'Permissão de elaborador removida.', 'success');
+                            }
+                        }); 
+                    }
                 });
             </script>
 

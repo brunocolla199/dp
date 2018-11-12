@@ -71,6 +71,15 @@ class AjaxController extends Controller
                                                 ->pluck('name', 'usuario_id') 
                                 ]);
     }
+
+
+    public function setPermissaoElaborador(Request $_request) {
+        $user = User::find($_request->user_id);
+        $user->permissao_elaborador = $_request->valor_permissao_elaborador;
+        $user->save();
+
+        return response()->json(['response' => 'success']);
+    }
     
 
 
