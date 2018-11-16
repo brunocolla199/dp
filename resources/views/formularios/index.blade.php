@@ -203,12 +203,18 @@
                                                     Quando o campo <b>Título do Formulário</b> for preenchido, os outros filtros serão <b>ignorados</b>. Caso o campo seja deixado em branco, os outros filtros serão aplicados em conjunto.
                                                 </h5>
                                             </div>
+
                                             <div class="row">
                                                 <h4>FILTROS</h4>
                                                 <div class="col-md-12">
 
                                                     {!! Form::open(['route' => 'formularios.filter-forms-index', 'method' => 'POST', 'class' => 'form-horizontal']) !!}
-                                                        <div class="row margin-top-1percent">
+                                                        <div class="row margin-top-1percent" style="width: 109%">
+                                                            <div class="col-md-2 margin-right-1percent">
+                                                                <div class="row">
+                                                                    {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select']) !!}
+                                                                </div>
+                                                            </div>
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row">
                                                                     {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $grupoDivulgacao, null, ['class' => 'form-control  custom-select']) !!}
@@ -216,17 +222,21 @@
                                                             </div>
                                                             <div class="col-md-3 margin-right-1percent">
                                                                 <div class="row">
-                                                                    {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select']) !!}
+                                                                    {!! Form::select('search_nivel_acesso', array(null => '- Nível Acesso -') + $nivel_acesso, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-5 margin-right-1percent">
+                                                            <div class="col-md-3 margin-right-1percent">
+                                                                <div class="row">
+                                                                    {!! Form::select('search_status', array(null => '- Status -') + $status, null, ['class' => 'form-control  custom-select']) !!}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row margin-top-1percent" style="width: 109%">    
+                                                            <div class="col-md-6"> 
                                                                 <div class="row">
                                                                     {!! Form::text('search_tituloFormulario', null, ['class' => 'form-control', 'placeholder' => 'Título do Formulário']) !!}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row margin-top-1percent">    
-                                                            <div class="col-md-6"> </div>
                                                             <div class="col-md-6">
                                                                 <div class="row">
                                                                     <div class="col-md-5">
@@ -240,7 +250,7 @@
                                                         </div> 
                                                     {!! Form::close() !!} 
                                                     
-                                                </div>
+                                                </div>    
                                             </div>
 
                                             <div class="row mt-5 margin-top-1percent">
@@ -254,6 +264,7 @@
                                                                 <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Status</th>
                                                                 <th class="text-center">Data Emissão</th>
+                                                                <th class="text-center">Nível Acesso</th>
                                                                 <th class="text-center">Modificado</th>
                                                             </tr>
                                                         </thead>
@@ -279,6 +290,8 @@
                                                                         <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
                                                                         
                                                                         <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+
+                                                                        <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
                                                                         
                                                                         <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                     </tr>
@@ -306,8 +319,10 @@
                                                                             <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
                                                                             <td><p class="font-weight-bold text-danger"> Obsoleto </p></td>
-                                                                            
+
                                                                             <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                            
+                                                                            <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
 
                                                                             <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                         </tr>
@@ -334,8 +349,10 @@
                                                                             <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
                                                                             <td><p class="font-weight-bold text-success"> Finalizado </p></td>
-                                                                            
+
                                                                             <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                            
+                                                                            <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
                                                                             
                                                                             <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($form->updated_at)) }}</td>
                                                                         </tr>

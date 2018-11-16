@@ -110,112 +110,111 @@
 
                                             <div class="collapse" id="setores-empresa" role="tabpanel">
                                                 <div class="p-20">
-                                                    <div class="row">                                                        
 
-                                                        <div class="row mt-2 margin-top-1percent">
-                                                            <div class="table-responsive">
-                                                                <table class="table">
-                                                                    <thead>
+                                                    <div class="row mt-2 margin-top-1percent">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Nome do Setor</th>
+                                                                        <th>Sigla</th>
+                                                                        <th>Descrição</th>
+                                                                        <th>Ações</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($setoresEmpresa as $setor)
                                                                         <tr>
-                                                                            <th>Nome do Setor</th>
-                                                                            <th>Sigla</th>
-                                                                            <th>Descrição</th>
-                                                                            <th>Ações</th>
+                                                                            <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
+                                                                            <td>{{ $setor->sigla }}</td>
+                                                                            <td>{{ $setor->descricao }}</td>
+                                                                            <td class="text-nowrap">
+                                                                                <center>
+                                                                                    <a href="{{ route('configuracoes.link.users_sectors', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                    <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                </center>
+                                                                            </td>
                                                                         </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach($setoresEmpresa as $setor)
-                                                                            <tr>
-                                                                                <td><a href="javascript:void(0)">{{ $setor->nome }}</a></td> 
-                                                                                <td>{{ $setor->sigla }}</td>
-                                                                                <td>{{ $setor->descricao }}</td>
-                                                                                <td class="text-nowrap">
-                                                                                    <center>
-                                                                                        <a href="{{ route('configuracoes.link.users_sectors', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                        <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                        <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
-                                                                                    </center>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
                                                         </div>
-
                                                     </div>
+
                                                 </div>
                                             </div>
                                             <div class="collapse" id="grupos-treinamento" role="tabpanel">
                                                 <div class="p-20">
-                                                    <div class="row">
-                                                        <div class="row mt-2 margin-top-1percent">
-                                                            <div class="table-responsive">
-                                                                <table class="table">
-                                                                    <thead>
+
+                                                    <div class="row mt-2 margin-top-1percent">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Nome do Grupo</th>
+                                                                        <th>Descrição</th>
+                                                                        <th>Ações</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($gruposTreinamento as $grupoT)
                                                                         <tr>
-                                                                            <th>Nome do Grupo</th>
-                                                                            <th>Descrição</th>
-                                                                            <th>Ações</th>
+                                                                            <td><a href="javascript:void(0)">{{ $grupoT->nome }}</a></td> 
+                                                                            <td>{{ $grupoT->descricao }}</td>
+                                                                            <td class="text-nowrap">
+                                                                                <center>
+                                                                                    <a href="{{ route('configuracoes.link.users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                    <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                </center>
+                                                                            </td>
                                                                         </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach($gruposTreinamento as $grupoT)
-                                                                            <tr>
-                                                                                <td><a href="javascript:void(0)">{{ $grupoT->nome }}</a></td> 
-                                                                                <td>{{ $grupoT->descricao }}</td>
-                                                                                <td class="text-nowrap">
-                                                                                    <center>
-                                                                                        <a href="{{ route('configuracoes.link.users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                        <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                        <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
-                                                                                    </center>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div> 
-                                                    </div>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div> 
+
                                                 </div>
                                             </div>
                                             <div class="collapse" id="grupos-divulgacao" role="tabpanel">
                                                 <div class="p-20">
-                                                    <div class="row">
-                                                        <div class="row mt-2 margin-top-1percent">
-                                                            <div class="table-responsive">
-                                                                <table class="table">
-                                                                    <thead>
+
+                                                    <div class="row mt-2 margin-top-1percent">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Nome do Grupo</th>
+                                                                        <th>Descrição</th>
+                                                                        <th>Ações</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($gruposDivulgacao as $grupoD)
                                                                         <tr>
-                                                                            <th>Nome do Grupo</th>
-                                                                            <th>Descrição</th>
-                                                                            <th>Ações</th>
+                                                                            <td><a href="javascript:void(0)">{{ $grupoD->nome }}</a></td> 
+                                                                            <td>{{ $grupoD->descricao }}</td>
+                                                                            <td class="text-nowrap">
+                                                                                <center>
+                                                                                    <a href="{{ route('configuracoes.link.users_disclosure-group', ['id' => $grupoD->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
+                                                                                    <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
+                                                                                </center>
+                                                                            </td>
                                                                         </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach($gruposDivulgacao as $grupoD)
-                                                                            <tr>
-                                                                                <td><a href="javascript:void(0)">{{ $grupoD->nome }}</a></td> 
-                                                                                <td>{{ $grupoD->descricao }}</td>
-                                                                                <td class="text-nowrap">
-                                                                                    <center>
-                                                                                        <a href="{{ route('configuracoes.link.users_disclosure-group', ['id' => $grupoD->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                        <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                        <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
-                                                                                    </center>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div> 
-                                                    </div>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div> 
+
                                                 </div>
                                             </div>
                                             <div class="collapse" id="aprovadores" role="tabpanel">
                                                 <div class="p-20">
+                                                
                                                     <div class="row">
                                                         <h5 class="alert container alert-info alert-dismissible" role="alert">
                                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
