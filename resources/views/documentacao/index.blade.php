@@ -685,7 +685,10 @@
                         $('#form-generate-document').submit();
                     });
 
-                    // Mudanças no select de setor dono do documento
+                    /**
+                     *  REMOVER ESSA FUNÇÃO E O TRIGGER ABAIXO QUANDO O ITEM PARA PODER CRIAR APENAS DOCUMENTOS DO SETOR QUE PERTENCE FOR VALIDADO
+                     */
+                    // Mudanças no select de setor dono do documento  
                     $("#setor_dono_doc").change(function(){
                         var obj = {'id': $("#setor_dono_doc").val()};
 
