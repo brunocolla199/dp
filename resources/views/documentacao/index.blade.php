@@ -133,192 +133,198 @@
                                     /* TAB - Gerar Documento */ 
                                 -->
                                 <div class="tab-pane p-20" id="gerarDocs" role="tabpanel"> 
-                                    <div class="col-md-12">
-                                        {!! Form::open(['route' => 'documentacao.validate-data', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
-                                            <!-- Linha 1 -->
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('setor_dono_doc', 'Setor:') !!}
+                                    @if(Auth::user()->permissao_elaborador)
+                                        <div class="col-md-12">
+                                            {!! Form::open(['route' => 'documentacao.validate-data', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
+                                                <!-- Linha 1 -->
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('setor_dono_doc', 'Setor:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('setor_dono_doc', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
                                                         </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('setor_dono_doc', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select']) !!}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('tipo_documento', 'TIPO DE DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('tipo_documento', $tipoDocumentos, '-- Selecione --', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('tipo_documento', 'TIPO DE DOCUMENTO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('tipo_documento', $tipoDocumentos, '-- Selecione --', ['class' => 'form-control  custom-select']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <!-- Linha 2 -->
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
+                                                <!-- Linha 2 -->
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL], '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
                                                         </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL], '', ['class' => 'form-control  custom-select']) !!}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('aprovadores', 'APROVADORES:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+
+                                                                {!! Form::select('aprovador', $aprovadores, '', ['class' => 'form-control  custom-select', 'id' => 'aprovadores']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>    
+                                                </div>
+
+                                                <!-- Linha 3 -->
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('areaInteresse', 'ÁREA DE INTERESSE:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <select multiple id="optgroup-newAreaDeInteresse" name="areaInteresse[]">
+                                                                    @foreach($setoresUsuarios as $key => $su)
+                                                                        <optgroup label="{{ $key }}">
+                                                                            @foreach($su as $key2 => $user)
+                                                                                <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>   
+                                                    </div>                                                    
+                                                </div>
+
+                                                <!-- Linha 4 --> 
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('aprovadores', 'APROVADORES:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
 
-                                                            {!! Form::select('aprovador', $aprovadores, '', ['class' => 'form-control  custom-select', 'id' => 'aprovadores']) !!}
+                                                <!-- Linha 5 --> 
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('validadeDocumento', date('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>    
-                                            </div>
-
-                                            <!-- Linha 3 -->
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('areaInteresse', 'ÁREA DE INTERESSE:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <select multiple id="optgroup-newAreaDeInteresse" name="areaInteresse[]">
-                                                                @foreach($setoresUsuarios as $key => $su)
-                                                                    <optgroup label="{{ $key }}">
-                                                                        @foreach($su as $key2 => $user)
-                                                                            <option value="{{ $key2 }}">{{ $user }}</option>
-                                                                        @endforeach
-                                                                    </optgroup>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>   
-                                                </div>                                                    
-                                            </div>
-
-                                            <!-- Linha 4 --> 
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('copiaControlada', 'CÓPIA CONTROLADA:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <input name="copiaControlada" type="radio" id="sim" value="true" class="with-gap radio-col-blue" />
+                                                                <label for="sim">Sim</label>
+                                                                <input name="copiaControlada" type="radio" id="nao" value="false" class="with-gap radio-col-light-blue" checked/>
+                                                                <label for="nao">Não</label>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                </div>                                                
+
+                                                <!-- Linha 6 -->
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('tituloDocumento', null, ['class' => 'form-control']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('formulariosAtrelados', 'ATRELAR AOS FORMULÁRIOS:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <select multiple id="optgroup-formulariosAtrelados" name="formulariosAtrelados[]" class="form-control select2" style="width:100%;">
+                                                                    @foreach($formularios as $key => $form)
+                                                                        <option value="{{ $key }}">{{ $form }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>   
+                                                    </div>           
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <!-- Linha 5 --> 
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
-                                                        </div>
+                                                <!-- Linha 7 -->
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-4">
+                                                        @if ($errors->any())
+                                                            <div class="alert alert-danger">
+                                                                <ul>
+                                                                    @foreach ($errors->all() as $error)
+                                                                        <li>{{ $error }}</li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @elseif (session('document_name_already_exists'))
+                                                            <div class="alert alert-warning">
+                                                                <ul>
+                                                                    <li>{{ session('document_name_already_exists') }}</li>
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            {!! Form::text('validadeDocumento', date('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                            <button type="button" id="importDocument" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">IMPORTAR DOCUMENTO</button>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('copiaControlada', 'CÓPIA CONTROLADA:') !!}
-                                                        </div>
+                                                    <div class="col-md-6">
                                                         <div class="col-md-12">
-                                                            <input name="copiaControlada" type="radio" id="sim" value="true" class="with-gap radio-col-blue" />
-                                                            <label for="sim">Sim</label>
-                                                            <input name="copiaControlada" type="radio" id="nao" value="false" class="with-gap radio-col-light-blue" checked/>
-                                                            <label for="nao">Não</label>
+                                                            <button type="button" id="createDocument" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR DOCUMENTO</button>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>                                                
-
-                                            <!-- Linha 6 -->
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::text('tituloDocumento', null, ['class' => 'form-control']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('formulariosAtrelados', 'ATRELAR AOS FORMULÁRIOS:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <select multiple id="optgroup-formulariosAtrelados" name="formulariosAtrelados[]" class="form-control select2" style="width:100%;">
-                                                                @foreach($formularios as $key => $form)
-                                                                    <option value="{{ $key }}">{{ $form }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>   
-                                                </div>           
-                                            </div>
-
-                                            <!-- Linha 7 -->
-                                            <div class="row">
-                                                <div class="col-md-12 mb-4">
-                                                    @if ($errors->any())
-                                                        <div class="alert alert-danger">
-                                                            <ul>
-                                                                @foreach ($errors->all() as $error)
-                                                                    <li>{{ $error }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    @elseif (session('document_name_already_exists'))
-                                                        <div class="alert alert-warning">
-                                                            <ul>
-                                                                <li>{{ session('document_name_already_exists') }}</li>
-                                                            </ul>
-                                                        </div>
-                                                    @endif
                                                 </div>
                                                 
-                                                <div class="col-md-6">
-                                                    <div class="col-md-12">
-                                                        <button type="button" id="importDocument" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">IMPORTAR DOCUMENTO</button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="col-md-12">
-                                                        <button type="button" id="createDocument" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR DOCUMENTO</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                        {!! Form::close() !!}
-                                    </div>
+                                            {!! Form::close() !!}
+                                        </div>
+                                    @else
+                                        <div class="col-md-12">
+                                            <h3>Você não possui permissão para criar documentos. Por favor, contate seu superior.</h3>
+                                        </div>
+                                    @endif
                                 </div>
 
 
@@ -392,7 +398,6 @@
                                                     
                                                 </div>
                                             </div>
-
 
                                             <div class="row mt-5 margin-top-1percent">
                                                 <div class="table-responsive">
@@ -486,7 +491,7 @@
                                                                                 
                                                                                 <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
 
-                                                                                @if( !$docF->necessita_revisao )
+                                                                                @if( !$docF->necessita_revisao && Auth::user()->permissao_elaborador )
                                                                                     <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a>
                                                                                 @endif
 

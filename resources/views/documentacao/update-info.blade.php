@@ -152,14 +152,22 @@
                                 <!-- Linha 6 --> 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="form-group">
-                                            <div class="col-md-10 control-label font-bold">
-                                                {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
+                                        @if( Auth::user()->permissao_elaborador || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                            <div class="form-group">
+                                                <div class="col-md-10 control-label font-bold">
+                                                    {!! Form::label('validadeDocumento', 'VALIDADE DO DOCUMENTO:') !!}
+                                                </div>
+                                                <div class="col-md-12">
+                                                    {!! Form::text('validadeDocumento', \Carbon\Carbon::createFromFormat('Y-m-d', $documento->validade)->format('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                                </div>
                                             </div>
-                                            <div class="col-md-12">
-                                                {!! Form::text('validadeDocumento', \Carbon\Carbon::createFromFormat('Y-m-d', $documento->validade)->format('d/n/Y'), ['class' => 'form-control', 'id' => 'mdate']) !!}
+                                        @else 
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <h6>A validade só pode ser alterada por um usuário do setor Qualidade ou que possua a <i>permissão de elaborador</i>. </h6>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     </div>
                                     <div class="col-md-6">
                                         <div class="col-md-12">
