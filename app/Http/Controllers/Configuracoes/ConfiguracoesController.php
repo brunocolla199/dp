@@ -44,8 +44,39 @@ class ConfiguracoesController extends Controller
 
         $configs = Configuracao::all();
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
+        $setores = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
 
-        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'gruposTreinamento' => $gruposTreinamento, 
+        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores, 'gruposTreinamento' => $gruposTreinamento, 
+                                            'gruposDivulgacao' => $gruposDivulgacao, 'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 
+                                            'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
+    }
+
+
+    public function filter(Request $request) {
+        $usuariosCadastrados = User::where('setor_id', '=', $request->get('search_setor'))->orderBy('name')->select('id', 'name', 'username', 'email', 'permissao_elaborador')->get();
+
+        $setoresEmpresa = DB::table('setor')
+                            ->join('tipo_setor', 'tipo_setor.id', '=', 'setor.tipo_setor_id')
+                            ->select('setor.*', 'tipo_setor.nome AS nome_tipo')
+                            ->where('setor.tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)
+                            ->orderBy('nome')
+                            ->get();
+
+        $gruposTreinamento = DB::table('grupo_treinamento')
+                                ->select('grupo_treinamento.*')
+                                ->orderBy('nome')
+                                ->get();
+
+        $gruposDivulgacao  = DB::table('grupo_divulgacao')
+                                ->select('grupo_divulgacao.*')
+                                ->orderBy('nome')
+                                ->get();
+
+        $configs = Configuracao::all();
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
+        $setores = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+
+        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores, 'gruposTreinamento' => $gruposTreinamento, 
                                             'gruposDivulgacao' => $gruposDivulgacao, 'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 
                                             'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
