@@ -949,7 +949,7 @@
         select.val(forms);
         select.trigger('change');   
     }
-
+    
     if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
         var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
         var select = $(".select2-vinculos").select2({
