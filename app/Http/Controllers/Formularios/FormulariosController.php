@@ -34,11 +34,12 @@ class FormulariosController extends Controller
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
-        $formularios       = $this->getFormsIndex();
+        $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
         
-        // $formularios1_old  = Formulario::join('workflow_formulario', 'workflow_formulario.formulario_id', '=', 'formulario.id')->get();      
+        $formularios       = $this->getFormsIndex();
 
-        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos]);
+        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
     }
 
     public function filterFormsIndex(Request $request){
@@ -46,10 +47,12 @@ class FormulariosController extends Controller
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
+        $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
         
         $formularios       = $this->filterListForms($request->all());
 
-        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos]);
+        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
     }
     
     public function validateData(DadosNovoFormularioRequest $request) {
@@ -715,6 +718,7 @@ class FormulariosController extends Controller
         $baseData = null;
         $formularios = $this->getFormsIndex();
         
+        /** Processamento inicial das informações */
         // Deixa os resultados em diferentes níveis hierárquicos
         $formsNAOFinalizados = ( array_key_exists("nao_finalizados", $formularios) && count($formularios["nao_finalizados"]) > 0 )  ? $formularios["nao_finalizados"] : null;
         $formsFinalizados = ( array_key_exists("finalizados", $formularios) && count($formularios["finalizados"]) > 0 )  ? $formularios["finalizados"] : null;
@@ -733,7 +737,9 @@ class FormulariosController extends Controller
             $formsFinalizados = null;
         }
 
-        // Filtros
+
+        /** Filtros  */
+        // Se a busca foi realizada pelo nome do formulário, aplica o filtro somente com esse valor e, portanto, cai no else
         if(null == $req['search_tituloFormulario'] || "" == $req['search_tituloFormulario']) {
             $arr1 = array();
             $arr2 = array();
@@ -741,12 +747,20 @@ class FormulariosController extends Controller
             if($formsNAOFinalizados != null) {
                 foreach ($formsNAOFinalizados as $key => $value) {
                     $add = false;
+                    if($req['search_setor'] != null) {
+                        if( $value->setor_id == $req['search_setor']) $add = true;
+                        else continue;           
+                    }
                     if($req['search_grupoDivulgacao'] != null) {
                         if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
                         else continue;
                     }
-                    if($req['search_setor'] != null) {
-                        if( $value->setor_id == $req['search_setor']) $add = true;           
+                    if($req['search_nivel_acesso'] != null) {
+                        if( $value->nivel_acesso == $req['search_nivel_acesso']) $add = true;           
+                        else continue;
+                    }
+                    if($req['search_status'] != null) {
+                        if( $value->etapa == $req['search_status']) $add = true;           
                         else continue;
                     }
 
@@ -759,12 +773,20 @@ class FormulariosController extends Controller
             if($formsFinalizados != null) {
                 foreach ($formsFinalizados as $key => $value) {
                     $add = false;
+                    if($req['search_setor'] != null) {
+                        if( $value->setor_id == $req['search_setor']) $add = true;        
+                        else continue;   
+                    }
                     if($req['search_grupoDivulgacao'] != null) {
                         if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
                         else continue;
                     }
-                    if($req['search_setor'] != null) {
-                        if( $value->setor_id == $req['search_setor']) $add = true;           
+                    if($req['search_nivel_acesso'] != null) {
+                        if( $value->nivel_acesso == $req['search_nivel_acesso']) $add = true;           
+                        else continue;
+                    }
+                    if($req['search_status'] != null) {
+                        if( $value->etapa == $req['search_status']) $add = true;           
                         else continue;
                     }
                     

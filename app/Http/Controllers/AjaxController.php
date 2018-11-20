@@ -278,6 +278,22 @@ class AjaxController extends Controller
     }
 
 
+    public function refreshFormsLinked(Request $_request) {
+        if( isset($_request->forms) && count($_request->forms) > 0 ) {            
+            DocumentoFormulario::where('documento_id', $_request->document_id)->delete();
+            
+            foreach($_request->forms as $key => $form) {
+                $documentoFormulario = new DocumentoFormulario();
+                $documentoFormulario->documento_id  = $_request->document_id;
+                $documentoFormulario->formulario_id = $form;
+                $documentoFormulario->save();
+            }
+        } else {
+            DocumentoFormulario::where('documento_id', $_request->document_id)->delete();
+        }
+        return response()->json(['response' => "success"]);
+    }
+
 
     // Formulários
     public function okJustifyCancelFormReviewRequest(Request $request) {
