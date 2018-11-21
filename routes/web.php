@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/usuarios/removerDoGrupo',								['as' => 'ajax.usuarios.removerDoGrupo', 	  						'uses' => 'AjaxController@removerDoGrupo']);
 	Route::post('ajax/usuarios/aprovadoresPorSetor',						['as' => 'ajax.usuarios.aprovadoresPorSetor', 	  					'uses' => 'AjaxController@getAprovadoresPorSetor']);
 	Route::post('ajax/usuarios/permissaoElaborador',						['as' => 'ajax.usuarios.permissaoElaborador', 	  					'uses' => 'AjaxController@setPermissaoElaborador']);
+	Route::post('ajax/usuarios/permissaoAprovarListaPresenca',				['as' => 'ajax.usuarios.permissaoAprovarListaPresenca',				'uses' => 'AjaxController@setPermissaoAprovarListaPresenca']);
 	Route::get('ajax/setores/retornarSetores',  							['as' => 'retornarSetores', 	  									'uses' => 'AjaxController@getSectors']);
 	Route::post('ajax/setores/retornaSetoresExcetoUm',  					['as' => 'ajax.setores.retornaSetoresExcetoUm',						'uses' => 'AjaxController@retornaSetoresExcetoUm']);
 	Route::post('ajax/upload',                          					['as' => 'ajax.upload.image',	                					'uses' => 'AjaxController@uploadEditorImage']);
@@ -130,6 +131,7 @@ Route::group(['middleware' => ['auth']], function() {
 			Route::get('link/{id}/users_disclosure-group', 		['as' => 'configuracoes.link.users_disclosure-group',   	'uses' => 'Configuracoes\ConfiguracoesController@linkUsersDisclosureGroup']);
 			Route::get('link/{id}/users_sectors', 				['as' => 'configuracoes.link.users_sectors',   				'uses' => 'Configuracoes\ConfiguracoesController@linkUsersSectors']);
 			Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
+			Route::get('lista-presenca/{id}/aprovadores',		['as' => 'configuracoes.lista_presenca.aprovadores',    	'uses' => 'Configuracoes\ConfiguracoesController@defineAprovadoresListaPresenca']);
 		});
 
 	});
