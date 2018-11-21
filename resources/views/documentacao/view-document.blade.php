@@ -521,7 +521,8 @@
 
                             @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM && (Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
                                 
-                                @if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO)
+                                <!-- #45 - Realizar o bloqueio do botão "Aprovar" e "Rejeitar" apenas para usuários do setor PESSOAS, porém, que possuam a permissão criada no item anterior. -->
+                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO  &&  Auth::user()->permissao_aprovar_lista_presenca )
                                     <div class="row mb-4">
                                         <div class="col-md-4"></div>
                                         <div class="col-md-4">
