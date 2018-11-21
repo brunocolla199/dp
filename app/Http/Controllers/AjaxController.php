@@ -80,6 +80,15 @@ class AjaxController extends Controller
 
         return response()->json(['response' => 'success']);
     }
+
+
+    public function setPermissaoAprovarListaPresenca(Request $_request) {
+        $user = User::find($_request->user_id);
+        $user->permissao_aprovar_lista_presenca = $_request->valor_permissao_aprovar_lista;
+        $user->save();
+
+        return response()->json(['response' => 'success']);
+    }
     
 
 

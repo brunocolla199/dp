@@ -167,6 +167,7 @@
                                         <!-- Tab panes -->
                                         <div class="tab-content">
 
+                                            <!-- Setores da Empresa -->
                                             <div class="collapse" id="setores-empresa" role="tabpanel">
                                                 <div class="p-20">
 
@@ -189,6 +190,10 @@
                                                                             <td>{{ $setor->descricao }}</td>
                                                                             <td class="text-nowrap">
                                                                                 <center>
+                                                                                    @if( $setor->id == Constants::$ID_SETOR_CAPITAL_HUMANO )
+                                                                                        <a href="{{ route('configuracoes.lista_presenca.aprovadores', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Definir Aprovadores de Lista"> <i class="fa fa-check-square-o text-danger"></i> </a>
+                                                                                    @endif
+
                                                                                     <a href="{{ route('configuracoes.link.users_sectors', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                     <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                                                                     <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
@@ -203,6 +208,7 @@
 
                                                 </div>
                                             </div>
+                                            <!-- Grupos de Treinamento -->
                                             <div class="collapse" id="grupos-treinamento" role="tabpanel">
                                                 <div class="p-20">
 
@@ -237,6 +243,7 @@
 
                                                 </div>
                                             </div>
+                                            <!-- Grupos de Divulgação -->
                                             <div class="collapse" id="grupos-divulgacao" role="tabpanel">
                                                 <div class="p-20">
 
@@ -271,6 +278,7 @@
 
                                                 </div>
                                             </div>
+                                            <!-- Aprovadores -->
                                             <div class="collapse" id="aprovadores" role="tabpanel">
                                                 <div class="p-20">
                                                 
@@ -660,30 +668,22 @@
                     var user_id = $(this).data("user-id");
                     var obj = {'user_id': user_id, 'valor_permissao_elaborador': this.checked, '_token': "{{ csrf_token() }}"};
                     var url = "{{ URL::route('ajax.usuarios.permissaoElaborador') }}";
+                    var msg = "";
 
-                    if(this.checked) {
-                        $.ajax({  
-                            type: "POST",  
-                            url: url,  
-                            dataTypé: "JSON",
-                            data: obj,
-                            success: function(data) {
-                                console.log(data);
-                                showToast('Sucesso!', 'Usuário agora possui permissão de elaborador.', 'success');
-                            }
-                        }); 
-                    } else {
-                        $.ajax({  
-                            type: "POST",  
-                            url: url,  
-                            dataTypé: "JSON",
-                            data: obj,
-                            success: function(data) {
-                                console.log(data);
-                                showToast('Sucesso!', 'Permissão de elaborador removida.', 'success');
-                            }
-                        }); 
-                    }
+                    if(this.checked) msg = "Usuário agora possui permissão de elaborador.";
+                    else msg = "Permissão de elaborador removida.";
+
+                    $.ajax({  
+                        type: "POST",  
+                        url: url,  
+                        dataTypé: "JSON",
+                        data: obj,
+                        success: function(data) {
+                            console.log(data);
+                            showToast('Sucesso!', msg, 'success');
+                        }
+                    }); 
+                    
                 });
             </script>
 

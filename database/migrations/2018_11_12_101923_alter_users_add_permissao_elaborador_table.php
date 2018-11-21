@@ -15,6 +15,7 @@ class AlterUsersAddPermissaoElaboradorTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('permissao_elaborador')->default(false);
+            $table->boolean('permissao_aprovar_lista_presenca')->default(false);
         });
     }
 
@@ -27,6 +28,7 @@ class AlterUsersAddPermissaoElaboradorTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('permissao_elaborador');
+            $table->dropColumn('permissao_aprovar_lista_presenca');
         });
     }
 }

@@ -394,4 +394,10 @@ class ConfiguracoesController extends Controller
         return redirect()->route('configuracoes')->with('link_success', 'valor');
     }
 
+
+    public function defineAprovadoresListaPresenca($_setorID) {
+        $usuariosDoSetorCapitalHumano = User::where('setor_id', '=', $_setorID)->get();
+        return view('configuracoes.lista-presenca_aprovadores', compact('usuariosDoSetorCapitalHumano'));
+    }
+
 }
