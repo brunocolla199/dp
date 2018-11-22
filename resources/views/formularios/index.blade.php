@@ -382,7 +382,7 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body"> 
-                            Deseja solicitar uma revisão neste formulário? 
+                            Deseja iniciar uma revisão para este formulário? 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
