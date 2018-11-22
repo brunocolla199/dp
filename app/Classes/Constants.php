@@ -20,14 +20,11 @@ class Constants {
     
     public static $ID_TIPO_AGRUPAMENTO_APROVADORES_POR_SETOR= 3;
 
+
     // Tipos de Setores
     public static $ID_TIPO_SETOR_SETOR_NORMAL   = 1;
     
     public static $NOME_SETOR_SEM_SETOR         = "Sem Setor";
-    
-    // public static $ID_TIPO_SETOR_DIRETORIA      = 2;
-    
-    // public static $ID_TIPO_SETOR_GERENCIA       = 3;
 
 
     // Tipos de Documentos
@@ -39,6 +36,7 @@ class Constants {
     
     public static $ID_TIPO_DOCUMENTO_FORMULARIO             = 4;
 
+    
     // Fomatos de Documentos
     public static $EXTENSAO_DOCUMENTO  = '.html';
 
@@ -115,10 +113,6 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA          = "Aguardando lista de presença";
 
     public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO                = "Solicitado revisão do documento";
-    
-    public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_REJEITADA      = "Solicitação de revisão do documento rejeitada";
-    
-    public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO_APROVADA       = "Solicitação de revisão do documento aprovada";
     
     public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1             = "Revisão ";
     public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_2             = " do documento foi cancelada.";

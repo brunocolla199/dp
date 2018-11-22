@@ -22,12 +22,8 @@
 		<input type="hidden" name="status" id="status" value="reject_list_success">
     @elseif (session('resend_list_success'))
 		<input type="hidden" name="status" id="status" value="resend_list_success">
-    @elseif (session('request_review_success'))
-		<input type="hidden" name="status" id="status" value="request_review_success">
-    @elseif (session('reject_request_review_success'))
-		<input type="hidden" name="status" id="status" value="reject_request_review_success">
-    @elseif (session('approves_request_review_success'))
-		<input type="hidden" name="status" id="status" value="approves_request_review_success">
+    @elseif (session('start_review_success'))
+		<input type="hidden" name="status" id="status" value="start_review_success">
     @elseif (session('document_name_already_exists'))
 		<input type="hidden" name="status" id="status" value="document_name_already_exists">
     @elseif (session('cancel_review_success'))
@@ -58,12 +54,8 @@
                 showToast('Sucesso!', 'A lista de presença foi rejeitada.', 'success');
             } else if(status == "resend_list_success") {
                 showToast('Sucesso!', 'A lista de presença foi reenviada ao Capital Humano.', 'success');
-            } else if(status == "request_review_success") {
-                showToast('Sucesso!', 'O seu pedido de revisão do documento foi enviado à Qualidade.', 'success');
-            } else if(status == "reject_request_review_success") {
-                showToast('Sucesso!', 'O pedido de revisão do documento foi rejeitado com sucesso.', 'success');
-            } else if(status == "approves_request_review_success") {
-                showToast('Sucesso!', 'O pedido de revisão do documento foi aprovado com sucesso e o workflow de revisão já está em andamento.', 'success');
+            } else if(status == "start_review_success") {
+                showToast('Sucesso!', 'A revisão do documento foi iniciada.', 'success');
             } else if(status == "document_name_already_exists") {
                 showToast('Nome já existe!', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!', 'warning');
             } else if(status == "cancel_review_success") {
@@ -505,11 +497,11 @@
                                                                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                                     <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
 
-                                                                                    <a href="#" class="{{ (!$docF->necessita_revisao) ? 'm-r-15' : '' }}" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+                                                                                    <a href="#" class="m-r-15" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                                 @endif
 
-                                                                                @if( !$docF->necessita_revisao && Auth::user()->permissao_elaborador )
-                                                                                    <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a>
+                                                                                @if( Auth::user()->permissao_elaborador )
+                                                                                    <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
                                                                                 @endif
 
                                                                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
@@ -601,17 +593,17 @@
             <!-- /.modal para vínculos com formulários -->
 
 
-            <!-- Modal de confirmação - deseja mesmo solicitar uma revisão neste documento -->
-            <div class="modal fade bs-example-modal-sm" id="solicitar-revisao-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+            <!-- Modal de confirmação - deseja mesmo iniciar uma revisão para este documento -->
+            <div class="modal fade bs-example-modal-sm" id="iniciar-revisao-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body"> 
-                            Deseja solicitar uma revisão neste documento? 
+                            Deseja iniciar uma revisão para este documento? 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
 
-                            {{ Form::open(['route' => 'documentacao.request-review', 'method' => 'POST']) }}
+                            {{ Form::open(['route' => 'documentacao.start-review', 'method' => 'POST']) }}
                                 {{ Form::hidden('document_id', '', ['id' => 'document_id_request_review']) }}
                                 <button type="submit" class="btn btn-success waves-effect"> Sim </button>
                             {!! Form::close() !!}
@@ -621,7 +613,7 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.Modal de confirmação - deseja mesmo solicitar uma revisão neste documento -->
+            <!-- /.Modal de confirmação - deseja mesmo iniciar uma revisão para este documento -->
 
 
             <!-- Modal de confirmação - deseja mesmo tornar o documento obsoleto -->
@@ -710,7 +702,7 @@
                     });
 
                     /**
-                     *  REMOVER ESSA FUNÇÃO E O TRIGGER ABAIXO QUANDO O ITEM PARA PODER CRIAR APENAS DOCUMENTOS DO SETOR QUE PERTENCE FOR VALIDADO
+                     *  REMOVER ESSA FUNÇÃO E O TRIGGER ABAIXO QUANDO O ITEM PARA PODER CRIAR APENAS DOCUMENTOS DO SETOR QUE PERTENCE FOR VALIDADO (Porque essa função era responsável por permitir que apenas usuários aprovadores do setor que estava selecionado naquele momento fossem escolhidos)
                      */
                     // Mudanças no select de setor dono do documento  
                     $("#setor_dono_doc").change(function(){
@@ -741,7 +733,7 @@
                         var id = $(this).data('id');
                         $("#document_id_request_review").val(id);
                         
-                        $("#solicitar-revisao-modal").modal({
+                        $("#iniciar-revisao-modal").modal({
                             backdrop: 'static',
                             keyboard: false
                         });

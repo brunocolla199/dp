@@ -141,16 +141,6 @@ class AjaxController extends Controller
     }
 
 
-    public function okJustifyRejectRequest(Request $request) {
-        $dadosDoc = DadosDocumento::where('documento_id', '=', $request->document_id)->get();
-        $dadosDoc[0]->id_usuario_solicitante = null;
-        $dadosDoc[0]->justificativa_rejeicao_revisao = null;
-        $dadosDoc[0]->save();
-        
-        return response()->json(['response' => 'success']);    
-    }
-
-
     public function okJustifyCancelRequest(Request $request) {
         $dadosDoc = DadosDocumento::where('documento_id', '=', $request->document_id)->get();
         $dadosDoc[0]->id_usuario_solicitante = null;

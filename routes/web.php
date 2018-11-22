@@ -38,7 +38,6 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/documentos/retornaFormularios',   					['as' => 'ajax.documentos.formularios',	                			'uses' => 'AjaxController@getDocumentosFormularios']);
 	Route::post('ajax/documentos/salvaObservacao',	    					['as' => 'ajax.documentos.salvaObservacao',							'uses' => 'AjaxController@salvaObservacao']);
 	Route::post('ajax/documentos/getObservacoes',	    					['as' => 'ajax.documentos.getObservacoes',							'uses' => 'AjaxController@getObservacoes']);
-	Route::post('ajax/documentos/okJustifyRejectRequest',					['as' => 'ajax.documentos.okJustifyRejectRequest',					'uses' => 'AjaxController@okJustifyRejectRequest']);
 	Route::post('ajax/documentos/okJustifyCancelRequest',					['as' => 'ajax.documentos.okJustifyCancelRequest',					'uses' => 'AjaxController@okJustifyCancelRequest']);
 	Route::post('ajax/documentos/saveAttachedDocument',   					['as' => 'ajax.documentos.saveAttachedDocument', 	    			'uses' => 'AjaxController@saveAttachedDocument']);
 	Route::post('ajax/documentos/saveNewDocument',   						['as' => 'ajax.documentos.saveNewDocument', 	    				'uses' => 'AjaxController@saveNewDocument']);
@@ -77,8 +76,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('salva-lista-presenca',			['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
 		Route::post('resend-list',  				['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
 		Route::post('save-link-form',	     		['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
-		Route::post('request-review',	     		['as' => 'documentacao.request-review',          		'uses' => 'Documentacao\DocumentacaoController@requestReview']);
-		Route::post('decides-on-review-request',	['as' => 'documentacao.decides-on-review-request', 		'uses' => 'Documentacao\DocumentacaoController@decidesOnReviewRequest']);
+		Route::post('start-review',	     		['as' => 'documentacao.start-review',          			'uses' => 'Documentacao\DocumentacaoController@startReview']);
 		Route::post('cancel-review',				['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
 		Route::post('save-attached-start-workflow',	['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
 		Route::post('make-obsolete-doc',	  		['as' => 'documentacao.make-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@makeObsoleteDoc']);

@@ -329,7 +329,7 @@
                                                                     @elseif( !$form->obsoleto )
                                                                         <tr>
                                                                             <td class="text-nowrap text-center"> 
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Solicitar Revisão"></i> </a> 
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a> 
 
                                                                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                                     <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger fa-2x" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
@@ -377,8 +377,8 @@
             <!-- End Page Content -->
 
 
-            <!-- Modal de confirmação - deseja mesmo solicitar uma revisão neste formulário -->
-            <div class="modal fade bs-example-modal-sm" id="solicitar-revisao-formulario-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+            <!-- Modal de confirmação - deseja mesmo iniciar uma revisão para este formulário -->
+            <div class="modal fade bs-example-modal-sm" id="iniciar-revisao-formulario-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body"> 
@@ -397,7 +397,7 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- /.Modal de confirmação - deseja mesmo solicitar uma revisão neste formulário -->
+            <!-- /.Modal de confirmação - deseja mesmo iniciar uma revisão para este formulário -->
 
             <!-- Modal de confirmação - deseja mesmo tornar o formulário obsoleto -->
             <div class="modal fade" id="tornar-formulario-obsoleto-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
@@ -470,7 +470,7 @@
             var id = $(this).data('id');
             $("#form_id_request_review").val(id);
             
-            $("#solicitar-revisao-formulario-modal").modal({
+            $("#iniciar-revisao-formulario-modal").modal({
                 backdrop: 'static',
                 keyboard: false
             });
