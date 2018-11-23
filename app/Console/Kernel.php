@@ -30,7 +30,6 @@ class Kernel extends ConsoleKernel
         *  Procura todos os documentos que vencem no dia exato resultante da operação "hoje + um mês" do Carbon. Quando encontra, seleciona todos os usuários que tem permissão de elaborador e pertencem ao setor para o qual o documento foi criado.
         *  Após encontrar todos esses usuários, salva uma notificação para cada um deles.
         */
-        /*
         $schedule->call(function () {
             $hojeMaisUmMes = Carbon::now()->addMonth()->format('Y-m-d');
             $documentosParaVencer = DB::table('documento')->join('dados_documento', 'documento_id', '=', 'documento.id')->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id' )
@@ -53,7 +52,6 @@ class Kernel extends ConsoleKernel
                 }
             }
         })->everyDay();
-        */
     }
 
     /**
