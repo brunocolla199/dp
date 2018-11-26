@@ -308,8 +308,13 @@
 
                                 <!-- Editor -->
                                 <div class="container" >
-                                    @if( $documentoEhEditavel )    
-                                        <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                    @if( $documentoEhEditavel ) 
+                                        <!-- #46 - Desabilitar para o usuário na etapa "área de interesse" a possibilidade de edição do documento = ou seja, se o doc estiver na etapa de área de interesse e não for um membro da Qualidade, não edita o doc -->
+                                        @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM  &&  Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE )   
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                        @else
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                        @endif
                                     @else
                                         <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                                     @endif
