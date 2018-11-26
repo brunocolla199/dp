@@ -51,7 +51,7 @@ class Kernel extends ConsoleKernel
                     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $doc->codigo . " vence em um mês.", true, $user->id, $doc->id);    
                 }
             }
-        })->everyDay();
+        })->daily();
     }
 
     /**
