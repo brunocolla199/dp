@@ -406,7 +406,7 @@ class FormulariosController extends Controller
 
     public function updateInfo(Request $_request) {        
         $idForm      = (int) $_request->form_id;
-        $nivelAcesso = ($_request->nivelAcessoFormulario == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_LIVRE;
+        $nivelAcesso = ($_request->nivelAcessoFormulario == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : Constants::$NIVEL_ACESSO_DOC_RESTRITO;
 
         $formulario = Formulario::where('id', '=', $idForm)->first();
         $formulario->grupo_divulgacao_id = $_request->grupoDivulgacao;

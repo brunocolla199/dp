@@ -170,11 +170,26 @@
                                         @endif
                                     </div>
                                     <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-10 control-label font-bold">
+                                                {!! Form::label('nivelAcessoDoc', 'NÍVEL DE ACESSO:') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::select('nivelAcessoDoc', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL], $documento->nivel_acesso_fake_id, ['class' => 'form-control  custom-select']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>    
+
+                                <!-- Linha 7 --> 
+                                <div class="row">
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
                                         <div class="col-md-12">
                                             <button type="submit" class="btn waves-effect waves-light btn-block btn-lg btn-secondary">ATUALIZAR INFORMAÇÕES</button>
                                         </div>
                                     </div>
-                                </div>    
+                                </div>
                             {!! Form::close() !!}
 
                         </div>

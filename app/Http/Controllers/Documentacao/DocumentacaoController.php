@@ -947,6 +947,13 @@ class DocumentacaoController extends Controller
                                 ->where('documento.id', '=', $id)
                                 ->select('documento.id', 'nome', 'codigo', 'nivel_acesso', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'copia_controlada', 'validade', 'setor_id')->first();
 
+        if( $documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_LIVRE ) {
+            $documento['nivel_acesso_fake_id'] = 0;
+        } else {
+            $documento['nivel_acesso_fake_id'] = ($documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_RESTRITO) ? 1 : 2;
+        }
+        
+
         // Área de Interesse
         $setoresUsuarios = [];
         $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
@@ -988,6 +995,12 @@ class DocumentacaoController extends Controller
         if($dadosDoc->grupo_treinamento_id != $request->grupoTreinamento) $dadosDoc->grupo_treinamento_id = (int) $request->grupoTreinamento;
         
         if($dadosDoc->grupo_divulgacao_id != $request->grupoDivulgacao) $dadosDoc->grupo_divulgacao_id = (int) $request->grupoDivulgacao;
+
+        if( $request->nivelAcessoDoc == 0 ) {
+            $dadosDoc->nivel_acesso = Constants::$NIVEL_ACESSO_DOC_LIVRE;
+        } else {
+            $dadosDoc->nivel_acesso = ($request->nivelAcessoDoc == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL;
+        }
         
         $dadosDoc->validade = $request->validadeDocumento;
         $dadosDoc->save();
