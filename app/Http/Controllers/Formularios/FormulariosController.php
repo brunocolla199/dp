@@ -390,6 +390,35 @@ class FormulariosController extends Controller
         );
     }
 
+
+
+    public function editInfo($_id) {        
+        // Documento
+        $formulario = Formulario::where('id', '=', $_id)->select('id', 'nome', 'codigo', 'nivel_acesso', 'grupo_divulgacao_id')->first();
+        $formulario['nivel_acesso_fake_id'] = ($formulario->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_LIVRE) ? 0 : 1;
+
+        // Grupos de Divulgação
+        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+
+        return view('formularios.update-info', compact('formulario', 'gruposDivulgacao') );
+    }
+
+
+    public function updateInfo(Request $_request) {        
+        $idForm      = (int) $_request->form_id;
+        $nivelAcesso = ($_request->nivelAcessoFormulario == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_LIVRE;
+
+        $formulario = Formulario::where('id', '=', $idForm)->first();
+        $formulario->grupo_divulgacao_id = $_request->grupoDivulgacao;
+        $formulario->nivel_acesso        = $nivelAcesso;
+        $formulario->nome                = $_request->tituloFormulario;
+        $formulario->save();      
+
+        return redirect()->route('formularios')->with('update_info_success', 'msg');
+    }
+
+
+
     /*
     *       
     *  WORKFLOW FORMS

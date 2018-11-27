@@ -105,6 +105,8 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('make-obsolete-form',	  ['as' => 'formularios.make-obsolete-form',		'uses' => 'Formularios\FormulariosController@makeObsoleteForm']);
 		Route::post('make-active-form',	  	  ['as' => 'formularios.make-active-form',			'uses' => 'Formularios\FormulariosController@makeActiveForm']);
 		Route::post('view-obsolete-form',	  ['as' => 'formularios.view-obsolete-form',		'uses' => 'Formularios\FormulariosController@viewObsoleteForm']);
+		Route::get('{id}/edit-info',  		  ['as' => 'formularios.edit-info',					'uses' => 'Formularios\FormulariosController@editInfo']);
+		Route::post('update-info', 			  ['as' => 'formularios.update-info',				'uses' => 'Formularios\FormulariosController@updateInfo']);
 	});
 
 

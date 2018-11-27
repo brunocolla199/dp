@@ -18,6 +18,8 @@
 		<input type="hidden" name="status" id="status" value="make_obsolete_form">
     @elseif (session('make_active_form'))
 		<input type="hidden" name="status" id="status" value="make_active_form">
+    @elseif (session('update_info_success'))
+		<input type="hidden" name="status" id="status" value="update_info_success">
     @endif
 
     <script>
@@ -40,7 +42,9 @@
                 showToast('Sucesso!', 'O formulário foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
             } else if(status == "make_active_form") {
                 showToast('Sucesso!', 'O formulário foi ativado com sucesso!', 'success');
-            } 
+            } else if(status == "update_info_success") {
+                showToast('Sucesso!', 'As informações do formulário foram atualizadas com sucesso!', 'success');
+            }
         });
     </script>
 
@@ -273,7 +277,11 @@
                                                             @if( is_array($formularios) && array_key_exists("nao_finalizados", $formularios) && count($formularios['nao_finalizados']) > 0 )
                                                                 @foreach($formularios['nao_finalizados'] as $form)
                                                                     <tr>
-                                                                        <td class="text-nowrap text-center"></td>
+                                                                        <td class="text-nowrap text-center">
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $form->elaborador_id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ) )
+                                                                                <a href="{{ route('formularios.edit-info', ['id' => $form->id]) }}"> <i class="fa fa-pencil text-success fa-2x" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                            @endif
+                                                                        </td>
 
                                                                         {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('formulario_id', $form->id) }}
