@@ -488,7 +488,6 @@ class DocumentacaoController extends Controller
 
             case 2:
                 
-                dd($idUsuarioAdminSetorQualidade);
                 if($documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL) {
                     if( Auth::user()->id == $idUsuarioAdminSetorQualidade->admin_setor_qualidade )  {
                         $nomeFinal = $documento->nome . "." . $documento->extensao;
@@ -677,9 +676,7 @@ class DocumentacaoController extends Controller
         exit();
     }
 
-    protected function startReview(Request $request) {
-        // dd( $request->all() );
-        
+    protected function startReview(Request $request) {        
         /*
         $documento = Documento::where('id', '=', $request->document_id)->get();
         $dados_documento = DadosDocumento::where('documento_id', '=', $documento[0]->id)->get();
@@ -1699,7 +1696,7 @@ class DocumentacaoController extends Controller
 
 
     private function cmp($a, $b) {
-        return strcmp($a->nome, $b->nome);
+        return strcmp($a->codigo, $b->codigo);
     }
 
 

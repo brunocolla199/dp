@@ -710,7 +710,7 @@ class FormulariosController extends Controller
     }
 
     private function cmp($a, $b) {
-        return strcmp($a->nome, $b->nome);
+        return strcmp($a->codigo, $b->codigo);
     }
 
     public function filterListForms($req) {
