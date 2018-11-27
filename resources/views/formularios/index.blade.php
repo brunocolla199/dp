@@ -337,10 +337,14 @@
                                                                     @elseif( !$form->obsoleto )
                                                                         <tr>
                                                                             <td class="text-nowrap text-center"> 
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a> 
+                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $form->elaborador_id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ) )
+                                                                                    <a href="{{ route('formularios.edit-info', ['id' => $form->id]) }}"> <i class="fa fa-pencil text-success fa-2x " data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                                @endif
+
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review ml-2" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning fa-2x" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a> 
 
                                                                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                    <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger fa-2x" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
+                                                                                    <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-2" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger fa-2x" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
                                                                                 @endif
                                                                             </td>
                                                                             
