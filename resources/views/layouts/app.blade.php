@@ -117,7 +117,8 @@
                             <!-- Light Logo text -->    
                             <!-- <img src="{{ asset('images/dpworld-logo.jpg') }}" alt="homepage" class="light-logo" /></span> </a> -->
                             <!-- <img src="{{ asset('images/dp-logo-text-white.png') }}" alt="homepage" class="light-logo" /></span> </a> -->
-                            <img src="{{ asset('images/dpworld-logo-full2.jpg') }}" class="light-logo" alt="homepage" /></span> </a>
+                            <!-- <img src="{{ asset('images/dpworld-logo-full2.jpg') }}" class="light-logo" alt="homepage" /></span> </a> -->
+                            <img src="{{ asset('images/logo-speed.png') }}" class="light-logo" alt="homepage" /></span> </a>
                     </div>
                     <!-- ============================================================== -->
                     <!-- End Logo -->
@@ -183,8 +184,8 @@
                 <div class="scroll-sidebar">
                     <!-- User profile -->
                     
-                    <!-- <div class="user-profile" style="background: url({{ asset('images/background/work.jpg') }}) no-repeat;"> -->
-                    <div class="user-profile" style="background: url({{ asset('images/background/Imagem_Usuário.png') }}) no-repeat center; ">
+                    <div class="user-profile" style="background: url({{ asset('images/background/work.jpg') }}) no-repeat;">
+                    <!-- <div class="user-profile" style="background: url({{ asset('images/background/Imagem_Usuário.png') }}) no-repeat center; "> -->
                         <!-- User profile image -->
                         <div class="profile-img" style="height: 130px;"> </div>
                         <!-- User profile text-->
