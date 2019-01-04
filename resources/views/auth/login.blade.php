@@ -12,7 +12,7 @@
                 <div class="row justify-content-md-center">
                     <div class="col-md-4">
                         <span class="pull-right custom-border-pink"></span>
-                        <img src="{{ asset('images/speed_300x300.png') }}" class="img-fluid" style="margin-top: 10%; height: 80%; width: 60%;" alt="DP World - Logo">
+                        <img src="{{ asset('images/dpworld-logo.jpg') }}" class="img-fluid" alt="DP World - Logo">
                     </div>
                     <div class="col-md-5" style="margin-top: 2%">
                         <form class="form-horizontal form-material" id="loginform" method="POST" action="{{ route('login') }}">
