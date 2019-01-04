@@ -122,19 +122,19 @@
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th class="text-center" style="width: 20%!important">Nome</th>
-                                                            <th class="text-center" style="width: 20%!important">E-mail</th>
-                                                            <th class="text-center" style="width: 20%!important">Login de Usuário</th>
-                                                            <th class="text-center text-nowrap" style="width: 40%!important"> Permissão de Elaborador</th>
+                                                            <th class="text-center">Nome</th>
+                                                            <th class="text-center">E-mail</th>
+                                                            <!-- <th class="text-center">Login de Usuário</th> -->
+                                                            <th class="text-center text-nowrap">Permissão de Elaborador</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         @foreach($usuariosCadastrados as $usuario)
                                                             <tr>
-                                                                <td class="text-center" style="width: 20%!important"><a href="javascript:void(0)">{{ $usuario->name }}</a></td> 
-                                                                <td class="text-center" style="width: 20%!important">{{ $usuario->email }}</td>
-                                                                <td class="text-center" style="width: 20%!important">{{ $usuario->username }}</td>
-                                                                <td class="text-center text-nowrap" style="width: 40%!important">
+                                                                <td class="text-center"><a href="javascript:void(0)">{{ $usuario->name }}</a></td> 
+                                                                <td class="text-center">{{ $usuario->email }}</td>
+                                                                <!-- <td class="text-center">{{ $usuario->username }}</td> -->
+                                                                <td class="text-center text-nowrap">
                                                                     <div class="switch">
                                                                         <label>DESABILITADA
                                                                             <input type="checkbox" class="switch-elaborador" data-user-id="{{ $usuario->id }}" {{ ($usuario->permissao_elaborador) ? 'checked' : '' }} ><span class="lever switch-col-light-blue"></span>HABILITADA
