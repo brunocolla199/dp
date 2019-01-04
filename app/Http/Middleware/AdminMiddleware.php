@@ -17,7 +17,7 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ( ! Auth::user()->permissao_elaborador || Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE ) return redirect()->route('unauthorized');
+        if ( !Auth::user()->permissao_elaborador && Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE ) return redirect()->route('unauthorized');
         return $next($request);
     }
 }
