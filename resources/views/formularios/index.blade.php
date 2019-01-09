@@ -263,11 +263,11 @@
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-nowrap text-center">Ações</th>
-                                                                <th>Título do Formulário</th>
-                                                                <th>Código</th>
+                                                                <th class="text-center">Código</th>
+                                                                <th class="text-center">Título do Formulário</th>
+                                                                <th class="text-center">Data Emissão</th>
                                                                 <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Status</th>
-                                                                <th class="text-center">Data Emissão</th>
                                                                 <th class="text-center">Nível Acesso</th>
                                                                 <th class="text-center">Modificado</th>
                                                             </tr>
@@ -283,21 +283,22 @@
                                                                             @endif
                                                                         </td>
 
+                                                                        <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+
                                                                         {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('formulario_id', $form->id) }}
                                                                             {{ Form::hidden('action', 'view') }}
-                                                                            <td>
+                                                                            <td class="text-center">
                                                                                 {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+                                                                        <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
                                                                         
                                                                         <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
-                                                                        <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
                                                                         
-                                                                        <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                        <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
 
                                                                         <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
                                                                         
@@ -315,20 +316,21 @@
                                                                                 <a href="javascript:void(0)" class="btn-ativar-formulario-modal ml-3" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-success fa-2x" data-toggle="tooltip" data-original-title="Ativar Formulário"></i> </a> 
                                                                             </td>
 
+                                                                            <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+
                                                                             {{ Form::open(['route' => 'formularios.view-obsolete-form', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
-                                                                                <td>
+                                                                                <td class="text-center">
                                                                                     {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
-                                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+
 
                                                                             <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
                                                                             <td><p class="font-weight-bold text-danger"> Obsoleto </p></td>
-
-                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
                                                                             
                                                                             <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
 
@@ -348,21 +350,22 @@
                                                                                 @endif
                                                                             </td>
                                                                             
+                                                                            <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+
                                                                             {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 {{ Form::hidden('action', 'view') }}
-                                                                                <td>
+                                                                                <td class="text-center">
                                                                                     {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
-                                                                            <td><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
+                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
 
                                                                             <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
-                                                                            <td><p class="font-weight-bold text-success"> Finalizado </p></td>
 
-                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                            <td><p class="font-weight-bold text-success"> Finalizado </p></td>
                                                                             
                                                                             <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
                                                                             

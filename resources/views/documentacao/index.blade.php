@@ -409,12 +409,13 @@
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-center text-nowrap">Ações</th>
-                                                                <th class="text-center">Título do Documento</th>
                                                                 <th class="text-center text-nowrap">Código</th>
+                                                                <th class="text-center">Título do Documento</th>
+                                                                <th class="text-center">Data Emissão</th>
                                                                 <th class="text-center text-nowrap ">Revisão</th>
+
                                                                 <th class="text-center">Tipo do Documento</th>
                                                                 <th class="text-center">Status</th>
-                                                                <th class="text-center">Data Emissão</th>
                                                                 <th class="text-center">Nível Acesso</th>
                                                                 <th class="text-center">Modificado</th>
                                                                 <th class="text-center">Validade</th>
@@ -433,6 +434,8 @@
                                                                             <a href="#" title="Vincular Formulários" class="ml-3" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                         </td>
 
+                                                                        <td class="text-center text-nowrap"> {{ $doc->codigo }} </td>
+
                                                                         {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                             {{ Form::hidden('document_id', $doc->id) }}
                                                                             <td class="text-center text-nowrap">
@@ -440,7 +443,7 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td class="text-center text-nowrap"> {{ $doc->codigo }} </td>
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->created_at)) }}</td>
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->revisao }} </td>
 
@@ -448,7 +451,6 @@
                                                                         
                                                                         <td class="text-center"><p class="text-muted font-weight-bold {{ ($doc->etapa == 'Finalizado') ? ' text-success' : '' }} "> {{ $doc->etapa }} </p></td>
 
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->created_at)) }}</td>
 
                                                                         <td class="text-center">{{ $doc->nivel_acesso }}</td>
 
@@ -468,22 +470,23 @@
                                                                                 <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Documento"></i> </a> 
                                                                             </td>
 
+                                                                            <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
+
                                                                             {{ Form::open(['route' => 'documentacao.view-obsolete-doc', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('document_id', $docF->id) }}
-                                                                                <td>
+                                                                                <td class="text-center">
                                                                                     {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
-                                                                            <td class="text-nowrap"> {{ $docF->codigo }} </td>
+                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
                                                                             <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
+
 
                                                                             <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
                                                                             
                                                                             <td class="text-center"><p class="font-weight-bold text-danger"> Obsoleto </p></td>
-
-                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
                                                                             <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
@@ -509,22 +512,23 @@
                                                                                 @endif
                                                                             </td>
 
+                                                                            <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
+
                                                                             {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('document_id', $docF->id) }}
-                                                                                <td>
+                                                                                <td class="text-center">
                                                                                     {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
-                                                                            <td class="text-nowrap"> {{ $docF->codigo }} </td>
+                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
                                                                             <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
+
 
                                                                             <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
 
                                                                             <td class="text-center"><p class="text-muted font-weight-bold text-success"> Finalizado </p> </td>
-
-                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
                                                                             <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
