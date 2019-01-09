@@ -436,8 +436,14 @@
                                                                            <td style="padding-right: 10px; padding-left: 10px; padding-top: 15px; padding-bottom: 0px;">
                                                                               <![endif]-->
                                                                               <div style="color:#0D0D0D;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:150%; padding-right: 10px; padding-left: 10px; padding-top: 15px; padding-bottom: 0px;">
-                                                                                 <div style="font-size:12px;line-height:18px;color:#0D0D0D;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 14px;line-height: 21px;text-align: center">ACESSE O SISTEMA CLICANDO NO BOTÃO ABAIXO.</p>
+                                                                                 <div style="font-size:12px;line-height:18px;color:#0D0D0D;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:center;">
+                                                                                    <p style="margin: 0;font-size: 14px;line-height: 21px;text-align: center">ACESSE O SISTEMA CLICANDO NO <i>LINK</i> ABAIXO.</p>
+
+                                                                                    <span style="font-size: 28px; line-height: 33px;">
+                                                                                       <span style="line-height: 33px; font-size: 20px;">
+                                                                                          <a href="{{ Constants::$URL_SISTEMA_PRODUCAO }}" target="_blank">Sistema de Documentos Normativos - DP World</a>
+                                                                                       </span>
+                                                                                    </span>
                                                                                  </div>
                                                                               </div>
                                                                               <!--[if mso]>
@@ -445,30 +451,6 @@
                                                                         </tr>
                                                                      </table>
                                                                      <![endif]-->
-                                                                  </div>
-                                                                  <div align="center" class="button-container center" style="padding-right: 10px; padding-left: 10px; padding-top:15px; padding-bottom:10px; cursor:pointer;">
-                                                                     <a href="{{ Constants::$URL_SISTEMA_PRODUCAO }}" style="text-decoration:none;" target="_blank">
-                                                                        <!--[if mso]>
-                                                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
-                                                                           <tr>
-                                                                              <td style="padding-right: 10px; padding-left: 10px; padding-top:15px; padding-bottom:10px;" align="center">
-                                                                                 <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:46pt; v-text-anchor:middle; width:154pt;" arcsize="7%" strokecolor="#173A64" fillcolor="#173A64">
-                                                                                    <w:anchorlock/>
-                                                                                    <v:textbox inset="0,0,0,0">
-                                                                                       <center style="color:#ffffff; font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; font-size:16px;">
-                                                                                          <![endif]-->
-                                                                                          <div style="color: #ffffff; background-color: #173A64; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width: 206px; width: 176px;width: auto; border-top: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent; border-left: 0px solid transparent; padding-top: 15px; padding-right: 15px; padding-bottom: 15px; padding-left: 15px; font-family: 'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; text-align: center; mso-border-alt: none;">
-                                                                                             <span style="font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;font-size:16px;line-height:32px;">ACESSAR O SISTEMA</span>
-                                                                                          </div>
-                                                                                          <!--[if mso]>
-                                                                                       </center>
-                                                                                    </v:textbox>
-                                                                                 </v:roundrect>
-                                                                              </td>
-                                                                           </tr>
-                                                                        </table>
-                                                                        <![endif]-->
-                                                                     </a>
                                                                   </div>
                                                                   <table border="0" cellpadding="0" cellspacing="0" width="100%" class="divider " style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;min-width: 100%;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
                                                                      <tbody>
