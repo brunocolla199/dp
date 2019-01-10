@@ -271,8 +271,11 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
-                                    <!-- <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&action=review&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
-                                    <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                    @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  !$finalizado  )
+                                        <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                    @else
+                                        <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&action=review&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                    @endif
                                 </div>
                                     
                                 <div class="col-md-4" style="font-size:14px; height: 800px; overflow-y: scroll;">
