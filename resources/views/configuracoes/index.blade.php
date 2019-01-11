@@ -439,7 +439,7 @@
                                                         {!! Form::open(['route' => 'configuracoes.save.number-default', 'class' => 'form-horizontal']) !!}
                                                         <div class="form-group">
                                                             <div class="col-md-12 control-label font-bold">
-                                                                {!! Form::label('numeroPadrao', 'PADRÃO PARA CÓDIGO - INSTRUÇÃO DE TRABALHO:') !!}
+                                                                {!! Form::label('numeroPadrao', 'PADRÃO PARA CÓDIGO - INSTRUÇÕES DE TRABALHO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
                                                                 {!! Form::text('numeroPadrao', $numeroPadraoParaCodigo, ['class' => 'form-control input-validation']) !!}
