@@ -6,6 +6,10 @@
 
     @if (session('padrao_sucesso'))
 		<input type="hidden" name="status" id="status" value="padrao_sucesso">
+    @elseif (session('padrao_sucesso_dg'))
+		<input type="hidden" name="status" id="status" value="padrao_sucesso_dg">
+    @elseif (session('padrao_sucesso_pg'))
+		<input type="hidden" name="status" id="status" value="padrao_sucesso_pg">
     @elseif (session('new_grouping_sucesso'))
 		<input type="hidden" name="status" id="status" value="new_grouping_sucesso">
     @elseif (session('edit_sector_success'))
@@ -25,7 +29,11 @@
             // Verifica se acabou de gravar uma nova solicitação
             var status = $("#status").val();
             if(status == "padrao_sucesso") {
-                showToast('Sucesso!', 'O número padrão para geração do código do documento foi atualizado.', 'success');
+                showToast('Sucesso!', 'O número padrão para geração do código do INSTRUÇÕES DE TRABALHO foi atualizado.', 'success');
+            } else if(status == "padrao_sucesso_dg") {
+                showToast('Sucesso!', 'O número padrão para geração do código das DIRETRIZES DE GESTÃO foi atualizado.', 'success');
+            } else if(status == "padrao_sucesso_pg") {
+                showToast('Sucesso!', 'O número padrão para geração do código dos PROCEDIMENTOS DE GESTÃO foi atualizado.', 'success');
             } else if(status == "new_grouping_sucesso") {
                 showToast('Sucesso!', 'Novo agrupamento criado com sucesso.', 'success');
             } else if(status == "edit_sector_success") {
@@ -417,27 +425,65 @@
                                                                 <span><b>Exemplos de valores aceitos:</b></span>
                                                                 <ul>
                                                                     <li>0       <span class="text-muted">- Código gerado será [1, 2, 3....]</span></li>
+                                                                    <li>00       <span class="text-muted">- Código gerado será [1, 2, 3....]</span></li>
                                                                     <li>000     <span class="text-muted">- Código gerado será [001, 002, 003....]</span></li>
-                                                                    <li>000.    <span class="text-muted">- Código gerado será [001.01, 002.01, 003.01....]</span></li>
+                                                                    <li>0000    <span class="text-muted">- Código gerado será [001.01, 002.01, 003.01....]</span></li>
                                                                 </ul>
-                                                                <small><b>Lembre-se:</b> são aceitos apenas 4 dígitos, sendo que o último deve ser um ponto (.)!</small>
+                                                                <small><b>Lembre-se:</b> são aceitos apenas 4 dígitos!</small>
                                                             </div>
                                                         @endif
                                                     </div>
 
-                                                    {!! Form::open(['route' => 'configuracoes.save.number-default', 'class' => 'form-horizontal']) !!}
-                                                    <div class="form-group">
-                                                        <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('numeroPadrao', 'PADRÃO PARA NÚMERO DO CÓDIGO DE DOCUMENTO:') !!}
+                                                    
+                                                    <div class="col-md-12 mb-5">
+                                                        {!! Form::open(['route' => 'configuracoes.save.number-default', 'class' => 'form-horizontal']) !!}
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('numeroPadrao', 'PADRÃO PARA CÓDIGO - INSTRUÇÃO DE TRABALHO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('numeroPadrao', $numeroPadraoParaCodigo, ['class' => 'form-control input-validation']) !!}
+                                                            </div>
+                                                            <div class="col-md-offset-8 pull-right col-md-4">
+                                                                <button type="submit" class="btn btn-block btn-outline-success mt-2">Salvar</button>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::text('numeroPadrao', $numeroPadraoParaCodigo, ['class' => 'form-control']) !!}
-                                                        </div>
-                                                        <div class="col-md-offset-8 pull-right col-md-4 mt-4">
-                                                            <button type="submit" class="btn btn-block btn-outline-success">Salvar</button>
-                                                        </div>
+                                                        {!! Form::close() !!}
                                                     </div>
-                                                    {!! Form::close() !!}
+
+                                                    <div class="col-md-12 mt-5 mb-4">
+                                                        {!! Form::open(['route' => 'configuracoes.save.number-default-dg', 'class' => 'form-horizontal']) !!}
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('numeroPadraoDG', 'PADRÃO PARA CÓDIGO - DIRETRIZES DE GESTÃO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('numeroPadraoDG', $numeroPadraoDG, ['class' => 'form-control input-validation']) !!}
+                                                            </div>
+                                                            <div class="col-md-offset-8 pull-right col-md-4">
+                                                                <button type="submit" class="btn btn-block btn-outline-success mt-2">Salvar</button>
+                                                            </div>
+                                                        </div>
+                                                        {!! Form::close() !!}
+                                                    </div>
+
+                                                    <div class="col-md-12 mt-5 mb-4">
+                                                        {!! Form::open(['route' => 'configuracoes.save.number-default-pg', 'class' => 'form-horizontal']) !!}
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('numeroPadraoPG', 'PADRÃO PARA CÓDIGO - PROCEDIMENTOS DE GESTÃO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('numeroPadraoPG', $numeroPadraoPG, ['class' => 'form-control input-validation']) !!}
+                                                            </div>
+                                                            <div class="col-md-offset-8 pull-right col-md-4">
+                                                                <button type="submit" class="btn btn-block btn-outline-success mt-2">Salvar</button>
+                                                            </div>
+                                                        </div>
+                                                        {!! Form::close() !!}
+                                                    </div>
+
+
                                                 </div>
 
                                                 <!-- Apenas o usuário que já é administrador da Qualidade pode ver essa parte. Aí, caso deseje, pode "repassar" seu cargo a outro usuário -->
@@ -682,8 +728,16 @@
                             console.log(data);
                             showToast('Sucesso!', msg, 'success');
                         }
-                    }); 
+                    });     
+                });
+
+                // Toda vez que o usuário estiver digitando em campos que possuem essa classe
+                $('.input-validation').keypress(function(e) {
+                    if(this.value.length>= 4)  return false;
                     
+                    return !(e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57));
+                }).on('paste', function(event) {
+                    event.preventDefault();
                 });
             </script>
 

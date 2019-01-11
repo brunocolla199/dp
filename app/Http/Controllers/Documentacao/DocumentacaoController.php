@@ -220,14 +220,14 @@ class DocumentacaoController extends Controller
                             ->get()->first();
 
                 if( empty($lastDoc) ) { // Ainda não existe documento para esse setor...
-                    $codigo = $this->buildCodDocument(1);
+                    $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                 } else {
                     $arr = explode("-", $lastDoc->codigo);
                     if( count($arr) != 3) { // Houve algum erro ao criar o código do último documento desse setor...
-                        $codigo = $this->buildCodDocument(1);
+                        $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                     } else {
                         $lastCode = (int) $arr[2];
-                        $codigo = $this->buildCodDocument($lastCode + 1);
+                        $codigo = $this->buildCodDocument($lastCode + 1, $text_tipo_documento[0]->sigla);
                     }
                 }
 
@@ -240,14 +240,14 @@ class DocumentacaoController extends Controller
                             ->get()->first();
 
                 if( empty($lastDoc2) ) { // Ainda não existe documento deste tipo...
-                    $codigo = $this->buildCodDocument(1);
+                    $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                 } else { 
                     $arr = explode("-", $lastDoc2->codigo);
                     if( count($arr) != 2) { // Houve algum erro ao criar o código do último documento desse tipo...
-                        $codigo = $this->buildCodDocument(1);
+                        $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                     } else {
                         $lastCode = (int) $arr[1];
-                        $codigo = $this->buildCodDocument($lastCode + 1);
+                        $codigo = $this->buildCodDocument($lastCode + 1, $text_tipo_documento[0]->sigla);
                     }
                 }
             }
@@ -1542,8 +1542,15 @@ class DocumentacaoController extends Controller
     /*
     *  Úteis
     */
-    public function buildCodDocument($n) {
-        $padrao = Configuracao::where('id', '=', '1')->get()[0]->numero_padrao_codigo;
+    public function buildCodDocument($n, $siglaTipoDoc) {
+        if( $siglaTipoDoc == "DG" ) {
+            $padrao = Configuracao::where('id', '=', '3')->get()[0]->numero_padrao_codigo;
+        } else if( $siglaTipoDoc == "PG" ) {
+            $padrao = Configuracao::where('id', '=', '4')->get()[0]->numero_padrao_codigo;
+        } else {
+            $padrao = Configuracao::where('id', '=', '1')->get()[0]->numero_padrao_codigo;
+        }
+
         $codigo = "0";
 
         if( strlen($padrao) == 1 ) {

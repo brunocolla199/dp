@@ -121,6 +121,8 @@ Route::group(['middleware' => ['auth']], function() {
 			Route::get('',	       								['as' => 'configuracoes', 	        						'uses' => 'Configuracoes\ConfiguracoesController@index']);
 			Route::post('filter',	       						['as' => 'configuracoes.filter-sector',  					'uses' => 'Configuracoes\ConfiguracoesController@filter']);
 			Route::post('save/number-default',	    			['as' => 'configuracoes.save.number-default', 	        	'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefault']);
+			Route::post('save/number-default-dg',    			['as' => 'configuracoes.save.number-default-dg',        	'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefaultDG']);
+			Route::post('save/number-default-pg',    			['as' => 'configuracoes.save.number-default-pg',        	'uses' => 'Configuracoes\ConfiguracoesController@saveNumberDefaultPG']);
 			Route::post('save/new-grouping',	    			['as' => 'configuracoes.save.new-grouping', 	        	'uses' => 'Configuracoes\ConfiguracoesController@saveNewGrouping']);
 			Route::post('save/quality-admin',	    			['as' => 'configuracoes.save.quality-admin', 	        	'uses' => 'Configuracoes\ConfiguracoesController@saveQualityAdmin']);
 			Route::post('edit/sector',	    					['as' => 'configuracoes.edit.sector', 	        			'uses' => 'Configuracoes\ConfiguracoesController@editSector']);

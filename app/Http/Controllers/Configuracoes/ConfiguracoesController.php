@@ -42,12 +42,13 @@ class ConfiguracoesController extends Controller
                                 ->orderBy('nome')
                                 ->get();
 
-        $configs = Configuracao::all();
+        $configs = Configuracao::orderBy('id')->get();
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
         $setores = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
 
-        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores, 'gruposTreinamento' => $gruposTreinamento, 
-                                            'gruposDivulgacao' => $gruposDivulgacao, 'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 
+        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores, 
+                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
+                                            'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'numeroPadraoDG' => $configs[2]->numero_padrao_codigo, 'numeroPadraoPG' => $configs[3]->numero_padrao_codigo, 
                                             'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
 
@@ -81,7 +82,7 @@ class ConfiguracoesController extends Controller
                                             'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
 
-
+    // Salva número padrão para as Instruções de Trabalho
     public function saveNumberDefault(NumberDefaultRequest $request) {
         $c = "0";
 
@@ -98,6 +99,52 @@ class ConfiguracoesController extends Controller
         $config[0]->save();
 
         return redirect()->route('configuracoes')->with(['padrao_sucesso' => 'valor']);
+    }
+
+    // Salva número padrão para as Diretrizes de Gestão
+    public function saveNumberDefaultDG(Request $request) {
+        $c = "0";
+
+        if( strlen($request->numeroPadraoDG) < 4 ) {
+            if( strlen($request->numeroPadraoDG) == 1 ) $c = "0";
+            else if( strlen($request->numeroPadraoDG) == 2)  $c = "00";
+            else $c = "000";
+        } else {
+            $c = "000.";
+        }
+        
+        try {
+            $config = Configuracao::find(3);
+            $config->numero_padrao_codigo = $c;
+            $config->save();
+        } catch (\Exception $th) {
+            //throw $th;
+        }
+
+        return redirect()->route('configuracoes')->with(['padrao_sucesso_dg' => 'valor']);
+    }
+
+    // Salva número padrão para os Procedimentos de Gestão
+    public function saveNumberDefaultPG(Request $request) {
+        $c = "0";
+
+        if( strlen($request->numeroPadraoPG) < 4 ) {
+            if( strlen($request->numeroPadraoPG) == 1 ) $c = "0";
+            else if( strlen($request->numeroPadraoPG) == 2)  $c = "00";
+            else $c = "000";
+        } else {
+            $c = "000.";
+        }
+        
+        try {
+            $config = Configuracao::find(4);
+            $config->numero_padrao_codigo = $c;
+            $config->save();
+        } catch (\Exception $th) {
+            //throw $th;
+        }
+
+        return redirect()->route('configuracoes')->with(['padrao_sucesso_pg' => 'valor']);
     }
 
 
