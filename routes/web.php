@@ -48,6 +48,9 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/formularios/okJustifyCancelFormReviewRequest',		['as' => 'ajax.formularios.okJustifyCancelFormReviewRequest',		'uses' => 'AjaxController@okJustifyCancelFormReviewRequest']);
 	Route::post('ajax/formularios/getFilesFormRevisions',					['as' => 'ajax.formularios.getFilesFormRevisions',					'uses' => 'AjaxController@getFileListAllFormRevisions']);
 	Route::post('ajax/notificacoes/cleanAll',								['as' => 'ajax.notificacoes.cleanAll',								'uses' => 'AjaxController@cleanAll']);
+	Route::post('ajax/copiaControlada/save',								['as' => 'ajax.copiaControlada.save',								'uses' => 'AjaxController@saveControlledCopy']);
+	Route::post('ajax/copiaControlada/getCopias',							['as' => 'ajax.copiaControlada.getCopias',							'uses' => 'AjaxController@getCopias']);
+	Route::post('ajax/copiaControlada/removeCopy',							['as' => 'ajax.copiaControlada.remove',								'uses' => 'AjaxController@removeCopy']);
 
 
     /*

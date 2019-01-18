@@ -17,6 +17,7 @@ use App\Formulario;
 use App\FormularioRevisao;
 use App\Notificacao;
 use App\NotificacaoFormulario;
+use App\CopiaControlada;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -368,6 +369,47 @@ class AjaxController extends Controller
             $value->delete();
         }
         return response()->json(['response' => $formNotifications]);  
+    }
+
+
+    // Cópia Controlada
+    public function saveControlledCopy(Request $request) {
+        try {
+            $novoRegistro                = new CopiaControlada();
+            $novoRegistro->numero_copias = (int) $request->numeroDeCopias;
+            $novoRegistro->revisao       = $request->revisaoDasCopias;
+            $novoRegistro->setor         = $request->setorDasCopias;
+            $novoRegistro->documento_id  = $request->idDoc;
+            $novoRegistro->save();
+
+            $copias = CopiaControlada::where('documento_id', '=', $request->idDoc)->orderBy('numero_copias')->get();
+            return response()->json(['response' => $copias]);  
+        } catch(\Exception $e) {
+            return response()->json(['error' => $e]);  
+        }
+    }
+
+
+    public function getCopias(Request $_request) {
+        try {
+            $copias = CopiaControlada::where('documento_id', '=', $_request->idDoc)->orderBy('numero_copias')->get();
+            return response()->json(['response' => $copias]);  
+        } catch(\Exception $e) {
+            return response()->json(['error' => $e]);  
+        }
+    }
+
+
+    public function removeCopy(Request $_request) {
+        try {
+            $copiaControlada = CopiaControlada::where('id', '=', $_request->idCC)->where('documento_id', '=', $_request->idDoc)->first();
+            $copiaControlada->delete();
+            
+            $copias = CopiaControlada::where('documento_id', '=', $_request->idDoc)->orderBy('numero_copias')->get();
+            return response()->json(['response' => $copias]);    
+        } catch(\Exception $e) {
+            return response()->json(['error' => $e]);  
+        }
     }
 
 }
