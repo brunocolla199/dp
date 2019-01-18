@@ -46,6 +46,7 @@ class DocumentacaoController extends Controller
         $formularios       = Formulario::all()->pluck('nome', 'id');
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
         $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
+        $filtroCopiaControladaAtivo = false;
         
         // Aprovadores
         $aprovadores = array();
@@ -99,7 +100,7 @@ class DocumentacaoController extends Controller
                                             'setoresUsuarios' => $setoresUsuarios, 
                                             'formularios' => $formularios,
                                             'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados,
-                                            'nivel_acesso' => $nivel_acesso, 'status' => $status ]);
+                                            'nivel_acesso' => $nivel_acesso, 'status' => $status, 'filtroCopiaControlada' => $filtroCopiaControladaAtivo ]);
     }
 
 
@@ -113,6 +114,7 @@ class DocumentacaoController extends Controller
         $formularios       = Formulario::all()->pluck('nome', 'id');
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
         $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
+        $filtroCopiaControladaAtivo = ( array_key_exists('possuiCopiaControlada', $request->all()) ) ? true : false;
 
         // Aprovadores
         $aprovadores = array();
@@ -157,7 +159,7 @@ class DocumentacaoController extends Controller
                                             'setoresUsuarios' => $setoresUsuarios, 
                                             'formularios' => $formularios,
                                             'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados,
-                                            'nivel_acesso' => $nivel_acesso, 'status' => $status ]);
+                                            'nivel_acesso' => $nivel_acesso, 'status' => $status, 'filtroCopiaControlada' => $filtroCopiaControladaAtivo ]);
     }
 
 
@@ -1578,6 +1580,7 @@ class DocumentacaoController extends Controller
         $list = null;
         $baseData = null;
         $documentos = $this->getDocumentsIndex();
+        $filtroCopiaControladaAtivo = ( array_key_exists('possuiCopiaControlada', $req) ) ? true : false;
         
         // Deixa os resultados em diferentes níveis hierárquicos
         $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
@@ -1621,6 +1624,10 @@ class DocumentacaoController extends Controller
                         }
                         if($req['search_status'] != null) {
                             if($value->etapa == $req['search_status']) $add = true;
+                            else continue;
+                        }
+                        if($filtroCopiaControladaAtivo) {
+                            if($value->copia_controlada) $add = true;
                             else continue;
                         }
 
@@ -1671,6 +1678,10 @@ class DocumentacaoController extends Controller
                         }
                         if($req['search_status'] != null) {
                             if($value->etapa == $req['search_status']) $add = true;
+                            else continue;
+                        }
+                        if($filtroCopiaControladaAtivo) {
+                            if($value->copia_controlada) $add = true;
                             else continue;
                         }
                         
@@ -1905,7 +1916,7 @@ class DocumentacaoController extends Controller
                                 ->join('workflow',          'workflow.documento_id',        '=',    'documento.id')
                                 ->join('tipo_documento',    'tipo_documento.id',            '=',    'documento.tipo_documento_id') 
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );

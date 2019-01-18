@@ -374,9 +374,15 @@
                                                             </div>
                                                         </div>
                                                         <div class="row margin-top-1percent" style="width: 109%">    
-                                                            <div class="col-md-5">
+                                                            <div class="col-md-3">
                                                                 <div class="row">
                                                                     {!! Form::select('search_status', array(null => '- Status -') + $status, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="row" style="margin-top: 5%;">
+                                                                    <input type="checkbox" name="possuiCopiaControlada" id="ckbCopiaControlada" class="filled-in" {{($filtroCopiaControlada) ? 'checked' : ''}} />
+                                                                    <label for="ckbCopiaControlada">Possui Cópia Controlada</label>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-7">
