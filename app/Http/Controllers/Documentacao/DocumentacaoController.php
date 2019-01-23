@@ -1677,8 +1677,8 @@ class DocumentacaoController extends Controller
                             else continue;
                         }
                         if($req['search_status'] != null) {
-                            if($value->etapa == $req['search_status']) $add = true;
-                            else continue;
+                            //  Isso foi feito porque um documento finalizado não vai possuir nenhum status dos que estão sendo listados no select de filtro (exceto 'Análise de Lista de Presença', que não é alterado quando um documento é finalizado e acaba gerando essa inconsistência) e, portanto, se houve um filtro por status, documentos finalizados não devem aparecer (não existe, hoje, filtro por status 'finalizado')
+                            continue;
                         }
                         if($filtroCopiaControladaAtivo) {
                             if($value->copia_controlada) $add = true;
