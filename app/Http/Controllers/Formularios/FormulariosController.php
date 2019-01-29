@@ -35,7 +35,7 @@ class FormulariosController extends Controller
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO );
-        $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_EM_REVISAO => Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
         
         $formularios       = $this->getFormsIndex();
 
@@ -48,7 +48,7 @@ class FormulariosController extends Controller
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO );
-        $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_EM_REVISAO => Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
         
         $formularios       = $this->filterListForms($request->all());
 
@@ -275,8 +275,9 @@ class FormulariosController extends Controller
 
     public function cancelReview(Request $request) {
 
-        $idForm = $request->formulario_id;
-        $formulario = Formulario::where('id', '=', $idForm)->get();
+        $idForm         = $request->formulario_id;
+        $formulario     = Formulario::where('id', '=', $idForm)->get();
+        $wkfFormulario  = WorkflowFormulario::where('formulario_id', '=', $idForm)->first();
         $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $formulario[0]->revisao)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registor e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
 
         // Notificações
@@ -311,6 +312,10 @@ class FormulariosController extends Controller
         $formulario[0]->nome_completo_em_revisao        = null;
         $formulario[0]->justificativa_cancelar_revisao  = $request->justificativaCancelamentoRevisaoForm;
         $formulario[0]->save();
+
+        // Modificando etapa do workflow deste formulário para que ele não fique com etapa 'Em Revisão' ou 'Em Análise pela Qualidade', por exemplo
+        $wkfFormulario->etapa = Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO;
+        $wkfFormulario->save();
 
         return redirect()->route('formularios')->with('cancel_review_success', 'msg');
     }
