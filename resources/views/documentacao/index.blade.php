@@ -432,13 +432,13 @@
                                                                 <th class="text-center text-nowrap">Ações</th>
                                                                 <th class="text-center text-nowrap">Código</th>
                                                                 <th class="text-center">Título do Documento</th>
-                                                                <th class="text-center">Data Emissão</th>
+                                                                <th class="text-center">Última Revisão</th>
                                                                 <th class="text-center text-nowrap ">Revisão</th>
-
+                                                                
                                                                 <th class="text-center">Tipo do Documento</th>
                                                                 <th class="text-center">Status</th>
                                                                 <th class="text-center">Nível Acesso</th>
-                                                                <th class="text-center">Modificado</th>
+                                                                <th class="text-center">Data Emissão Inicial</th>
                                                                 <th class="text-center">Validade</th>
                                                             </tr>
                                                         </thead>
@@ -464,7 +464,8 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->created_at)) }}</td>
+
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->revisao }} </td>
 
@@ -475,7 +476,7 @@
 
                                                                         <td class="text-center">{{ $doc->nivel_acesso }}</td>
 
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->created_at)) }}</td>
 
                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
                                                                     </tr>
@@ -511,7 +512,8 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
+                                                                        
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
 
                                                                         <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
@@ -522,7 +524,7 @@
 
                                                                         <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                     </tr>
