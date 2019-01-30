@@ -163,6 +163,30 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function indexDocsObsoletos() {       
+
+        $documentos = $this->getDocumentsIndexObsolete();
+        $documentos_finalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
+
+        return view('documentacao.index-obsolete', compact('documentos_finalizados'));
+    }
+
+
+    public function filterDocumentsObsoleteIndex(Request $request) {
+
+        $documentos = $this->getDocumentsIndexObsolete();
+        $documentos_finalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
+        
+        foreach ($documentos_finalizados as $key => $value) {
+            
+            if( stripos(strtolower(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $value->nome)[0]), strtolower($request->get('search_tituloDocObsoleto'))) === false) 
+                unset($documentos_finalizados[$key]);
+        }
+
+        return view('documentacao.index-obsolete', compact('documentos_finalizados'));
+    }
+
+
     public function validateData(DadosNovoDocumentoRequest $request) { 
 
         $tituloDocumento = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
@@ -1919,7 +1943,7 @@ class DocumentacaoController extends Controller
                                         'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
-                                );
+                                )->where('dados_documento.obsoleto', '=', false);
                             
         // Realiza um controle da busca de documentos, começando pela hierarquia principal: documentos não finalizados e finalizados.
         $documentosEmProcessoDeCriacao = $this->getDocumentosEmProcessoDeCriacao($base_query);
@@ -1941,6 +1965,38 @@ class DocumentacaoController extends Controller
             }
         }
 
+        if( count($documentosFinalizados) > 0 ) {
+            usort($documentosFinalizados, array($this, "cmp"));
+            $docs["finalizados"] = $documentosFinalizados;
+            
+            //Adicionando formulários vinculados ao doc
+            foreach ($docs['finalizados'] as $key => &$value) {
+                $value->formularios = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $value->id)->pluck('formulario.id as id');
+            }
+        }
+        
+        return $docs;
+    }
+
+
+    public function getDocumentsIndexObsolete() {
+        // Criação da query base para a busca de todos os possíveis documentos que o usuário tem permissão de visualizar
+        $base_query = DB::table('documento')
+                                ->join('dados_documento',   'dados_documento.documento_id', '=',    'documento.id')
+                                ->join('workflow',          'workflow.documento_id',        '=',    'documento.id')
+                                ->join('tipo_documento',    'tipo_documento.id',            '=',    'documento.tipo_documento_id') 
+                                ->select('documento.*', 
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
+                                        'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
+                                        'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
+                                )->where('dados_documento.obsoleto', '=', true);
+                            
+        
+        // Criando array final para a listagem de documentos
+        $docs = array();
+        $documentosFinalizados = $this->getDocumentosFinalizados($base_query);
+        
+        
         if( count($documentosFinalizados) > 0 ) {
             usort($documentosFinalizados, array($this, "cmp"));
             $docs["finalizados"] = $documentosFinalizados;

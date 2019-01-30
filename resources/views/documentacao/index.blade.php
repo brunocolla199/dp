@@ -395,12 +395,27 @@
                                                             <div class="col-md-6"> </div>
                                                             <div class="col-md-6">
                                                                 <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        <a href="{{ route('documentacao') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
-                                                                    </div>
+                                                                    
+                                                                    @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE)
+                                                                        <div class="col-md-4">
+                                                                            <a href="{{ route('documentacao.obsoletos') }}" class="btn btn-block waves-effect waves-light btn-outline-danger"><i class="fa fa-expeditedssl"></i> Obsoletos</a>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <a href="{{ route('documentacao') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
+                                                                        </div>
+                                                                    @else
+                                                                        <div class="col-md-6">
+                                                                            <a href="{{ route('documentacao') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
+                                                                        </div>
+
+                                                                    @endif
+
                                                                 </div>
                                                             </div>
                                                         </div>                                                            
@@ -470,79 +485,47 @@
                                                             @if( $documentos_finalizados != null && count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
 
-                                                                    @if( $docF->obsoleto && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                        <tr>
-                                                                            <td class="text-nowrap text-center">
-                                                                                <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Documento"></i> </a> 
+                                                                    <tr>
+                                                                        <td class="text-nowrap text-center">
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+
+                                                                                <a href="#" class="m-r-15" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+                                                                            @endif
+
+                                                                            @if( Auth::user()->permissao_elaborador )
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
+                                                                            @endif
+
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                <a href="javascript:void(0)" class="btn-tornar-documento-obsoleto-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-danger" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
+                                                                            @endif
+                                                                        </td>
+
+                                                                        <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
+
+                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                            {{ Form::hidden('document_id', $docF->id) }}
+                                                                            <td class="text-center">
+                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                             </td>
+                                                                        {{ Form::close() }}
 
-                                                                            <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
-                                                                            {{ Form::open(['route' => 'documentacao.view-obsolete-doc', 'method' => 'POST']) }}
-                                                                                {{ Form::hidden('document_id', $docF->id) }}
-                                                                                <td class="text-center">
-                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
-                                                                                </td>
-                                                                            {{ Form::close() }}
-
-                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
-
-                                                                            <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
+                                                                        <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
 
-                                                                            <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
-                                                                            
-                                                                            <td class="text-center"><p class="font-weight-bold text-danger"> Obsoleto </p></td>
+                                                                        <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
 
-                                                                            <td class="text-center">{{ $docF->nivel_acesso }}</td>
+                                                                        <td class="text-center"><p class="text-muted font-weight-bold text-success"> Finalizado </p> </td>
 
-                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
+                                                                        <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
-                                                                            <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
-                                                                        </tr>
-                                                                    @elseif( !$docF->obsoleto )
-                                                                        <tr>
-                                                                            <td class="text-nowrap text-center">
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                    <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
 
-                                                                                    <a href="#" class="m-r-15" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
-                                                                                @endif
-
-                                                                                @if( Auth::user()->permissao_elaborador )
-                                                                                    <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
-                                                                                @endif
-
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                    <a href="javascript:void(0)" class="btn-tornar-documento-obsoleto-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-danger" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
-                                                                                @endif
-                                                                            </td>
-
-                                                                            <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
-
-                                                                            {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
-                                                                                {{ Form::hidden('document_id', $docF->id) }}
-                                                                                <td class="text-center">
-                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
-                                                                                </td>
-                                                                            {{ Form::close() }}
-
-                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
-
-                                                                            <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
-
-
-                                                                            <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
-
-                                                                            <td class="text-center"><p class="text-muted font-weight-bold text-success"> Finalizado </p> </td>
-
-                                                                            <td class="text-center">{{ $docF->nivel_acesso }}</td>
-
-                                                                            <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
-
-                                                                            <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
-                                                                        </tr>
-                                                                    @endif
+                                                                        <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
+                                                                    </tr>
                                                                     
                                                                 @endforeach
                                                             @endif
@@ -647,28 +630,6 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.Modal de confirmação - deseja mesmo tornar o documento obsoleto -->
-            
-            <!-- Modal de confirmação - deseja mesmo ativar o documento -->
-            <div class="modal fade" id="ativar-documento-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-body"> 
-                            Tem certeza que deseja ativar o documento ? 
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
-
-                            {{ Form::open(['route' => 'documentacao.make-active-doc', 'method' => 'POST']) }}
-                                {{ Form::hidden('doc_id', '', ['id' => 'form_id_make_active_doc']) }}
-                                <button type="submit" class="btn btn-success waves-effect"> Sim </button>
-                            {!! Form::close() !!}
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.Modal de confirmação - deseja mesmo ativar o documento -->
 
 
             <script>
@@ -760,16 +721,6 @@
                         });
                     });
 
-                    // Ao clicar no botão que abrirá o modal de confirmação para ativar o formulário 
-                    $(".btn-ativar-documento-modal").click(function(){
-                        var id = $(this).data('id');
-                        $("#form_id_make_active_doc").val(id);
-                        
-                        $("#ativar-documento-modal").modal({
-                            backdrop: 'static',
-                            keyboard: false
-                        });
-                    });
                 });
             </script>
 

@@ -79,7 +79,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('salva-lista-presenca',			['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
 		Route::post('resend-list',  				['as' => 'documentacao.resend-list',	    			'uses' => 'Documentacao\DocumentacaoController@resendList']);
 		Route::post('save-link-form',	     		['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
-		Route::post('start-review',	     		['as' => 'documentacao.start-review',          			'uses' => 'Documentacao\DocumentacaoController@startReview']);
+		Route::post('start-review',	     			['as' => 'documentacao.start-review',          			'uses' => 'Documentacao\DocumentacaoController@startReview']);
 		Route::post('cancel-review',				['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
 		Route::post('save-attached-start-workflow',	['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
 		Route::post('make-obsolete-doc',	  		['as' => 'documentacao.make-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@makeObsoleteDoc']);
@@ -137,6 +137,12 @@ Route::group(['middleware' => ['auth']], function() {
 			Route::get('link/{id}/users_sectors', 				['as' => 'configuracoes.link.users_sectors',   				'uses' => 'Configuracoes\ConfiguracoesController@linkUsersSectors']);
 			Route::post('link/save', 							['as' => 'configuracoes.link.save',    						'uses' => 'Configuracoes\ConfiguracoesController@linkSave']);
 			Route::get('lista-presenca/{id}/aprovadores',		['as' => 'configuracoes.lista_presenca.aprovadores',    	'uses' => 'Configuracoes\ConfiguracoesController@defineAprovadoresListaPresenca']);
+		});
+
+		// Documentação (2)
+		Route::group(['prefix' => 'documentacao'], function() {
+			Route::get('obsoletos',	  							['as' => 'documentacao.obsoletos',							'uses' => 'Documentacao\DocumentacaoController@indexDocsObsoletos']);
+			Route::post('filter-documents-obsolete-index',  	['as' => 'documentacao.filter-documents-obsolete-index',	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsObsoleteIndex']);
 		});
 
 	});
