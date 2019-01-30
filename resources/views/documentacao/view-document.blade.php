@@ -208,7 +208,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="row text-center">
-                                            <div class="col-md-8">
+                                            <div class="col-md-7">
                                                 @if( isset($justificativa) && $justificativa != "''" && $justificativa != "")
                                                     <div class="ribbon-wrapper card ">
                                                         <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
@@ -216,11 +216,11 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div class="col-md-4 align-middle">    
+                                            <div class="col-md-5 align-middle">    
                                                 {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
                                                     {{ Form::hidden('documento_id', $document_id) }}
                                                     {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                    {!! Form::button('Encaminhar para validação/aprovação <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                    {!! Form::button('Encaminhar para aprovação <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
                                                 {{ Form::close() }}
                                             </div>
                                         </div>
