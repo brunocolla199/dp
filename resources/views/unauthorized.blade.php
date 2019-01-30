@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="icon" href="{{ asset('logouri.png') }}">
-        <title>Uri</title>
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/dpworld.ico') }}">
+        <title>DP World - Acesso Negado</title>
 	</head>
 
 	<style type="text/css">
