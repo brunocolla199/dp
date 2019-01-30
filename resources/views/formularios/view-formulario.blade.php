@@ -116,7 +116,7 @@
                                                 <div class="col-md-12 pull-right">    
                                                     {{ Form::hidden('formulario_id', $formulario_id) }}
                                                     {{ Form::hidden('etapa_form', $etapa_form) }}
-                                                    {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
+                                                    {!! Form::button('Encaminhar para validação/aprovação <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
                                                 </div>
                                             </div>    
                                         </div>

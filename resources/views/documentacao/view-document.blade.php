@@ -220,7 +220,7 @@
                                                 {{ Form::open(['route' => 'documentacao.resend-document', 'method' => 'POST']) }}
                                                     {{ Form::hidden('documento_id', $document_id) }}
                                                     {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                    {!! Form::button('REENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                    {!! Form::button('Encaminhar para validação/aprovação <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
                                                 {{ Form::close() }}
                                             </div>
                                         </div>
