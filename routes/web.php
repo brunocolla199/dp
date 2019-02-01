@@ -29,7 +29,6 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('ajax/usuarios/retornarUsuarios',  							['as' => 'retornarUsuarios', 	  									'uses' => 'AjaxController@getUsers']);
 	Route::post('ajax/usuarios/trocarSetor',  								['as' => 'ajax.usuarios.trocarSetor', 	  							'uses' => 'AjaxController@trocarSetor']);
 	Route::post('ajax/usuarios/removerDoGrupo',								['as' => 'ajax.usuarios.removerDoGrupo', 	  						'uses' => 'AjaxController@removerDoGrupo']);
-	Route::post('ajax/usuarios/aprovadoresPorSetor',						['as' => 'ajax.usuarios.aprovadoresPorSetor', 	  					'uses' => 'AjaxController@getAprovadoresPorSetor']);
 	Route::post('ajax/usuarios/permissaoElaborador',						['as' => 'ajax.usuarios.permissaoElaborador', 	  					'uses' => 'AjaxController@setPermissaoElaborador']);
 	Route::post('ajax/usuarios/permissaoAprovarListaPresenca',				['as' => 'ajax.usuarios.permissaoAprovarListaPresenca',				'uses' => 'AjaxController@setPermissaoAprovarListaPresenca']);
 	Route::get('ajax/setores/retornarSetores',  							['as' => 'retornarSetores', 	  									'uses' => 'AjaxController@getSectors']);

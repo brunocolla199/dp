@@ -103,7 +103,6 @@
                                                                 <th class="text-center">Última Revisão</th>
                                                                 <th class="text-center text-nowrap ">Revisão</th>
 
-                                                                <th class="text-center">Tipo do Documento</th>
                                                                 <th class="text-center">Status</th>
                                                                 <th class="text-center">Nível Acesso</th>
                                                                 <th class="text-center">Data Emissão Inicial</th>
@@ -133,8 +132,6 @@
 
                                                                         <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
-
-                                                                        <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
                                                                         
                                                                         <td class="text-center"><p class="font-weight-bold text-danger"> Obsoleto </p></td>
 

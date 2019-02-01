@@ -171,7 +171,7 @@
                                                             </div>
                                                             <div class="col-md-12">
 
-                                                                {!! Form::select('aprovador', $aprovadores, '', ['class' => 'form-control  custom-select', 'id' => 'aprovadores']) !!}
+                                                                {!! Form::select('aprovador', $aprovadoresSetorAtual, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>    
@@ -199,31 +199,51 @@
                                                     </div>                                                    
                                                 </div>
 
-                                                <!-- Linha 4 --> 
+                                                <!-- Linha 4 -->
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-10 control-label font-bold">
-                                                                {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
+                                                                {!! Form::label('grupoTreinamentoDoc', 'GRUPO DE TREINAMENTO:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('grupoTreinamento', $gruposTreinamento, '', ['class' => 'form-control  custom-select']) !!}
+                                                                <select multiple id="optgroup-newGrupoTreinamentoDoc" name="grupoTreinamentoDoc[]">
+                                                                    @foreach($setoresUsuarios as $key => $su)
+                                                                        <optgroup label="{{ $key }}">
+                                                                            @foreach($su as $key2 => $user)
+                                                                                <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div class="col-md-10 control-label font-bold">
-                                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                {!! Form::select('grupoDivulgacao', $gruposDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        </div>   
+                                                    </div>                                                    
                                                 </div>
 
-                                                <!-- Linha 5 --> 
+                                                <!-- Linha 5 -->
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('grupoDivulgacaoDoc', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <select multiple id="optgroup-newGrupoDivulgacaoDoc" name="grupoDivulgacaoDoc[]">
+                                                                    @foreach($setoresUsuarios as $key => $su)
+                                                                        <optgroup label="{{ $key }}">
+                                                                            @foreach($su as $key2 => $user)
+                                                                                <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>   
+                                                    </div>                                                    
+                                                </div>
+
+                                                <!-- Linha 6 --> 
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
@@ -250,7 +270,7 @@
                                                     </div>
                                                 </div>                                                
 
-                                                <!-- Linha 6 -->
+                                                <!-- Linha 7 -->
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
@@ -278,7 +298,7 @@
                                                     </div>           
                                                 </div>
 
-                                                <!-- Linha 7 -->
+                                                <!-- Linha 8 -->
                                                 <div class="row">
                                                     <div class="col-md-12 mb-4">
                                                         @if ($errors->any())
@@ -343,14 +363,14 @@
                                                                     {!! Form::select('search_tipoDocumento', $tipoDocumentos, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-4" >
+                                                            <div class="col-md-4">
                                                                 <div class="row">
-                                                                    {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $gruposDivulgacao, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
+                                                                    {!! Form::select('search_status', array(null => '- Status -') + $status, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-4" >
-                                                                <div class="row ">
-                                                                    {!! Form::select('search_grupoTreinamento', array(null => '- Grupo Treinamento -') + $gruposTreinamento, '', ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
+                                                            <div class="col-md-4">
+                                                                <div class="row">
+                                                                    {!! Form::select('search_nivel_acesso', array(null => '- Nível de Acesso -') + $nivel_acesso, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
                                                                 </div>
                                                             </div>
                                                         </div>  
@@ -367,32 +387,20 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-4">
-                                                                <div class="row">
-                                                                    {!! Form::select('search_nivel_acesso', array(null => '- Nível de Acesso -') + $nivel_acesso, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row margin-top-1percent" style="width: 109%">    
+                                                            <div class="col-md-1"></div>
                                                             <div class="col-md-3">
-                                                                <div class="row">
-                                                                    {!! Form::select('search_status', array(null => '- Status -') + $status, null, ['class' => 'form-control  custom-select', 'style' => 'width: 96%']) !!}
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <div class="row" style="margin-top: 5%;">
+                                                                <div class="row" style="margin-top: 4%;">
                                                                     <input type="checkbox" name="possuiCopiaControlada" id="ckbCopiaControlada" class="filled-in" {{($filtroCopiaControlada) ? 'checked' : ''}} />
                                                                     <label for="ckbCopiaControlada">Possui Cópia Controlada</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-7">
+                                                        </div>
+                                                        <div class="row margin-top-1percent" style="width: 108%">    
+                                                            <div class="col-md-6">
                                                                 <div class="row">
-                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -', 'style' => 'width: 95%; margin-left:2.5%']) !!}
+                                                                    {!! Form::text('search_tituloDocumento', null, ['class' => 'form-control', 'placeholder' => '- Título do Documento -', 'style' => 'width: 95%; ']) !!}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row margin-top-1percent" style="width: 109%">    
-                                                            <div class="col-md-6"> </div>
                                                             <div class="col-md-6">
                                                                 <div class="row">
                                                                     
@@ -418,7 +426,7 @@
 
                                                                 </div>
                                                             </div>
-                                                        </div>                                                            
+                                                        </div>                                                        
                                                     {!! Form::close() !!} 
                                                     
                                                 </div>
@@ -435,10 +443,8 @@
                                                                 <th class="text-center">Última Revisão</th>
                                                                 <th class="text-center text-nowrap ">Revisão</th>
                                                                 
-                                                                <th class="text-center">Tipo do Documento</th>
                                                                 <th class="text-center">Status</th>
                                                                 <th class="text-center">Nível Acesso</th>
-                                                                <th class="text-center">Data Emissão Inicial</th>
                                                                 <th class="text-center">Validade</th>
                                                             </tr>
                                                         </thead>
@@ -464,19 +470,15 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-
                                                                         <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->revisao }} </td>
-
-                                                                        <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $doc->nome_tipo }} </td>
                                                                         
+                                                                        
+
                                                                         <td class="text-center"><p class="text-muted font-weight-bold {{ ($doc->etapa == 'Finalizado') ? ' text-success' : '' }} "> {{ $doc->etapa }} </p></td>
 
-
                                                                         <td class="text-center">{{ $doc->nivel_acesso }}</td>
-
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->created_at)) }}</td>
 
                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
                                                                     </tr>
@@ -518,13 +520,9 @@
                                                                         <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
 
-                                                                        <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $docF->nome_tipo }} </td>
-
                                                                         <td class="text-center"><p class="text-muted font-weight-bold text-success"> Finalizado </p> </td>
 
                                                                         <td class="text-center">{{ $docF->nivel_acesso }}</td>
-
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->created_at)) }}</td>
 
                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                     </tr>
@@ -674,30 +672,7 @@
                         $('#form-generate-document').submit();
                     });
 
-                    /**
-                     *  REMOVER ESSA FUNÇÃO E O TRIGGER ABAIXO QUANDO O ITEM PARA PODER CRIAR APENAS DOCUMENTOS DO SETOR QUE PERTENCE FOR VALIDADO (Porque essa função era responsável por permitir que apenas usuários aprovadores do setor que estava selecionado naquele momento fossem escolhidos)
-                     */
-                    // Mudanças no select de setor dono do documento  
-                    $("#setor_dono_doc").change(function(){
-                        var obj = {'id': $("#setor_dono_doc").val()};
-
-                        ajaxMethod('POST', " {{ URL::route('ajax.usuarios.aprovadoresPorSetor') }} ", obj).then(function(result) {
-                            var data = result.response;
-                            $("#aprovadores").empty();
-
-                            if(Object.keys(data).length > 0 ) {    
-                                Object.keys(data).forEach(function(key) {
-                                    $('#aprovadores').append($('<option>', { 
-                                        value: key,
-                                        text : data[key]
-                                    }));
-                                });
-                            }
-
-                        }, function(err) {
-                        });
-                    });
-
+                    
                     // Chama trigger quando a página é recarregada
                     $("#setor_dono_doc").val( $("#setor_dono_doc").val() ).trigger("change");
 
@@ -762,6 +737,88 @@
             *
             */
             $('#optgroup-newAreaDeInteresse').multiSelect({
+                selectableOptgroup: true,
+                selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                afterInit: function(ms){
+                    var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                    .on('keydown', function(e){
+                    if (e.which === 40){
+                        that.$selectableUl.focus();
+                        return false;
+                    }
+                    });
+
+                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                    .on('keydown', function(e){
+                    if (e.which == 40){
+                        that.$selectionUl.focus();
+                        return false;
+                    }
+                    });
+                },
+                afterSelect: function(){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                },
+                afterDeselect: function(values){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                }
+            });
+
+
+            /*
+            * MultiSelect de NOVO GRUPO DE TREINAMENTO PARA O DOCUMENTO
+            */
+            $('#optgroup-newGrupoTreinamentoDoc').multiSelect({
+                selectableOptgroup: true,
+                selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                afterInit: function(ms){
+                    var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                    .on('keydown', function(e){
+                    if (e.which === 40){
+                        that.$selectableUl.focus();
+                        return false;
+                    }
+                    });
+
+                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                    .on('keydown', function(e){
+                    if (e.which == 40){
+                        that.$selectionUl.focus();
+                        return false;
+                    }
+                    });
+                },
+                afterSelect: function(){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                },
+                afterDeselect: function(values){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                }
+            });
+
+
+            /*
+            * MultiSelect de NOVO GRUPO DE DIVULGAÇÃO PARA O DOCUMENTO
+            */
+            $('#optgroup-newGrupoDivulgacaoDoc').multiSelect({
                 selectableOptgroup: true,
                 selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
                 selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",

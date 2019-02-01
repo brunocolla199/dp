@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Documentacao;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\GrupoTreinamento;
-use App\GrupoDivulgacao;
+use App\GrupoTreinamentoDocumento;
+use App\GrupoDivulgacaoDocumento;
 use App\TipoDocumento;
 use App\Documento;
 use App\DadosDocumento;
@@ -41,40 +41,16 @@ class DocumentacaoController extends Controller
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
         $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
         $filtroCopiaControladaAtivo = false;
         
         // Aprovadores
-        $aprovadores = array();
-        $aprovadoresSetorAtual = null;
-        $setoresQuePossuemAprovadores = DB::table('aprovador_setor')
-                                                ->select('setor_id')
-                                                ->groupBy('setor_id')
-                                                ->get();
-        
-        foreach ($setoresQuePossuemAprovadores as $key => $value) {
-            $setor = Setor::where('id', '=', $value->setor_id)->get();
-            
-            $users = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                            ->where('aprovador_setor.setor_id', '=', $value->setor_id)
-                            ->get()->pluck('name', 'usuario_id')->toArray();
+        $aprovadoresSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+                                    ->where('aprovador_setor.setor_id', '=', Auth::user()->setor_id)
+                                    ->get()->pluck('name', 'usuario_id')->toArray();
 
-            $aprovadores[$setor[0]->nome] = $users;
-        }
-        
-        $aprovadorSetorAtual = null;
-        $nomeDoPrimeiroSetorQuePossuiAprovador = (count($aprovadores)>0) ? array_keys($aprovadores)[0] : null;
-        if($nomeDoPrimeiroSetorQuePossuiAprovador != null) {
-            $idPrimeiroAprovador = array_keys($aprovadores[$nomeDoPrimeiroSetorQuePossuiAprovador])[0];
-            $aprovadorSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                                        ->where('aprovador_setor.usuario_id', '=', $idPrimeiroAprovador)
-                                        ->get()
-                                        ->pluck('name', 'id');
-        }
     
         // Área de Interesse
         $setoresUsuarios = [];
@@ -94,8 +70,7 @@ class DocumentacaoController extends Controller
         $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
         return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
-                                            'aprovadores' => $aprovadores, 'aprovadorSetorAtual' => $aprovadorSetorAtual,
-                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
+                                            'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
                                             'setores' => $setores, 'setorUsuarioAtual' => $setorUsuarioAtual,
                                             'setoresUsuarios' => $setoresUsuarios, 
                                             'formularios' => $formularios,
@@ -109,31 +84,15 @@ class DocumentacaoController extends Controller
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
         $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
         $filtroCopiaControladaAtivo = ( array_key_exists('possuiCopiaControlada', $request->all()) ) ? true : false;
 
         // Aprovadores
-        $aprovadores = array();
-        $aprovadoresSetorAtual = array();
-        $setoresQuePossuemAprovadores = DB::table('aprovador_setor')
-                                                ->select('setor_id')
-                                                ->groupBy('setor_id')
-                                                ->get();
-        
-        foreach ($setoresQuePossuemAprovadores as $key => $value) {
-            $setor = Setor::where('id', '=', $value->setor_id)->get();
-            $users = AprovadorSetor::where('setor_id', '=', $value->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
-            $aprovadores[$setor[0]->nome] = $users;
-        }
-
         $aprovadoresSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                                        ->where('aprovador_setor.setor_id', '=', array_keys($setores)[0])
-                                        ->get()
-                                        ->pluck('name', 'id');
+                                    ->where('aprovador_setor.setor_id', '=', Auth::user()->setor_id)
+                                    ->get()->pluck('name', 'usuario_id')->toArray();
 
         // Área de Interesse
         $setoresUsuarios = [];
@@ -153,8 +112,7 @@ class DocumentacaoController extends Controller
         $docsFinalizados = ( is_array($documentos) && array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
         return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
-                                            'aprovadores' => $aprovadores, 'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
-                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
+                                            'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
                                             'setores' => $setores, 'setorUsuarioAtual' => $setorUsuarioAtual,
                                             'setoresUsuarios' => $setoresUsuarios, 
                                             'formularios' => $formularios,
@@ -188,7 +146,6 @@ class DocumentacaoController extends Controller
 
 
     public function validateData(DadosNovoDocumentoRequest $request) { 
-
         $tituloDocumento = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
 
         $documentos = DB::table('documento')
@@ -208,12 +165,6 @@ class DocumentacaoController extends Controller
     
             $aprovador               = $request->aprovador;
             $text_aprovador          = User::where('id', '=', $request->aprovador)->get();
-    
-            $grupoTreinamento        = $request->grupoTreinamento;
-            $text_grupoTreinamento   = GrupoTreinamento::where('id', '=', $request->grupoTreinamento)->get();
-    
-            $grupoDivulgacao         = $request->grupoDivulgacao;
-            $text_grupoDivulgacao    = GrupoDivulgacao::where('id', '=', $request->grupoDivulgacao)->get();
             
             $copiaControlada         = ($request->copiaControlada) ? true : false;
             $text_copiaControlada    = ($request->copiaControlada) ? 'Sim' : 'Não';
@@ -288,8 +239,7 @@ class DocumentacaoController extends Controller
             return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
                                                             'nivelAcessoDocumento' => $nivelAcessoDocumento,
                                                             'aprovador' => $aprovador, 'text_aprovador' => $text_aprovador[0]->name,
-                                                            'grupoTreinamento' => $grupoTreinamento, 'text_grupoTreinamento' => $text_grupoTreinamento[0]->nome, 
-                                                            'grupoDivulgacao' => $grupoDivulgacao, 'text_grupoDivulgacao' => $text_grupoDivulgacao[0]->nome, 
+                                                            'grupoTreinamento' => $request->grupoTreinamentoDoc, 'grupoDivulgacao' => $request->grupoDivulgacaoDoc, 
                                                             'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
                                                             'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
                                                             'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
@@ -297,137 +247,6 @@ class DocumentacaoController extends Controller
         }
 
     }
-
-    /*
-    public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
-        $novoDocumento = $request->all();
-        
-        // Popular a tabela 'documento' e, em seguida, as tabelas: 'dados_dcumento', 'area_interesse_documento', 'workflow'
-         //if (Input::file('doc_uploaded') != null) {
-            $file = $request->file('doc_uploaded', 'local');
-            $extensao = $file->getClientOriginalExtension();
-            $titulo   = \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']) . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
-            $codigo   = $novoDocumento['codigoDocumento'];
-            $path     = $file->storeAs('/uploads', $titulo . "." . $extensao, 'local');
-
-            $documento = new Documento();
-            $documento->nome                 = $titulo;
-            $documento->codigo               = $codigo;
-            $documento->extensao             = $extensao;
-            $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
-            $documento->save();
-            
-            // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
-            $dados_documento = new DadosDocumento();
-            $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
-            $dados_documento->status                            = true;
-            $dados_documento->observacao                        = "Documento Novo";
-            $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];
-            $dados_documento->nivel_acesso                      = $novoDocumento['nivel_acesso'];
-            $dados_documento->necessita_revisao                 = false;
-            $dados_documento->id_usuario_solicitante            = null;
-            $dados_documento->revisao                           = "00";
-            $dados_documento->justificativa_rejeicao_revisao    = null;
-            $dados_documento->em_revisao                        = false;
-            $dados_documento->justificativa_cancelar_revisao    = null;
-            $dados_documento->finalizado                        = false;
-            $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
-            $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
-            $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
-            $dados_documento->elaborador_id                     = Auth::user()->id;
-            $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
-            $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
-            $dados_documento->save();
-            
-            // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
-            if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
-                foreach($novoDocumento['areaInteresse'] as $key => $user) {
-                    $areaInteresseDocumento = new AreaInteresseDocumento();
-                    $areaInteresseDocumento->documento_id  = $documento->id;
-                    $areaInteresseDocumento->usuario_id  = $user;
-                    $areaInteresseDocumento->save();
-                }
-            }
-
-            //Populando a tabela de vinculação Documento -> Formulários
-            if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
-                foreach($novoDocumento['formsAtrelados'] as $key => $form) {
-                    $documentoFormulario = new DocumentoFormulario();
-                    $documentoFormulario->documento_id  = $documento->id;
-                    $documentoFormulario->formulario_id = $form;
-                    $documentoFormulario->save();
-                }
-            }
-
-         //}
-        
-        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
-    }
-    */
-
-    /*
-    public function saveNewDocument(Request $request) {         
-        
-        $novoDocumento = $request->all();
-        $titulo   =  \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']);
-        $codigo   = $novoDocumento['codigoDocumento']; 
-        $extensao = 'docx';
-
-        Storage::disk('local')->put('uploads/'. $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.html', $novoDocumento['docData']); 
-
-        $documento = new Documento();
-        $documento->nome                 = $titulo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
-
-        $documento->codigo               = $codigo;
-        $documento->extensao             = $extensao;
-        $documento->tipo_documento_id    = $novoDocumento['tipo_documento'];
-        $documento->save();
-        
-        // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
-        $dados_documento = new DadosDocumento();
-        $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
-        $dados_documento->status                            = true;
-        $dados_documento->observacao                        = "Documento Novo";
-        $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];
-        $dados_documento->nivel_acesso                      = $novoDocumento['nivel_acesso'];
-        $dados_documento->necessita_revisao                 = false;
-        $dados_documento->id_usuario_solicitante            = null;
-        $dados_documento->revisao                           = "00";
-        $dados_documento->justificativa_rejeicao_revisao    = null;
-        $dados_documento->em_revisao                        = false;
-        $dados_documento->justificativa_cancelar_revisao    = null;
-        $dados_documento->finalizado                        = false;
-        $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
-        $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
-        $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
-        $dados_documento->elaborador_id                     = Auth::user()->id;
-        $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
-        $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
-        $dados_documento->save();
-        
-        // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
-        if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
-            foreach($novoDocumento['areaInteresse'] as $key => $user) {
-                $areaInteresseDocumento = new AreaInteresseDocumento();
-                $areaInteresseDocumento->documento_id  = $documento->id;
-                $areaInteresseDocumento->usuario_id  = $user;
-                $areaInteresseDocumento->save();
-            }
-        }
-
-        //Populando a tabela de vinculação Documento -> Formulários
-        if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
-            foreach($novoDocumento['formsAtrelados'] as $key => $form) {
-                $documentoFormulario = new DocumentoFormulario();
-                $documentoFormulario->documento_id  = $documento->id;
-                $documentoFormulario->formulario_id = $form;
-                $documentoFormulario->save();
-            }
-        }
-
-        return View::make('documentacao.define-documento', array('overlay_sucesso' => 'valor', 'docData'=>$novoDocumento['docData']));
-    }
-    */
 
 
     public function salvaAnexoElaboradorEIniciaWorkflow(Request $request) {
@@ -444,15 +263,10 @@ class DocumentacaoController extends Controller
         $workflow->save();
 
         // Gravar notificação para todos usuários do setor Qualidade sobre a importação do documento
+        $acao = ($request->acao == "import") ? "importado" : "emitido";
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-        if($request->acao == "import") {
-            foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi importado e precisa ser revisado.", true, $user->id, $request->documento_id);
-            }
-        } else {            
-            foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi emitido e necessita ser revisado.", true, $user->id, $request->documento_id);
-            }
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi " . $acao . " e precisa ser revisado.", true, $user->id, $request->documento_id);
         }
             
         // [E-mail -> (4)]
@@ -703,29 +517,6 @@ class DocumentacaoController extends Controller
     }
 
     protected function startReview(Request $request) {        
-        /*
-        $documento = Documento::where('id', '=', $request->document_id)->get();
-        $dados_documento = DadosDocumento::where('documento_id', '=', $documento[0]->id)->get();
-        
-        $dados_documento[0]->observacao = Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO;
-        $dados_documento[0]->necessita_revisao = true;
-        $dados_documento[0]->id_usuario_solicitante = Auth::user()->id;
-        $dados_documento[0]->save();
-        
-        // Notificações
-        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-        foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("Existe uma solicitação de revisão para o documento " . $documento[0]->codigo . ".", true, $user->id, $documento[0]->id);
-        }
-        
-        // Histórico
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO, $documento[0]->id);
-        
-        return redirect()->route('documentacao')->with('request_review_success', 'message');
-        */
-        // ---------------
-        
-        
         $idDoc = $request->document_id;
         
         $documento = Documento::find($request->document_id);
@@ -799,7 +590,6 @@ class DocumentacaoController extends Controller
 
         return redirect()->route('documentacao')->with('start_review_success', 'message');
     }
-
 
 
     protected function cancelReview(Request $request) {
@@ -971,7 +761,7 @@ class DocumentacaoController extends Controller
         // Documento
         $documento = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
                                 ->where('documento.id', '=', $id)
-                                ->select('documento.id', 'nome', 'codigo', 'nivel_acesso', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'copia_controlada', 'validade', 'setor_id')->first();
+                                ->select('documento.id', 'nome', 'codigo', 'nivel_acesso', 'aprovador_id', 'copia_controlada', 'validade', 'setor_id')->first();
 
         if( $documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_LIVRE ) {
             $documento['nivel_acesso_fake_id'] = 0;
@@ -994,6 +784,13 @@ class DocumentacaoController extends Controller
 
         $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')
                                                                     ->where('documento_id', '=', $id)->select('usuario_id')->get()->pluck('usuario_id')->toArray();
+
+        $usuariosGrupoTreinamentoDocumento = GrupoTreinamentoDocumento::join('users', 'users.id', '=', 'grupo_treinamento_documento.usuario_id')
+                                                                    ->where('documento_id', '=', $id)->select('usuario_id')->get()->pluck('usuario_id')->toArray();
+
+        $usuariosGrupoDivulgacaoDocumento = GrupoDivulgacaoDocumento::join('users', 'users.id', '=', 'grupo_divulgacao_documento.usuario_id')
+                                                                    ->where('documento_id', '=', $id)->select('usuario_id')->get()->pluck('usuario_id')->toArray();
+
         
         // Usuários Extras
         $usuariosExtraDocumento = UsuarioExtra::join('users', 'users.id', '=', 'usuario_extra.usuario_id')
@@ -1001,26 +798,21 @@ class DocumentacaoController extends Controller
 
         // Aprovadores, Grupos de Interesse e de Divulgação
         $aprovadores = AprovadorSetor::join('users', 'users.id', '=', 'usuario_id')->where('aprovador_setor.setor_id', '=', $documento->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
-        $gruposTreinamento = GrupoTreinamento::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
 
         return view('documentacao.update-info', array( 'documento'=>$documento, 'usuariosAreaInteresseDocumento'=>$usuariosAreaInteresseDocumento, 'setoresUsuarios'=>$setoresUsuarios, 
-                                                        'usuariosExtraDocumento'=>$usuariosExtraDocumento, 'aprovadores'=>$aprovadores, 'gruposTreinamento'=>$gruposTreinamento, 'gruposDivulgacao'=>$gruposDivulgacao  ) );
+                                                        'usuariosExtraDocumento'=>$usuariosExtraDocumento, 'aprovadores'=>$aprovadores, 
+                                                        'usuariosGrupoTreinamentoDocumento'=>$usuariosGrupoTreinamentoDocumento, 'usuariosGrupoDivulgacaoDocumento'=>$usuariosGrupoDivulgacaoDocumento  ) );
     }
 
 
     public function updateInfo(Request $request) {
         $idDoc = (int) $request->doc_id;
-        $dadosDoc = DadosDocumento::where('documento_id', '=', $idDoc)->select('id', 'copia_controlada', 'aprovador_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'validade')->first();
+        $dadosDoc = DadosDocumento::where('documento_id', '=', $idDoc)->select('id', 'copia_controlada', 'aprovador_id', 'validade')->first();
       
         // dados_documento
         $dadosDoc->copia_controlada = ($request->copiaControlada == "false") ? false : true;
 
         if($dadosDoc->aprovador_id != $request->aprovador) $dadosDoc->aprovador_id = $request->aprovador;
-        
-        if($dadosDoc->grupo_treinamento_id != $request->grupoTreinamento) $dadosDoc->grupo_treinamento_id = (int) $request->grupoTreinamento;
-        
-        if($dadosDoc->grupo_divulgacao_id != $request->grupoDivulgacao) $dadosDoc->grupo_divulgacao_id = (int) $request->grupoDivulgacao;
 
         if( $request->nivelAcessoDoc == 0 ) {
             $dadosDoc->nivel_acesso = Constants::$NIVEL_ACESSO_DOC_LIVRE;
@@ -1053,6 +845,30 @@ class DocumentacaoController extends Controller
                 $usuarioExtra->documento_id  = $idDoc;
                 $usuarioExtra->usuario_id  = $user;
                 $usuarioExtra->save();
+            }
+        }
+
+        // grupo de treinamento do documento
+        $delRows = GrupoTreinamentoDocumento::where('documento_id', '=', $idDoc)->delete();
+        $novoGrupoTreinamentoDoc = $request->grupoTreinamentoDoc;
+        if( is_array($novoGrupoTreinamentoDoc) && count($novoGrupoTreinamentoDoc) > 0 ) {
+            foreach($novoGrupoTreinamentoDoc as $key => $user) {
+                $newMember = new GrupoTreinamentoDocumento();
+                $newMember->documento_id  = $idDoc;
+                $newMember->usuario_id    = $user;
+                $newMember->save();
+            }
+        }
+
+        // grupo de divulgação do documento
+        $deletRows = GrupoDivulgacaoDocumento::where('documento_id', '=', $idDoc)->delete();
+        $novoGrupoDivulgacaoDoc = $request->grupoDivulgacaoDoc;
+        if( is_array($novoGrupoDivulgacaoDoc) && count($novoGrupoDivulgacaoDoc) > 0 ) {
+            foreach($novoGrupoDivulgacaoDoc as $key => $user) {
+                $novoMembro = new GrupoDivulgacaoDocumento();
+                $novoMembro->documento_id  = $idDoc;
+                $novoMembro->usuario_id    = $user;
+                $novoMembro->save();
             }
         }
 
@@ -1623,14 +1439,6 @@ class DocumentacaoController extends Controller
                     if( $value->tipo_documento_id == $req['search_tipoDocumento']) { 
                         $add = true;    
 
-                        if($req['search_grupoDivulgacao'] != null) {
-                            if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
-                            else continue;
-                        }
-                        if($req['search_grupoTreinamento'] != null) {
-                            if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
-                            else continue;
-                        }
                         if($req['search_setor'] != null) {
                             if($value->setor_id == $req['search_setor']) $add = true;
                             else continue;
@@ -1654,14 +1462,6 @@ class DocumentacaoController extends Controller
                             if($value->copia_controlada) $add = true;
                             else continue;
                         }
-
-
-                        /*
-                        if($req['search_aprovador'] != null) {
-                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
-                            else continue;
-                        }
-                        */
                     } 
 
                     if($add) $arr1[] = $value; 
@@ -1677,14 +1477,6 @@ class DocumentacaoController extends Controller
                     if( $value->tipo_documento_id == $req['search_tipoDocumento']) {    
                         $add = true;
                         
-                        if($req['search_grupoDivulgacao'] != null) {
-                            if($value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;
-                            else continue;
-                        }
-                        if($req['search_grupoTreinamento'] != null) {
-                            if($value->grupo_treinamento_id == $req['search_grupoTreinamento']) $add = true;
-                            else continue;
-                        }
                         if($req['search_setor'] != null) {
                             if($value->setor_id == $req['search_setor']) $add = true;
                             else continue;
@@ -1708,13 +1500,6 @@ class DocumentacaoController extends Controller
                             if($value->copia_controlada) $add = true;
                             else continue;
                         }
-                        
-                        /*
-                        if($req['search_aprovador'] != null) {
-                            if($value->aprovador_id == $req['search_aprovador']) $add = true;
-                            else continue;
-                        }
-                        */
                     } 
 
                     if($add) $arr2[] = $value; 
@@ -1936,11 +1721,11 @@ class DocumentacaoController extends Controller
     public function getDocumentsIndex() {
         // Criação da query base para a busca de todos os possíveis documentos que o usuário tem permissão de visualizar
         $base_query = DB::table('documento')
-                                ->join('dados_documento',   'dados_documento.documento_id', '=',    'documento.id')
-                                ->join('workflow',          'workflow.documento_id',        '=',    'documento.id')
-                                ->join('tipo_documento',    'tipo_documento.id',            '=',    'documento.tipo_documento_id') 
+                                ->join('dados_documento',               'dados_documento.documento_id',                 '=',    'documento.id')
+                                ->join('workflow',                      'workflow.documento_id',                        '=',    'documento.id')
+                                ->join('tipo_documento',                'tipo_documento.id',                            '=',    'documento.tipo_documento_id') 
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 )->where('dados_documento.obsoleto', '=', false);
@@ -1984,9 +1769,9 @@ class DocumentacaoController extends Controller
         $base_query = DB::table('documento')
                                 ->join('dados_documento',   'dados_documento.documento_id', '=',    'documento.id')
                                 ->join('workflow',          'workflow.documento_id',        '=',    'documento.id')
-                                ->join('tipo_documento',    'tipo_documento.id',            '=',    'documento.tipo_documento_id') 
+                                ->join('tipo_documento',    'tipo_documento.id',            '=',    'documento.tipo_documento_id')
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.grupo_treinamento_id', 'dados_documento.grupo_divulgacao_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 )->where('dados_documento.obsoleto', '=', true);
@@ -2318,161 +2103,5 @@ class DocumentacaoController extends Controller
         return $documentosFinalizados;
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    protected function getNotFinishedDocuments($base_query) {
-        $documentos_NAOFinalizados      = array();
-        $idUsuarioAdminSetorQualidade   = Configuracao::where('id', '=', 2)->get();
-
-        $cloneBaseQueryDocumentosNAOConfidenciais   = clone $base_query;
-        $cloneBaseQueryDocumentosConfidenciais      = clone $base_query;
-        $cloneBaseQueryEtapa1Elaborador             = clone $base_query;
-        $cloneBaseQueryEtapa4Aprovadores            = clone $base_query;
-        $cloneBaseQueryEtapas5e6UploadListaPresenca = clone $base_query;
-        $cloneBaseQueryEtapa7CapitalHumano          = clone $base_query;
-        $cloneBaseQueryEtapa3AreaInteresse          = clone $base_query;
-
-
-        /* 
-        *    Início das validações de quais documentos devem ser retornados para que sejam listados para o usuário
-        */
-        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
-            $documentos_NAOFinalizados_NAOConfidenciais;
-            $documentos_NAOFinalizados_Confidenciais = array();
-            
-            $documentos_NAOFinalizados_NAOConfidenciais = $cloneBaseQueryDocumentosNAOConfidenciais->where('dados_documento.finalizado', '=', false)
-                                                                                                    ->where('dados_documento.nivel_acesso', '!=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                                                    ->get();
-
-                                                                        
-            if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) {
-                $documentos_NAOFinalizados_Confidenciais = $cloneBaseQueryDocumentosConfidenciais->where('dados_documento.finalizado', '=', false)
-                                                                                                    ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
-                                                                                                    ->get();                                                        
-            }
-
-            if( count($documentos_NAOFinalizados_NAOConfidenciais) > 0 ) 
-                for ($i=0; $i < count($documentos_NAOFinalizados_NAOConfidenciais); $i++) 
-                    $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_NAOConfidenciais[$i]; 
-
-
-            if( count($documentos_NAOFinalizados_Confidenciais) > 0 ) 
-                for ($i=0; $i < count($documentos_NAOFinalizados_Confidenciais); $i++) 
-                    $documentos_NAOFinalizados[] = $documentos_NAOFinalizados_Confidenciais[$i]; 
-
-        } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE ) { //  && Auth::user()->setor_id != Constants::$ID_SETOR_CAPITAL_HUMANO
-
-            $docs_etapa1 = $cloneBaseQueryEtapa1Elaborador->where('dados_documento.finalizado', '=', false)
-                                                            ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
-                                                            ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                            ->get();
-            
-            // Documentos na etapa 3 PRECISAM, OBRIGATORIAMENTE, possuir uma Área de Interesse para si (VER SLACK)
-            $docs_etapa3 = $cloneBaseQueryEtapa3AreaInteresse->where('dados_documento.finalizado', '=', false)
-                                                                ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM)
-                                                                ->get();
-
-            $aux_etapa3 = clone $docs_etapa3;
-            foreach ($aux_etapa3 as $key => $value) {
-                $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
-                
-                if( !in_array(Auth::user()->id, $usuariosDaAreaDeInteresseDoDocumento) ) $docs_etapa3->forget($key);
-            }
-
-
-            $docs_etapa4 = $cloneBaseQueryEtapa4Aprovadores->where('dados_documento.finalizado', '=', false)
-                                                ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_APROVADOR_NUM)
-                                                ->get();
-            
-            $aux_etapa4 = clone $docs_etapa4;
-            foreach ($aux_etapa4 as $key => $value) {              
-                $usuariosAprovadores_etapa4 = User::select('users.id', 'users.name')
-                                                    ->join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                                                    ->where('aprovador_setor.setor_id', '=', $value->setor_id)
-                                                    ->get()
-                                                    ->pluck('name', 'id')
-                                                    ->toArray();
-                
-                if( !in_array(Auth::user()->id, array_keys($usuariosAprovadores_etapa4)) ) $docs_etapa4->forget($key);
-            }
-
-
-
-            $docs_etapas_5_6 = $cloneBaseQueryEtapas5e6UploadListaPresenca->where('dados_documento.finalizado', '=', false)
-                                                                            ->where(function ($query) {
-                                                                                $query->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM)
-                                                                                    ->orWhere('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM);
-                                                                            })
-                                                                            ->where('dados_documento.elaborador_id', '=', Auth::user()->id)
-                                                                            ->get();
-
-            if( count($docs_etapa1) > 0 ) 
-                for ($i=0; $i < count($docs_etapa1); $i++) 
-                    $documentos_NAOFinalizados[] = $docs_etapa1[$i]; 
-
-            if( $docs_etapa3->count() > 0 && count($docs_etapa3) > 0 ) 
-                foreach($docs_etapa3 as $key => $value)
-                    $documentos_NAOFinalizados[] = $value;  
-
-            if( $docs_etapa4->count() > 0 && count($docs_etapa4) > 0 ) 
-                foreach($docs_etapa4 as $key => $value)
-                    $documentos_NAOFinalizados[] = $value; 
-
-            if( count($docs_etapas_5_6) > 0 ) 
-                for ($i=0; $i < count($docs_etapas_5_6); $i++) 
-                    $documentos_NAOFinalizados[] = $docs_etapas_5_6[$i]; 
-
-         
-            // Além de tudo isso, se for um usuário do Capital Humano, precisa listar os docs na etapa 7
-            if(Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO) {
-                $docs_etapa7 = $cloneBaseQueryEtapa7CapitalHumano->where('dados_documento.finalizado', '=', false)
-                                                                    ->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)
-                                                                    ->get();
-    
-                if( count($docs_etapa7) > 0 ) 
-                    for ($i=0; $i < count($docs_etapa7); $i++) 
-                        $documentos_NAOFinalizados[] = $docs_etapa7[$i];  
-            }
-        }
-
-        
-        return $documentos_NAOFinalizados;
-    }
-    
 
 }

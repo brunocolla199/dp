@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Setor;
-use App\GrupoTreinamentoUsuario;
 use App\DocumentoObservacao;
 use App\Documento;
 use App\DadosDocumento;
@@ -18,6 +17,8 @@ use App\FormularioRevisao;
 use App\Notificacao;
 use App\NotificacaoFormulario;
 use App\CopiaControlada;
+use App\GrupoTreinamentoDocumento;
+use App\GrupoDivulgacaoDocumento;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -185,8 +186,6 @@ class AjaxController extends Controller
         $dados_documento->justificativa_cancelar_revisao    = null;
         $dados_documento->finalizado                        = false;
         $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
-        $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
-        $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
         $dados_documento->elaborador_id                     = Auth::user()->id;
         $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
         $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
@@ -199,6 +198,26 @@ class AjaxController extends Controller
                 $areaInteresseDocumento->documento_id  = $documento->id;
                 $areaInteresseDocumento->usuario_id  = $user;
                 $areaInteresseDocumento->save();
+            }
+        }
+
+        // Populando a NOVA tabela de vinculação (GrupoTreinamentoDocumento)
+        if( isset($novoDocumento['grupoTreinamentoDocumento']) && count($novoDocumento['grupoTreinamentoDocumento']) > 0 ) {
+            foreach($novoDocumento['grupoTreinamentoDocumento'] as $key => $user) {
+                $novoGrupTreinamDocumento = new GrupoTreinamentoDocumento();
+                $novoGrupTreinamDocumento->documento_id  = $documento->id;
+                $novoGrupTreinamDocumento->usuario_id    = $user;
+                $novoGrupTreinamDocumento->save();
+            }
+        }
+        
+        // Populando a NOVA tabela de vinculação (GrupoDivulgacaoDocumento)
+        if( isset($novoDocumento['grupoDivulgacaoDocumento']) && count($novoDocumento['grupoDivulgacaoDocumento']) > 0 ) {
+            foreach($novoDocumento['grupoDivulgacaoDocumento'] as $key => $user) {
+                $novoGrupDivulgDocumento = new GrupoDivulgacaoDocumento();
+                $novoGrupDivulgDocumento->documento_id  = $documento->id;
+                $novoGrupDivulgDocumento->usuario_id    = $user;
+                $novoGrupDivulgDocumento->save();
             }
         }
 
@@ -216,7 +235,7 @@ class AjaxController extends Controller
     }
 
 
-    public function saveNewDocument(Request $request) {         
+    public function saveNewDocument(Request $request) {  
         
         $novoDocumento = $request->all();
         $titulo   =  \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']);
@@ -247,8 +266,6 @@ class AjaxController extends Controller
         $dados_documento->justificativa_cancelar_revisao    = null;
         $dados_documento->finalizado                        = false;
         $dados_documento->setor_id                          = $novoDocumento['setor_dono_doc'];
-        $dados_documento->grupo_treinamento_id              = $novoDocumento['grupoTreinamento'];
-        $dados_documento->grupo_divulgacao_id               = $novoDocumento['grupoDivulgacao'];
         $dados_documento->elaborador_id                     = Auth::user()->id;
         $dados_documento->aprovador_id                      = $novoDocumento['id_aprovador'];
         $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
@@ -261,6 +278,26 @@ class AjaxController extends Controller
                 $areaInteresseDocumento->documento_id  = $documento->id;
                 $areaInteresseDocumento->usuario_id  = $user;
                 $areaInteresseDocumento->save();
+            }
+        }
+        
+        // Populando a NOVA tabela de vinculação (GrupoTreinamentoDocumento)
+        if( isset($novoDocumento['grupoTreinamentoDocumento']) && count($novoDocumento['grupoTreinamentoDocumento']) > 0 ) {
+            foreach($novoDocumento['grupoTreinamentoDocumento'] as $key => $user) {
+                $novoGrupTreinamDocumento = new GrupoTreinamentoDocumento();
+                $novoGrupTreinamDocumento->documento_id  = $documento->id;
+                $novoGrupTreinamDocumento->usuario_id    = $user;
+                $novoGrupTreinamDocumento->save();
+            }
+        }
+        
+        // Populando a NOVA tabela de vinculação (GrupoDivulgacaoDocumento)
+        if( isset($novoDocumento['grupoDivulgacaoDocumento']) && count($novoDocumento['grupoDivulgacaoDocumento']) > 0 ) {
+            foreach($novoDocumento['grupoDivulgacaoDocumento'] as $key => $user) {
+                $novoGrupDivulgDocumento = new GrupoDivulgacaoDocumento();
+                $novoGrupDivulgDocumento->documento_id  = $documento->id;
+                $novoGrupDivulgDocumento->usuario_id    = $user;
+                $novoGrupDivulgDocumento->save();
             }
         }
 

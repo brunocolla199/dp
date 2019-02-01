@@ -104,14 +104,6 @@
                                     <p class="pull-left"><b>TIPO DE DOCUMENTO: </b>{{ $text_tipo_documento }}  </p>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE TREINAMENTO: </b>{{ $text_grupoTreinamento }}  </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $text_grupoDivulgacao }}  </p>
-                                </div>
-                            </div>
 
                              @if( count($formsAtrelados) > 0 )
                                 
@@ -165,20 +157,30 @@
                                                     <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
                                                     {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'required' => 'required']) !!}
                                                     
-                                                    {!! Form::hidden('tipo_documento',          $tipo_documento) !!}
-                                                    {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
-                                                    {!! Form::hidden('id_aprovador',            $aprovador) !!}
-                                                    {!! Form::hidden('grupoTreinamento',        $grupoTreinamento) !!}
-                                                    {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
-                                                    {!! Form::hidden('setor_dono_doc',          $setorDono) !!}
-                                                    {!! Form::hidden('copiaControlada',         $copiaControlada) !!}                                                
-                                                    {!! Form::hidden('tituloDocumento',         $tituloDocumento) !!}
-                                                    {!! Form::hidden('codigoDocumento',         $codigoDocumento) !!}
-                                                    {!! Form::hidden('validadeDocumento',       $validadeDocumento) !!}
+                                                    {!! Form::hidden('tipo_documento',              $tipo_documento) !!}
+                                                    {!! Form::hidden('nivel_acesso',                $nivelAcessoDocumento) !!}
+                                                    {!! Form::hidden('id_aprovador',                $aprovador) !!}
+                                                    {!! Form::hidden('setor_dono_doc',              $setorDono) !!}
+                                                    {!! Form::hidden('copiaControlada',             $copiaControlada) !!}                                                
+                                                    {!! Form::hidden('tituloDocumento',             $tituloDocumento) !!}
+                                                    {!! Form::hidden('codigoDocumento',             $codigoDocumento) !!}
+                                                    {!! Form::hidden('validadeDocumento',           $validadeDocumento) !!}
 
                                                     @if( count($areaInteresse) > 0 )
                                                         @foreach($areaInteresse as $usuariosInteresse)
                                                             <input type="hidden" name="areaInteresse[]" value="<?php echo $usuariosInteresse ?>">
+                                                        @endforeach
+                                                    @endif
+
+                                                    @if( count($grupoTreinamento) > 0 )
+                                                        @foreach($grupoTreinamento as $usuariosTreinamento)
+                                                            <input type="hidden" name="grupoTreinamentoDocumento[]" value="<?php echo $usuariosTreinamento ?>">
+                                                        @endforeach
+                                                    @endif
+
+                                                    @if( count($grupoDivulgacao) > 0 )
+                                                        @foreach($grupoDivulgacao as $usuariosDivulgacao)
+                                                            <input type="hidden" name="grupoDivulgacaoDocumento[]" value="<?php echo $usuariosDivulgacao ?>">
                                                         @endforeach
                                                     @endif
 
@@ -218,8 +220,6 @@
                                     {!! Form::hidden('tipo_documento',      $tipo_documento) !!}
                                     {!! Form::hidden('nivel_acesso',        $nivelAcessoDocumento) !!}
                                     {!! Form::hidden('id_aprovador',        $aprovador) !!}
-                                    {!! Form::hidden('grupoTreinamento',    $grupoTreinamento) !!}
-                                    {!! Form::hidden('grupoDivulgacao',     $grupoDivulgacao) !!}
                                     {!! Form::hidden('setor_dono_doc',      $setorDono) !!}
                                     {!! Form::hidden('copiaControlada',     $copiaControlada) !!}                                                
                                     {!! Form::hidden('tituloDocumento',     $tituloDocumento) !!}
@@ -229,6 +229,18 @@
                                     @if( count($areaInteresse) > 0 )
                                         @foreach($areaInteresse as $usuariosInteresse)
                                             <input type="hidden" name="areaInteresse[]" value="<?php echo $usuariosInteresse ?>">
+                                        @endforeach
+                                    @endif
+
+                                    @if( count($grupoTreinamento) > 0 )
+                                        @foreach($grupoTreinamento as $usuariosTreinamento)
+                                            <input type="hidden" name="grupoTreinamentoDocumento[]" value="<?php echo $usuariosTreinamento ?>">
+                                        @endforeach
+                                    @endif
+
+                                    @if( count($grupoDivulgacao) > 0 )
+                                        @foreach($grupoDivulgacao as $usuariosDivulgacao)
+                                            <input type="hidden" name="grupoDivulgacaoDocumento[]" value="<?php echo $usuariosDivulgacao ?>">
                                         @endforeach
                                     @endif
 

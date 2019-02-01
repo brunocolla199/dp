@@ -132,29 +132,57 @@
 
                                 <!-- Linha 5 --> 
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="col-md-10 control-label font-bold">
-                                                {!! Form::label('grupoTreinamento', 'GRUPO DE TREINAMENTO:') !!}
+                                                {!! Form::label('grupoTreinamentoDoc', 'GRUPO DE TREINAMENTO:') !!}
                                             </div>
                                             <div class="col-md-12">
-                                                {!! Form::select('grupoTreinamento', $gruposTreinamento, $documento->grupo_treinamento_id, ['class' => 'form-control  custom-select']) !!}
+                                                <select multiple id="optgroup-newGrupoTreinamentoDoc-update" name="grupoTreinamentoDoc[]">
+                                                    @foreach($setoresUsuarios as $key => $su)
+                                                        <optgroup label="{{ $key }}">
+                                                            @foreach($su as $key2 => $user)
+                                                                @if( in_array($key2, $usuariosGrupoTreinamentoDocumento) )
+                                                                    <option selected value="{{ $key2 }}">{{ $user }}</option>
+                                                                @else
+                                                                    <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                @endif
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <div class="col-md-10 control-label font-bold">
-                                                {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
-                                            </div>
-                                            <div class="col-md-12">
-                                                {!! Form::select('grupoDivulgacao', $gruposDivulgacao, $documento->grupo_divulgacao_id, ['class' => 'form-control  custom-select']) !!}
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </div>   
+                                    </div>                                                    
                                 </div>
 
                                 <!-- Linha 6 --> 
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-10 control-label font-bold">
+                                                {!! Form::label('grupoDivulgacaoDoc', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                <select multiple id="optgroup-newGrupoDivulgacaoDoc-update" name="grupoDivulgacaoDoc[]">
+                                                    @foreach($setoresUsuarios as $key => $su)
+                                                        <optgroup label="{{ $key }}">
+                                                            @foreach($su as $key2 => $user)
+                                                                @if( in_array($key2, $usuariosGrupoDivulgacaoDocumento) )
+                                                                    <option selected value="{{ $key2 }}">{{ $user }}</option>
+                                                                @else
+                                                                    <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                @endif
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>   
+                                    </div>                                                    
+                                </div>                               
+                                
+                                <!-- Linha 7 --> 
                                 <div class="row">
                                     <div class="col-md-6">
                                         @if( Auth::user()->permissao_elaborador || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
@@ -470,6 +498,88 @@
             *
             */
             $('#optgroup-newExtraUsers').multiSelect({
+                selectableOptgroup: true,
+                selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                afterInit: function(ms){
+                    var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                    .on('keydown', function(e){
+                    if (e.which === 40){
+                        that.$selectableUl.focus();
+                        return false;
+                    }
+                    });
+
+                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                    .on('keydown', function(e){
+                    if (e.which == 40){
+                        that.$selectionUl.focus();
+                        return false;
+                    }
+                    });
+                },
+                afterSelect: function(){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                },
+                afterDeselect: function(values){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                }
+            });
+
+
+            /*
+            * MultiSelect de atualização do GRUPO DE TREINAMENTO DO DOCUMENTO
+            */
+            $('#optgroup-newGrupoTreinamentoDoc-update').multiSelect({
+                selectableOptgroup: true,
+                selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+                afterInit: function(ms){
+                    var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                    .on('keydown', function(e){
+                    if (e.which === 40){
+                        that.$selectableUl.focus();
+                        return false;
+                    }
+                    });
+
+                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                    .on('keydown', function(e){
+                    if (e.which == 40){
+                        that.$selectionUl.focus();
+                        return false;
+                    }
+                    });
+                },
+                afterSelect: function(){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                },
+                afterDeselect: function(values){
+                    this.qs1.cache();
+                    this.qs2.cache();
+                }
+            });
+
+
+            /*
+            * MultiSelect de atualização do GRUPO DE DIVULGAÇÃO DO DOCUMENTO
+            */
+            $('#optgroup-newGrupoDivulgacaoDoc-update').multiSelect({
                 selectableOptgroup: true,
                 selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
                 selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
