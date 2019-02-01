@@ -168,8 +168,6 @@
                                         <!-- Nav tabs -->
                                         <ul class="nav nav-tabs nav-fill customtab" role="tablist">
                                             <li class="nav-item"> <a class="nav-link speed-subtabs ovo" style="cursor: pointer" data-toggle="collapse" data-target="#setores-empresa" aria-expanded="false" aria-controls="setores-empresa" role="tab"> <i class="fa fa-sitemap"></i> <span class="hidden-xs-down"> SETORES DA EMPRESA</span></a> </li>
-                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-treinamento" aria-expanded="false" aria-controls="grupos-treinamento" role="tab"> <i class="fa fa-gavel"></i>   <span class="hidden-xs-down"> GRUPOS DE TREINAMENTO</span></a> </li>
-                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#grupos-divulgacao" aria-expanded="false" aria-controls="grupos-divulgacao" role="tab">  <i class="fa fa-bullhorn"></i>      <span class="hidden-xs-down"> GRUPOS DE DIVULGAÇÃO</span></a> </li>
                                             <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#aprovadores" aria-expanded="false" aria-controls="aprovadores" role="tab">  <i class="fa fa-group"></i>      <span class="hidden-xs-down"> APROVADORES</span></a> </li>
                                         </ul>
                                         <!-- Tab panes -->
@@ -216,76 +214,7 @@
 
                                                 </div>
                                             </div>
-                                            <!-- Grupos de Treinamento -->
-                                            <div class="collapse" id="grupos-treinamento" role="tabpanel">
-                                                <div class="p-20">
-
-                                                    <div class="row mt-2 margin-top-1percent">
-                                                        <div class="table-responsive">
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Nome do Grupo</th>
-                                                                        <th>Descrição</th>
-                                                                        <th>Ações</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach($gruposTreinamento as $grupoT)
-                                                                        <tr>
-                                                                            <td><a href="javascript:void(0)">{{ $grupoT->nome }}</a></td> 
-                                                                            <td>{{ $grupoT->descricao }}</td>
-                                                                            <td class="text-nowrap">
-                                                                                <center>
-                                                                                    <a href="{{ route('configuracoes.link.users_training-group', ['id' => $grupoT->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                    <a href="#" class="open-edit-training-group" data-id="{{$grupoT->id}}" data-nome="{{$grupoT->nome}}" data-desc="{{$grupoT->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-training-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
-                                                                                </center>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div> 
-
-                                                </div>
-                                            </div>
-                                            <!-- Grupos de Divulgação -->
-                                            <div class="collapse" id="grupos-divulgacao" role="tabpanel">
-                                                <div class="p-20">
-
-                                                    <div class="row mt-2 margin-top-1percent">
-                                                        <div class="table-responsive">
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Nome do Grupo</th>
-                                                                        <th>Descrição</th>
-                                                                        <th>Ações</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach($gruposDivulgacao as $grupoD)
-                                                                        <tr>
-                                                                            <td><a href="javascript:void(0)">{{ $grupoD->nome }}</a></td> 
-                                                                            <td>{{ $grupoD->descricao }}</td>
-                                                                            <td class="text-nowrap">
-                                                                                <center>
-                                                                                    <a href="{{ route('configuracoes.link.users_disclosure-group', ['id' => $grupoD->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
-                                                                                    <a href="#" class="open-edit-disclosure-group" data-id="{{$grupoD->id}}" data-nome="{{$grupoD->nome}}" data-desc="{{$grupoD->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-disclosure-group-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
-                                                                                </center>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div> 
-
-                                                </div>
-                                            </div>
+                                           
                                             <!-- Aprovadores -->
                                             <div class="collapse" id="aprovadores" role="tabpanel">
                                                 <div class="p-20">
@@ -372,7 +301,7 @@
                                                             {!! Form::label('tipo_do_agrupamento', 'TIPO DO AGRUPAMENTO:') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('tipo_do_agrupamento', ['Setor', 'Grupo de Treinamento', 'Grupo de Divulgação'], '', ['class' => 'form-control  custom-select']) !!}
+                                                            {!! Form::select('tipo_do_agrupamento', ['Setor'], '', ['class' => 'form-control  custom-select']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -581,91 +510,6 @@
             <!-- /.modal para editar setor -->
 
 
-            <!-- modal para editar grupo de treinamento -->
-            <div id="edit-training-group-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Alterando informações do grupo de treinamento</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        </div>
-                        {!! Form::open(['route' => 'configuracoes.edit.training-group', 'class' => 'form-horizontal']) !!}
-                            <div class="modal-body">
-                                <div class="col-md-12 mb-4">
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger">
-                                            <ul>
-                                                @foreach ($errors->all() as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                {!! Form::hidden('id_do_grupo_de_treinamento', '', ['id' => 'id_do_grupo_de_treinamento']) !!}
-                                <div class="form-group">
-                                    {!! Form::label('nome_do_grupo_de_treinamento', 'NOME DO GRUPO DE TREINAMENTO:') !!}
-                                    {!! Form::text('nome_do_grupo_de_treinamento', null, ['class' => 'form-control', 'id' => 'nome_do_grupo_de_treinamento']) !!}
-                                </div>
-                                <div class="form-group">
-                                    {!! Form::label('descrição_do_grupo_de_treinamento', 'DESCRIÇÃO DO GRUPO DE TREINAMENTO:') !!}
-                                    {!! Form::textarea('descrição_do_grupo_de_treinamento', null, ['class' => 'form-control', 'id' => 'descrição_do_grupo_de_treinamento']) !!}
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
-                            </div>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
-            </div>
-            <!-- /.modal para editar grupo de treinamento -->
-
-
-            <!-- modal para editar grupo de divulgação -->
-            <div id="edit-disclosure-group-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Alterando informações do grupo de divulgação</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        </div>
-                        {!! Form::open(['route' => 'configuracoes.edit.disclosure-group', 'class' => 'form-horizontal']) !!}
-                            <div class="modal-body">
-                                <div class="col-md-12 mb-4">
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger">
-                                            <ul>
-                                                @foreach ($errors->all() as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                {!! Form::hidden('id_do_grupo_de_divulgação', '', ['id' => 'id_do_grupo_de_divulgação']) !!}
-                                <div class="form-group">
-                                    {!! Form::label('nome_do_grupo_de_divulgação', 'NOME DO GRUPO DE DIVULGAÇÃO:') !!}
-                                    {!! Form::text('nome_do_grupo_de_divulgação', null, ['class' => 'form-control', 'id' => 'nome_do_grupo_de_divulgação']) !!}
-                                </div>
-                                <div class="form-group">
-                                    {!! Form::label('descrição_do_grupo_de_divulgação', 'DESCRIÇÃO DO GRUPO DE DIVULGAÇÃO:') !!}
-                                    {!! Form::textarea('descrição_do_grupo_de_divulgação', null, ['class' => 'form-control', 'id' => 'descrição_do_grupo_de_divulgação']) !!}
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
-                            </div>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
-            </div>
-            <!-- /.modal para editar grupo de divulgação -->
-
 
             <script type="text/javascript" language="javascript">
 
@@ -681,25 +525,6 @@
                     $("#descrição_do_setor").val(descricao);
                 });
 
-                // Click para abrir modal de editar grupo de treinamento
-                $(document).on("click", ".open-edit-training-group", function () {
-                    var id = $(this).data('id');
-                    var nome = $(this).data('nome');
-                    var descricao = $(this).data('desc');
-                    $("#id_do_grupo_de_treinamento").val(id);
-                    $("#nome_do_grupo_de_treinamento").val(nome);
-                    $("#descrição_do_grupo_de_treinamento").val(descricao);
-                });
-
-                // Click para abrir modal de editar grupo de divulgação
-                $(document).on("click", ".open-edit-disclosure-group", function () {
-                    var id = $(this).data('id');
-                    var nome = $(this).data('nome');
-                    var descricao = $(this).data('desc');
-                    $("#id_do_grupo_de_divulgação").val(id);
-                    $("#nome_do_grupo_de_divulgação").val(nome);
-                    $("#descrição_do_grupo_de_divulgação").val(descricao);
-                });
 
                 // Destacando a subtab
                 $("a.speed-subtabs").click(function(){

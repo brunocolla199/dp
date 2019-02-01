@@ -32,22 +32,11 @@ class ConfiguracoesController extends Controller
                             ->orderBy('nome')
                             ->get();
 
-        $gruposTreinamento = DB::table('grupo_treinamento')
-                                ->select('grupo_treinamento.*')
-                                ->orderBy('nome')
-                                ->get();
-
-        $gruposDivulgacao  = DB::table('grupo_divulgacao')
-                                ->select('grupo_divulgacao.*')
-                                ->orderBy('nome')
-                                ->get();
-
         $configs = Configuracao::orderBy('id')->get();
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
         $setores = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
 
         return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores, 
-                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
                                             'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'numeroPadraoDG' => $configs[2]->numero_padrao_codigo, 'numeroPadraoPG' => $configs[3]->numero_padrao_codigo, 
                                             'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
@@ -63,22 +52,11 @@ class ConfiguracoesController extends Controller
                             ->orderBy('nome')
                             ->get();
 
-        $gruposTreinamento = DB::table('grupo_treinamento')
-                                ->select('grupo_treinamento.*')
-                                ->orderBy('nome')
-                                ->get();
-
-        $gruposDivulgacao  = DB::table('grupo_divulgacao')
-                                ->select('grupo_divulgacao.*')
-                                ->orderBy('nome')
-                                ->get();
-
         $configs = Configuracao::all();
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->orderBy('name')->get()->pluck('name', 'id');
         $setores = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
 
-        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores, 
-                                            'gruposTreinamento' => $gruposTreinamento, 'gruposDivulgacao' => $gruposDivulgacao, 
+        return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores,
                                             'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'numeroPadraoDG' => $configs[2]->numero_padrao_codigo, 'numeroPadraoPG' => $configs[3]->numero_padrao_codigo, 
                                             'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
@@ -197,104 +175,6 @@ class ConfiguracoesController extends Controller
         $setor[0]->save();
 
         return redirect()->route('configuracoes')->with(['edit_sector_success' => 'valor']);
-    }
-
-
-    public function editTrainingGroup(Request $request) {
-        $grupoT = GrupoTreinamento::where('id', '=', $request->id_do_grupo_de_treinamento)->get();
-        $grupoT[0]->nome = $request->nome_do_grupo_de_treinamento;
-        $grupoT[0]->descricao = $request->descrição_do_grupo_de_treinamento;
-        $grupoT[0]->save();
-
-        return redirect()->route('configuracoes')->with(['edit_training-group_success' => 'valor']);
-    }
-
-
-    public function editDisclosureGroup(Request $request) {
-        $grupoD = GrupoDivulgacao::where('id', '=', $request->id_do_grupo_de_divulgação)->get();
-        $grupoD[0]->nome = $request->nome_do_grupo_de_divulgação;
-        $grupoD[0]->descricao = $request->descrição_do_grupo_de_divulgação;
-        $grupoD[0]->save();
-
-        return redirect()->route('configuracoes')->with(['edit_disclosure-group_success' => 'valor']);
-    }
-
-
-    public function linkUsersTrainingGroup($id) {
-        $usersAndSectors = [];
-        $grupoAtual      = [];
-
-        $allSectors = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get();
-        foreach($allSectors as $key => $sector) {
-            $arrUsers = [];
-            $users = User::where('setor_id', '=', $sector->id)->get();
-            foreach($users as $key2 => $user) {
-                $arrUsers[$user->id] = $user->name;
-            }
-            $usersAndSectors[$sector->nome] = $arrUsers;
-        }
-
-        //Khalil was in here
-        /* // adiós y lamento, amigo
-        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
-        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
-        */
-        //Khalil is out
-
-
-        $arrUsers = [];
-        $grupoT = GrupoTreinamento::where('id', '=', $id)->get();
-        $relations = GrupoTreinamentoUsuario::where('grupo_id', '=', $grupoT[0]->id)->get();
-        foreach($relations as $key => $rel) {
-            $user = User::where('id', '=', $rel->usuario_id)->get();
-            $arrUsers[] = $user[0]->name;
-        }
-        $grupoAtual[$grupoT[0]->nome] = $arrUsers;        
-
-        $grupoTreinamento = GrupoTreinamento::where('id', '=', $id)->get();
-        $text_agrupamento = "ao grupo de treinamento '" . $grupoTreinamento[0]->nome . "'";
-        $checkGrouping = $grupoTreinamento[0]->nome;
-
-        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoT' => $grupoTreinamento[0], 'setoresUsuarios' => $usersAndSectors, 'usuariosJaVinculados' => $grupoAtual]);
-    }
-
-
-    public function linkUsersDisclosureGroup($id) {
-        $usersAndSectors = [];
-        $grupoAtual      = [];
-
-        $allSectors = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get();
-        foreach($allSectors as $key => $sector) {
-            $arrUsers = [];
-            $users = User::where('setor_id', '=', $sector->id)->get();
-            foreach($users as $key2 => $user) {
-                $arrUsers[$user->id] = $user->name;
-            }
-            $usersAndSectors[$sector->nome] = $arrUsers;
-        }
-
-        //Khalil was in here
-        /* // adiós y lamento, amigo
-        $noSectorsUsers = User::whereNull('setor_id')->get()->pluck('name', 'id');
-        $usersAndSectors['Sem Setor'] = $noSectorsUsers;
-        */
-        //Khalil is out
-
-
-        $arrUsers = [];
-        $grupoD = GrupoDivulgacao::where('id', '=', $id)->get();
-        $relations = GrupoDivulgacaoUsuario::where('grupo_id', '=', $grupoD[0]->id)->get();
-        foreach($relations as $key => $rel) {
-            $user = User::where('id', '=', $rel->usuario_id)->get();
-            $arrUsers[] = $user[0]->name;
-        }
-        $grupoAtual[$grupoD[0]->nome] = $arrUsers;        
-
-        $grupoDivulgacao = GrupoDivulgacao::where('id', '=', $id)->get();
-        $text_agrupamento = "ao grupo de divulgação '" . $grupoDivulgacao[0]->nome . "'";
-        $checkGrouping = $grupoDivulgacao[0]->nome;
-
-        return view('configuracoes.link-users', ['text_agrupamento' => $text_agrupamento, 'checkGrouping' => $checkGrouping, 'grupoD' => $grupoDivulgacao[0], 'setoresUsuarios' => $usersAndSectors, 'usuariosJaVinculados' => $grupoAtual]);
     }
 
 
