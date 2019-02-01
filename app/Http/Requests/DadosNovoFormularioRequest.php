@@ -25,7 +25,6 @@ class DadosNovoFormularioRequest extends FormRequest
     {
         return [
             'tituloFormulario'    => 'required',
-            'grupoDivulgacao'     => 'required',
             'action'              => 'required|max:7|min:5'
         ];
     }
@@ -34,7 +33,6 @@ class DadosNovoFormularioRequest extends FormRequest
     {
         return [
             'tituloFormulario.required'         => "O campo Título de Formulário deve ter um valor selecionado. Por favor, verifique!",
-            'grupoDivulgacao.required'          => "O campo Grupo de Divulgação deve ter um valor selecionado. Por favor, verifique!",
             'action.required'                   => "Por favor, não modifique o código da página depois de interpretada! =D"            
         ];
     }

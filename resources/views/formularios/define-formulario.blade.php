@@ -77,7 +77,7 @@
                                 </div>
                                 
                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                    <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -3%; margin-top: -0.5%;">
+                                    <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -6.5%; margin-top: -0.5%;">
                                         <div class="form-group row">
                                             <label for="codigoFormulario" class="col-sm-3 text-right control-label col-form-label"><b>CÓDIGO: </b></label>
                                             <div class="col-md-9">
@@ -94,9 +94,6 @@
 
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>SETOR: </b>{{ $text_setorDono }}  </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>GRUPO DE DIVULGAÇÃO: </b>{{ $text_grupoDivulgacao }}  </p>
                                 </div>
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>NÍVEL DE ACESSO: </b>{{ $nivelAcessoDocumento }}  </p>
@@ -148,10 +145,16 @@
                                                     <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
                                                     {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'required' => 'required', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
                                                     
-                                                    {!! Form::hidden('nivel_acesso',            $nivelAcessoDocumento) !!}
-                                                    {!! Form::hidden('grupoDivulgacao',         $grupoDivulgacao) !!}
-                                                    {!! Form::hidden('setor_dono_form',         $setorDono) !!}                                             
-                                                    {!! Form::hidden('tituloFormulario',        $tituloFormulario) !!}
+                                                    {!! Form::hidden('nivel_acesso',                $nivelAcessoDocumento) !!}
+                                                    {!! Form::hidden('setor_dono_form',             $setorDono) !!}                                             
+                                                    {!! Form::hidden('tituloFormulario',            $tituloFormulario) !!}
+                                                    
+                                                    @if( count($grupoDivulgacaoFormulario) > 0 )
+                                                        @foreach($grupoDivulgacaoFormulario as $usuariosGrupoDivulgacaoFormulario)
+                                                            <input type="hidden" name="grupoDivulgacaoFormulario[]" value="<?php echo $usuariosGrupoDivulgacaoFormulario ?>">
+                                                        @endforeach
+                                                    @endif
+
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 col-md-12">

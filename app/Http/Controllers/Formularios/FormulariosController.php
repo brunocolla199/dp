@@ -26,39 +26,62 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailsJob;
 
+use App\GrupoDivulgacaoFormulario;
+
 class FormulariosController extends Controller
 {
     
     public function index() {
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO );
         $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_EM_REVISAO => Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
+
+        // Usuários (com setor): Grupo de Divulgação do Formulário
+        $setoresUsuarios = [];
+        $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
+        foreach($todosSetores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
         
         $formularios       = $this->getFormsIndex();
 
-        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
+        return view('formularios.index', ['formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
     }
 
     public function filterFormsIndex(Request $request){
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO );
         $status            = array( Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$DESCRICAO_WORKFLOW_EM_REVISAO => Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE, Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO => "Finalizado" );
         
+        // Usuários (com setor): Grupo de Divulgação do Formulário
+        $setoresUsuarios = [];
+        $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
+        foreach($todosSetores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
+
         $formularios       = $this->filterListForms($request->all());
 
-        return view('formularios.index', ['formularios'=>$formularios, 'grupoDivulgacao' => $gruposDivulgacao, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
+        return view('formularios.index', ['formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
     }
     
     public function validateData(DadosNovoFormularioRequest $request) {
 
         $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['nome', 'sigla']);
-        $text_grupoDivulgacao = GrupoDivulgacao::where('id', '=', $request->grupoDivulgacao)->get(['nome']);
         $acao = $request->action;
 
         $nivelAcessoDocumento = (  ($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : ( ($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  )    );
@@ -83,11 +106,10 @@ class FormulariosController extends Controller
             'acao'=>$acao,
             'codigoFormulario' => $codigo_final,
             'tituloFormulario' => $request->tituloFormulario,
-            'grupoDivulgacao' => $request->grupoDivulgacao,
             'nivelAcessoDocumento' => $nivelAcessoDocumento,
-            'text_grupoDivulgacao' => $text_grupoDivulgacao[0]->nome,
             'setorDono' => $request->setor_dono_form,
-            'text_setorDono' => $text_setorDono[0]->nome
+            'text_setorDono' => $text_setorDono[0]->nome,
+            'grupoDivulgacaoFormulario' => $request->grupoDivulgacaoFormulario
         ]);
 
     }
@@ -140,7 +162,6 @@ class FormulariosController extends Controller
         $formulario->codigo                         = $request->codigoFormulario;
         $formulario->extensao                       = $extensao;
         $formulario->setor_id                       = $request->setor_dono_form;
-        $formulario->grupo_divulgacao_id            = $request->grupoDivulgacao;
         $formulario->nivel_acesso                   = $request->nivel_acesso;
         $formulario->finalizado                     = false;
         $formulario->elaborador_id                  = Auth::user()->id;
@@ -161,6 +182,16 @@ class FormulariosController extends Controller
         $workflow->justificativa= "";
         $workflow->formulario_id = $formulario->id; // id que acabou de ser inserido no 'save' na tabela de formulário
         $workflow->save();
+
+        // Populando a nova tabela de vinculação [GrupoDivulgacaoFormulario]
+        if( isset($request->grupoDivulgacaoFormulario) && count($request->grupoDivulgacaoFormulario) > 0 ) {
+            foreach($request->grupoDivulgacaoFormulario as $key => $user) {
+                $newGrupoDivulgacaoForm = new GrupoDivulgacaoFormulario();
+                $newGrupoDivulgacaoForm->formulario_id  = $formulario->id;
+                $newGrupoDivulgacaoForm->usuario_id  = $user;
+                $newGrupoDivulgacaoForm->save();
+            }
+        }
         
         
         // Gravar notificação para todos usuários do setor Qualidade sobre a criação do documento
@@ -306,7 +337,6 @@ class FormulariosController extends Controller
         $formulario[0]->tipo_documento_id               = $revisaoAnteriorFormulario[0]->tipo_documento_id;
         $formulario[0]->elaborador_id                   = $revisaoAnteriorFormulario[0]->elaborador_id;
         $formulario[0]->setor_id                        = $revisaoAnteriorFormulario[0]->setor_id;
-        $formulario[0]->grupo_divulgacao_id             = $revisaoAnteriorFormulario[0]->grupo_divulgacao_id;
         $formulario[0]->em_revisao                      = false;
         $formulario[0]->nome_completo_finalizado        = null;
         $formulario[0]->nome_completo_em_revisao        = null;
@@ -335,16 +365,16 @@ class FormulariosController extends Controller
 
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->where('id', '!=', $elaborador[0]->id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
 
-        $usuariosGrupoDivulgacao = User::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.usuario_id', '=', 'users.id')
-                                            ->join('grupo_divulgacao', 'grupo_divulgacao.id', '=', 'grupo_divulgacao_usuario.grupo_id')
-                                            ->where('grupo_divulgacao.id', '=', $formulario->grupo_divulgacao_id)
-                                            ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
-                                            ->where('users.id', '!=', $elaborador[0]->id)
-                                            ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();   
+        $usuariosGrupoDivulgacaoForm = User::join('grupo_divulgacao_formulario', 'grupo_divulgacao_formulario.usuario_id', '=', 'users.id')
+                                        ->where('grupo_divulgacao_formulario.formulario_id', '=', $formulario->id)
+                                        ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                        ->where('users.id', '!=', $elaborador[0]->id)
+                                        ->select('users.id', 'name', 'username', 'email', 'setor_id')
+                                        ->get();
 
         $allUsersInvolved = $elaborador;
         if($usuariosSetorQualidade != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorQualidade);
-        if($usuariosGrupoDivulgacao != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosGrupoDivulgacao);
+        if($usuariosGrupoDivulgacaoForm != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosGrupoDivulgacaoForm);
 
         foreach ($allUsersInvolved as $key => $value) {
             \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario->codigo . " foi marcado como obsoleto.", false, $value->id, $formulario->id);
@@ -398,26 +428,52 @@ class FormulariosController extends Controller
 
 
     public function editInfo($_id) {        
-        // Documento
-        $formulario = Formulario::where('id', '=', $_id)->select('id', 'nome', 'codigo', 'nivel_acesso', 'grupo_divulgacao_id')->first();
+        // Formulário
+        $formulario = Formulario::where('id', '=', $_id)->select('id', 'nome', 'codigo', 'nivel_acesso')->first();
         $formulario['nivel_acesso_fake_id'] = ($formulario->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_LIVRE) ? 0 : 1;
 
-        // Grupos de Divulgação
-        $gruposDivulgacao  = GrupoDivulgacao::orderBy('nome')->get()->pluck('nome', 'id')->toArray();
+        // Usuários (com setor): Grupo de Divulgação do Formulário
+        $setoresUsuarios = [];
+        $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
+        foreach($todosSetores as $key => $setor) {
+            $arrUsers = [];
+            $users = User::where('setor_id', '=', $setor->id)->get();
+            foreach($users as $key => $user) {
+                $arrUsers[$user->id] = $user->name;
+            }
+            $setoresUsuarios[$setor->nome] = $arrUsers;
+        }
 
-        return view('formularios.update-info', compact('formulario', 'gruposDivulgacao') );
+        $usuarioExistentesGrupoDivulgacaoFormulario = GrupoDivulgacaoFormulario::join('users', 'users.id', '=', 'grupo_divulgacao_formulario.usuario_id')
+                                                            ->where('grupo_divulgacao_formulario.formulario_id', '=', $_id)
+                                                            ->select('usuario_id')->get()
+                                                            ->pluck('usuario_id')->toArray();
+
+        return view('formularios.update-info', compact('formulario', 'setoresUsuarios', 'usuarioExistentesGrupoDivulgacaoFormulario') );
     }
 
 
-    public function updateInfo(Request $_request) {        
+    public function updateInfo(Request $_request) {  
+
         $idForm      = (int) $_request->form_id;
         $nivelAcesso = ($_request->nivelAcessoFormulario == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : Constants::$NIVEL_ACESSO_DOC_RESTRITO;
 
         $formulario = Formulario::where('id', '=', $idForm)->first();
-        $formulario->grupo_divulgacao_id = $_request->grupoDivulgacao;
         $formulario->nivel_acesso        = $nivelAcesso;
         $formulario->nome                = $_request->tituloFormulario;
-        $formulario->save();      
+        $formulario->save();   
+        
+        // Grupo de Divulgação do Formulário
+        $deletedRows = GrupoDivulgacaoFormulario::where('formulario_id', '=', $idForm)->delete();
+        $novaGrupoDivulgacaoForm = $_request->grupoDivulgacaoFormularioUPDATE;
+        if( is_array($novaGrupoDivulgacaoForm) && count($novaGrupoDivulgacaoForm) > 0 ) {
+            foreach($novaGrupoDivulgacaoForm as $key => $user) {
+                $newGrDivulForm = new GrupoDivulgacaoFormulario();
+                $newGrDivulForm->formulario_id  = $idForm;
+                $newGrDivulForm->usuario_id     = $user;
+                $newGrDivulForm->save();
+            }
+        }
 
         return redirect()->route('formularios')->with('update_info_success', 'msg');
     }
@@ -482,7 +538,6 @@ class FormulariosController extends Controller
                 $formRevisao->tipo_documento_id         = $formulario[0]->tipo_documento_id;             
                 $formRevisao->elaborador_id             = $formulario[0]->elaborador_id;             
                 $formRevisao->setor_id                  = $formulario[0]->setor_id;             
-                $formRevisao->grupo_divulgacao_id       = $formulario[0]->grupo_divulgacao_id;             
                 $formRevisao->save();             
 
 
@@ -506,11 +561,15 @@ class FormulariosController extends Controller
                 }
                 
                 //Grupo de Divulgação
-                $usuariosGrupoDivulgacao = User::join('grupo_divulgacao_usuario', 'grupo_divulgacao_usuario.usuario_id', '=', 'users.id')
-                                                    ->join('grupo_divulgacao', 'grupo_divulgacao.id', '=', 'grupo_divulgacao_usuario.grupo_id')
-                                                    ->where('grupo_divulgacao.id', '=', $formulario[0]->grupo_divulgacao_id)
-                                                    ->select('users.id', 'name', 'username', 'email', 'setor_id')->get();               
-                foreach ($usuariosGrupoDivulgacao as $key => $userG) {
+                $usuariosGrupoDivulgacaoForm = User::join('grupo_divulgacao_formulario', 'grupo_divulgacao_formulario.usuario_id', '=', 'users.id')
+                                                    ->where('grupo_divulgacao_formulario.formulario_id', '=', $formulario[0]->id)
+                                                    ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
+                                                    ->where('users.id', '!=', $formulario[0]->elaborador_id)
+                                                    ->select('users.id', 'name', 'username', 'email', 'setor_id')
+                                                    ->get();
+                                                    
+                                                    
+                foreach ($usuariosGrupoDivulgacaoForm as $key => $userG) {
                     \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade. (Início da Divulgação)", false, $userG->id, $idForm);
                 }
 
@@ -522,7 +581,7 @@ class FormulariosController extends Controller
                 $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
                 $setor = Setor::where('id', '=', $formulario[0]->setor_id)->select('nome')->get();
 
-                $mergeOne = $usuariosSetorQualidade->merge($usuariosGrupoDivulgacao);
+                $mergeOne = $usuariosSetorQualidade->merge($usuariosGrupoDivulgacaoForm);
                 $allUsersInvolved = $mergeOne->merge($elaborador);
 
                 $icon = "success";
@@ -592,6 +651,7 @@ class FormulariosController extends Controller
     }
 
     protected function resendForm(Request $request) {
+        
         $idForm = $request->formulario_id;
         $file   = $request->file('new_form', 'local');
         $formulario     = Formulario::where('id', '=', $idForm)->get();
@@ -785,10 +845,6 @@ class FormulariosController extends Controller
                         if( $value->setor_id == $req['search_setor']) $add = true;
                         else continue;           
                     }
-                    if($req['search_grupoDivulgacao'] != null) {
-                        if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
-                        else continue;
-                    }
                     if($req['search_nivel_acesso'] != null) {
                         if( $value->nivel_acesso == $req['search_nivel_acesso']) $add = true;           
                         else continue;
@@ -810,10 +866,6 @@ class FormulariosController extends Controller
                     if($req['search_setor'] != null) {
                         if( $value->setor_id == $req['search_setor']) $add = true;        
                         else continue;   
-                    }
-                    if($req['search_grupoDivulgacao'] != null) {
-                        if( $value->grupo_divulgacao_id == $req['search_grupoDivulgacao']) $add = true;           
-                        else continue;
                     }
                     if($req['search_nivel_acesso'] != null) {
                         if( $value->nivel_acesso == $req['search_nivel_acesso']) $add = true;           

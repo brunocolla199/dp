@@ -91,6 +91,7 @@
                                         
                                             {{ csrf_field() }}
 
+
                                             <!-- Linha 1 -->
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -105,20 +106,6 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('grupoDivulgacao', 'GRUPO DE DIVULGAÇÃO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('grupoDivulgacao', $grupoDivulgacao, '', ['class' => 'form-control  custom-select']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Linha 2 -->
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
                                                         <div class="col-md-10 control-label font-bold">
                                                             {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
                                                         </div>
@@ -127,6 +114,32 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <!-- Linha 2 -->
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <div class="col-md-10 control-label font-bold">
+                                                            {!! Form::label('grupoDivulgacaoFormulario', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <select multiple id="optgroup-newGrupoDivulgacaoFormulario" name="grupoDivulgacaoFormulario[]">
+                                                                @foreach($setoresUsuarios as $key => $su)
+                                                                    <optgroup label="{{ $key }}">
+                                                                        @foreach($su as $key2 => $user)
+                                                                            <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                        @endforeach
+                                                                    </optgroup>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>   
+                                                </div>                                                    
+                                            </div>
+
+                                            <!-- Linha 3 -->
+                                            <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="col-md-6 control-label font-bold">
@@ -136,50 +149,16 @@
                                                             {!! Form::text('tituloFormulario', null, ['class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
-                                                </div>     
-
-                                                <!-- <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('documentosAtrelados', 'ATRELAR AOS DOCUMENTOS:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <select multiple id="optgroup-documentosAtrelados" name="documentosAtrelados[]" class="form-control select2">
-                                                                @foreach($documentosTipo as $key => $docs)
-                                                                    <optgroup label="{{ $key }}">
-                                                                        @foreach($docs as $key2 => $doc)
-                                                                            <option value="{{ $doc['doc_id'] }}">{{ $doc['nome'] }}</option>
-                                                                        @endforeach
-                                                                    </optgroup>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>   
-                                                </div>            -->
-                                            </div>
-
-                                            <!-- Linha 3 -->
-                                            <div class="row">
-                                                <div class="col-md-6">
+                                                </div> 
+                                                <div class="col-md-6 margin-top-1percent">
                                                     <div class="col-md-12">
                                                         <button type="button" id="importFormulario" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >IMPORTAR FORMULÁRIO</button>
-                                                        <!-- <span> 
-                                                            <small>Botão desabilitado em virtude da necessidade de disponibilizar um download específico, pois os formulários serão um tipo específico de documento 
-                                                                    e, por isso, não será suportado qualquer formato.</small> 
-                                                        </span> -->
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="col-md-12">
-                                                        <button disabled type="button" id="createFormulario" class="btn btn-save-new-form waves-effect waves-light btn-block btn-lg btn-secondary">CRIAR FORMULÁRIO</button>
-                                                        <span> 
-                                                            <small>Botão desabilitado em virtude de definições pendentes referentes ao editor de formulários" </small> 
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <!-- Linha 5 -->
+
+                                            <!-- Linha 4 -->
                                             <div class="row">
                                                 <div class="col-md-12 mb-4">
                                                     @if ($errors->any())
@@ -193,6 +172,7 @@
                                                     @endif
                                                 </div>
                                             </div>
+
                                             
                                         {!! Form::close() !!}
                                     </div>
@@ -213,37 +193,34 @@
                                                 <div class="col-md-12">
 
                                                     {!! Form::open(['route' => 'formularios.filter-forms-index', 'method' => 'POST', 'class' => 'form-horizontal']) !!}
-                                                        <div class="row margin-top-1percent" style="width: 109%">
+                                                        <div class="row margin-top-1percent" style="width: 107%">
                                                             <div class="col-md-2 margin-right-1percent">
                                                                 <div class="row">
                                                                     {!! Form::select('search_setor', array(null => '- Setor -') + $setores, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3 margin-right-1percent">
-                                                                <div class="row">
-                                                                    {!! Form::select('search_grupoDivulgacao', array(null => '- Grupo Divulgação -') + $grupoDivulgacao, null, ['class' => 'form-control  custom-select']) !!}
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-2 margin-right-1percent">
                                                                 <div class="row">
                                                                     {!! Form::select('search_nivel_acesso', array(null => '- Nível Acesso -') + $nivel_acesso, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-3 margin-right-1percent">
+                                                            <div class="col-md-2 margin-right-1percent">
                                                                 <div class="row">
                                                                     {!! Form::select('search_status', array(null => '- Status -') + $status, null, ['class' => 'form-control  custom-select']) !!}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row margin-top-1percent" style="width: 109%">    
-                                                            <div class="col-md-6"> 
+                                                            <div class="col-md-5 margin-right-1percent"> 
                                                                 <div class="row">
                                                                     {!! Form::text('search_tituloFormulario', null, ['class' => 'form-control', 'placeholder' => 'Título do Formulário']) !!}
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                        <div class="row margin-top-1percent">    
+                                                            <div class="col-md-6"></div>
+                                                            
                                                             <div class="col-md-6">
                                                                 <div class="row">
-                                                                    <div class="col-md-5">
+                                                                    <div class="col-md-6">
                                                                         <a href="{{ route('formularios') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
                                                                     </div>
                                                                     <div class="col-md-6">
@@ -289,7 +266,7 @@
                                                                             {{ Form::hidden('formulario_id', $form->id) }}
                                                                             {{ Form::hidden('action', 'view') }}
                                                                             <td class="text-center">
-                                                                                {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
+                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                             </td>
                                                                         {{ Form::close() }}
 
@@ -321,7 +298,7 @@
                                                                             {{ Form::open(['route' => 'formularios.view-obsolete-form', 'method' => 'POST']) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 <td class="text-center">
-                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
+                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
@@ -356,7 +333,7 @@
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 {{ Form::hidden('action', 'view') }}
                                                                                 <td class="text-center">
-                                                                                    {!! Form::submit($form->nome, ['class' => 'a-href-submit force-break-word']) !!}
+                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
                                                                                 </td>
                                                                             {{ Form::close() }}
 
@@ -467,6 +444,9 @@
 
 @section('footer')
 
+    <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
+    <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
+
     <script>
         // Envia o form conforme o botão que foi clicado
         $("#importFormulario").click(function(){
@@ -512,6 +492,48 @@
                 keyboard: false
             });
         });
+
+        /*
+        * MultiSelect de NOVO GRUPO DE DIVULGAÇÃO PARA O FORMULÁRIO
+        */
+        $('#optgroup-newGrupoDivulgacaoFormulario').multiSelect({
+            selectableOptgroup: true,
+            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Pesquisar usuários'>",
+            afterInit: function(ms){
+                var that = this,
+                    $selectableSearch = that.$selectableUl.prev(),
+                    $selectionSearch = that.$selectionUl.prev(),
+                    selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                    selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                .on('keydown', function(e){
+                if (e.which === 40){
+                    that.$selectableUl.focus();
+                    return false;
+                }
+                });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                .on('keydown', function(e){
+                if (e.which == 40){
+                    that.$selectionUl.focus();
+                    return false;
+                }
+                });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(values){
+                this.qs1.cache();
+                this.qs2.cache();
+            }
+        });
+
+
     </script>
 
 @endsection
