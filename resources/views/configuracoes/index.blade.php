@@ -167,7 +167,7 @@
                                         
                                         <!-- Nav tabs -->
                                         <ul class="nav nav-tabs nav-fill customtab" role="tablist">
-                                            <li class="nav-item"> <a class="nav-link speed-subtabs ovo" style="cursor: pointer" data-toggle="collapse" data-target="#setores-empresa" aria-expanded="false" aria-controls="setores-empresa" role="tab"> <i class="fa fa-sitemap"></i> <span class="hidden-xs-down"> SETORES DA EMPRESA</span></a> </li>
+                                            <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#setores-empresa" aria-expanded="false" aria-controls="setores-empresa" role="tab"> <i class="fa fa-sitemap"></i> <span class="hidden-xs-down"> SETORES DA EMPRESA</span></a> </li>
                                             <li class="nav-item"> <a class="nav-link speed-subtabs" style="cursor: pointer" data-toggle="collapse" data-target="#aprovadores" aria-expanded="false" aria-controls="aprovadores" role="tab">  <i class="fa fa-group"></i>      <span class="hidden-xs-down"> APROVADORES</span></a> </li>
                                         </ul>
                                         <!-- Tab panes -->
@@ -202,7 +202,6 @@
 
                                                                                     <a href="{{ route('configuracoes.link.users_sectors', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Vincular Usuários"> <i class="fa fa-exchange text-info"></i> </a>
                                                                                     <a href="#" class="open-edit-sector-modal" data-id="{{$setor->id}}" data-nome="{{$setor->nome}}" data-sigla="{{$setor->sigla}}" data-desc="{{$setor->descricao}}" data-toggle="tooltip" data-original-title="Editar"> <i data-toggle="modal" data-target="#edit-sector-modal" class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                                                    <!-- <a href="#" class="sa-warning" data-toggle="tooltip" data-original-title="Excluir"> <i class="fa fa-close text-danger"></i> </a> -->
                                                                                 </center>
                                                                             </td>
                                                                         </tr>

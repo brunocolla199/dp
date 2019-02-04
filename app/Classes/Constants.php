@@ -59,23 +59,21 @@ class Constants {
     public static $ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM       = 5;
     public static $ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT      = "Upload da Lista de Presença";
     
-    public static $ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM  = 6;
-    public static $ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT = "Correção da Lista de Presença";
-    
-    public static $ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM                 = 7;
-    public static $ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT                = "Análise da Lista de Presença";
+
+    public static $_DEPRECATED_ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM  = 6;
+    public static $_DEPRECATED_ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT = "Correção da Lista de Presença";
+    public static $_DEPRECATED_ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM                 = 7;
+    public static $_DEPRECATED_ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT                = "Análise da Lista de Presença";
+
 
 
     // Descrição do Workflow
-    // Alinhar as seguintes etapas: 'Próximo de vencimento', 'Emissão', 'Em elaboração', 'Aprovado pela Gerência ou Diretoria', 'Em treinamento', 'Documento divulgado' [ALEḾ DE IDENTIFICAR MOMENTOS CONFLITANTES]
-
     public static $DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE             = "Em análise pela área de qualidade";
 
     public static $DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE             = "Em análise pela área de interesse";
     
     public static $DESCRICAO_WORKFLOW_ANALISE_APROVADOR                     = "Em análise pelo aprovador";
     
-    public static $DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO                = "Em análise pelo Capital Humano";
     
     public static $DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE            = "Aprovado pela área de qualidade";
     
@@ -84,12 +82,10 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_APROVADO_GERENCIA                     = "Aprovado pela Gerência";  // Documentos IT, PG
     public static $DESCRICAO_WORKFLOW_APROVADO_DIRETORIA                    = "Aprovado pela Diretoria"; // Documentos DG
     
-    public static $DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO               = "Lista de Presença aprovada pelo Capital Humano";
-    
     public static $DESCRICAO_WORKFLOW_EM_TREINAMENTO                        = "Em treinamento";
     
     public static $DESCRICAO_WORKFLOW_EM_REVISAO                            = "Em revisão";
-
+    
     public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO                   = "Documento divulgado";
     
     public static $DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO                  = "Formulário divulgado";
@@ -99,19 +95,17 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_EMISSAO                               = "Emissão";
     
     public static $DESCRICAO_WORKFLOW_EM_ELABORACAO                         = "Em Elaboração";
-
+    
     public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Devolvido para correção pela Qualidade";
     
     public static $DESCRICAO_WORKFLOW_REJEITADO_AREA_INTERESSE              = "Devolvido para correção pela Área de Interesse";
     
     public static $DESCRICAO_WORKFLOW_REJEITADO_APROVADOR                   = "Devolvido para correção pelo Aprovador";
     
-    public static $DESCRICAO_WORKFLOW_REJEITADO_CAPITAL_HUMANO              = "Lista de Presença devolvida para correção pelo Capital Humano";
-   
     public static $DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR                 = "Reenviado pelo Elaborador";
     
     public static $DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA          = "Aguardando lista de presença";
-
+    
     public static $DESCRICAO_WORKFLOW_SOLICITACAO_DE_REVISAO                = "Solicitado revisão do documento";
     
     public static $DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1             = "Revisão ";
@@ -123,13 +117,19 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_PARTE_2      = " do documento foi restaurada.";
     
     public static $DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL    = "Revisão anterior do formulário foi restaurada.";
-
+    
     public static $DESCRICAO_WORKFLOW_FORM_REVISAO_INICIADA                 = "Revisão do formulário iniciada";
     
     public static $DESCRICAO_WORKFLOW_FORM_MARCADO_COMO_OBSOLETO            = "Marcou o formulário como obsoleto.";
-
+    
     public static $DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO             = "Marcou o documento como obsoleto.";
-
+    
+    public static $TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS        = "Lista de presença enviada para: ";
+    
+    
+    public static $_DEPRECATED_DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO                = "Em análise pelo Capital Humano";
+    public static $_DEPRECATED_DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO               = "Lista de Presença aprovada pelo Capital Humano";
+    public static $_DEPRECATED_DESCRICAO_WORKFLOW_REJEITADO_CAPITAL_HUMANO              = "Lista de Presença devolvida para correção pelo Capital Humano";
     
     
     // Extras
@@ -142,6 +142,8 @@ class Constants {
     public static $SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS = "_rev";
  
     public static $URL_SISTEMA_PRODUCAO = "http://dpws1sva013/qualidade/login";
+    
+    public static $SEPARADOR_PARA_CONCATENACOES = "; ";
 }
 
 

@@ -18,10 +18,6 @@
 		<input type="hidden" name="status" id="status" value="resend_success">
     @elseif (session('import_list_success'))
 		<input type="hidden" name="status" id="status" value="import_list_success">
-    @elseif (session('reject_list_success'))
-		<input type="hidden" name="status" id="status" value="reject_list_success">
-    @elseif (session('resend_list_success'))
-		<input type="hidden" name="status" id="status" value="resend_list_success">
     @elseif (session('start_review_success'))
 		<input type="hidden" name="status" id="status" value="start_review_success">
     @elseif (session('document_name_already_exists'))
@@ -50,10 +46,6 @@
                 showToast('Sucesso!', 'A vinculação foi realizada com sucesso.', 'success');
             } else if(status == "import_list_success") {
                 showToast('Sucesso!', 'A lista de presença foi salva.', 'success');
-            } else if(status == "reject_list_success") {
-                showToast('Sucesso!', 'A lista de presença foi rejeitada.', 'success');
-            } else if(status == "resend_list_success") {
-                showToast('Sucesso!', 'A lista de presença foi reenviada ao Capital Humano.', 'success');
             } else if(status == "start_review_success") {
                 showToast('Sucesso!', 'A revisão do documento foi iniciada.', 'success');
             } else if(status == "document_name_already_exists") {

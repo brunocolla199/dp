@@ -32,6 +32,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendEmailsJob;
 
+use App\Jobs\SendEmailComAnexoJob;
+
 
 class DocumentacaoController extends Controller
 {
@@ -43,7 +45,7 @@ class DocumentacaoController extends Controller
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
-        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO );
         $filtroCopiaControladaAtivo = false;
         
         // Aprovadores
@@ -80,13 +82,14 @@ class DocumentacaoController extends Controller
 
 
     public function filterDocumentsIndex(Request $request) {
+
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
         $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
-        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT=>Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT );
+        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO );
         $filtroCopiaControladaAtivo = ( array_key_exists('possuiCopiaControlada', $request->all()) ) ? true : false;
 
         // Aprovadores
@@ -417,12 +420,6 @@ class DocumentacaoController extends Controller
                 }
                 break;
             
-            case 7:
-                if( Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO ) {
-                    $status = $documento->etapa;
-                }
-                break;
-            
             default: // Etapas: 1, 5 e 6 (Elaborador, Upload Lista de Presença e Correção Lista de Presença)
                 if( Auth::user()->id == $documento->elaborador_id ) {
                     $status = $documento->etapa;
@@ -520,8 +517,8 @@ class DocumentacaoController extends Controller
         $idDoc = $request->document_id;
         
         $documento = Documento::find($request->document_id);
-        $dadosDoc  = DadosDocumento::find($idDoc);
-        $workflow  = Workflow::find($idDoc);
+        $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
+        $workflow  = Workflow::where('documento_id', '=', $idDoc)->first();
 
         $revisaoAtual = $dadosDoc->revisao;
         $revisaoNova  = (int) $revisaoAtual + 1;
@@ -618,9 +615,9 @@ class DocumentacaoController extends Controller
         $dadosDoc[0]->justificativa_cancelar_revisao = $request->justificativaCancelamentoRevisao;
         $dadosDoc[0]->save();
 
-        // < Workflow > [Por prevenção, coloca na etapa 7 - pois isso não fará diferença enquanto o documento estiver como 'finalizado'] 
-        $workflow[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-        $workflow[0]->etapa     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
+        // < Workflow > [Por prevenção, coloca na etapa 5 - pois isso não fará diferença enquanto o documento estiver como 'finalizado'] 
+        $workflow[0]->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
+        $workflow[0]->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
         $workflow[0]->save();
 
         // < Excluindo o arquivo físico da revisão que acabou de ser cancelada >
@@ -691,12 +688,6 @@ class DocumentacaoController extends Controller
                                             ->select('id', 'name', 'username', 'email', 'setor_id')->get();
         }
 
-        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)
-                                            ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
-                                            ->where('users.id', '!=', $elaborador[0]->id)
-                                            ->where('users.id', '!=', $dadosDoc->aprovador_id)
-                                            ->select('id', 'name', 'username', 'email', 'setor_id')->get();        
-        
         $usuariosAreaInteresseDocumento = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')
                                                 ->where('area_interesse_documento.documento_id', '=', $request->doc_id)
                                                 ->where('users.setor_id', '!=', Constants::$ID_SETOR_QUALIDADE)
@@ -707,7 +698,6 @@ class DocumentacaoController extends Controller
 
         
         if($usuariosSetorQualidade != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorQualidade);
-        if($usuariosSetorCapitalHumano != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosSetorCapitalHumano);
         if($usuariosAreaInteresseDocumento != null) $allUsersInvolved = $allUsersInvolved->merge($usuariosAreaInteresseDocumento);
 
         foreach ($allUsersInvolved as $key => $value) {
@@ -976,7 +966,7 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR, $idDoc);
                 break;
 
-            case 4: // Aprovador
+            default: // Aprovador
                 $dados_doc[0]->observacao = "Aprovado pelo Aprovador";
                 $dados_doc[0]->save();
 
@@ -992,72 +982,6 @@ class DocumentacaoController extends Controller
                 else \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_GERENCIA, $idDoc);
 
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA, $idDoc);
-                break;
-            
-            default: // (7) Capital Humano
-                $dados_doc[0]->observacao             = "Lista de Presença aprovada pelo Capital Humano";
-                $dados_doc[0]->finalizado             = true;
-                $dados_doc[0]->em_revisao             = false;
-                $dados_doc[0]->id_usuario_solicitante = false;
-                $dados_doc[0]->save();
-
-                // Notificações
-                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->elaborador_id, $idDoc);
-
-                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-                foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
-                }
-
-                $usuariosAreaInteresseDocumento = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
-                if( count($usuariosAreaInteresseDocumento) > 0  ) {
-                    foreach ($usuariosAreaInteresseDocumento as $key => $user) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
-                    }
-                }
-
-                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $dados_doc[0]->aprovador_id, $idDoc);
-
-                $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-                foreach ($usuariosSetorCapitalHumano as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento[0]->codigo . " foi divulgado.", false, $user->id, $idDoc);
-                }
-
-                // [E-mail -> (3)]  
-                $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-                $aprovador = User::where('id', '=', $dados_doc[0]->aprovador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-                $setor = Setor::where('id', '=', $dados_doc[0]->setor_id)->select('nome')->get();
-                $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get();
-
-                $mergeOne = $usuariosSetorQualidade->merge($usuariosSetorCapitalHumano);
-                $mergeTwo = $mergeOne->merge($elaborador);
-                $mergeThree = $mergeTwo->merge($aprovador);
-                $allUsersInvolved = $mergeThree->merge($usuariosAreaInteresseDocumento);
-
-                $icon = "success";
-                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " foi divulgado.";
-                $labelF2 = "Setor do documento: "; $valueF2 = $setor[0]->nome;
-                $labelF3 = "Nível de acesso do documento: "; $valueF3 = $dados_doc[0]->nivel_acesso; $label2_F3 = " / Tipo do documento: "; $value2_F3 = $tipoDocumento[0]->nome_tipo;
-                $this->dispatch(new SendEmailsJob($allUsersInvolved, "Documento divulgado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-
-
-                // Notificação específica para documentos que possuem Cópia Controlada
-                if($dados_doc[0]->copia_controlada) {
-                    foreach ($usuariosSetorQualidade as $key => $user) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita de Cópia Controlada.", true, $user->id, $idDoc);
-                    }
-
-                    // [E-mail -> (5)]
-                    $icon = "info";
-                    $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " possui cópia controlada.";
-                    $labelF2 = "Este documento necessita de "; $valueF2 = "cópia controlada";
-                    $labelF3 = ""; $valueF3 = "Não esqueça!"; $label2_F3 = ""; $value2_F3 = "";
-                    $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Cópia controlada necessária",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-                }
-
-                // Histórico
-                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_CAPITAL_HUMANO, $idDoc);
-                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO, $idDoc);
                 break;
         }
 
@@ -1138,7 +1062,7 @@ class DocumentacaoController extends Controller
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
                 break;
 
-            case 4: // Aprovador
+            default: // Aprovador
                 $dados_doc[0]->observacao = "Rejeitado pelo Aprovador";
                 $dados_doc[0]->save();
 
@@ -1165,38 +1089,6 @@ class DocumentacaoController extends Controller
                 // Histórico
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_APROVADOR, $idDoc);
                 \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
-                break;
-
-            
-            default: // (7) Capital Humano
-                $dados_doc[0]->observacao = "Rejeitado pelo Capital Humano";
-                $dados_doc[0]->save();
-
-                $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM;
-                $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT;
-                $workflow_doc[0]->justificativa = $request->justificativaReprovacaoLista;
-                $workflow_doc[0]->save();
-
-                // Notificações
-                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-                foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("A lista de presença do documento " . $documento[0]->codigo . " foi devolvida para correção pelo Capital Humano.", false, $user->id, $idDoc);
-                }
-
-                \App\Classes\Helpers::instance()->gravaNotificacao("A lista de presença do documento " . $documento[0]->codigo . " precisa ser corrigida (rejeitada pelo Capital Humano).", true, $dados_doc[0]->elaborador_id, $idDoc);
-
-                // [E-mail -> (6)]  
-                $icon = "error";
-                $contentF1_P1 = "A lista de presença "; $codeF1 = ""; $contentF1_P2 = "foi rejeitada.";
-                $labelF2 = "A rejeição foi realizada pelo setor: "; $valueF2 = $responsavelPelaAcao[0]->nome;
-                $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
-                $this->dispatch(new SendEmailsJob($elaborador, "Lista de presença rejeitada",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-
-                // Histórico
-                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REJEITADO_CAPITAL_HUMANO, $idDoc);
-                \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO, $idDoc);
-
-                return redirect()->route('documentacao')->with('reject_list_success', 'message');
                 break;
         }
 
@@ -1242,139 +1134,123 @@ class DocumentacaoController extends Controller
     }
 
 
-    protected function resendList(Request $request) {
-        $idDoc = $request->documento_id;
-        $documento = Documento::where('id', '=', $idDoc)->get();
-        $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
-        $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+    public function salvaListaPresenca(Request $request) {
+        /**
+         * Novo comportamento do método:
+         *  1. Salva a lista de presença da mesma forma como era feito anteriormente
+         *      1.1. Porém, nesse ponto deve-se popular a nova coluna da tabela 'lista_presenca' que armazena os destinatários que receberam o e-mail com a lista de presença em anexo
+         *      1.2. Envia um e-mail para todos os integrantes do setor do Capital Humano com a permissão de "Aprovar Lista de Presença" habilitada
+         *      1.3. Grava no histórico do documento os usuários que receberam o e-mail
+         *      1.4. Envia também uma notificação dentro do sistema, SEM a necessidade de interação do usuário, para esses mesmos usuários do item acima
+         *  2. Divulga o documento
+         */
+
+        $idDoc      = $request->documento_id;
+        $documento  = Documento::find($idDoc);
+        $dados_doc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
+        $file       = $request->file('doc_uploaded', 'local');
+        $extensao   = $file->getClientOriginalExtension();
         $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
-        $listaPresenca = ListaPresenca::where('documento_id', '=', $idDoc)->get();
 
-        // Exclui Lista antiga
-        Storage::disk('speed_office')->delete('lists/' . $request->nome_lista . "." . $request->extensao);
-        
-        // Salva nova lista de presença com o mesmo nome
-        $file = $request->file('doc_uploaded', 'local');
-        $extensao = $file->getClientOriginalExtension();
+        $usuariosCapitalHumanoComPermissaoParaAprovarLista = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
+        $usuariosSetorQualidade                            = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        $usuariosAreaInteresseDocumento                    = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
 
+
+        // COMPORTAMENTO #1
         Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
-        // $path = \App\Classes\Helpers::instance()->getListaPresenca($request->nome_lista.".".$extensao); 
+        $nomeLista = $request->nome_lista .".". $extensao;
+        $pathLista = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix() . "/lists/" . $nomeLista;
 
-        $listaPresenca[0]->extensao = $extensao;
-        $listaPresenca[0]->save();
+        $emailsParaExibir = $usuariosCapitalHumanoComPermissaoParaAprovarLista->reduce(function ($textoAtual, $emailIteracao) {
+            return $textoAtual . $emailIteracao->email . Constants::$SEPARADOR_PARA_CONCATENACOES;
+        }, Constants::$TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS);
 
-        $dados_doc[0]->observacao = "Reenviado pelo Elaborador";
-        $dados_doc[0]->save();
+        // #1.1
+        $lista                      = new ListaPresenca();
+        $lista->nome                = $request->nome_lista;
+        $lista->extensao            = $extensao;
+        $lista->descricao           = "Lista de Presença anexada";
+        $lista->data                = date('d/m/Y');
+        $lista->documento_id        = $idDoc;
+        $lista->destinatarios_email = $emailsParaExibir;
+        $lista->save();
+
+        // #1.2 | [E-mail -> (7)]      
+        $elaborador = User::where('id', '=', $dados_doc->elaborador_id)->select('name')->get();
+        $icon = "info";
+        $contentF1_P1 = "A lista de presença em anexo"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
+        $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento->codigo; $label2_F3 = ""; $value2_F3 = "";
         
-        $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-        $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
-        $workflow_doc[0]->justificativa = '';
-        $workflow_doc[0]->save();
+        $this->dispatch(new SendEmailComAnexoJob($usuariosCapitalHumanoComPermissaoParaAprovarLista, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3, $pathLista, $nomeLista, 'application/octet-stream' ));
+
+
+        // #1.3
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento($emailsParaExibir, $idDoc);
+        
+        // #1.4
+        foreach ($usuariosCapitalHumanoComPermissaoParaAprovarLista as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("Você recebeu um e-mail com a lista de presença do documento " . $documento->codigo . " , que foi divulgado.", false, $user->id, $idDoc);
+        }
+
+
+        
+        // COMPORTAMENTO #2
+        $dados_doc->observacao             = "Lista de Presença anexada pelo elaborador e documento divulgado";
+        $dados_doc->finalizado             = true;
+        $dados_doc->em_revisao             = false;
+        $dados_doc->id_usuario_solicitante = false;
+        $dados_doc->save();
 
         // Notificações
-        $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-        foreach ($usuariosSetorCapitalHumano as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença reanalisada.", true, $user->id, $idDoc);
+        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->elaborador_id, $idDoc);
+
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
         }
 
-        // [E-mail -> (7)]      
-        $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('name')->get();
-        $icon = "info";
-        $contentF1_P1 = "A lista de presença"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
-        $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
-        $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
-        $this->dispatch(new SendEmailsJob($usuariosSetorCapitalHumano, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        if( count($usuariosAreaInteresseDocumento) > 0  ) {
+            foreach ($usuariosAreaInteresseDocumento as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+            }
+        }
+
+        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->aprovador_id, $idDoc);
+        
+
+        // [E-mail -> (3)]  
+        $elaborador    = User::where('id', '=', $dados_doc->elaborador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        $aprovador     = User::where('id', '=', $dados_doc->aprovador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+        $setor         = Setor::where('id', '=', $dados_doc->setor_id)->select('nome')->first();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get();
+
+        $mergeOne = $usuariosSetorQualidade->merge($elaborador);
+        $mergeTwo = $mergeOne->merge($aprovador);
+        $allUsersInvolved = $mergeTwo->merge($usuariosAreaInteresseDocumento);
+
+        $icon = "success";
+        $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " foi divulgado.";
+        $labelF2 = "Setor do documento: "; $valueF2 = $setor->nome;
+        $labelF3 = "Nível de acesso do documento: "; $valueF3 = $dados_doc->nivel_acesso; $label2_F3 = " / Tipo do documento: "; $value2_F3 = $tipoDocumento[0]->nome_tipo;
+        $this->dispatch(new SendEmailsJob($allUsersInvolved, "Documento divulgado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
+        // Notificação específica para documentos que possuem Cópia Controlada
+        if($dados_doc->copia_controlada) {
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " necessita de Cópia Controlada.", true, $user->id, $idDoc);
+            }
+
+            // [E-mail -> (5)]
+            $icon = "info";
+            $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " possui cópia controlada.";
+            $labelF2 = "Este documento necessita de "; $valueF2 = "cópia controlada";
+            $labelF3 = ""; $valueF3 = "Não esqueça!"; $label2_F3 = ""; $value2_F3 = "";
+            $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Cópia controlada necessária",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        }
 
         // Histórico
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idDoc);
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
-
-        return redirect()->route('documentacao')->with('resend_list_success', 'message');
-    }
-
-
-    public function salvaListaPresenca(Request $request) {
-        $idDoc = $request->documento_id;
-        $documento = Documento::where('id', '=', $idDoc)->get();
-        $file = $request->file('doc_uploaded', 'local');
-        $extensao = $file->getClientOriginalExtension();
-        $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
-
-        $listaPresenca = ListaPresenca::where('documento_id', '=', $idDoc)->get();
-        if($listaPresenca->count() <= 0) {
-            Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
-            $lista = new ListaPresenca();
-            $lista->nome            = $request->nome_lista;
-            $lista->extensao        = $extensao;
-            $lista->descricao       = "Lista de Presença anexada";
-            $lista->data            = date('d/m/Y');
-            $lista->documento_id    = $idDoc;
-            $lista->save();
-    
-            $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
-            $dados_doc[0]->observacao = "Lista de Presença importada pelo elaborador";
-            $dados_doc[0]->save();
-    
-            $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
-            $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-            $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
-            $workflow_doc[0]->save();
-    
-            // Notificações
-            $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-            foreach ($usuariosSetorCapitalHumano as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $user->id, $idDoc);
-            }
-
-            // [E-mail -> (7)]      
-            $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('name')->get();
-            $icon = "info";
-            $contentF1_P1 = "A lista de presença"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
-            $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
-            $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
-            $this->dispatch(new SendEmailsJob($usuariosSetorCapitalHumano, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-    
-            // Histórico
-            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
-        } else {
-            // U => Estamos em uma revisão do documento e já existe lista de presença, ou seja, é necessário deletar a antiga e subir a nova
-
-            // Exclui lista antiga
-            Storage::disk('speed_office')->delete('lists/' . $listaPresenca[0]->nome .".". $listaPresenca[0]->extensao);
-
-            // Salva lista nova
-            Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".". $extensao, file_get_contents($file), 'private');
-
-            // Atualiza tabela no B.D.
-            $listaPresenca[0]->nome      = $request->nome_lista;
-            $listaPresenca[0]->extensao  = $extensao;
-            $listaPresenca[0]->data      = date('d/m/Y');
-            $listaPresenca[0]->save();
-
-            $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
-            $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
-            $workflow_doc[0]->etapa = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT;
-            $workflow_doc[0]->save();
-
-            // Notificações
-            $usuariosSetorCapitalHumano = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-            foreach ($usuariosSetorCapitalHumano as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ter a lista de presença analisada.", true, $user->id, $idDoc);
-            }
-
-            // [E-mail -> (7)]   
-            $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
-            
-            $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('name')->get();
-            $icon = "info";
-            $contentF1_P1 = "A lista de presença"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
-            $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
-            $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento[0]->codigo; $label2_F3 = ""; $value2_F3 = "";
-            $this->dispatch(new SendEmailsJob($usuariosSetorCapitalHumano, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-    
-            // Histórico
-            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO, $idDoc);
-        }
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO, $idDoc);
 
         return redirect()->route('documentacao')->with('import_list_success', 'message');
     }
@@ -1595,7 +1471,7 @@ class DocumentacaoController extends Controller
             
             //WorkFlow
             $workflow = new Workflow();
-            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
             $workflow->etapa         = "";
             $workflow->descricao     = "Documento Importado Rotina Speed";
             $workflow->justificativa = "";
@@ -1647,7 +1523,7 @@ class DocumentacaoController extends Controller
             
             //WorkFlow
             $workflow = new Workflow();
-            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
             $workflow->etapa         = "";
             $workflow->descricao     = "Documento Importado Rotina Speed";
             $workflow->justificativa = "";
@@ -1700,7 +1576,7 @@ class DocumentacaoController extends Controller
             
             //WorkFlow
             $workflow = new Workflow();
-            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM;
+            $workflow->etapa_num     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
             $workflow->etapa         = "";
             $workflow->descricao     = "Documento Importado Rotina Speed";
             $workflow->justificativa = "";
@@ -1809,8 +1685,7 @@ class DocumentacaoController extends Controller
         $cloneBaseQueryEtapa2Qualidade        = clone $baseQueryLocal;
         $cloneBaseQueryEtapa3AreaDeInteresse  = clone $baseQueryLocal;
         $cloneBaseQueryEtapa4Aprovadores      = clone $baseQueryLocal;
-        $cloneBaseQueryEtapas5e6Elaborador    = clone $baseQueryLocal; // Etapa 1 "não existe" em processo de criação [EXISTE SIM HEUHEUHE]
-        $cloneBaseQueryEtapa7CapitalHumano    = clone $baseQueryLocal;
+        $cloneBaseQueryEtapas5e6Elaborador    = clone $baseQueryLocal;
         $cloneBaseQueryTodasEtapasMaioresQue2 = clone $baseQueryLocal;
 
         // Conforme regras do sistema, se o usuário for do Setor Qualidade, ele poderá ver os documentos em todas as etapas        
@@ -1872,17 +1747,10 @@ class DocumentacaoController extends Controller
             $documentosEmCriacao[] = $etapa4->values()->all();
 
             // Documentos em Criação - Etapas 5 e 6
-            $etapa5e6 = $cloneBaseQueryEtapas5e6Elaborador->whereIn('workflow.etapa_num', array(Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM, Constants::$ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM))
+            $etapa5e6 = $cloneBaseQueryEtapas5e6Elaborador->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM)
                                                           ->where('elaborador_id', '=', Auth::user()->id)->get();
 
             if( $etapa5e6->count() > 0 ) $documentosEmCriacao[] = $etapa5e6->values()->all();
-
-            // Documentos em Criação - Etapa 7
-            if( Auth::user()->setor_id == Constants::$ID_SETOR_CAPITAL_HUMANO ) {
-                $etapa7 = $cloneBaseQueryEtapa7CapitalHumano->where('workflow.etapa_num', '=', Constants::$ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM)->get();
-
-                $documentosEmCriacao[] = $etapa7->values()->all();
-            }
         }
         
         // Passa todos os documentos, de cada etapa, para a raiz de um novo array, de forma que tods fiquem no mesmo nível hierrárquico
