@@ -332,15 +332,6 @@ class Helpers {
 
     }
 
-    // O formulário foi recebido e precisa ser analisado/revisado/aprovado
-    public function sendFormularioNecessitaRevisao() {
-        $dataFile = [];
-        $dataFile['codigo'] = $lista->nome;
-
-        Mail::to($destinatarios)->send(new NecessitaRevisao($documento, $responsavelPelaAcao, "A lista de presença", "Nova lista de presença para aprovação"));
-        return true;
-    }
-
 
 
 
