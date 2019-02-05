@@ -591,55 +591,55 @@ class DocumentacaoController extends Controller
 
     protected function cancelReview(Request $request) {
         $idDoc     = $request->documento_id;
-        $documento = Documento::where('id', '=', $idDoc)->get();
-        $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->get();
-        $workflow  = Workflow::where('documento_id', '=', $idDoc)->get();
+        $documento = Documento::find($idDoc);
+        $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
+        $workflow  = Workflow::where('documento_id', '=', $idDoc)->first();
 
-        $nomeCompletoDoc = $documento[0]->nome;
-        $nomeDoc = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0];
-        $revAtual = (int) explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[1];
-        $revAtual_txt = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[1];
-        $revCorreta = $revAtual - 1;
-        $revCorreta = ($revCorreta <= 9) ? "0{$revCorreta}" : $revCorreta;
+        $nomeCompletoDoc = $documento->nome;
+        $nomeDoc         = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0];
+        $revAtual        = (int) explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[1];
+        $revAtual_txt    = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[1];
+        $revCorreta      = $revAtual - 1;
+        $revCorreta      = ($revCorreta <= 9) ? "0{$revCorreta}" : $revCorreta;
 
         // < Documento >
-        $documento[0]->nome  = $nomeDoc . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revCorreta;
-        $documento[0]->save();
+        $documento->nome  = $nomeDoc . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revCorreta;
+        $documento->save();
 
         // < DadosDocumento >
-        $dadosDoc[0]->finalizado = true;
-        $dadosDoc[0]->necessita_revisao = false;
-        $dadosDoc[0]->revisao = $revCorreta;
-        $dadosDoc[0]->justificativa_rejeicao_revisao = null;
-        $dadosDoc[0]->em_revisao = false;
-        $dadosDoc[0]->justificativa_cancelar_revisao = $request->justificativaCancelamentoRevisao;
-        $dadosDoc[0]->save();
+        $dadosDoc->finalizado = true;
+        $dadosDoc->necessita_revisao = false;
+        $dadosDoc->revisao = $revCorreta;
+        $dadosDoc->justificativa_rejeicao_revisao = null;
+        $dadosDoc->em_revisao = false;
+        $dadosDoc->justificativa_cancelar_revisao = $request->justificativaCancelamentoRevisao;
+        $dadosDoc->save();
 
         // < Workflow > [Por prevenção, coloca na etapa 5 - pois isso não fará diferença enquanto o documento estiver como 'finalizado'] 
-        $workflow[0]->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
-        $workflow[0]->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
-        $workflow[0]->save();
+        $workflow->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
+        $workflow->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
+        $workflow->save();
 
         // < Excluindo o arquivo físico da revisão que acabou de ser cancelada >
-        Storage::disk('speed_office')->delete($nomeCompletoDoc.".".$documento[0]->extensao);
+        Storage::disk('speed_office')->delete($nomeCompletoDoc.".".$documento->extensao);
 
         // Notificações
-        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc[0]->elaborador_id, $idDoc);
-        if($dadosDoc[0]->id_usuario_solicitante != $dadosDoc[0]->elaborador_id  && $dadosDoc[0]->id_usuario_solicitante != $dadosDoc[0]->aprovador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc[0]->id_usuario_solicitante, $idDoc);
+        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc->elaborador_id, $idDoc);
+        if($dadosDoc->id_usuario_solicitante != $dadosDoc->elaborador_id  && $dadosDoc->id_usuario_solicitante != $dadosDoc->aprovador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc->id_usuario_solicitante, $idDoc);
 
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $user->id, $idDoc);
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $user->id, $idDoc);
         }
         
         $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
         if( count($usuariosAreaInteresseDocumento) > 0 ) {
             foreach ($usuariosAreaInteresseDocumento as $key => $value) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $value, $idDoc);
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $value, $idDoc);
             }
         }
     
-        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc[0]->aprovador_id, $idDoc);
+        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc->aprovador_id, $idDoc);
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1 . $revAtual_txt . Constants::$DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_2, $idDoc);

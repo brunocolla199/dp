@@ -425,8 +425,15 @@
                                             </div>
 
                                             <div class="row mt-5 margin-top-1percent">
-                                                <div class="table-responsive">
-                                                    <table class="table">
+                                                <h5 class="alert alert-warning alert-dismissible" role="alert">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    Para filtrar registros através do <b>Título do Documento</b>, utilize o campo acima. Qualquer outro campo pode ser pesquisado no campo <i>Pesquisar</i> (canto superior direito da tabela).
+                                                </h5>
+                                            </div>
+
+                                            <div class="row mt-2 margin-top-1percent">
+                                                <div class="table-responsive m-t-40">
+                                                    <table id="example23" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-center text-nowrap">Ações</th>
@@ -441,7 +448,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-
+                                                            
                                                             @if( $documentos_nao_finalizados != null && count($documentos_nao_finalizados) > 0 )
                                                                 @foreach($documentos_nao_finalizados as $doc)
                                                                     <tr>
@@ -523,7 +530,7 @@
                                                             @endif
 
                                                         </tbody>
-                                                    </table>
+                                                    </table>      
                                                 </div>
                                             </div>
                                             
@@ -634,23 +641,6 @@
                 *   QUANDO CARREGAR A PÁGINA
                 */
                 $(document).ready(function(){
-                    /*
-                    var arr = ["IT - 012 - V2", "DP - 12 - V1", "IT - 07 - V2", "IT - 05 - V2", "PG-09-V2", "DG-01-V3", "IT - 012 - V2", "DP - 12 - V1", "IT - 07 - V2", "IT - 05 - V2"];
-                    for(var i=0; i<10; i++) {
-                        $.toast({
-                            heading: '<b>' + arr[i] + '</b>',
-                            text: 'O documento código '+ arr[i] +' vence em <b>20/04/2018</b>.',
-                            position: 'top-right',
-                            bgColor: '#03739a',  // Background color of the toast
-                            textColor: '#eeeeee',  // Text color of the toast
-                            textAlign: 'left', 
-                            allowToastClose: true,
-                            hideAfter: 100, // false
-                            stack: 6
-                        });
-                    }
-                    */
-
                     // Envia o form conforme o botão que foi clicado
                     $("#importDocument").click(function(){
                         var input = $("<input>").attr("type", "hidden").attr("name", "action").val("import");
@@ -715,6 +705,20 @@
 @section('footer')
     <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
     <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
+    
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    
+    <!-- start - This is for export functionality only -->
+    <script src="{{ asset('js/dataTables/dataTables-1.2.2.buttons.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/buttons-1.2.2.flash.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/jszip-2.5.0.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/pdfmake-0.1.18.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/vfs_fonts-0.1.18.js') }}"></script>
+    <script src="{{ asset('js/dataTables/buttons-1.2.2.html5.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/buttons-1.2.2.print.min.js') }}"></script>
+    <!-- end - This is for export functionality only -->
+
     <script>
         
         function viewFormulario(id){
@@ -866,6 +870,81 @@
             $(".btn-save-link").click(function(){
                 $("#save-link-form").submit();
             });
+
+            /*
+            * DATA-TABLE
+            */
+            $(document).ready(function() {
+                $('#example23').DataTable({
+                    "language": {
+                        "sEmptyTable": "Nenhum registro encontrado",
+                        "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                        "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ".",
+                        "sLengthMenu": "_MENU_ resultados por página",
+                        "sLoadingRecords": "Carregando...",
+                        "sProcessing": "Processando...",
+                        "sZeroRecords": "Nenhum registro encontrado",
+                        "sSearch": "Pesquisar",
+                        "oPaginate": {
+                            "sNext": "Próximo",
+                            "sPrevious": "Anterior",
+                            "sFirst": "Primeiro",
+                            "sLast": "Último"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Ordenar colunas de forma ascendente",
+                            "sSortDescending": ": Ordenar colunas de forma descendente"
+                        }
+                    },
+                    dom: 'Bfrtip',
+                    buttons: [
+                        { extend: 'excel',  text: 'Excel' },
+                        { extend: 'pdf',    text: 'PDF' },
+                        { extend: 'print',  text: 'Imprimir' }
+                    ]
+                });
+
+                $(document).ready(function() {
+                    var table = $('#example').DataTable({
+                        "columnDefs": [{
+                            "visible": false,
+                            "targets": 2
+                        }],
+                        "order": [
+                            [2, 'asc']
+                        ],
+                        "displayLength": 25,
+                        "drawCallback": function(settings) {
+                            var api = this.api();
+                            var rows = api.rows({
+                                page: 'current'
+                            }).nodes();
+                            var last = null;
+                            api.column(2, {
+                                page: 'current'
+                            }).data().each(function(group, i) {
+                                if (last !== group) {
+                                    $(rows).eq(i).before('<tr class="group"><td colspan="5">' + group + '</td></tr>');
+                                    last = group;
+                                }
+                            });
+                        }
+                    });
+                    // Order by the grouping
+                    $('#example tbody').on('click', 'tr.group', function() {
+                        var currentOrder = table.order()[0];
+                        if (currentOrder[0] === 2 && currentOrder[1] === 'asc') {
+                            table.order([2, 'desc']).draw();
+                        } else {
+                            table.order([2, 'asc']).draw();
+                        }
+                    });
+                });
+            });
+            
 
         });
     </script>
