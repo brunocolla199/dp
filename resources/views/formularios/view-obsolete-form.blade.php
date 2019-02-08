@@ -16,13 +16,17 @@
 
             <div class="row page-titles">
                 
-                <div class="col-md-9 col-9 align-self-center">
+                <div class="col-md-6 col-6 align-self-center">
                     <h3 class="text-themecolor m-b-0 m-t-0">Visualização de Formulário</h3>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="{{ URL::route('formularios') }}">Formulários</a></li>
                         <li class="breadcrumb-item active">Visualização de Formulário Obsoleto</li>
                     </ol>
+                </div>
+
+                <div class="col-3">
+                    <button class="btn btn-lg btn-info" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Ver Linha do Tempo</button>
                 </div>
                 
                 <?php $revisoes = \App\Classes\Helpers::instance()->getNameListAllFormRevisions($formulario_id); ?>
@@ -50,6 +54,62 @@
                 <div class="col-12">
                     <div class="card">
                         <div class=" card-body">
+
+                             <!-- Timeline do Formulário -->
+                             <div class="row">
+                                <div class="col col-centered">
+                                    <div class="collapse multi-collapse" id="multiCollapseExample2">
+                                        <div class="card card-body text-center">
+
+                                            <div class="row">
+                                                <div class="col-md-3"></div>
+                                                <div class="col-md-6">
+                                                    <div class="row" style="font-size:14px">
+                                                        <div class="form-group col-md-12">
+                                                            
+                                                            <!-- INICIO TIMELINE FORMS -->
+                                                            <?php \Carbon\Carbon::setLocale('pt_BR') ?>
+                                                            
+                                                            <ul class="timeline">
+                                                                
+                                                            @foreach($historico as $key => $hist)
+                                                                <li class=" {{ $key%2 == 0 ? 'timeline-inverted' : '' }}">
+                                                                    <div class="timeline-badge {{ ($loop->last && $hist->finalizado) ? 'icon-green' : 'success'}} "  >
+                                                                        <!-- <i class="mdi {{ ($hist->finalizado == 'true') ? 'mdi-check-circle-outline' : 'mdi-file-document' }}"></i>  ESSE TA CERTO, MAS PRECISA SALVAR A ETAPA-->
+                                                                        
+                                                                        @if ($loop->last && $hist->finalizado)
+                                                                            <i class="mdi mdi-check-circle-outline"></i>
+                                                                        @else
+                                                                            <i class="mdi mdi-file-document"></i>
+                                                                        @endif
+
+                                                                    </div>
+                                                                    <div class="timeline-panel">
+                                                                        <div class="timeline-heading">
+                                                                            <h4 class="timeline-title">{{ ($hist->nome_usuario_responsavel != null) ? $hist->nome_usuario_responsavel : 'Usuário Inválido' }}</h4>
+                                                                            <p><small class="text-muted"><i class="fa fa-clock-o"></i> {{ $hist->created_at->diffForHumans() }}</small> </p>
+                                                                        </div>
+                                                                        <div class="timeline-body">
+                                                                            <p>{{ $hist->descricao }}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            @endforeach
+                                                                    
+                                                            </ul>
+                                                                                                            
+                                                            <!-- END TIMELINE FORMS -->
+
+                                                        </div>
+                                                    </div>
+                                                </div>    
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <!-- Revisões do Formulário -->
                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  count($revisoes) > 1)
@@ -98,60 +158,13 @@
                                             </div>
                                         </div>
                                     </div> 
-
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <div class="control-label font-bold text-center timeline-doc-title">
-                                                Timeline do Formulário
-                                            </div>
-                                        </div>
-                                    </div>
-
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
                                     <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?lang=pt&type=embedded&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
-                                </div>
-                                    
-                                <div class="col-md-4" style="font-size:14px; height: 800px; overflow-y: scroll;">
-                                    <div class="form-group">
-                                        
-                                        <!-- INICIO TIMELINE FORMS -->
-                                        <?php \Carbon\Carbon::setLocale('pt_BR') ?>
-                                        
-                                        <ul class="timeline">
-                                            
-                                        @foreach($historico as $key => $hist)
-                                            <li class=" {{ $key%2 == 0 ? 'timeline-inverted' : '' }}">
-                                                <div class="timeline-badge {{ ($loop->last && $hist->finalizado) ? 'icon-green' : 'success'}} "  >
-                                                    <!-- <i class="mdi {{ ($hist->finalizado == 'true') ? 'mdi-check-circle-outline' : 'mdi-file-document' }}"></i>  ESSE TA CERTO, MAS PRECISA SALVAR A ETAPA-->
-                                                    
-                                                    @if ($loop->last && $hist->finalizado)
-                                                        <i class="mdi mdi-check-circle-outline"></i>
-                                                    @else
-                                                        <i class="mdi mdi-file-document"></i>
-                                                    @endif
-
-                                                </div>
-                                                <div class="timeline-panel">
-                                                    <div class="timeline-heading">
-                                                        <h4 class="timeline-title">{{ ($hist->nome_usuario_responsavel != null) ? $hist->nome_usuario_responsavel : 'Usuário Inválido' }}</h4>
-                                                        <p><small class="text-muted"><i class="fa fa-clock-o"></i> {{ $hist->created_at->diffForHumans() }}</small> </p>
-                                                    </div>
-                                                    <div class="timeline-body">
-                                                        <p>{{ $hist->descricao }}</p>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        @endforeach
-                                                
-                                        </ul>
-                                                                                        
-                                        <!-- END TIMELINE FORMS -->
-                                    </div>
                                 </div>
                             </div>
 
