@@ -234,9 +234,17 @@
                                                 </div>    
                                             </div>
 
+                                            
                                             <div class="row mt-5 margin-top-1percent">
-                                                <div class="table-responsive">
-                                                    <table class="table" style="table-layout: fixed">
+                                                <h5 class="alert alert-warning alert-dismissible" role="alert">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    Para filtrar registros através do <b>Título do Formulário</b>, utilize o campo acima. Qualquer outro campo pode ser pesquisado no campo <i>Pesquisar</i> (canto superior direito da tabela).
+                                                </h5>
+                                            </div>
+
+                                            <div class="row mt-2 margin-top-1percent">
+                                                <div class="table-responsive m-t-40">
+                                                    <table id="dataTable-form" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-nowrap text-center">Ações</th>
@@ -356,7 +364,8 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                            </div>   
+                                            </div>
+ 
                                         </div> 
                                     </div>
                                 </div>
@@ -447,6 +456,19 @@
     <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
     <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
 
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    
+    <!-- start - This is for export functionality only -->
+    <script src="{{ asset('js/dataTables/dataTables-1.2.2.buttons.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/buttons-1.2.2.flash.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/jszip-2.5.0.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/pdfmake-0.1.18.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/vfs_fonts-0.1.18.js') }}"></script>
+    <script src="{{ asset('js/dataTables/buttons-1.2.2.html5.min.js') }}"></script>
+    <script src="{{ asset('js/dataTables/buttons-1.2.2.print.min.js') }}"></script>
+    <!-- end - This is for export functionality only -->
+
     <script>
         // Envia o form conforme o botão que foi clicado
         $("#importFormulario").click(function(){
@@ -531,6 +553,81 @@
                 this.qs1.cache();
                 this.qs2.cache();
             }
+        });
+
+
+        /*
+        * DATA-TABLE
+        */
+        $(document).ready(function() {
+            $('#dataTable-form').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "_MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    { extend: 'excel',  text: 'Excel' },
+                    { extend: 'pdf',    text: 'PDF' },
+                    { extend: 'print',  text: 'Imprimir' }
+                ]
+            });
+
+            $(document).ready(function() {
+                var table = $('#example').DataTable({
+                    "columnDefs": [{
+                        "visible": false,
+                        "targets": 2
+                    }],
+                    "order": [
+                        [2, 'asc']
+                    ],
+                    "displayLength": 25,
+                    "drawCallback": function(settings) {
+                        var api = this.api();
+                        var rows = api.rows({
+                            page: 'current'
+                        }).nodes();
+                        var last = null;
+                        api.column(2, {
+                            page: 'current'
+                        }).data().each(function(group, i) {
+                            if (last !== group) {
+                                $(rows).eq(i).before('<tr class="group"><td colspan="5">' + group + '</td></tr>');
+                                last = group;
+                            }
+                        });
+                    }
+                });
+                // Order by the grouping
+                $('#example tbody').on('click', 'tr.group', function() {
+                    var currentOrder = table.order()[0];
+                    if (currentOrder[0] === 2 && currentOrder[1] === 'asc') {
+                        table.order([2, 'desc']).draw();
+                    } else {
+                        table.order([2, 'asc']).draw();
+                    }
+                });
+            });
         });
 
 
