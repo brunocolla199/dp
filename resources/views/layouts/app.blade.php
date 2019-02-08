@@ -283,8 +283,8 @@
                             <li><a href="#importarform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar</span></a></li>
                             <li><a href="#qualidadeform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
                             <li><a href="#visualizacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização</span></a></li>
-                            <li><a href="#divulgacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>
                             <li><a href="#revisaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Revisão</span></a></li>
+                            <li><a href="#divulgacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>
 
                         </ul>
                     </nav>
