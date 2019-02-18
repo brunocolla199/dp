@@ -33,7 +33,7 @@ class ImportDocuments extends Command
 
     private $foreground_colors = array();
 
-    
+
     private $background_colors = array();
     
     /**
@@ -224,7 +224,7 @@ class ImportDocuments extends Command
 
             exec("cp '$path' '$dest' ");
 
-            $this->updateDocument($documentobase, $revisao, $this->formatDate($dataRevisao), $dataValidade, $path, $setorbase);
+            $this->updateDocument($documentobase, $revisao, $this->formatDate($dataRevisao), $dataValidade, $path, $setorbase, $titulo);
             $this->updatedDocsCount++;
             
         } else {
@@ -256,9 +256,10 @@ class ImportDocuments extends Command
      * Update document data (db)
      * 
      */
-    private function updateDocument($documento, $revisao, $dataRevisao, $dataValidade, $path, $setor){ 
+    private function updateDocument($documento, $revisao, $dataRevisao, $dataValidade, $path, $setor, $titulo){ 
     
         $doc = \App\Documento::find($documento->id);
+        $doc->nome = $titulo;
         $doc->timestamps = false;
         $doc->updated_at = \Carbon\Carbon::createFromFormat('Y-m-d', $dataRevisao);
         $doc->save();
