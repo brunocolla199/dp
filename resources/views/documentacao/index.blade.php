@@ -462,10 +462,10 @@
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->codigo }} </td>
 
-                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST', 'id'=>'view-documento-'.$doc->id]) }}
                                                                             {{ Form::hidden('document_id', $doc->id) }}
-                                                                            <td class="text-center text-nowrap">
-                                                                                {!! Form::submit( explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                            <td class="text-center a-href-submit force-break-word text-nowrap">
+                                                                                <p class="text-center a-href-submit force-break-word submit-view-documento" data-id="{{ $doc->id }}"> {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0] }}</p>
                                                                             </td>
                                                                         {{ Form::close() }}
 
@@ -506,12 +506,15 @@
 
                                                                         <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
 
-                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST']) }}
+                                                                        {{ Form::open(['route' => 'documentacao.view-document', 'method' => 'POST', 'id'=>'view-documento-'.$docF->id]) }}
                                                                             {{ Form::hidden('document_id', $docF->id) }}
-                                                                            <td class="text-center">
-                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                            
+                                                                            <td class="text-center a-href-submit force-break-word text-nowrap">
+                                                                                <p class="text-center a-href-submit force-break-word submit-view-documento" data-id="{{ $docF->id }}"> {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0] }}</p>
                                                                             </td>
                                                                         {{ Form::close() }}
+
+                                                                      
 
                                                                         
                                                                         <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
@@ -942,6 +945,11 @@
                             table.order([2, 'asc']).draw();
                         }
                     });
+                });
+
+                $(document).on("click", ".submit-view-documento", (elm) => {
+                    let id = $(elm.target).attr('data-id');
+                    $(`#view-documento-${id}`)[0].submit();
                 });
             });
             

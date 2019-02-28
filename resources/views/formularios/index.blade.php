@@ -270,11 +270,11 @@
 
                                                                         <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
 
-                                                                        {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                                        {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST', 'id'=>'view-formulario-'.$form->id]) }}
                                                                             {{ Form::hidden('formulario_id', $form->id) }}
                                                                             {{ Form::hidden('action', 'view') }}
-                                                                            <td class="text-center">
-                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                            <td class="">
+                                                                                <p class="text-center a-href-submit force-break-word submit-view-formulario" data-id="{{ $form->id }}"> {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0] }}</p>
                                                                             </td>
                                                                         {{ Form::close() }}
 
@@ -337,13 +337,14 @@
                                                                             
                                                                             <td class="text-center"><span class="text-muted"><i class="fa fa-file-text-o"></i></span> {{ $form->codigo }} </td>
 
-                                                                            {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST']) }}
+                                                                            {{ Form::open(['route' => 'formularios.view-formulario', 'method' => 'POST', 'id'=>'view-formulario-'.$form->id]) }}
                                                                                 {{ Form::hidden('formulario_id', $form->id) }}
                                                                                 {{ Form::hidden('action', 'view') }}
                                                                                 <td class="text-center">
-                                                                                    {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                                    <p class="text-center a-href-submit force-break-word submit-view-formulario" data-id="{{ $form->id }}"> {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form->nome)[0] }}</p>
                                                                                 </td>
                                                                             {{ Form::close() }}
+
 
                                                                             <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
 
@@ -626,6 +627,11 @@
                     } else {
                         table.order([2, 'asc']).draw();
                     }
+                });
+                
+                $(document).on("click", ".submit-view-formulario", (elm) => {
+                    let id = $(elm.target).attr('data-id');
+                    $(`#view-formulario-${id}`)[0].submit();
                 });
             });
         });

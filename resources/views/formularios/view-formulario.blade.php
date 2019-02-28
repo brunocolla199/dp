@@ -446,9 +446,6 @@
 
 @section('footer')
 
-<script src="{{ asset('plugins/formeo/formeo.min.js') }}"></script>
-<script src="{{ asset('plugins/formeo/initFormeo.js') }}"></script>
-
 <script>
     
     // initFormeo('{!! $formData  !!}', '{{ url("/") }}');

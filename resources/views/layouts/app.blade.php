@@ -227,7 +227,7 @@
                 <!-- Bottom points-->
                 <div class="sidebar-footer">
                     <!-- item-->
-                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Speed Software"><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Speed Softwares - Logo"></a>
+                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Versão {{ env('APP_VERSION') }} "><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Versão {{ env('APP_VERSION') }}"></a>
                     <!-- item-->
                     <a href="{{ url('/') }}" class="link" data-toggle="tooltip" title="Dashboard"><i class="mdi mdi-home"></i></a>
                     <!-- item-->
@@ -294,7 +294,7 @@
                <!-- Bottom points-->
                <div class="sidebar-footer">
                     <!-- item-->
-                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Speed Software"><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Speed Softwares - Logo"></a>
+                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Versão {{ env('APP_VERSION') }}"><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Versão {{ env('APP_VERSION') }}"></a>
                     <!-- item-->
                     <a href="{{ url('/') }}" class="link" data-toggle="tooltip" title="Dashboard"><i class="mdi mdi-home"></i></a>
                     <!-- item-->
