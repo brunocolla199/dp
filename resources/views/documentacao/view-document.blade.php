@@ -720,7 +720,7 @@
         setTimeout(() => {
             $.unblockUI; 
             $("#form-edit-document").submit();
-        }, 80000);
+        }, 8000);
     });
 
     // Quando clicar para salvar observação, invoca Ajax
