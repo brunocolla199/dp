@@ -662,7 +662,7 @@
 @endsection
 
 @section('footer')
-
+<script src="{{ asset('plugins/blockUI/jquery.blockUI.js') }}"></script>    
 <script>
 
     var etapaDocumento  = "{{$etapa_doc}}";
@@ -703,7 +703,24 @@
 
 
     $("#btn-save-document").click(function(){
-        $("#form-edit-document").submit();
+    
+        $.blockUI({
+            message:'Aguarde! Estamos salvando as alterações realizadas...',
+            css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .9, 
+            color: '#fff',
+            'font-style':'bolder'
+        }}); 
+
+        setTimeout(() => {
+            $.unblockUI; 
+            $("#form-edit-document").submit();
+        }, 80000);
     });
 
     // Quando clicar para salvar observação, invoca Ajax
@@ -876,6 +893,7 @@
 
  @if($resp)
     <script src="{{ asset('js/utils-speed.js') }}"></script>    
+
     <script>
         showToast("{{$resp['title']}}", "{{$resp['msg']}}", "{{$resp['status']}}");
     </script>
