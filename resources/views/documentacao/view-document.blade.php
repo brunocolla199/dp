@@ -182,8 +182,8 @@
                                 </div>
                             @endif
 
-                            <div class="row h-100">
-                                <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
+                            <div class="row h-100 iframe_box">
+                                <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
                             <!-- Qualidade e Elaborador sempre podem adicionar anexos -->
@@ -307,16 +307,16 @@
 
 
                                 <!-- Editor -->
-                                <div class="container" >
+                                <div class="container iframe_box" >
                                     @if( $documentoEhEditavel ) 
                                         <!-- #46 - Desabilitar para o usuário na etapa "área de interesse" a possibilidade de edição do documento = ou seja, se o doc estiver na etapa de área de interesse e não for um membro da Qualidade, não edita o doc -->
                                         @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM  &&  Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE )   
-                                            <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=view&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=view&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                                         @else
-                                            <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                                         @endif
                                     @else
-                                        <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                        <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                                     @endif
                                 </div>
                                 <!-- End Editor -->
@@ -400,8 +400,8 @@
                         @else
 
                             <!-- Editor -->
-                            <div class="container" >
-                                <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                            <div class="container iframe_box">
+                                <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                             </div>
                             <!-- End Editor -->
 
@@ -701,26 +701,40 @@
         $("#form-view-formulario").submit();
     }   
 
+    $('.iframe_box').block({ 
+        message: '<h3>Carregando...</h3>', 
+        css: { 
+            padding:'10px 0 0 0',
+            color:'#fff',
+            'border-radius':'20px',
+            'background-color':'rgba(255, 255, 255, 0.7)'
+        } 
+    }); 
+
+    setTimeout(() => {
+        $('iframe').map((key, iframe) => $(iframe).attr('src', $(iframe).attr('data-src')));
+        $('.iframe_box').unblock();
+    }, 8000);
 
     $("#btn-save-document").click(function(){
     
-        $.blockUI({
-            message:'Aguarde! Estamos salvando as alterações realizadas...',
-            css: { 
-            border: 'none', 
-            padding: '15px', 
-            backgroundColor: '#000', 
-            '-webkit-border-radius': '10px', 
-            '-moz-border-radius': '10px', 
-            opacity: .9, 
-            color: '#fff',
-            'font-style':'bolder'
-        }}); 
+        // $.blockUI({
+        //     message:'Aguarde! Estamos salvando as alterações realizadas...',
+        //     css: { 
+        //     border: 'none', 
+        //     padding: '15px', 
+        //     backgroundColor: '#000', 
+        //     '-webkit-border-radius': '10px', 
+        //     '-moz-border-radius': '10px', 
+        //     opacity: .9, 
+        //     color: '#fff',
+        //     'font-style':'bolder'
+        // }}); 
 
-        setTimeout(() => {
-            $.unblockUI; 
+        // setTimeout(() => {
+        //     $.unblockUI; 
             $("#form-edit-document").submit();
-        }, 8000);
+        // }, 8000);
     });
 
     // Quando clicar para salvar observação, invoca Ajax
