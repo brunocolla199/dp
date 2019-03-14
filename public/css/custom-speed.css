@@ -231,3 +231,7 @@ div .slimScrollDiv {
     min-height: 600px;
     border: 1px solid #ccc;
 }
+
+iframe {
+    border:none!important;
+}
