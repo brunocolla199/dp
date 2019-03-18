@@ -528,24 +528,7 @@
                                                                               <![endif]-->
                                                                               <div style="color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:200%; padding-right: 5px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
                                                                                  <div style="font-size:12px;line-height:24px;color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="color: rgb(197, 31, 65); font-size: 14px; line-height: 28px;">+55&#160; 13&#160; 3213-0829</span></p>
-                                                                                 </div>
-                                                                              </div>
-                                                                              <!--[if mso]>
-                                                                           </td>
-                                                                        </tr>
-                                                                     </table>
-                                                                     <![endif]-->
-                                                                  </div>
-                                                                  <div class="">
-                                                                     <!--[if mso]>
-                                                                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                                                        <tr>
-                                                                           <td style="padding-right: 5px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
-                                                                              <![endif]-->
-                                                                              <div style="color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:200%; padding-right: 5px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
-                                                                                 <div style="font-size:12px;line-height:24px;color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="color: rgb(197, 31, 65); font-size: 14px; line-height: 28px;">+55&#160; 13&#160; 3213-0669</span></p>
+                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="color: rgb(197, 31, 65); font-size: 14px; line-height: 28px;">13-32130781</span></p>
                                                                                  </div>
                                                                               </div>
                                                                               <!--[if mso]>
@@ -622,7 +605,7 @@
                                                                               <![endif]-->
                                                                               <div style="color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:200%; padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
                                                                                  <div style="font-size:12px;line-height:24px;color:#a8bf6f;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
-                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="font-size: 11px; line-height: 22px; color: rgb(197, 31, 65);"><span style="line-height: 22px; font-size: 11px;">qualidade.ssz@dpworld.com</span></span></p>
+                                                                                    <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: center"><span style="font-size: 11px; line-height: 22px; color: rgb(197, 31, 65);"><span style="line-height: 22px; font-size: 11px;">processo.ssz@dpworld.com</span></span></p>
                                                                                  </div>
                                                                               </div>
                                                                               <!--[if mso]>
