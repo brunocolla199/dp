@@ -11,7 +11,7 @@ class ImportDocuments extends Command
      *
      * @var string
      */
-    protected $signature = 'ImportDocuments {type : type of documents to import [docs, forms, attachments] } {path : path to documents folder} {dest : destination folder} {--savelogs} ';
+    protected $signature = 'ImportDocuments {type : type of documents to import [docs, forms, attachments] } {path : path to documents folder} {dest : destination folder} {--savelogs} {--test} ';
 
     /**
      * The console command description.
@@ -98,7 +98,7 @@ class ImportDocuments extends Command
         $path = $this->argument('path');
         
         echo $this->getColoredString(" \nIniciando importação de documentos '$type' localizados na pasta: '$path' ... ", "green")." \n\n";
-        
+
         if($this->option('savelogs')){
             if(!is_writable($this->logsDir)){
                 echo $this->getColoredString("Erro o diretório de logs: '$this->logsDir' não possui permissão para escrita ou não existe, resolva esse problema e rode o script novamente.", "red")." \n\n";
@@ -181,10 +181,10 @@ class ImportDocuments extends Command
      * 
      */
     private function getFileInfo($type, $filename, $path){
-        
+        print_r($filename);
         $parts = explode(" ", $filename);
         $codigo = trim($parts[0]); 
-        $revisao = trim(str_replace(".doc", "", str_replace(".docx", "", explode("Rev.", $filename)[1]))); 
+        $revisao = trim(str_replace(".doc", "", str_replace(".docx", "", str_replace(".xlsx", "", str_replace(".xlsm", "", explode("Rev.", $filename)[1]))))); 
         $dataRevisao = $parts[count($parts)-3];
         $dataValidade =  \Carbon\Carbon::parse($this->formatDate($dataRevisao))->addYear()->format('Y-m-d');
         $setor = $this->lastSetor;
@@ -195,7 +195,7 @@ class ImportDocuments extends Command
         } else {
             $setorbase = false;
         }
-        
+         
         if($documentobase){
             if($revisao > $documentobase->revisao){
                 $titulo = explode("rev", $documentobase->nome)[0]."rev".$revisao;
@@ -220,20 +220,24 @@ class ImportDocuments extends Command
             echo $this->getColoredString("   |   Data Validade:  $dataValidade \n", "green")." \n";
             echo $this->getColoredString("   |   Caminho :  $path ", "green")." \n";
             echo $this->getColoredString("   |   Destino :  $dest ", "green")." \n";
+            echo $this->getColoredString("   |   Setor :  $setorbase->sigla ", "green")." \n";
+            echo $this->getColoredString("   |   Extensão :  ".last(explode(".", $filename)), "light_red")." \n";
             echo $this->getColoredString("   |   cp $path $dest", "purple")." \n\n";
-
-            exec("cp '$path' '$dest' ");
-
-            $this->updateDocument($documentobase, $revisao, $this->formatDate($dataRevisao), $dataValidade, $path, $setorbase, $titulo);
-            $this->updatedDocsCount++;
             
+
+            if(!$this->option('test')){
+                exec("cp '$path' '$dest' ");
+                $this->updateDocument($documentobase, $revisao, $this->formatDate($dataRevisao), $dataValidade, $path, $setorbase, $titulo);
+            }
+
+            $this->updatedDocsCount++;
+             
         } else {
             $this->setDocumentNotFound($codigo, $filename);
             $setorID = ($setorbase) ? $setorbase->id : 1;
-
             $titulo = str_replace('Rev.', '_rev', $filename);
             $titulo = explode(" - ",$titulo)[1]." ".last(explode(" - ",$titulo));
-
+            $extensao = last(explode(".", $filename));
             $dest = $this->argument('dest')."/".$titulo;
 
             echo $this->getColoredString(" ------------------ Novo (Insert) ------------------ ", "light_red")." \n";
@@ -244,11 +248,15 @@ class ImportDocuments extends Command
             echo $this->getColoredString("   |   Data Validade:  $dataValidade \n", "light_red")." \n";
             echo $this->getColoredString("   |   Caminho :  $path ", "light_red")." \n";
             echo $this->getColoredString("   |   Destino :  $dest ", "light_red")." \n";
+            echo $this->getColoredString("   |   Setor :  $setorbase->sigla ", "light_red")." \n";
+            echo $this->getColoredString("   |   Extensão :  $extensao", "light_red")." \n";
             echo $this->getColoredString("   |   cp $path $dest", "purple")." \n\n";
 
-            exec("cp '$path' '$dest' ");
 
-            $this->insertDocument($titulo, $codigo, $revisao, $this->formatDate($dataRevisao), $dataValidade, $setorID, $path);
+            if(!$this->option('test')){
+                exec("cp '$path' '$dest' ");
+                $this->insertDocument($titulo, $codigo, $revisao, $this->formatDate($dataRevisao), $dataValidade, $setorID, $path, $extensao);
+            }
         }
     }
 
@@ -257,24 +265,42 @@ class ImportDocuments extends Command
      * 
      */
     private function updateDocument($documento, $revisao, $dataRevisao, $dataValidade, $path, $setor, $titulo){ 
-    
-        $doc = \App\Documento::find($documento->id);
-        $doc->nome = $titulo;
-        $doc->timestamps = false;
-        $doc->updated_at = \Carbon\Carbon::createFromFormat('Y-m-d', $dataRevisao);
-        $doc->save();
-
-        $dataValidade =  \Carbon\Carbon::parse($this->formatDate($doc->updated_at))->addYear()->format('Y-m-d');
-
-        $doc_dados = \App\DadosDocumento::where('documento_id', '=', $documento->id)->get()->first();
-        $doc_dados->validade = $dataValidade;
-        $doc_dados->revisao = $revisao;
         
-        if($setor){
-            $doc_dados->setor_id = $setor->id;
-        }
+        if($this->argument('type') == "docs"){      
+            $doc = \App\Documento::find($documento->id);
+            $doc->nome = $titulo;
+            $doc->timestamps = false;
+            $doc->updated_at = \Carbon\Carbon::createFromFormat('Y-m-d', $dataRevisao);
+            $doc->save();
+            
+            $dataValidade =  \Carbon\Carbon::parse($this->formatDate($doc->updated_at))->addYear()->format('Y-m-d');
+            
+            $doc_dados = \App\DadosDocumento::where('documento_id', '=', $documento->id)->get()->first();
+            $doc_dados->validade = $dataValidade;
+            $doc_dados->revisao = $revisao;
+            
+            if($setor){
+                $doc_dados->setor_id = $setor->id;
+            }
+            
+            $doc_dados->save();
+        } else if($this->argument('type') == "forms") {
+            $form = \App\Formulario::find($documento->id);
+            $form->nome = $titulo;
+            $form->timestamps = false;
+            $form->finalizado = true;
+            $form->updated_at = \Carbon\Carbon::createFromFormat('Y-m-d', $dataRevisao);
+            $form->save();
 
-        $doc_dados->save();
+            $form_revisao = \App\FormularioRevisao::where('formulario_id', '=', $documento->id)->get()->first();
+            $form_revisao->finalizado = true;
+            $form_revisao->revisao = $revisao;
+            
+            if($setor){
+                $form_revisao->setor_id = $setor->id;
+            }
+            $form_revisao->save();
+        }
     }
 
     /**
@@ -282,50 +308,82 @@ class ImportDocuments extends Command
      * 
      */
 
-    private function insertDocument($filename, $codigo, $revisao, $dataRevisao, $dataValidade, $setor, $path){
+    private function insertDocument($filename, $codigo, $revisao, $dataRevisao, $dataValidade, $setor, $path, $extensao){
 
-        $documento = new \App\Documento();
-        $documento->timestamps = false;
-        $documento->updated_at = \Carbon\Carbon::createFromFormat('Y-m-d', $dataRevisao);
-        $documento->nome                = str_replace(".docx", "", $filename);
-        $documento->codigo              = $codigo;
-        $documento->extensao            = 'docx';
-        $documento->tipo_documento_id   = $this->getTypeDoc($codigo);
-        $documento->save();
+        if($this->argument('type') == "docs"){      
+            $documento = new \App\Documento();
+            $documento->timestamps = false;
+            $documento->updated_at = \Carbon\Carbon::createFromFormat('Y-m-d', $dataRevisao);
+            $documento->nome                = str_replace(".docx", "", $filename);
+            $documento->codigo              = $codigo;
+            $documento->extensao            = 'docx';
+            $documento->tipo_documento_id   = $this->getTypeDoc($codigo);
+            $documento->save();
+            
+            $dataValidade =  \Carbon\Carbon::parse($this->formatDate($documento->updated_at))->addYear()->format('Y-m-d');
+
+            $dados_documento = new \App\DadosDocumento();
+            $dados_documento->validade                          = $dataValidade;
+            $dados_documento->status                            = true;
+            $dados_documento->observacao                        = "Documento Finalizado (Importação - Fevereiro 2019 )";
+            $dados_documento->copia_controlada                  = false;
+            $dados_documento->nivel_acesso                      = 'Livre';
+            $dados_documento->necessita_revisao                 = false;
+            $dados_documento->id_usuario_solicitante            = null;
+            $dados_documento->revisao                           = $revisao;
+            $dados_documento->justificativa_rejeicao_revisao    = null;
+            $dados_documento->em_revisao                        = false;
+            $dados_documento->justificativa_cancelar_revisao    = null;
+            $dados_documento->finalizado                        = true;
+            $dados_documento->setor_id                          = $setor;
+            $dados_documento->elaborador_id                     = 1;
+            $dados_documento->aprovador_id                      = 1;
+            $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
+            $dados_documento->save();
+            
+            //WorkFlow
+            $workflow = new \App\Workflow();
+            $workflow->etapa_num     = \App\Classes\Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
+            $workflow->etapa         = "";
+            $workflow->descricao     = "Documento Importado Rotina Speed";
+            $workflow->justificativa = "";
+            $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
+            $workflow->save();
+
+            //Historico
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Documento Importado", $documento->id);
+        } else if($this->argument('type') == "forms") {
         
-        $dataValidade =  \Carbon\Carbon::parse($this->formatDate($documento->updated_at))->addYear()->format('Y-m-d');
+            $formulario = new \App\Formulario();
+            $formulario->nome                           = str_replace(".xlsx", "", str_replace(".xlsm", "", str_replace(".docx", "", $filename)));
+            $formulario->codigo                         = $codigo;
+            $formulario->extensao                       = $extensao;
+            $formulario->setor_id                       = $setor;
+            $formulario->nivel_acesso                   = 'Livre';
+            $formulario->finalizado                     = false;
+            $formulario->elaborador_id                  = 1;
+            $formulario->tipo_documento_id              = \App\Classes\Constants::$ID_TIPO_DOCUMENTO_FORMULARIO;
+            $formulario->revisao                        = $revisao;
+            $formulario->em_revisao                     = false;
+            $formulario->id_usuario_solicitante         = null;
+            $formulario->nome_completo_finalizado       = null;
+            $formulario->nome_completo_em_revisao       = null;
+            $formulario->justificativa_cancelar_revisao = null;
+            $formulario->save();
 
+            // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
+            $workflow                = new \App\WorkflowFormulario();
+            $workflow->etapa_num     = \App\Classes\Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
+            $workflow->etapa         = \App\Classes\Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
+            $workflow->descricao     = "Documento Importado Rotina Speed";
+            $workflow->justificativa = "";
+            $workflow->formulario_id = $formulario->id; // id que acabou de ser inserido no 'save' na tabela de formulário
+            $workflow->save();
 
-        $dados_documento = new \App\DadosDocumento();
-        $dados_documento->validade                          = $dataValidade;
-        $dados_documento->status                            = true;
-        $dados_documento->observacao                        = "Documento Finalizado (Importação - Fevereiro 2019 )";
-        $dados_documento->copia_controlada                  = false;
-        $dados_documento->nivel_acesso                      = 'Livre';
-        $dados_documento->necessita_revisao                 = false;
-        $dados_documento->id_usuario_solicitante            = null;
-        $dados_documento->revisao                           = $revisao;
-        $dados_documento->justificativa_rejeicao_revisao    = null;
-        $dados_documento->em_revisao                        = false;
-        $dados_documento->justificativa_cancelar_revisao    = null;
-        $dados_documento->finalizado                        = true;
-        $dados_documento->setor_id                          = $setor;
-        $dados_documento->elaborador_id                     = 1;
-        $dados_documento->aprovador_id                      = 1;
-        $dados_documento->documento_id                      = $documento->id; // id que acabou de ser inserido no 'save' acima
-        $dados_documento->save();
-        
-        //WorkFlow
-        $workflow = new \App\Workflow();
-        $workflow->etapa_num     = \App\Classes\Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
-        $workflow->etapa         = "";
-        $workflow->descricao     = "Documento Importado Rotina Speed";
-        $workflow->justificativa = "";
-        $workflow->documento_id = $documento->id; // id que acabou de ser inserido no 'save' na tabela de documento
-        $workflow->save();
+            // Grava histórico do documento
+            \App\Classes\Helpers::instance()->gravaHistoricoFormulario("Formulário Importado", $formulario->id);
 
-        //Historico
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Documento Importado", $documento->id);
+        }
 
     }
 
@@ -360,7 +418,11 @@ class ImportDocuments extends Command
      * 
      */
     private function getDatabaseInfo($codigo){
-        return $documento = \App\Documento::join('dados_documento','dados_documento.documento_id', '=', 'documento.id')->where('codigo', $codigo)->get()->first();
+        if($this->argument('type') == "docs"){
+            return $documento = \App\Documento::join('dados_documento','dados_documento.documento_id', '=', 'documento.id')->where('codigo', $codigo)->get()->first();
+        } else if($this->argument('type') == "forms"){
+            return $formulario = \App\Formulario::join('formulario_revisao','formulario_revisao.formulario_id', '=', 'formulario.id')->where('formulario.codigo', $codigo)->get()->first();
+        }
     }
 
 
