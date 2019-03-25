@@ -778,7 +778,8 @@ class FormulariosController extends Controller
             // Como o fluxo de WF dos formulários tem apenas elaborados e qualidade e qualidade cai no if acima, só precisa verificar os que ele é elaborador
             $formsFinalizados_restritos = $clonedBaseQuery6->where('formulario.finalizado', '=', true)
                                                             ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                            ->where('formulario.elaborador_id', '=', Auth::user()->id)
+                                                            // ->where('formulario.elaborador_id', '=', Auth::user()->id)
+                                                            ->where('formulario.setor_id', '=', Auth::user()->setor_id)
                                                             ->get();
         } 
         

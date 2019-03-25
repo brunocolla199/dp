@@ -21,7 +21,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ URL::route('home') }}">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="{{ URL::route('formularios') }}">Formulários</a></li>
-                        <li class="breadcrumb-item active">Visualização de Formulário</li>      qwfdqc, zv.c adk bz,k  x    
+                        <li class="breadcrumb-item active">Visualização de Formulário</li>
                     </ol>
                 </div>
 
