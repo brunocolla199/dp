@@ -685,7 +685,8 @@
     }
     
     if(etapaDocumento >= etapaMinina && etapaDocumento <= etapaMaxima) {
-        var forms = JSON.parse($(".select2-vinculos").attr('data-forms'));
+        
+        var forms = ($(".select2-vinculos").attr('data-forms') !== 'undefined' && $(".select2-vinculos").attr('data-forms') !== undefined) ? JSON.parse($(".select2-vinculos").attr('data-forms')) : '';
         var select = $(".select2-vinculos").select2({
             templateSelection: function (d) { 
                 return $('<a href="#" onclick="viewFormulario('+d.id+')" ><b>'+d.text+'</b></a>'); 
