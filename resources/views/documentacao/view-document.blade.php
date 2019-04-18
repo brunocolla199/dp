@@ -349,10 +349,11 @@
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
                                     <div class="control-label font-bold text-center">
-                                        <h3>Pré-visualização do Documento</h3>
+                                        <h3>Pré-visualização e Download do Documento</h3>
                                         <div class="text-center">   
                                             <br>
                                             <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-lg btn-success" target="_blank"> Visualizar </a>
+                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-lg btn-success" target="_blank"> <i class="mdi mdi-cloud-download"></i> Download </a>
                                         </div>
                                     </div>
                                 </div>
