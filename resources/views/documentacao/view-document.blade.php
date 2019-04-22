@@ -182,7 +182,7 @@
                                 </div>
                             @endif
 
-                            <div class="row h-100 iframe_box">
+                            <div class="row iframe_box">
                                 <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
@@ -601,7 +601,7 @@
                                             <h4 class="card-title"> Upload de anexo </h4>
                                             {!! Form::open(['route' => 'ajax.anexos.save', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'id' => 'form-save-attachment']) !!}
                                                 <label for="input-file-now">Por favor, selecione o arquivo que você deseja anexar ao documento atual.</label>
-                                                {!! Form::file('anexo_escolhido', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'data-allowed-file-extensions'=>'pdf xlsx xls']) !!}
+                                                {!! Form::file('anexo_escolhido', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
 
                                                 <div class="col-md-12 mt-3">
                                                     <div class="col-md-9 pull-left">
