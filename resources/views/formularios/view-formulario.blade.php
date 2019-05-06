@@ -314,6 +314,10 @@
                                                 {!! Form::text('codigoFormulario', $codigo, ['class' => 'form-control', 'readonly']) !!}
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="col-md-4 text-center p-10">
+                                        <a href="{{ asset('plugins/onlyoffice-php/Storage/formularios').'/'.$filePath }}" class="btn btn-lg btn-success" target="_blank"> <i class="mdi mdi-cloud-download"></i> Download </a>
                                     </div> 
 
                                 </div>
