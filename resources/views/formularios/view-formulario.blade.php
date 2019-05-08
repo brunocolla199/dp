@@ -281,15 +281,10 @@
                                 </div>
                             @endif
 
-                            @if($finalizado)
-                                
-                                @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                <div class="col-md-12 text-right">
-                                    <a href="{{ asset('plugins/onlyoffice-php/Storage/formularios').'/'.$filePath }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
-                                </div>
-                                <br>
-                                @endif
-                            @endif
+                            <div class="col-md-12 text-right">
+                                <a href="{{ asset('plugins/onlyoffice-php/Storage/formularios').'/'.$filePath }}" target="_blank" id="down-doc" class="btn col-md-2 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                            </div>
+                            <br>
 
                             <div class="col-md-12">
                                 <hr>
@@ -316,21 +311,18 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 text-center p-10">
-                                        <a href="{{ asset('plugins/onlyoffice-php/Storage/formularios').'/'.$filePath }}" class="btn btn-lg btn-success" target="_blank"> <i class="mdi mdi-cloud-download"></i> Download </a>
-                                    </div> 
-
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <!-- <iframe src="https://docs.google.com/viewer?url={{ rawurlencode($filePath) }}&embedded=true&chrome=false&dov=1" style="width:100%; min-height:800px;" frameborder="0"></iframe> -->
-                                    @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  !$finalizado  )
-                                        <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
-                                    @else
-                                        <iframe src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&action=review&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
-                                    @endif
+                                    <div class="iframe_box">
+                                        @if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  !$finalizado  )
+                                            <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                        @else
+                                            <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?type=desktop&action=review&folder=formularios&fileID=').$filePath }}" style="width:100%; min-height:800px;" frameborder="0"></iframe>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -449,7 +441,7 @@
 @endsection
 
 @section('footer')
-
+<script src="{{ asset('plugins/blockUI/jquery.blockUI.js') }}"></script>
 <script>
     
     // initFormeo('{!! $formData  !!}', '{{ url("/") }}');
@@ -487,7 +479,22 @@
             });
         }, function(err) {
         });
-    })
+    });
+
+    $('.iframe_box').block({ 
+        message: '<h3>Carregando...</h3>', 
+        css: { 
+            padding:'10px 0 0 0',
+            color:'#fff',
+            'border-radius':'20px',
+            'background-color':'rgba(255, 255, 255, 0.7)'
+        } 
+    }); 
+
+    setTimeout(() => {
+        $('iframe').map((key, iframe) => $(iframe).attr('src', $(iframe).attr('data-src')));
+        $('.iframe_box').unblock();
+    }, 8000);
 
 </script>
 
