@@ -34,7 +34,7 @@ Para isso execute o seguinte comando no terminal:
 
 Para executar em modo de produção, é necessário configurar um `supervisor`, para isso você deve que seguir os passos conforme descrito na própria documentaçao do laravel disponível em [Doc-Supervisor](https://laravel.com/docs/5.5/queues#supervisor-configuration)
 
-    1.  easy_install supervisor
+    <!-- 1.  easy_install supervisor -->
     2.  apt-get install supervisor
     3.  apt-get update
     4.  cd /etc/supervisor/conf.d/
@@ -51,7 +51,10 @@ Para executar em modo de produção, é necessário configurar um `supervisor`, 
             redirect_stderr=true
             stdout_logfile=/home/ubuntu/dpworld-qualidade/laravel-queue-worker.log
     
-    7.   service supervisor restart
+    <!-- 7.   service supervisor restart -->
+    7.   service supervisor stop
+    7.   service supervisor start
+
     8.   cd ..
     9.   chmod -R 777 *
     10.  sudo supervisorctl reread
@@ -61,3 +64,14 @@ Para executar em modo de produção, é necessário configurar um `supervisor`, 
 
 
 **NOTE:** Rodar _php artisan migrate_
+
+
+public function handleError($level, $message, $file = '', $line = 0, $context = [])
+    {
+        if (error_reporting() & $level) {
+            if (strpos($message, 'Parameter must be an array or an object that implements Countable') !== false) 
+                return;
+
+            throw new ErrorException($message, 0, $level, $file, $line);
+        }
+    }
