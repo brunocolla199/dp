@@ -134,7 +134,7 @@
 
                                                 <div class="row">
                                                     <div class="col-md-12 col-sm-12 p-20">
-                                                        <h3 class="card-title text-success">Revisões do formulário: <b>{{ $nome }}</b></h3>
+                                                        <h3 class="card-title text-success">Revisões do formulário: <b>{{ explode('_rev', $nome)[0] }}</b></h3>
                                                         <div class="list-group" id="reviews-list-div">
                                                         
                                                         </div>
@@ -295,7 +295,7 @@
                                                 {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
                                             </div>
                                             <div class="col-md-12">
-                                                {!! Form::text('tituloFormulario', $nome, ['class' => 'form-control', 'readonly']) !!}
+                                                {!! Form::text('tituloFormulario', explode("_rev", $nome)[0], ['class' => 'form-control', 'readonly']) !!}
                                             </div>
                                         </div>
                                     </div>
@@ -473,7 +473,7 @@
             
             data.forEach(function(key) {
                 var a = '<a href="';
-                a += '{{ asset("plugins/onlyoffice-php/doceditor.php?type=desktop&action=review&folder=formularios&fileID=") }}'+key.encodeFilePath+'" class="list-group-item mt-3" target="_blank"> <span style="font-size: 150%">Revisão <b>' +key.revisao+ '</b></span>:  ' + key.nome; 
+                a += '{{ asset("plugins/onlyoffice-php/doceditor.php?type=desktop&action=review&folder=formularios&fileID=") }}'+key.encodeFilePath+'" class="list-group-item mt-3" target="_blank"> <span style="font-size: 150%">Revisão <b>' +key.revisao+ '</b></span>:  ' + key.nome.split('_rev')[0]; 
                 a += '</a>';
                 $("#reviews-list-div").append(a);
             });

@@ -81,12 +81,12 @@ class FormulariosController extends Controller
     
     public function validateData(DadosNovoFormularioRequest $request) {
 
-        $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['nome', 'sigla']);
+        $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['id', 'nome', 'sigla'])->first();
         $acao = $request->action;
-
+        
         $nivelAcessoDocumento = (  ($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : ( ($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  )    );
-
-        $qtdForms = Formulario::count();
+        
+        $qtdForms = Formulario::where('setor_id', $text_setorDono->id)->count();
 
         $tipoDocumento = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
     
@@ -100,7 +100,7 @@ class FormulariosController extends Controller
         }
         
         // Concatena e gera o código final
-        $codigo_final .= $text_setorDono[0]->sigla. "-".$codigo;
+        $codigo_final .= $text_setorDono->sigla. "-".$codigo;
 
         return view('formularios.define-formulario', [
             'acao'=>$acao,
@@ -108,7 +108,7 @@ class FormulariosController extends Controller
             'tituloFormulario' => $request->tituloFormulario,
             'nivelAcessoDocumento' => $nivelAcessoDocumento,
             'setorDono' => $request->setor_dono_form,
-            'text_setorDono' => $text_setorDono[0]->nome,
+            'text_setorDono' => $text_setorDono->nome,
             'grupoDivulgacaoFormulario' => $request->grupoDivulgacaoFormulario
         ]);
 
@@ -124,7 +124,7 @@ class FormulariosController extends Controller
         $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
                                             ->join('users', 'users.id', '=', 'formulario.elaborador_id')
                                             ->where('formulario_id', '=', $request->formulario_id)
-                                            ->orderby('finalizado')->get();
+                                            ->orderby('finalizado')->get(['formulario.finalizado', 'historico_formulario.descricao', 'historico_formulario.nome_usuario_responsavel', 'historico_formulario.created_at']);
 
         $filePath = ($formulario[0]->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario[0]->nome_completo_em_revisao : $formulario[0]->nome.".".$formulario[0]->extensao;
 
@@ -425,11 +425,10 @@ class FormulariosController extends Controller
         );
     }
 
-
-
     public function editInfo($_id) {        
         // Formulário
         $formulario = Formulario::where('id', '=', $_id)->select('id', 'nome', 'codigo', 'nivel_acesso')->first();
+        $formulario->nome = explode("_rev", $formulario->nome)[0];
         $formulario['nivel_acesso_fake_id'] = ($formulario->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_LIVRE) ? 0 : 1;
 
         // Usuários (com setor): Grupo de Divulgação do Formulário
@@ -457,11 +456,16 @@ class FormulariosController extends Controller
 
         $idForm      = (int) $_request->form_id;
         $nivelAcesso = ($_request->nivelAcessoFormulario == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : Constants::$NIVEL_ACESSO_DOC_RESTRITO;
-
-        $formulario = Formulario::where('id', '=', $idForm)->first();
+        $formulario  = Formulario::where('id', '=', $idForm)->first();
+        $oldName     = $formulario->nome;
+        $revisaoText = "_rev".last(explode("_rev", $formulario->nome));
         $formulario->nivel_acesso        = $nivelAcesso;
-        $formulario->nome                = $_request->tituloFormulario;
-        $formulario->save();   
+        $formulario->nome                = $_request->tituloFormulario." ".$revisaoText;
+        $formulario->save();
+        
+        //Renomeando arquivo no Storage
+        $filename =  \App\Classes\Helpers::instance()->escapeFilename($formulario->nome);
+        \Storage::disk('speed_office')->move('/formularios/'.$oldName .".". $formulario->extensao, '/formularios/'.$filename .".". $formulario->extensao);
         
         // Grupo de Divulgação do Formulário
         $deletedRows = GrupoDivulgacaoFormulario::where('formulario_id', '=', $idForm)->delete();
@@ -475,9 +479,10 @@ class FormulariosController extends Controller
             }
         }
 
+        //Alterar nome do arquivo no disco tmb!!!!
+
         return redirect()->route('formularios')->with('update_info_success', 'msg');
     }
-
 
 
     /*
