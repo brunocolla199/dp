@@ -4,22 +4,8 @@ namespace App\Http\Controllers\Documentacao;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\GrupoTreinamentoDocumento;
-use App\GrupoDivulgacaoDocumento;
-use App\TipoDocumento;
-use App\Documento;
-use App\DadosDocumento;
-use App\Setor;
+use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow};
 use App\Classes\Constants;
-use App\User;
-use App\Workflow;
-use App\Configuracao;
-use App\AreaInteresseDocumento;
-use App\Formulario;
-use App\DocumentoFormulario;
-use App\ListaPresenca;
-use App\AprovadorSetor;
-use App\UsuarioExtra;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
 use Illuminate\Support\Facades\View;
@@ -1201,6 +1187,7 @@ class DocumentacaoController extends Controller
         $dados_doc->finalizado             = true;
         $dados_doc->em_revisao             = false;
         $dados_doc->id_usuario_solicitante = false;
+        $dados_doc->data_revisao           = now();
         $dados_doc->save();
 
         // Notificações
@@ -1601,7 +1588,7 @@ class DocumentacaoController extends Controller
                                 ->join('workflow',                      'workflow.documento_id',                        '=',    'documento.id')
                                 ->join('tipo_documento',                'tipo_documento.id',                            '=',    'documento.tipo_documento_id') 
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada', 'dados_documento.data_revisao',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 )->where('dados_documento.obsoleto', '=', false);

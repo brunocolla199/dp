@@ -469,7 +469,7 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($doc->updated_at)) }}</td>
+                                                                        <td class="text-center">{{ ($doc->data_revisao) ?  date("d/m/Y H:i:s", strtotime($doc->data_revisao)) :  '-' }}</td>
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->revisao }} </td>
                                                                         
@@ -516,8 +516,8 @@
 
                                                                       
 
+                                                                        <td class="text-center">{{ ($doc->data_revisao) ?  date("d/m/Y H:i:s", strtotime($doc->data_revisao)) :  '-' }}</td>
                                                                         
-                                                                        <td class="text-center">{{ date("d/m/Y H:i:s", strtotime($docF->updated_at)) }}</td>
 
                                                                         <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
