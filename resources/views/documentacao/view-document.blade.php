@@ -35,26 +35,52 @@
             <!-- Start Page Content -->
             <div class="row">
                 
-                <!-- Card "Documento em Revisão" -->
+
                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE   &&  $em_revisao  )    
-                    <div class="col-md-12">
+                    
+                    <!-- Card "Documento em Revisão" -->
+                    <div class="col-md-6">
                         <div class="card card-outline-info">
                             <div class="card-header">
                                 <h4 class="m-b-0 text-white">Este documento está em revisão -  Validade: <b>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $validadeDoc)->format('d/m/Y') }}</b>  </h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-10">
+                                    <div class="col-md-12">
                                         <p class="card-text">Você pode cancelar a revisão à qualquer momento clicando no botão ao lado.</p>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-12 m-t-20">
                                         <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#confirm-cancel-review-modal" data-backdrop="static">Cancelar Revisão</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Card "Upload de Documento" -->
+                    <div class="col-md-6">
+                        <div class="card card-outline-info">
+                            <div class="card-header">
+                                <h4 class="m-b-0 text-white">Substituição de documento  </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <p class="card-text">Você pode realizar a substituição do documento atual fazendo <i>upload</i> de um <b>.docx</b> ou <b>.xlsx (o nome será mantido)</b></p>
+
+                                    {!! Form::open(['route' => 'documentacao.replace-document', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'style' => 'width: 100%']) !!}
+                                        {!! Form::hidden('document_id', $document_id) !!}
+
+                                        <input type="file" name="new_document" class="dropify m-t-10" data-allowed-file-extensions='["docx", "xlsx"]' required/>
+                                        <button type="submit" class="btn btn-block btn-success m-t-10">Salvar</button>
+                                    {!! Form::close() !!}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                 @endif
+                
+                
 
 
                 <!-- Card Principal -->

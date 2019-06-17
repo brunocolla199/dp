@@ -607,7 +607,7 @@
                     error: 'Erro ao processar arquivo, contate o suporte técnico (suporte@speedsoftware.com.br)'
                 },
                 error:{
-                    fileExtension:'O formato do arquivo não é suportado (pdf doc docx xlsx xls apenas).'
+                    fileExtension:'O formato do arquivo não é suportado (docx ou xlsx apenas).'
                 } 
             });
 

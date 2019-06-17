@@ -852,6 +852,27 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function replaceDocument(Request $_request) {
+        $file      = $_request->file('new_document', 'local');
+        $idDoc     = $_request->document_id;
+        $documento = Documento::find($idDoc);
+        $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
+        
+        define('NOME_COMPLETO', $documento->nome.".".$documento->extensao);
+        
+        // < Excluindo o arquivo físico da atual revisão >
+        Storage::disk('speed_office')->delete(NOME_COMPLETO);
+        
+        // < Salva o nome arquivo exatamente com o mesmo nome do antigo, para não gerar problemas >
+        \Storage::disk('speed_office')->put(NOME_COMPLETO, file_get_contents($file));
+
+        // Histórico
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DOCUMENTO_SUBSTITUIDO . Auth::user()->name, $idDoc);
+
+        return $this->viewDocument($_request);
+    }
+
+
 
     /*
     *  WORKFLOW      

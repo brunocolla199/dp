@@ -48,7 +48,7 @@ class Constants {
     public static $ETAPA_WORKFLOW_ELABORADOR_TEXT                    = "Elaborador";
     
     public static $ETAPA_WORKFLOW_QUALIDADE_NUM                      = 2;
-    public static $ETAPA_WORKFLOW_QUALIDADE_TEXT                     = "Qualidade";
+    public static $ETAPA_WORKFLOW_QUALIDADE_TEXT                     = "Processos";
     
     public static $ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM              = 3;
     public static $ETAPA_WORKFLOW_AREA_DE_INTERESSE_TEXT             = "Área de Interesse";
@@ -68,14 +68,14 @@ class Constants {
 
 
     // Descrição do Workflow
-    public static $DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE             = "Em análise pela área de qualidade";
+    public static $DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE             = "Em análise pela área de processos";
 
     public static $DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE             = "Em análise pela área de interesse";
     
     public static $DESCRICAO_WORKFLOW_ANALISE_APROVADOR                     = "Em análise pelo aprovador";
     
     
-    public static $DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE            = "Aprovado pela área de qualidade";
+    public static $DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE            = "Aprovado pela área de processos";
     
     public static $DESCRICAO_WORKFLOW_APROVADO_AREA_DE_INTERESSE            = "Aprovado pela área de interesse";
     
@@ -96,7 +96,7 @@ class Constants {
     
     public static $DESCRICAO_WORKFLOW_EM_ELABORACAO                         = "Em Elaboração";
     
-    public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Devolvido para correção pela Qualidade";
+    public static $DESCRICAO_WORKFLOW_REJEITADO_QUALIDADE                   = "Devolvido para correção pelo setor Processos";
     
     public static $DESCRICAO_WORKFLOW_REJEITADO_AREA_INTERESSE              = "Devolvido para correção pela Área de Interesse";
     
@@ -125,6 +125,8 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO             = "Marcou o documento como obsoleto.";
     
     public static $TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS        = "Lista de presença enviada para: ";
+
+    public static $DOCUMENTO_SUBSTITUIDO                                    = "Documento substituído através da função de upload pelo usuário: ";
     
     
     public static $_DEPRECATED_DESCRICAO_WORKFLOW_ANALISE_CAPITAL_HUMANO                = "Em análise pelo Capital Humano";

@@ -85,6 +85,8 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('view-obsolete-doc',	  		['as' => 'documentacao.view-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@viewObsoleteDoc']);
 		Route::get('{id}/edit-info',  				['as' => 'documentacao.edit-info',						'uses' => 'Documentacao\DocumentacaoController@editInfo']);
 		Route::post('update-info', 					['as' => 'documentacao.update-info',					'uses' => 'Documentacao\DocumentacaoController@updateInfo']);
+
+		Route::post('replace-document',				['as' => 'documentacao.replace-document',				'uses' => 'Documentacao\DocumentacaoController@replaceDocument']);
 	});
 	
 	
