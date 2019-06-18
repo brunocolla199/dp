@@ -31,11 +31,11 @@
             } else if(status == "reject_success") {
                 showToast('Sucesso!', 'O Formulário foi rejeitado.', 'success');
             } else if(status == "resend_success") {
-                showToast('Sucesso!', 'O Formulário foi reenviado para a Qualidade.', 'success');
+                showToast('Sucesso!', 'O Formulário foi reenviado para o setor Processos.', 'success');
             } else if(status == "start_review_success") {
                 showToast('Sucesso!', 'A revisão do formulário foi iniciada.', 'success');
             } else if(status == "send_new_review_success") {
-                showToast('Sucesso!', 'A nova revisão do formulário foi enviada para a Qualidade.', 'success');
+                showToast('Sucesso!', 'A nova revisão do formulário foi enviada para o setor Processos.', 'success');
             } else if(status == "cancel_review_success") {
                 showToast('Sucesso!', 'Revisão cancelada. Versão anterior do formulário restaurada com sucesso.', 'success');
             } else if(status == "make_obsolete_form") {

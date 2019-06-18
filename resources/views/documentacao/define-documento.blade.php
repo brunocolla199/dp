@@ -21,7 +21,7 @@
 @if (isset($overlay_sucesso))
     <script>
         openNav();
-        $("#message-overlay").text('DOCUMENTO ENCAMINHADO AO SETOR DE QUALIDADE PARA AVALIAÇÃO');
+        $("#message-overlay").text('DOCUMENTO ENCAMINHADO AO SETOR DE PROCESSOS PARA AVALIAÇÃO');
         $("#icon-overlay").removeClass('fa-send').addClass('fa-check');
     </script>
 @else
@@ -339,7 +339,7 @@
                                 @if( isset($acao) ) 
                                     {!! Form::hidden('acao', $acao) !!}
                                 @endif
-                                <button type="submit" class="btn btn-lg btn-secundary waves-effect" id="end-and-send">Concluir e Enviar à Qualidade</button>
+                                <button type="submit" class="btn btn-lg btn-secundary waves-effect" id="end-and-send">Concluir e Enviar ao setor Processos</button>
                             {!! Form::close() !!}
                         </div>
                     </div>

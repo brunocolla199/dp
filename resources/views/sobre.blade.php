@@ -42,7 +42,7 @@
                                 <div class="card-body">
                                     <h3>1. Introdução</h3>
                                     <p>
-                                        <br/>A ferramenta foi construída com o intuito de automatizar o controle de elaboração dos documentos e formulários pelo setor da qualidade, onde todas as partes envolvidas na elaboração interajam com a ferramenta, assim centralizando todas as informações em um único lugar.</p>
+                                        <br/>A ferramenta foi construída com o intuito de automatizar o controle de elaboração dos documentos e formulários pelo setor de processos, onde todas as partes envolvidas na elaboração interajam com a ferramenta, assim centralizando todas as informações em um único lugar.</p>
                                    
                                 </div>
                             </div>
@@ -194,14 +194,14 @@
 
                              <div class="card" id="padroes">
                                 <div class="card-body">
-                                    <h3>10. Administrador Setor Qualidade</h3>
+                                    <h3>10. Administrador Setor Processos</h3>
                                    <p> 
-                                    	<br/> A configuração do usuário do setor da qualidade que terá acesso a aprovação dos documentos confidenciais está disponível no menu <code>Configuração </code> -> <code> Padrões </code>. </p>
+                                    	<br/> A configuração do usuário do setor de processos que terá acesso a aprovação dos documentos confidenciais está disponível no menu <code>Configuração </code> -> <code> Padrões </code>. </p>
                                    <p>
-                                        <br/> No campo "Administrador - Setor Qualidade:" deve ser selecionado o usuário. Após clique no botão <code> Salvar </code>. </p>
+                                        <br/> No campo "Administrador - Setor Processos:" deve ser selecionado o usuário. Após clique no botão <code> Salvar </code>. </p>
                                    <p>
  									                      <!-- <img src="assets/images/Imagens/confidencial.jpg" alt="template" class="img-responsive" /> -->
- 									                      <img src="{{ asset('images/Imagens/confidencial.jpg') }}" class="img-fluid" alt="Configuração Administrador Setor Qualidade">
+ 									                      <img src="{{ asset('images/Imagens/confidencial.jpg') }}" class="img-fluid" alt="Configuração Administrador Setor Processos">
                                    <p>
                                    		
                                </div>
@@ -228,7 +228,7 @@
                                         <br/> <li>Grupo de Treinamento: definição dos usuários ou setor que receberam o treinamento referente o novo documento. </a></li>
                                         <br/> <li>Grupo de Divulgação:  definição dos usuários ou setor que após a finalização do documentos serem notificados. </a></li>
                                         <br/> <li>Validade do Documento: definição da validade do documento. </a></li>
-                                        <br/> <li>Cópia Controlada: opção para definir se após a finalização do documento a qualidade será notificada para realizar a impressão das cópias controladas. </a></li>
+                                        <br/> <li>Cópia Controlada: opção para definir se após a finalização do documento, o setor de Processos será notificado para realizar a impressão das cópias controladas. </a></li>
                                         <br/> <li>Título do Documento: descrição do nome do documento. </a></li>
                                         <br/> <li>Atrelar aos Formulários: opção para selecionar os formulários que estarão vinculados ao documentos que está sendo elaborado. </a></li>
                                    </p>
@@ -242,14 +242,14 @@
                                    		<br/> O Elaborador insere as informações no documento, e após deve clicar em <code> Salvar Documento</code>, nesse momento é aberta a tela para realizar a inclusão de anexos.	
  								                   <p>
 										                  <!--<img src="assets/images/Imagens/anexos.jpg" alt="template" class="img-responsive" /> -->
-                                   		<img src="{{ asset('images/Imagens/anexos.jpg') }}" class="img-fluid" alt="Envio do Documento a Qualidade"> 
+                                   		<img src="{{ asset('images/Imagens/anexos.jpg') }}" class="img-fluid" alt="Envio do Documento ao setor Processos"> 
                                    <p>
-                                   		<br/> Após realizar a inclusão dos anexos ao documento, deve clicar em <code> Concluir e Enviar à Qualidade</code>, nesse momento o documento é encaminhado para o próximo setor para análise do documento. 
+                                   		<br/> Após realizar a inclusão dos anexos ao documento, deve clicar em <code> Concluir e Enviar ao setor Processos</code>, nesse momento o documento é encaminhado para o próximo setor para análise do documento. 
                                    <p>
                                    		<div class="alert alert-warning">NOTA: <li>A inclusão de anexos aos documentos não é obrigatória.</a></li>.</div>
 
                                    		<!--<img src="assets/images/Imagens/envio_documento.jpg" alt="template" class="img-responsive" /> -->
-                                   		<img src="{{ asset('images/Imagens/envio_documento.jpg') }}" class="img-fluid" alt="Envio do Documento a Qualidade">                                         
+                                   		<img src="{{ asset('images/Imagens/envio_documento.jpg') }}" class="img-fluid" alt="Envio do Documento ao setor Processos">                                         
                                </div>
                             </div>
 
@@ -300,19 +300,19 @@
                                             </div>
                                         </div>
 
-                                        <div class="card" id="qualidade">
+                                        <div class="card" id="processos">
                                             <div class="card-body">
-                                                <h3>15. Qualidade</h3>
+                                                <h3>15. Processos</h3>
                                                <p> 
-                                                	<br/> Após o documento ser elaborado o mesmo é encaminhado a Qualidade para iniciar o Workflow de aprovação do documento. A qualidade será notificada que possui um novo documento para ser analisado. Conforme imagem abaixo.</p>
+                                                	<br/> Após o documento ser elaborado o mesmo é encaminhado ao setor Processos para iniciar o Workflow de aprovação do documento. O setor Processos será notificado que possui um novo documento para ser analisado. Conforme imagem abaixo.</p>
                                                <p>
                                                		<!--<img src="assets/images/Imagens/qualidade_not.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/qualidade_not.jpg') }}" class="img-fluid" alt="Notificação Qualidade">
+                                               		<img src="{{ asset('images/Imagens/qualidade_not.jpg') }}" class="img-fluid" alt="Notificação Processos">
                                                <p>
                                                		<br/> É possível através da notificação acessar o documento para realizar a análise. </p>
                                                <p>
 
-                                                <div class="card" id="qualidade">
+                                                <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.1 Rejeitar um Documento</h3>
                                                        <p> 
@@ -331,12 +331,12 @@
                                                        		<!--<img src="assets/images/Imagens/elaborador_not.jpg" alt="template" class="img-responsive" /> -->
                                                        		<img src="{{ asset('images/Imagens/elaborador_not.jpg') }}" class="img-fluid" alt="Notificação Elaborador">
                                                        <p>
-                                                       		<br/>Nesse momento o elaborador visualiza as informações sugeridas pela Qualidade, realiza as correções e segue com o Workflow, enviando novamente a Qualidade para análise.</p>
+                                                       		<br/>Nesse momento o elaborador visualiza as informações sugeridas pelo setor Processos, realiza as correções e segue com o Workflow, enviando novamente ao setor Processos para análise.</p>
                                                        <p>
                                                     </div>
                                                 </div>
 
-                                                <div class="card" id="qualidade">
+                                                <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.2 Aprovar Documento</h3>
                                                        <p> 
@@ -348,7 +348,7 @@
                                                     </div>
                                                 </div> 
 
-                                                <div class="card" id="qualidade">
+                                                <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.3 Tornar Obsoleto</h3>
                                                        <p> 
@@ -360,7 +360,7 @@
                                                     </div>
                                                 </div> 
 
-                                                <div class="card" id="qualidade">
+                                                <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.4 Desfazer Obsoleto</h3>
                                                        <p> 
@@ -372,7 +372,7 @@
                                                     </div>
                                                 </div> 
 
-                                                 <div class="card" id="qualidade">
+                                                 <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.5 Víncular Formulários</h3>
                                                        <p> 
@@ -384,7 +384,7 @@
                                                     </div>
                                                 </div> 
 
-                                                <div class="card" id="qualidade">
+                                                <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.6 Editar Informações</h3>
                                                        <p> 
@@ -403,7 +403,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="card" id="qualidade">
+                                                <div class="card" id="processos">
                                                     <div class="card-body">
                                                         <h3>15.7 Cópia Controlada</h3>
                                                        <p> 
@@ -434,9 +434,9 @@
                                             <div class="card-body">
                                                 <h3>16. Área de Interesse</h3>
                                                 <p> 
-                                                   	<br/> Após o documento ser aprovado pela Qualidade, a Área de Interesse será notificada que possui um novo documento para analisar.</p>
+                                                   	<br/> Após o documento ser aprovado pelo setor Processos, a Área de Interesse será notificada que possui um novo documento para analisar.</p>
                                                 <p>
-                                                	<br/> O processo de aprovação e rejeição do documento é o mesmo demonstrado no menu <code> Qualidade</code>
+                                                	<br/> O processo de aprovação e rejeição do documento é o mesmo demonstrado no menu <code> Processos</code>
                                                 <p>
 
                                             </div> 
@@ -448,7 +448,7 @@
                                                <p> 
                                                 	<br/> Após o documento ser aprovado pela Área de Interesse, o Aprovador será notificado que possui um novo documento para analisar.</p>
                                                <p>
-                                               		<br/> O processo de aprovação e rejeição do documento é o mesmo demonstrado no menu <code> Qualidade</code>
+                                               		<br/> O processo de aprovação e rejeição do documento é o mesmo demonstrado no menu <code> Processos</code>
                                                <p>
                                             </div>
                                         </div> 
@@ -590,7 +590,7 @@
                                                         <img src="{{ asset('images/Imagens/justificativa_revisao.jpg') }}" class="img-fluid" alt="Justificativa Revisão">
 
                                                       </p>
-                                                	      <div class="alert alert-warning">NOTA: <li>Somente os usuários da Qualidade tem permissão para cancelar a revisão de um documento. </a></li>.</div>
+                                                	      <div class="alert alert-warning">NOTA: <li>Somente os usuários do setor Processos tem permissão para cancelar a revisão de um documento. </a></li>.</div>
                                                         </p>
                                                  </div>
                                         	    </div>
@@ -631,21 +631,21 @@
                                                		<!--<img src="assets/images/Imagens/upload_form"template" class="img-responsive" /> -->
                                                		<img src="{{ asset('images/Imagens/upload_form.jpg') }}" class="img-fluid" alt="Upload Formulário">
                                                <p>
-                                               		<br/>O Elaborador deve selecionar o arquivo e clicar em <code> Salvar Formulário </code>, onde será encaminhado ao setor da Qualidade para análise. </p>
+                                               		<br/>O Elaborador deve selecionar o arquivo e clicar em <code> Salvar Formulário </code>, onde será encaminhado ao setor de Processos para análise. </p>
                                                <p>
                                                		<!--<img src="assets/images/Imagens/elaboracao_form"template" class="img-responsive" /> -->
                                                		<img src="{{ asset('images/Imagens/elaboracao_form.jpg') }}" class="img-fluid" alt="Elaboração Formulário">
                                             </div>
                                         </div> 
 
-                                        <div class="card" id="qualidadeform">
+                                        <div class="card" id="processosform">
                                             <div class="card-body">	
-                                                <h3>25.Qualidade </h3>
+                                                <h3>25.Processos </h3>
                                                <p> 
-                                                	<br/> A Qualidade será notificada que recebeu um novo formulário para análise. Conforme imagem abaixo.</p>
+                                                	<br/> O setor Processos será notificado que recebeu um novo formulário para análise. Conforme imagem abaixo.</p>
                                                <p>
                                                		<!--<img src="assets/images/Imagens/qualidade_form.jpg" alt="template" class="img-responsive" /> -->
-                                               		<img src="{{ asset('images/Imagens/qualidade_form.jpg') }}" class="img-fluid" alt="Notificação Qualidade">
+                                               		<img src="{{ asset('images/Imagens/qualidade_form.jpg') }}" class="img-fluid" alt="Notificação Processos">
                                                <p>
                                                		<br/>É possível através da notificação acessar o formulário para realizar a análise.</p>
                                               
@@ -654,12 +654,12 @@
                                                		<img src="{{ asset('images/Imagens/formulario_qua.jpg') }}" class="img-fluid" alt="Formulários">
                                         	
                                                	<p>
-                                        			    <br/> A Qualidade poderá Rejeitar ou Aprovar a lista de presença.</p>
+                                        			    <br/> O setor de Processos poderá Rejeitar ou Aprovar a lista de presença.</p>
                                                		<div class="alert alert-info">Rejeitar: será habilitado uma caixa para informar a justificativa da rejeição e o formulário retorna ao Elaborador para ajustes.</p>
                                                   Aprovar: será realizado a divulgação do formulário. </p>
                                                   </div>  
 
-                                             <div class="card" id="qualidadeform">
+                                             <div class="card" id="processosform">
                                                     <div class="card-body">
                                                         <h3>25.1 Tornar Obsoleto</h3>
                                                        <p> 
@@ -671,7 +671,7 @@
                                                     </div>
                                                 </div> 
 
-                                                <div class="card" id="qualidadeform">
+                                                <div class="card" id="processosform">
                                                     <div class="card-body">
                                                         <h3>25.2 Desfazer Obsoleto</h3>
                                                        <p> 
@@ -750,7 +750,7 @@
                                             <div class="card-body">	
                                                 <h3>28. Divulgação </h3>
                                                <p> 
-                                                	<br/> Após a Qualidade realizar a aprovação o formulário, o Workflow de elaboração do formulário é finalizado e dispara uma notificação aos envolvidos na elaboração do formulário.</p>
+                                                	<br/> Após o setor de Processos realizar a aprovação o formulário, o Workflow de elaboração do formulário é finalizado e dispara uma notificação aos envolvidos na elaboração do formulário.</p>
                                                <p>
                                                		<!--<img src="assets/images/Imagens/divulgacao_form.jpg" alt="template" class="img-responsive" /> -->
                                                		<img src="{{ asset('images/Imagens/divulgacao_form.jpg') }}" class="img-fluid" alt="Divulgação de Formulário"> 

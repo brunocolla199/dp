@@ -279,7 +279,7 @@
                             <li><a href="#criar" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Criar</span></a></li>
                             <li><a href="#importar" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar</span></a></li>
                             <li><a href="#editor" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Editor</span></a></li>
-                            <li><a href="#qualidade" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
+                            <li><a href="#processos" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Processos</span></a></li>
                             <li><a href="#areainteresse" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Área de Interesse</span></a></li>
                             <li><a href="#aprovador" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Aprovador</span></a></li>
                             <li><a href="#listadepresenca" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Lista de Presença</span></a></li>
@@ -291,7 +291,7 @@
                             <li class="nav-small-cap"> <span class="text-info">FORMULÁRIOS</span> </li>
                             <li><a href="#formularios" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Elaboração</span></a></li>
                             <li><a href="#importarform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Importar</span></a></li>
-                            <li><a href="#qualidadeform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Qualidade</span></a></li>
+                            <li><a href="#processosform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Processos</span></a></li>
                             <li><a href="#visualizacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Visualização</span></a></li>
                             <li><a href="#revisaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Revisão</span></a></li>
                             <li><a href="#divulgacaoform" aria-expanded="false"><i class="fa fa-circle-o"></i><span class="hide-menu">Divulgação</span></a></li>

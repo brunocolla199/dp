@@ -41,7 +41,7 @@
             } else if(status == "reject_success") {
                 showToast('Sucesso!', 'O documento foi rejeitado.', 'success');
             } else if(status == "resend_success") {
-                showToast('Sucesso!', 'O documento foi reenviado para a Qualidade.', 'success');
+                showToast('Sucesso!', 'O documento foi reenviado para o setor Processos.', 'success');
             } else if(status == "link_success") {
                 showToast('Sucesso!', 'A vinculação foi realizada com sucesso.', 'success');
             } else if(status == "import_list_success") {
@@ -514,8 +514,7 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                      
-
+                                                                        
                                                                         <td class="text-center">{{ ($docF->data_revisao) ?  date("d/m/Y H:i:s", strtotime($docF->data_revisao)) :  '-' }}</td>
                                                                         
 

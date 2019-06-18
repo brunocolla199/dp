@@ -21,7 +21,7 @@
 @if (isset($overlay_sucesso))
     <script>
         openNav();
-        $("#message-overlay").text('FORMULÁRIO ENCAMINHADO AO SETOR DE QUALIDADE PARA AVALIAÇÃO');
+        $("#message-overlay").text('FORMULÁRIO ENCAMINHADO AO SETOR DE PROCESSOS PARA AVALIAÇÃO');
         $("#icon-overlay").removeClass('fa-send').addClass('fa-check');
     </script>
 @else

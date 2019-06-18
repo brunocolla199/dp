@@ -197,7 +197,7 @@
                                         @else 
                                             <div class="form-group">
                                                 <div class="col-md-12">
-                                                    <h6>A validade só pode ser alterada por um usuário do setor Qualidade ou que possua a <i>permissão de elaborador</i>. </h6>
+                                                    <h6>A validade só pode ser alterada por um usuário do setor Processos ou que possua a <i>permissão de elaborador</i>. </h6>
                                                 </div>
                                             </div>
                                         @endif

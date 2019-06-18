@@ -269,7 +269,7 @@
                                         <div class="col-md-9">  
                                             <div class="ribbon-wrapper card ">
                                                 <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE CANCELAMENTO DA REVISÃO</div> 
-                                                <p class="ribbon-content"><b>Qualidade:</b> {{ $justificativa_cancelar_revisao }} </p>
+                                                <p class="ribbon-content"><b>Processos:</b> {{ $justificativa_cancelar_revisao }} </p>
                                             </div>
                                         </div>
 

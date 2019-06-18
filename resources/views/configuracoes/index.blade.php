@@ -45,7 +45,7 @@
             } else if(status == "link_success") {
                 showToast('Sucesso!', 'Vinculações atualizadas com sucesso.', 'success');
             } else if(status == "admin_qualidade_sucesso") {
-                showToast('Sucesso!', 'Usuário com privilégios do setor Qualidade atualizado com sucesso.', 'success');
+                showToast('Sucesso!', 'Usuário com privilégios do setor Processos atualizado com sucesso.', 'success');
             }
         });
     </script>
@@ -414,14 +414,14 @@
 
                                                 </div>
 
-                                                <!-- Apenas o usuário que já é administrador da Qualidade pode ver essa parte. Aí, caso deseje, pode "repassar" seu cargo a outro usuário -->
+                                                <!-- Apenas o usuário que já é administrador do setor Processos pode ver essa parte. Aí, caso deseje, pode "repassar" seu cargo a outro usuário -->
                                                 @if(Auth::user()->id == $adminSetorQualidade)
                                                     <div class="col-md-6">
                                                         {!! Form::open(['route' => 'configuracoes.save.quality-admin', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
                                                             <div class="row">
                                                                 <div class="col-md-12 mb-4">
                                                                     <div class="alert alert-warning">
-                                                                        <span>Por favor, defina o usuário com privilégios do setor <b>Qualidade</b>. </span>
+                                                                        <span>Por favor, defina o usuário com privilégios do setor <b>Processos</b>. </span>
                                                                         <small><b>Lembre-se:</b> este usuário é o único que poderá ver documentos confidenciais!</small>
                                                                     </div>
                                                                 </div>
@@ -429,7 +429,7 @@
                                                                 <div class="col-md-12">
                                                                     <div class="form-group">
                                                                         <div class="col-md-12 control-label font-bold">
-                                                                            {!! Form::label('userAdminQuality', 'Administrador - Setor Qualidade:') !!}
+                                                                            {!! Form::label('userAdminQuality', 'Administrador - Setor Processos:') !!}
                                                                         </div>
                                                                         <div class="col-md-12">
                                                                             {!! Form::select('userAdminQuality', $usuariosSetorQualidade, $adminSetorQualidade, ['class' => 'form-control  custom-select']) !!}

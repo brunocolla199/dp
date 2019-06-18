@@ -196,7 +196,7 @@
                                         <div class="col-md-9">
                                             <div class="ribbon-wrapper card ">
                                                 <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE CANCELAMENTO DA REVISÃO</div> 
-                                                <p class="ribbon-content"><b>Qualidade:</b> {{ $justificativa_cancelar_revisao }} </p>
+                                                <p class="ribbon-content"><b>Processos:</b> {{ $justificativa_cancelar_revisao }} </p>
                                             </div>
                                         </div>
 
@@ -212,7 +212,7 @@
                                 <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
                             </div>
 
-                            <!-- Qualidade e Elaborador sempre podem adicionar anexos -->
+                            <!-- Setor Processos e o Elaborador sempre podem adicionar anexos -->
                             <div class="row mt-4">
                                 @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                     <div class="col-md-2">
@@ -335,7 +335,7 @@
                                 <!-- Editor -->
                                 <div class="container iframe_box" >
                                     @if( $documentoEhEditavel ) 
-                                        <!-- #46 - Desabilitar para o usuário na etapa "área de interesse" a possibilidade de edição do documento = ou seja, se o doc estiver na etapa de área de interesse e não for um membro da Qualidade, não edita o doc -->
+                                        <!-- #46 - Desabilitar para o usuário na etapa "área de interesse" a possibilidade de edição do documento = ou seja, se o doc estiver na etapa de área de interesse e não for um membro do setor Processos, não edita o doc -->
                                         @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM  &&  Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE )   
                                             <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=view&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
                                         @else
@@ -349,7 +349,7 @@
                                     
                                 
                                 
-                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
+                                <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Setor de Processos e o Elaborador sempre podem adicionar anexos -->
                                 @if( $documentoEhEditavel )
                                     <div class="row mt-4">
                                         @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
@@ -409,7 +409,7 @@
                                 </div>
                             </div>
 
-                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Qualidade e Elaborador sempre podem adicionar anexos -->
+                            <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Setor de Processos e o Elaborador sempre podem adicionar anexos -->
                             <div class="row mt-4">
                                 @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                     <div class="col-md-2">
