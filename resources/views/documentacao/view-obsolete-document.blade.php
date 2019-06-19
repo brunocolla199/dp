@@ -118,6 +118,13 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-9"></div>
+                            <div class="col-md-3 mb-4 pull-right">
+                                <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
+                            </div>
+                        </div>
+
 
                         <div class="row h-100">
                             <!-- <iframe src="{{url('documentacao/make-doc/'.$document_id)}}" frameborder="0" width="100%" height="600px"></iframe> -->
