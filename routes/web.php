@@ -139,6 +139,8 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::group(['prefix' => 'documentacao'], function() {
 			Route::get('obsoletos',	  							['as' => 'documentacao.obsoletos',							'uses' => 'Documentacao\DocumentacaoController@indexDocsObsoletos']);
 			Route::post('filter-documents-obsolete-index',  	['as' => 'documentacao.filter-documents-obsolete-index',	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsObsoleteIndex']);
+			Route::get('pendentes-revisao',						['as' => 'documentacao.pendentes_revisao',					'uses' => 'Documentacao\DocumentacaoController@indexDocsPendentesRevisao']);
+			Route::post('filter-pendentes-revisao',  			['as' => 'documentacao.filter_pendentes_revisao',			'uses' => 'Documentacao\DocumentacaoController@filterDocumentsPendentesRevisao']);
 		});
 
 	});
