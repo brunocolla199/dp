@@ -1009,8 +1009,27 @@ class DocumentacaoController extends Controller
                 $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
                 $workflow_doc[0]->save();
 
+                $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+                $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+
+
                 // Notificações
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita lista de presença.", true, $dados_doc[0]->elaborador_id, $idDoc);
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita lista de presença.", true, $user->id, $idDoc);
+                }
+
+                // [E-mail -> (eu não achei o documento que padroniza de que tipo é, mas é isso ai heuhuehe)]
+                $icon = "info";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " necessita lista de presença.";
+                $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+                $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+                $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Necessário lista de presença",   $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                
+                // Se o elaborador não é do setor da Qualidade, envia o e-mail e notificação para ele também (Evita duplicidade)
+                if( $elaborador->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita lista de presença.", true, $dados_doc[0]->elaborador_id, $idDoc);
+                    $this->dispatch(new SendEmailsJob($elaborador, "Necessário lista de presença",               $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                }
 
                 // Histórico
                 if( $documento[0]->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_DIRETRIZES_DE_GESTAO ) \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_DIRETORIA, $idDoc);
