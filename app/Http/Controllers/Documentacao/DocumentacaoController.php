@@ -871,7 +871,8 @@ class DocumentacaoController extends Controller
                 break;
 
             case 2: // Qualidade
-                $dados_doc[0]->observacao = "Aprovado pela Qualidade";
+                $dados_doc[0]->observacao   = "Aprovado pela Qualidade";
+                $dados_doc[0]->data_revisao = now();
                 $dados_doc[0]->save();
 
                 $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')->where('documento_id', '=', $idDoc)->select('usuario_id', 'name', 'username', 'email', 'setor_id')->get();
@@ -1187,7 +1188,6 @@ class DocumentacaoController extends Controller
         $dados_doc->finalizado             = true;
         $dados_doc->em_revisao             = false;
         $dados_doc->id_usuario_solicitante = false;
-        $dados_doc->data_revisao           = now();
         $dados_doc->save();
 
         // Notificações
