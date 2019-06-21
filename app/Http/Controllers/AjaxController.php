@@ -352,6 +352,15 @@ class AjaxController extends Controller
     }
 
 
+    public function updateCode(Request $request) {
+        $form = Formulario::find($request->form_id);
+        $form->codigo = $request->new_code;
+        $form->save();
+        
+        return response()->json(['response' => 'success']);
+    }
+
+
     // Anexos
     public function saveAttachment(Request $request) {
         $file = $request->file('anexo_escolhido', 'local');

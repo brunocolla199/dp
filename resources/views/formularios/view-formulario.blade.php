@@ -300,16 +300,38 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <div class="col-md-12 control-label font-bold">
-                                                {!! Form::label('codigoFormulario', 'CÓDIGO DO FORMULÁRIO:') !!}
-                                            </div>
-                                            <div class="col-md-12">
-                                                {!! Form::text('codigoFormulario', $codigo, ['class' => 'form-control', 'readonly']) !!}
+                                    
+                                    @if ( $etapa_form == Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM  &&  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                    
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12 control-label font-bold">
+                                                    {!! Form::label('codigoFormulario', 'CÓDIGO DO FORMULÁRIO:') !!}
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        {!! Form::text('codigoFormulario', $codigo, ['class' => 'form-control', 'id' => 'input-update-code']) !!}
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <button class="btn btn-block btn-info" id="btn-update-code" data-form-id="{{ $formulario_id }}"><i class="mdi mdi-pencil"></i> Alterar Código</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12 control-label font-bold">
+                                                    {!! Form::label('codigoFormulario', 'CÓDIGO DO FORMULÁRIO:') !!}
+                                                </div>
+                                                <div class="col-md-12">
+                                                    {!! Form::text('codigoFormulario', $codigo, ['class' => 'form-control', 'readonly']) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
 
                                 </div>
                             </div>
@@ -334,8 +356,6 @@
                             </div>
 
                         </div>
-
-                        
                     </div>
                 </div>
 
@@ -449,6 +469,19 @@
         var formData = JSON.stringify(window.sessionStorage.getItem('formData'));
         $("#form-edit-form").append("<input type='hidden' name='formData' value='"+formData+"' >")
         $("#form-edit-form").submit();
+    });
+
+    // Quando o botão de atualizar o código do formulário é clicado
+    $("#btn-update-code").click(function(){
+        let form_id = $(this).data('form-id');
+        let newCode = $('#input-update-code').val();
+        
+        var obj = {'form_id': form_id, 'new_code': newCode};
+        ajaxMethod('POST', " {{ URL::route('ajax.formularios.updateCode') }} ", obj).then(function(result) {
+            showToast("Sucesso!", "O código do formulário foi atualizado com sucesso.", 'success');
+        }, function(err) {
+            console.log(err);
+        });
     });
 
     // Quando o solicitante da revisão do formulário aceitar a justificativa de cancelamento da mesma
