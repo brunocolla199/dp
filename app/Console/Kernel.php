@@ -59,9 +59,9 @@ class Kernel extends ConsoleKernel
                 $contentF1_P1 = "O documento "; $codeF1 = $doc->codigo; $contentF1_P2 = " vai vencer em 30 dias.";
                 $labelF2 = "Tipo do Documento: "; $valueF2 = $doc->nome_tipo;
                 $labelF3 = "Título do Documento: "; $valueF3 = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $doc->nome)[0]; $label2_F3 = ""; $value2_F3 = "";
-                dispatch(new SendEmailsJob($usuariosDoSetorComPermissaoElaborador, "Validade do documento " . $doc->codigo . " expira em um mês",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
                 foreach ($usuariosDoSetorComPermissaoElaborador as $key => $user) {
+                    dispatch(new SendEmailsJob($user, "Validade do documento " . $doc->codigo . " expira em um mês",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
                     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $doc->codigo . " vence em um mês ($user->email).", true, $user->id, $doc->id);    
                 }
             }
