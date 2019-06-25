@@ -3,6 +3,11 @@
 	margin-top: 1%;
 }
 
+/* Define o cursor do elemento como 'pointer' */
+.cursor-pointer-on {
+    cursor: pointer;
+}
+
 /* Fonte em Negrito */
 .font-bold label {
 	font-weight: bold;

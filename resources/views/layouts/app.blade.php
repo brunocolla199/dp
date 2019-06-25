@@ -107,7 +107,7 @@
                     <!-- Logo -->
                     <!-- ============================================================== -->
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="{{'home'}}">
+                        <a class="navbar-brand" href="{{ route('home') }}">
                             <!-- Logo icon -->
                             <!-- <b> -->
                                 <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
@@ -144,7 +144,14 @@
                                 <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu"></i></a> </li>
                                 <li class="nav-item"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a> </li>                                
                             </ul>
-                            <ul class="navbar-nav my-lg-0">                                
+                            <ul class="navbar-nav my-lg-0">          
+                                
+                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="{{ route('documentacao.relatorio_estatistico') }}"> <i class="mdi mdi-file-chart"></i></a>
+                                    </li>
+                                @endif
+
                                 <!-- ============================================================== -->
                                 <!-- Language -->
                                 <!-- ============================================================== -->

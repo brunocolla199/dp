@@ -20,7 +20,7 @@ Route::group(['middleware' => ['auth']], function() {
 		return Redirect::to('/login');
 	});
 
-	Route::get('/home', 'HomeController@index')->name('home');
+	Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
 	
 
 	/*
@@ -142,6 +142,8 @@ Route::group(['middleware' => ['auth']], function() {
 			Route::post('filter-documents-obsolete-index',  	['as' => 'documentacao.filter-documents-obsolete-index',	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsObsoleteIndex']);
 			Route::get('pendentes-revisao',						['as' => 'documentacao.pendentes_revisao',					'uses' => 'Documentacao\DocumentacaoController@indexDocsPendentesRevisao']);
 			Route::post('filter-pendentes-revisao',  			['as' => 'documentacao.filter_pendentes_revisao',			'uses' => 'Documentacao\DocumentacaoController@filterDocumentsPendentesRevisao']);
+			Route::get('relatorio-estatistico',					['as' => 'documentacao.relatorio_estatistico',				'uses' => 'Documentacao\RelatorioEstatistico@index']);
+			Route::post('relatorio',							['as' => 'documentacao.make-statical-report',				'uses' => 'Documentacao\RelatorioEstatistico@makeReport']);
 		});
 
 	});
