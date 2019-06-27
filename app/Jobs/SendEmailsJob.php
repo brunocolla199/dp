@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -70,4 +71,20 @@ class SendEmailsJob implements ShouldQueue
     {
         $mail::to($this->destinatarios)->send(new TemplateEmail($this->assunto,   $this->icon, $this->contentF1_P1, $this->codeF1, $this->contentF1_P2, $this->labelF2, $this->valueF2, $this->labelF3, $this->valueF3, $this->label2_F3, $this->value2_F3));
     }
+
+
+    /**
+     * The job failed to process.
+     *
+     * @param  Exception  $exception
+     * @return void
+     */
+    public function failed(Exception $exception)
+    {
+        $PATH = storage_path('logs');
+        $FILE = 'sendemailsjobs_failed_jobs.log';
+        file_put_contents($PATH.'/'.$FILE, "### WEE_LOG ### [".now()."] O job acabou de falhar! Código ( ".$exception->getCode()." )".PHP_EOL , FILE_APPEND | LOCK_EX);
+        file_put_contents($PATH.'/'.$FILE, "### WEE_LOG ### [".now()."] Mensagem da falha: ".$exception->getMessage().PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL , FILE_APPEND | LOCK_EX);
+    }
+
 }
