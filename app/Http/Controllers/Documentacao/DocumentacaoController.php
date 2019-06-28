@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Documentacao;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow};
+use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada};
 use App\Classes\Constants;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
@@ -474,7 +474,7 @@ class DocumentacaoController extends Controller
             'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
             'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
             'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'em_revisao' => $dadosDoc[0]->em_revisao, 'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao, 
-            'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc, 'documentoEhEditavel'=>$documentoEhEditavel ));
+            'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc, 'documentoEhEditavel'=>$documentoEhEditavel, 'possuiCopiaControlada' => $dadosDoc[0]->copia_controlada  ));
     }
 
     
@@ -514,7 +514,7 @@ class DocumentacaoController extends Controller
                 'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
                 'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
                 'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'em_revisao' => $dadosDoc[0]->em_revisao, 'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao, 
-                'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc, 'documentoEhEditavel'=>true));
+                'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc, 'documentoEhEditavel'=>true, 'possuiCopiaControlada' => $dadosDoc[0]->copia_controlada ));
         }
 
     }
@@ -802,9 +802,13 @@ class DocumentacaoController extends Controller
         // Aprovadores, Grupos de Interesse e de Divulgação
         $aprovadores = AprovadorSetor::join('users', 'users.id', '=', 'usuario_id')->where('aprovador_setor.setor_id', '=', $documento->setor_id)->get()->pluck('name', 'usuario_id')->toArray();
 
+        // Todos usuários
+        $usuarios = User::orderBy('name')->get()->pluck('name', 'id')->toArray();
+
         return view('documentacao.update-info', array( 'documento'=>$documento, 'usuariosAreaInteresseDocumento'=>$usuariosAreaInteresseDocumento, 'setoresUsuarios'=>$setoresUsuarios, 
                                                         'usuariosExtraDocumento'=>$usuariosExtraDocumento, 'aprovadores'=>$aprovadores, 
-                                                        'usuariosGrupoTreinamentoDocumento'=>$usuariosGrupoTreinamentoDocumento, 'usuariosGrupoDivulgacaoDocumento'=>$usuariosGrupoDivulgacaoDocumento  ) );
+                                                        'usuariosGrupoTreinamentoDocumento'=>$usuariosGrupoTreinamentoDocumento, 'usuariosGrupoDivulgacaoDocumento'=>$usuariosGrupoDivulgacaoDocumento,
+                                                        'usuarios'=>$usuarios  ) );
     }
 
 
@@ -1294,16 +1298,27 @@ class DocumentacaoController extends Controller
 
         // Notificação específica para documentos que possuem Cópia Controlada
         if($dados_doc->copia_controlada) {
-            foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " necessita de Cópia Controlada.", true, $user->id, $idDoc);
-            }
-
+            
             // [E-mail -> (5)]
             $icon = "info";
             $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " possui cópia controlada.";
-            $labelF2 = "Este documento necessita de "; $valueF2 = "cópia controlada";
-            $labelF3 = ""; $valueF3 = "Não esqueça!"; $label2_F3 = ""; $value2_F3 = "";
-            $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Cópia controlada necessária",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+            $labelF2 = "Este documento teve uma nova"; $valueF2 = " revisão divulgada.";
+            $labelF3 = ""; $valueF3 = "Não esqueça de substituir as cópias!"; $label2_F3 = ""; $value2_F3 = "";
+
+
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", true, $user->id, $idDoc);
+                $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+            }
+
+            $responsaveisPorSubstituirCopias = CopiaControlada::where('documento_id', $idDoc)->get()->pluck('usuario_id')->toArray();
+            foreach ($responsaveisPorSubstituirCopias as $idResponsavel) {
+                $user = User::find($idResponsavel);
+                if( $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", false, $user->id, $idDoc);
+                    $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                }
+            }
         }
 
         // Histórico

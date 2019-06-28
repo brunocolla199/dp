@@ -8,6 +8,12 @@
     cursor: pointer;
 }
 
+/* Adiciona um asterisco vermelho nos itens obrigatórios de um formulário */
+.form-group.required .control-label:after {
+    content:"*";
+    color:red;
+  }
+
 /* Fonte em Negrito */
 .font-bold label {
 	font-weight: bold;

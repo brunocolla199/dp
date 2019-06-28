@@ -704,6 +704,9 @@
     var setorIDUsuario  = "{{Auth::user()->setor_id}}";
     var idSetorQualidade= "{{Constants::$ID_SETOR_QUALIDADE}}";
     
+    let possuiCopiaContr= "{{$possuiCopiaControlada}}";
+    if(possuiCopiaContr) showPermanentToast("Possui Cópia Controlada!", "Este é um lembrete de que o documento atual possui cópia controlada.", "success");
+    
     if( finalizado && setorIDUsuario == idSetorQualidade ) {
         var forms = JSON.parse($(".select2-vinculos-docFinalizado").attr('data-forms'));
         var select = $(".select2-vinculos-docFinalizado").select2({
@@ -938,7 +941,7 @@
 
 </script>
 
- @if($resp)
+@if($resp)
     <script src="{{ asset('js/utils-speed.js') }}"></script>    
 
     <script>

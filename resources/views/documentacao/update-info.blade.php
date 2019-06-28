@@ -56,10 +56,10 @@
                                     </div> 
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <div class="col-md-10 control-label font-bold">
+                                            <div class="col-md-12 control-label font-bold">
                                                 {!! Form::label('copiaControlada', 'CÓPIA CONTROLADA:') !!}
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <input name="copiaControlada" type="radio" id="sim" value="true" class="with-gap radio-col-blue" {{ ($documento->copia_controlada) ? 'checked' : '' }} />
                                                 <label for="sim">Sim</label>
                                                 <input name="copiaControlada" type="radio" id="nao" value="false" class="with-gap radio-col-light-blue" {{ ($documento->copia_controlada) ? '' : 'checked' }}/>
@@ -233,7 +233,7 @@
 
             
             <!-- Modal de Cópias Controladas -->
-            <div class="modal fade" id="modalCopiasControladas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="modalCopiasControladas" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -254,6 +254,7 @@
                                                     <th class="text-nowrap text-center">Nº de Cópias</th>
                                                     <th class="text-nowrap text-center">Revisão</th>
                                                     <th class="text-nowrap text-center">Setor</th>
+                                                    <th class="text-nowrap text-center">Responsável</th>
                                                     <th class="text-nowrap text-center">Ações</th>
                                                 </tr>
                                             </thead>
@@ -302,10 +303,26 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-9">
-                                                <div id="mensagem-copia-controlada"></div>
+                                                <div class="form-group required">
+                                                    <div class="col-md-10 control-label font-bold">
+                                                        {!! Form::label('responsavel', 'RESPONSÁVEL PELA SUBSTITUIÇÃO') !!}
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <select id="responsavel" name="responsavel" class="form-control select2 m-b-10" style="width: 100%" data-placeholder="Digite..." required>
+                                                            @foreach ($usuarios as $id => $nome)
+                                                                <option value="{{ $id }}">{{ $nome }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <button type="submit" class="btn btn-info waves-effect pull-right" style="min-height: 100%">Salvar Registro</button>
+                                                <button type="submit" class="btn btn-block btn-info waves-effect pull-right" style="margin-top: 20%">Salvar Registro</button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div id="mensagem-copia-controlada"></div>
                                             </div>
                                         </div>
                                     {!! Form::close() !!}
@@ -328,6 +345,11 @@
 
 
 @section('footer')
+
+    <script>
+        $(".select2").select2();
+    </script>
+
     <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
     <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
     <script>        
@@ -351,12 +373,13 @@
                         var registros = result.response;
                         refreshTable(registros);
                     } else {
-                        console.log(data.error);
+                        console.log(result);
+                        $("#mensagem-copia-controlada").append("<div class='alert alert-danger'>Ops! Tivemos um problema ao carregar as cópias controladas desse documento.</div>");
                     }
                 });   
             })();
 
-            // Função que vai verificar se o valor 
+            // Função que vai verificar se o valor do documento possui 'cópia controlada' está marcado como 'sim' ou 'não'
             function checkValueCopiaControlada() {
                 var vlr = $('input[name=copiaControlada]:checked', '#form-update-document')[0].id;
                 var btn = $("#btnGerenciadorCopiasControladas");
@@ -406,6 +429,7 @@
                             refreshTable(registros);
                         } else {
                             console.log(data.error);
+                            $("#mensagem-copia-controlada").append("<div class='alert alert-danger'>Ops! Tivemos um problema ao salvar o registro.</div>");
                         }
                     }
                 });                 
@@ -421,6 +445,7 @@
                         refreshTable(result.response);
                     } else {
                         console.log(result.error);
+                        $("#mensagem-copia-controlada").append("<div class='alert alert-danger'>Ops! Tivemos um problema ao remover o registro.</div>");
                     }
                 });            
             });
@@ -431,8 +456,12 @@
                 $("#copiasControladas-corpo-tabela").empty();
 
                 data.forEach(function(key) {
+                    key.setor = (key.setor)?  key.setor : '-';
+                    key.revisao = (key.revisao)?  key.revisao : '-';
+                    key.setor = (key.setor)?  key.setor : '-';
+
                     var tr = '<tr>';
-                    tr += '<td class="text-nowrap text-center">'+ key.numero_copias +'</td><td class="text-nowrap text-center">'+ key.revisao +'</td><td class="text-nowrap text-center">'+ key.setor +'</td><td class="text-nowrap text-center"><button class="btn btn-danger btn-remove-cc" data-id="'+key.id+'">Remover</button></td>'; 
+                    tr += '<td class="text-nowrap text-center">'+ key.numero_copias  +'</td><td class="text-nowrap text-center">'+ key.revisao +'</td><td class="text-nowrap text-center">'+ key.setor +'</td><td class="text-nowrap text-center">'+ key.responsavel +'</td><td class="text-nowrap text-center"><button class="btn btn-danger btn-remove-cc" data-id="'+key.id+'">Remover</button></td>'; 
                     tr += '</tr>';
                     $("#copiasControladas-corpo-tabela").append(tr);
                 });
@@ -446,13 +475,13 @@
                 $("#numeroDeCopias").val(1);
                 $("#revisaoDasCopias").val('');
                 $("#setorDasCopias").val('');
+                $('.select2').val(null).trigger('change');
+                $("#mensagem-copia-controlada").empty();
             }
 
 
             /*
-            * 
             * MultiSelect de NOVA ÁREA DE INTERESSE - UPDATE
-            *
             */
             $('#optgroup-newAreaDeInteresse-update').multiSelect({
                 selectableOptgroup: true,
@@ -493,9 +522,7 @@
 
 
             /*
-            * 
             * MultiSelect de USUÁRIOS EXTRAS (Para poder permitir outras pessoas de ver o documento)
-            *
             */
             $('#optgroup-newExtraUsers').multiSelect({
                 selectableOptgroup: true,
@@ -618,4 +645,5 @@
 
         });
     </script>
+
 @endsection

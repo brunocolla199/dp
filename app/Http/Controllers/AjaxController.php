@@ -426,9 +426,10 @@ class AjaxController extends Controller
             $novoRegistro->revisao       = $request->revisaoDasCopias;
             $novoRegistro->setor         = $request->setorDasCopias;
             $novoRegistro->documento_id  = $request->idDoc;
+            $novoRegistro->usuario_id    = $request->responsavel;
             $novoRegistro->save();
 
-            $copias = CopiaControlada::where('documento_id', '=', $request->idDoc)->orderBy('numero_copias')->get();
+            $copias = $this->getListaCopias($request->idDoc);
             return response()->json(['response' => $copias]);  
         } catch(\Exception $e) {
             return response()->json(['error' => $e]);  
@@ -438,7 +439,7 @@ class AjaxController extends Controller
 
     public function getCopias(Request $_request) {
         try {
-            $copias = CopiaControlada::where('documento_id', '=', $_request->idDoc)->orderBy('numero_copias')->get();
+            $copias = $this->getListaCopias($_request->idDoc);
             return response()->json(['response' => $copias]);  
         } catch(\Exception $e) {
             return response()->json(['error' => $e]);  
@@ -451,11 +452,21 @@ class AjaxController extends Controller
             $copiaControlada = CopiaControlada::where('id', '=', $_request->idCC)->where('documento_id', '=', $_request->idDoc)->first();
             $copiaControlada->delete();
             
-            $copias = CopiaControlada::where('documento_id', '=', $_request->idDoc)->orderBy('numero_copias')->get();
+            $copias = $this->getListaCopias($_request->idDoc);
             return response()->json(['response' => $copias]);    
         } catch(\Exception $e) {
             return response()->json(['error' => $e]);  
         }
+    }
+
+
+    private function getListaCopias(int $idDoc) {
+        $copias = CopiaControlada::where('documento_id', '=', $idDoc)->orderBy('numero_copias')->get();
+        foreach ($copias as $copia) {
+            $copia['responsavel'] = $copia->responsavel;
+        }
+
+        return $copias;
     }
 
 }

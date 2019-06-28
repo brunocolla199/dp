@@ -64,6 +64,20 @@ function showToast(h, t, i) {
 }
 
 
+function showPermanentToast(h, t, i) {
+    $.toast({
+        heading: h,
+        text: t,
+        position: 'top-right',
+        loaderBg:'#ff6849',
+        icon: i,
+        hideAfter: 1000000, 
+        stack: 6
+    })
+
+}
+
+
 function ajaxMethod(method, url, obj) {
     return new Promise(function(resolve, reject) {        
         $.ajaxSetup({
