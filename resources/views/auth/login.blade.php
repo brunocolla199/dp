@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="row justify-content-md-center">
-                    <small> Versão {{ env('APP_VERSION') }} - <a href="http://speedsoftware.com.br/" target="_blank">Speed Software</a></small>
+                    <small> <span class="font-weight-bold">Versão {{ env('APP_VERSION') }}</span> - Desenvolvido por: <a href="https://weecode.com.br/site/" target="_blank">Weecode</a></small>
                 </div>
 
             </div>

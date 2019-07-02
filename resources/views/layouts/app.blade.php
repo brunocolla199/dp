@@ -237,6 +237,9 @@
                                 <a class="waves-effect waves-dark {{ (\Request::is('sobre/*')) ? 'active' : '' }}" href="{{ url('/sobre') }}" aria-expanded="false"><i class="mdi mdi-help"></i><span class="hide-menu">Sobre </span></a>    
                             </li>
                         </ul>
+                        <div style="text-align: center; margin-top: 125%;">
+                            <a href="https://weecode.com.br/site/" target="_blank"><small class="font-weight-bold" style="color: #3D6EB6"> Desenvolvido por: Weecode</small></a>
+                        </div>
                     </nav>
                     <!-- End Sidebar navigation -->
                 </div>
@@ -244,7 +247,7 @@
                 <!-- Bottom points-->
                 <div class="sidebar-footer">
                     <!-- item-->
-                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Versão {{ env('APP_VERSION') }} "><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Versão {{ env('APP_VERSION') }}"></a>
+                    <a href="https://weecode.com.br/site/" target="_blank" class="link" data-toggle="tooltip" title="Versão {{ env('APP_VERSION') }} "><img src="{{ asset('images/weecode.png') }}" class="img-fluid" alt="Versão {{ env('APP_VERSION') }}"></a>
                     <!-- item-->
                     <a href="{{ url('/') }}" class="link" data-toggle="tooltip" title="Dashboard"><i class="mdi mdi-home"></i></a>
                     <!-- item-->
@@ -311,7 +314,7 @@
                <!-- Bottom points-->
                <div class="sidebar-footer">
                     <!-- item-->
-                    <a href="http://speedsoftware.com.br/" target="_blank" class="link" data-toggle="tooltip" title="Versão {{ env('APP_VERSION') }}"><img src="{{ asset('images/speed-logo-gray.png') }}" class="img-fluid" alt="Versão {{ env('APP_VERSION') }}"></a>
+                    <a href="https://weecode.com.br/site/" target="_blank" class="link" data-toggle="tooltip" title="Versão {{ env('APP_VERSION') }} "><img src="{{ asset('images/weecode.png') }}" class="img-fluid" alt="Versão {{ env('APP_VERSION') }}"></a>
                     <!-- item-->
                     <a href="{{ url('/') }}" class="link" data-toggle="tooltip" title="Dashboard"><i class="mdi mdi-home"></i></a>
                     <!-- item-->
@@ -474,43 +477,43 @@
 
         <!-- modal para selecionar novo setor ao usuário [utilizado nas vinculações] -->
         <div id="new-sector-to-user" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Definindo novo setor para o usuário</h4>
-                            <button type="button" class="close cancel-change-sector-user" data-dismiss="modal" aria-hidden="true">×</button>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Definindo novo setor para o usuário</h4>
+                        <button type="button" class="close cancel-change-sector-user" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-md-12 alert alert-warning">
+                            <p class="text-justify">
+                                <b>Você está prestes a desvincular o usuário selecionado deste setor.</b> <small>Portanto, precisamos que você defina um novo setor para este usuário:</small>
+                            </p>
                         </div>
-                        <div class="modal-body">
-                            <div class="col-md-12 alert alert-warning">
-                                <p class="text-justify">
-                                    <b>Você está prestes a desvincular o usuário selecionado deste setor.</b> <small>Portanto, precisamos que você defina um novo setor para este usuário:</small>
-                                </p>
-                            </div>
-                            <div class="col-md-12 mb-4">
-                                @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul>
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-                            </div>
+                        <div class="col-md-12 mb-4">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
 
-                            <div class="form-group">
-                                {!! Form::label('novo_setor_do_usuario', 'NOVO SETOR DO USUÁRIO:') !!}
-                                {!! Form::select('novo_setor_do_usuario', ['ovo', 'ovo2'], '', ['class' => 'form-control', 'id' => 'novo_setor_do_usuario', 'style' => 'height: auto']) !!}
-                            </div>
-                        <div class="modal-footer">
-                            <span class="text-left"> Tem certeza que deseja alterar? </span>
-                            <button type="button" class="btn btn-default waves-effect cancel-change-sector-user" data-dismiss="modal">Cancelar</button>
-                            <button type="button" id="changeSectorUser" class="btn btn-success waves-effect waves-light">Alterar</button>
+                        <div class="form-group">
+                            {!! Form::label('novo_setor_do_usuario', 'NOVO SETOR DO USUÁRIO:') !!}
+                            {!! Form::select('novo_setor_do_usuario', ['ovo', 'ovo2'], '', ['class' => 'form-control', 'id' => 'novo_setor_do_usuario', 'style' => 'height: auto']) !!}
                         </div>
+                    <div class="modal-footer">
+                        <span class="text-left"> Tem certeza que deseja alterar? </span>
+                        <button type="button" class="btn btn-default waves-effect cancel-change-sector-user" data-dismiss="modal">Cancelar</button>
+                        <button type="button" id="changeSectorUser" class="btn btn-success waves-effect waves-light">Alterar</button>
                     </div>
                 </div>
             </div>
-            <!-- /.modal para selecionar novo setor ao usuário -->
+        </div>
+        <!-- /.modal para selecionar novo setor ao usuário -->
 
     </div>
     <!-- ============================================================== -->
