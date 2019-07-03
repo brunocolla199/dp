@@ -923,7 +923,7 @@ class DocumentacaoController extends Controller
                 break;
 
             case 2: // Qualidade
-                $newValidity = Carbon::parse($dados_doc[0]->validade)->addYear()->format('Y-m-d');
+                $newValidity = Carbon::now()->addYear()->format('Y-m-d');
                 
                 $dados_doc[0]->validade     = $newValidity;
                 $dados_doc[0]->observacao   = "Aprovado pela Qualidade";
