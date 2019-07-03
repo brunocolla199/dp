@@ -190,6 +190,15 @@
                                 </div>
 
                                 <br>
+                            @else
+                                <div class="row">
+                                    <div class="col-md-10"></div>
+                                    <div class="col-md-2 mt-4 pull-right">
+                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
+                                    </div>
+                                </div>
+
+                                <br>
                             @endif
 
                             <!-- Cards de justificativa do cancelamento da revisão para o solicitante de mesma -->
