@@ -518,7 +518,7 @@
                                                                         {{ Form::close() }}
 
                                                                         <td class="text-center">{{ ($docF->data_revisao) ?  date("d/m/Y H:i:s", strtotime($docF->data_revisao)) :  '-' }}</td>
-                                                                        
+
 
                                                                         <td class="text-nowrap text-center"> {{ $docF->revisao }} </td>
 
