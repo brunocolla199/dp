@@ -637,22 +637,22 @@ class DocumentacaoController extends Controller
         Storage::disk('speed_office')->delete($nomeCompletoDoc.".".$documento->extensao);
 
         // Notificações
-        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc->elaborador_id, $idDoc);
-        if($dadosDoc->id_usuario_solicitante != $dadosDoc->elaborador_id  && $dadosDoc->id_usuario_solicitante != $dadosDoc->aprovador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc->id_usuario_solicitante, $idDoc);
+        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->elaborador_id, $idDoc);
+        if($dadosDoc->id_usuario_solicitante != $dadosDoc->elaborador_id  && $dadosDoc->id_usuario_solicitante != $dadosDoc->aprovador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->id_usuario_solicitante, $idDoc);
 
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $user->id, $idDoc);
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $user->id, $idDoc);
         }
         
         $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
         if( count($usuariosAreaInteresseDocumento) > 0 ) {
             foreach ($usuariosAreaInteresseDocumento as $key => $value) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $value, $idDoc);
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $value, $idDoc);
             }
         }
     
-        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pela Qualidade.", false, $dadosDoc->aprovador_id, $idDoc);
+        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->aprovador_id, $idDoc);
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1 . $revAtual_txt . Constants::$DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_2, $idDoc);
@@ -926,7 +926,7 @@ class DocumentacaoController extends Controller
                 $newValidity = Carbon::now()->addYear()->format('Y-m-d');
                 
                 $dados_doc[0]->validade     = $newValidity;
-                $dados_doc[0]->observacao   = "Aprovado pela Qualidade";
+                $dados_doc[0]->observacao   = "Aprovado pelo setor Processos";
                 $dados_doc[0]->data_revisao = now();
                 $dados_doc[0]->save();
 
@@ -939,7 +939,7 @@ class DocumentacaoController extends Controller
                     // Notificações
                     $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                     foreach ($usuariosSetorQualidade as $key => $user) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $user->id, $idDoc);
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e aprovado pelo setor Processos.", false, $user->id, $idDoc);
                     }
 
                     foreach ($usuariosAreaInteresseDocumento as $key => $user) {
@@ -965,7 +965,7 @@ class DocumentacaoController extends Controller
                     // Notificações
                     $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                     foreach ($usuariosSetorQualidade as $key => $user) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $user->id, $idDoc);
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e aprovado pelo setor Processos.", false, $user->id, $idDoc);
                     }
 
                     \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $dados_doc[0]->aprovador_id, $idDoc);
@@ -1065,7 +1065,7 @@ class DocumentacaoController extends Controller
                 break;
 
             case 2: // Qualidade
-                $dados_doc[0]->observacao = "Rejeitado pela Qualidade";
+                $dados_doc[0]->observacao = "Rejeitado pelo setor Processos";
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
@@ -1076,10 +1076,10 @@ class DocumentacaoController extends Controller
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi devolvido para correção pela Qualidade.", false, $user->id, $idDoc);
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi devolvido para correção pelo setor Processos.", false, $user->id, $idDoc);
                 }
 
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pela Qualidade).", true, $dados_doc[0]->elaborador_id, $idDoc);
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser corrigido (rejeitado pelo setor Processos).", true, $dados_doc[0]->elaborador_id, $idDoc);
 
 
                 // [E-mail -> (1)]  
@@ -1751,7 +1751,7 @@ class DocumentacaoController extends Controller
                                 ->join('workflow',          'workflow.documento_id',        '=',    'documento.id')
                                 ->join('tipo_documento',    'tipo_documento.id',            '=',    'documento.tipo_documento_id')
                                 ->select('documento.*', 
-                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada',
+                                        'dados_documento.id AS dd_id', 'dados_documento.validade', 'dados_documento.elaborador_id', 'dados_documento.aprovador_id', 'dados_documento.setor_id', 'dados_documento.necessita_revisao', 'dados_documento.revisao', 'dados_documento.justificativa_rejeicao_revisao', 'dados_documento.obsoleto', 'dados_documento.nivel_acesso', 'dados_documento.copia_controlada', 'dados_documento.data_revisao',
                                         'workflow.id AS wkf_id', 'workflow.etapa_num', 'workflow.etapa', 
                                         'tipo_documento.id AS tp_doc_id', 'tipo_documento.nome_tipo'
                                 );

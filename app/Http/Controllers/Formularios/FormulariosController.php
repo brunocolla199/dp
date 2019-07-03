@@ -310,10 +310,10 @@ class FormulariosController extends Controller
         // Notificações
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {
-            if($user->id != $formulario[0]->elaborador_id) \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pela Qualidade.", false, $user->id, $idForm);
+            if($user->id != $formulario[0]->elaborador_id) \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pelo setor Processos.", false, $user->id, $idForm);
         }
         
-        \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pela Qualidade.", true, $formulario[0]->elaborador_id, $idForm);
+        \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pelo setor Processos.", true, $formulario[0]->elaborador_id, $idForm);
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REVISAO_FORM_CANCELADA_FULL, $idForm);
@@ -583,7 +583,7 @@ class FormulariosController extends Controller
                 // Qualidade
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $user->id, $idForm);
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pelo setor Processos.", false, $user->id, $idForm);
                 }
                 
                 //Grupo de Divulgação
@@ -596,13 +596,13 @@ class FormulariosController extends Controller
                                                     
                                                     
                 foreach ($usuariosGrupoDivulgacaoForm as $key => $userG) {
-                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade. (Início da Divulgação)", false, $userG->id, $idForm);
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pelo setor Processos. (Início da Divulgação)", false, $userG->id, $idForm);
                 }
 
                 //Elaborador
                 $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
                 if( $elaborador[0]->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
-                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $formulario[0]->elaborador_id, $idForm);
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pelo setor Processos.", false, $formulario[0]->elaborador_id, $idForm);
                 }
 
                 
@@ -651,7 +651,7 @@ class FormulariosController extends Controller
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
-                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formuláro " . $formulario[0]->codigo . " foi revisado e rejeitado pela Qualidade.", false, $user->id, $idForm);
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formuláro " . $formulario[0]->codigo . " foi revisado e rejeitado pelo setor Processos.", false, $user->id, $idForm);
                 }
 
                 \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser corrigido.", true, $formulario[0]->elaborador_id, $idForm);

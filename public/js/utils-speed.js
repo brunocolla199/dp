@@ -28,7 +28,7 @@ function getSiglaSetor(nomeSetor) {
         "Pessoas & Organização"     : "P&O",
         "Processos Aduaneiros"      : "ADU",
         "Projetos"                  : "PRJ",
-        "Qualidade"                 : "QUA",
+        "Processos"                 : "PRO",
         "Saúde"                     : "SOC",
         "Segurança do Trabalho"     : "SET",
         "Segurança Patrimonial"     : "SEP",
