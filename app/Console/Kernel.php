@@ -66,8 +66,8 @@ class Kernel extends ConsoleKernel
                 }
             }
         })
-        // ->dailyAt('12:00');
-        ->twiceDaily(6, 12); // Run the task daily at 6:00 & 12:00
+        ->dailyAt('06:00');
+        // ->twiceDaily(6, 12); // Run the task daily at 6:00 & 12:00
     }
 
     /**
