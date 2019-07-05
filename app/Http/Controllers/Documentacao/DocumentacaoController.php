@@ -1017,7 +1017,7 @@ class DocumentacaoController extends Controller
                 $workflow_doc[0]->save();
 
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-                $elaborador = User::where('id', '=', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                $elaborador = User::where('id', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->first();
 
 
                 // Notificações
