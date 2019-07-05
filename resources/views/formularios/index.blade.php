@@ -158,7 +158,7 @@
                                                             {!! Form::label('meio_distribuicao', 'MEIO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('meio_distribuicao', !is_null($registro) ? $registro->meio_distribuicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('meio_distribuicao', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -168,7 +168,7 @@
                                                             {!! Form::label('local_armazenamento', 'ARMAZENAMENTO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('local_armazenamento', !is_null($registro) ? $registro->local_armazenamento : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('local_armazenamento', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -181,7 +181,7 @@
                                                             {!! Form::label('protecao', 'PROTEÇÃO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('protecao', !is_null($registro) ? $registro->protecao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('protecao', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -191,7 +191,7 @@
                                                             {!! Form::label('recuperacao', 'RECUPERAÇÃO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('recuperacao', !is_null($registro) ? $registro->recuperacao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('recuperacao', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -204,7 +204,7 @@
                                                             {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('tempo_retencao_local', !is_null($registro) ? $registro->tempo_retencao_local : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('tempo_retencao_local', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div> 
@@ -214,7 +214,7 @@
                                                             {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('tempo_retencao_deposito', !is_null($registro) ? $registro->tempo_retencao_deposito : '-', ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('tempo_retencao_deposito', '-', ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -223,7 +223,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
-                                                        <div class="col-md-6 control-label font-bold">
+                                                        <div class="col-md-12 control-label font-bold">
                                                             {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
                                                         </div>
                                                         <div class="col-md-12">
@@ -237,7 +237,7 @@
                                                             {!! Form::label('disposicao', 'DISPOSIÇÃO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('disposicao', !is_null($registro) ? $registro->disposicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            {!! Form::text('disposicao', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div> 
