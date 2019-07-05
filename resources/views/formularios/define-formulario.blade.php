@@ -73,11 +73,11 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="pull-left"><b>TÍTULO DO FORMULÁRIO: </b>{{ $tituloFormulario }}  </p>
+                                    <p class="pull-left"><b>TÍTULO DO FORMULÁRIO: </b>{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $tituloFormulario)[0] }}  </p>
                                 </div>
                                 
                                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                    <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -6.5%; margin-top: -0.5%;">
+                                    <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -3.0%; margin-top: -0.5%;">
                                         <div class="form-group row">
                                             <label for="codigoFormulario" class="col-sm-3 text-right control-label col-form-label"><b>CÓDIGO: </b></label>
                                             <div class="col-md-9">
@@ -98,11 +98,7 @@
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>NÍVEL DE ACESSO: </b>{{ $nivelAcessoDocumento }}  </p>
                                 </div>                                                                                 
-                                
                             </div>
-                            
-                           
-                          
                         </div>
                         <div class="card-footer text-muted">
                             Informações do Novo Formulário
@@ -147,8 +143,9 @@
                                                     
                                                     {!! Form::hidden('nivel_acesso',                $nivelAcessoDocumento) !!}
                                                     {!! Form::hidden('setor_dono_form',             $setorDono) !!}                                             
-                                                    {!! Form::hidden('tituloFormulario',            $tituloFormulario) !!}
-                                                    
+                                                    {!! Form::hidden('nome_formulario',             $tituloFormulario) !!}
+                                                    {!! Form::hidden('registroControle',            $registroControle) !!}
+
                                                     @if( count($grupoDivulgacaoFormulario) > 0 )
                                                         @foreach($grupoDivulgacaoFormulario as $usuariosGrupoDivulgacaoFormulario)
                                                             <input type="hidden" name="grupoDivulgacaoFormulario[]" value="<?php echo $usuariosGrupoDivulgacaoFormulario ?>">
@@ -159,7 +156,7 @@
                                             </div>
                                             <div class="col-lg-12 col-md-12">
                                                 <div class="col-md-offset-2 col-md-3 pull-right">
-                                                    {!! Form::button('Salvar Formulário', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                                    {!! Form::button('Salvar Formulário', ['class' => 'btn btn-lg btn-block btn-success', 'id' => 'btn-save-document']) !!}
                                                 </div>
                                                 <div class="col-md-offset-2 col-md-3 pull-right">
                                                     <button type="button" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" onclick="history.back()">Voltar</button>
@@ -190,28 +187,6 @@
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
 
-    
-    <!-- modal para prévisualizar formulário -->
-    <div id="preview-form-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Pré-Visualização de Formulário</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                </div>
-                <div class="modal-body">
-                    <div class="render-form"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /.modal para prévisualizar formulário -->
-
-
-
 @endif
 
 
@@ -220,36 +195,22 @@
 
 @section('footer')
 
-        <script src="{{ asset('plugins/formeo/formeo.min.js') }}"></script>
-        <script src="{{ asset('plugins/formeo/initFormeo.js') }}"></script>
+    <script>
+        // Click no botão para salvar formulário
+        $("#btn-save-document").click(function(){
+            var valueInputFile = $("#input-file-now").val();
+            if( !valueInputFile ) {
+                showToast('Opa!', 'Importe um documento antes de salvar!', 'warning');
+                return;
+            }
 
-        <script>
-            // initFormeo('', '{{ url("/") }}');
-            $("#btn-save-new-form").click(function(){
-                var formData = JSON.stringify(window.sessionStorage.getItem('formData'));
-                
-                $("#form-upload-new-form").append("<input type='hidden' name='formData' value='"+formData+"' >")
-                $("#form-upload-new-form").submit();
-            });
+            $(this).prop('disable', true).attr('disabled', 'disabled');
 
+            var codigoFormulario = $("#codigoFormulario").val();
 
-            // Click no botão para salvar formulário
-            $("#btn-save-document").click(function(){
-                var valueInputFile = $("#input-file-now").val();
-                if( !valueInputFile ) {
-                    showToast('Opa!', 'Importe um documento antes de salvar!', 'warning');
-                    return;
-                }
-
-
-                $(this).prop('disable', true).attr('disabled', 'disabled');
-
-
-                var codigoFormulario = $("#codigoFormulario").val();
-
-                $("#form-upload-form").append("<input type='hidden' name='codigoFormulario' value='"+codigoFormulario+"' >")
-                $("#form-upload-form").submit();
-            });
-        </script>
+            $("#form-upload-form").append("<input type='hidden' name='codigoFormulario' value='"+codigoFormulario+"' >")
+            $("#form-upload-form").submit();
+        });
+    </script>
 
 @endsection

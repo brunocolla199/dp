@@ -99,3 +99,15 @@ function ajaxMethod(method, url, obj) {
         });
     });
 }
+
+
+function swalWithReload(title, text, type) {
+    swal({   
+        title: title,
+        text:  text,
+        type:  type,
+        closeOnConfirm: false 
+    }, function(){   
+        location.reload();
+    });
+}

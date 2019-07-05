@@ -86,37 +86,50 @@
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div class="tab-pane p-20" id="novoForm" role="tabpanel">
+                                    
+                                    <!-- Se erros ocorrerem -->
+                                    <div class="row mb-2">
+                                        <div class="col-md-12 mb-4">
+                                            @if ($errors->any())
+                                                <div class="alert alert-danger">
+                                                    <ul>
+                                                        @foreach ($errors->all() as $error)
+                                                            <li>{{ $error }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-12">
-                                    {!! Form::open(['route' => 'formularios.validate-data', 'method' => 'POST', 'id' => 'form-save-new-document', 'enctype' => 'multipart/form-data']) !!}
+                                        {!! Form::open(['route' => 'formularios.validate-data', 'method' => 'POST', 'id' => 'form-save-new-document', 'enctype' => 'multipart/form-data']) !!}
                                         
                                             {{ csrf_field() }}
 
-
-                                            <!-- Linha 1 -->
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="form-group required">
                                                         <div class="col-md-10 control-label font-bold">
                                                             {!! Form::label('setor_dono_form', 'Setor:') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('setor_dono_form', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select']) !!}
+                                                            {!! Form::select('setor_dono_form', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="form-group required">
                                                         <div class="col-md-10 control-label font-bold">
                                                             {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO], '', ['class' => 'form-control  custom-select']) !!}
+                                                            {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO], '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <!-- Linha 2 -->
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
@@ -138,38 +151,104 @@
                                                 </div>                                                    
                                             </div>
 
-                                            <!-- Linha 3 -->
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
+                                                    <div class="form-group required">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
+                                                            {!! Form::label('meio_distribuicao', 'MEIO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('tituloFormulario', null, ['class' => 'form-control']) !!}
+                                                            {!! Form::text('meio_distribuicao', !is_null($registro) ? $registro->meio_distribuicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
-                                                </div> 
-                                                <div class="col-md-6 margin-top-1percent">
-                                                    <div class="col-md-12">
-                                                        <button type="button" id="importFormulario" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >IMPORTAR FORMULÁRIO</button>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('local_armazenamento', 'ARMAZENAMENTO') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('local_armazenamento', !is_null($registro) ? $registro->local_armazenamento : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('protecao', 'PROTEÇÃO') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('protecao', !is_null($registro) ? $registro->protecao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('recuperacao', 'RECUPERAÇÃO') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('recuperacao', !is_null($registro) ? $registro->recuperacao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-
-                                            <!-- Linha 4 -->
                                             <div class="row">
-                                                <div class="col-md-12 mb-4">
-                                                    @if ($errors->any())
-                                                        <div class="alert alert-danger">
-                                                            <ul>
-                                                                @foreach ($errors->all() as $error)
-                                                                    <li>{{ $error }}</li>
-                                                                @endforeach
-                                                            </ul>
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-12 control-label font-bold">
+                                                            {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
                                                         </div>
-                                                    @endif
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('tempo_retencao_local', !is_null($registro) ? $registro->tempo_retencao_local : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-12 control-label font-bold">
+                                                            {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('tempo_retencao_deposito', !is_null($registro) ? $registro->tempo_retencao_deposito : '-', ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('tituloFormulario', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group required">
+                                                        <div class="col-md-6 control-label font-bold">
+                                                            {!! Form::label('disposicao', 'DISPOSIÇÃO') !!}
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            {!! Form::text('disposicao', !is_null($registro) ? $registro->disposicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6"></div>
+                                                <div class="col-md-6 margin-top-1percent">
+                                                    <div class="col-md-12">
+                                                        <button type="button" id="importFormulario" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >IMPORTAR FORMULÁRIO</button>
+                                                    </div>
                                                 </div>
                                             </div>
 

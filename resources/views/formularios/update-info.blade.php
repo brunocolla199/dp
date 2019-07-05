@@ -24,15 +24,22 @@
                 <div class="col-12">
                     <div class="card">
                         <div class=" card-body">
+
+                            <!-- Alertas - Validação do Form -->
+                            @if(Session::has('message'))
+                                <div class="alert alert-{{str_before(Session::get('style'), '|')}}"> <i class="mdi mdi-{{str_after(Session::get('style'), '|')}}"></i> {{ Session::get('message') }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+                                </div>
+                            @endif
+
                             {!! Form::open(['route' => 'formularios.update-info', 'method' => 'POST', 'id' => 'form-save-new-document']) !!}
                                 {{ csrf_field() }}
                                 {!! Form::hidden('form_id', $formulario->id) !!}
                                 
 
-                                <!-- Linha 1 -->
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="form-group">
+                                        <div class="form-group required">
                                             <div class="col-md-6 control-label font-bold">
                                                 {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
                                             </div>
@@ -42,20 +49,17 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group">
+                                        <div class="form-group required">
                                             <div class="col-md-10 control-label font-bold">
                                                 {!! Form::label('nivelAcessoFormulario', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
                                             </div>
                                             <div class="col-md-12">
-                                                
                                                 {!! Form::select('nivelAcessoFormulario', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO], $formulario->nivel_acesso_fake_id, ['class' => 'form-control  custom-select']) !!}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-
-                                <!-- Linha 2 -->
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -81,10 +85,86 @@
                                     </div>                                                    
                                 </div>
 
-
-                                <!-- Linha 3 -->
                                 <div class="row">
-                                    <div class="col-md-6"></div>    
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('meio_distribuicao', 'MEIO') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('meio_distribuicao', !is_null($registro) ? $registro->meio_distribuicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('local_armazenamento', 'ARMAZENAMENTO') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('local_armazenamento', !is_null($registro) ? $registro->local_armazenamento : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('protecao', 'PROTEÇÃO') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('protecao', !is_null($registro) ? $registro->protecao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('recuperacao', 'RECUPERAÇÃO') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('recuperacao', !is_null($registro) ? $registro->recuperacao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-12 control-label font-bold">
+                                                {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('tempo_retencao_local', !is_null($registro) ? $registro->tempo_retencao_local : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-12 control-label font-bold">
+                                                {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('tempo_retencao_deposito', !is_null($registro) ? $registro->tempo_retencao_deposito : '-', ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group required">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('disposicao', 'DISPOSIÇÃO') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('disposicao', !is_null($registro) ? $registro->disposicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                            </div>
+                                        </div>    
+                                    </div>    
                                     <div class="col-md-6">
                                         <div class="col-md-12 mt-3">
                                             <button type="submit" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >ATUALIZAR INFORMAÇÕES</button>

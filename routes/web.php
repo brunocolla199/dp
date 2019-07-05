@@ -112,6 +112,19 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('{id}/edit-info',  		  ['as' => 'formularios.edit-info',					'uses' => 'Formularios\FormulariosController@editInfo']);
 		Route::post('update-info', 			  ['as' => 'formularios.update-info',				'uses' => 'Formularios\FormulariosController@updateInfo']);
 	});
+	
+	
+	/*
+	* CONTROLE DE REGISTROS
+	*/
+	Route::group(['prefix' => 'controle-registros'], function() {
+		Route::get('',						['as' => 'controle-registros', 	        		'uses' => 'ControleRegistros\ControleRegistrosController@index']);
+		Route::get('criar',					['as' => 'controle-registros.create',      		'uses' => 'ControleRegistros\ControleRegistrosController@create']);
+		Route::post('armazenar',			['as' => 'controle-registros.store',      		'uses' => 'ControleRegistros\ControleRegistrosController@store']);
+		Route::get('editar/{registro}',		['as' => 'controle-registros.edit',      		'uses' => 'ControleRegistros\ControleRegistrosController@edit']);
+		Route::put('atualizar', 			['as' => 'controle-registros.update',			'uses' => 'ControleRegistros\ControleRegistrosController@update']);
+		Route::delete('remover', 			['as' => 'controle-registros.delete',			'uses' => 'ControleRegistros\ControleRegistrosController@delete']);
+	});
 
 
 

@@ -2,31 +2,16 @@
 
 namespace App\Http\Controllers\Formularios;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\DadosNovoFormularioRequest;
-use App\GrupoDivulgacao;
-use App\Setor;
-use App\Documento;
-use App\Formulario;
-use App\DocumentoFormulario;
-use App\FormularioRevisao;
-use App\HistoricoFormulario;
-use App\NotificacaoFormulario;
-use App\TipoDocumento;
-use Illuminate\Support\Facades\View;
-use App\Configuracao;
-use App\User;
 use S3Presigned;
-use App\WorkflowFormulario;
-use App\Classes\Constants;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
+use App\Classes\Constants;
 use App\Jobs\SendEmailsJob;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\DadosNovoFormularioRequest;
+use Illuminate\Support\Facades\{Auth, DB, Mail, Validator, View};
+use App\{GrupoDivulgacaoFormulario, GrupoDivulgacao, Setor, Documento, Formulario, DocumentoFormulario, FormularioRevisao, HistoricoFormulario, NotificacaoFormulario, TipoDocumento, Configuracao, User, WorkflowFormulario, ControleRegistro};
 
-use App\GrupoDivulgacaoFormulario;
 
 class FormulariosController extends Controller
 {
@@ -80,19 +65,15 @@ class FormulariosController extends Controller
     }
     
     public function validateData(DadosNovoFormularioRequest $request) {
-
         $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['id', 'nome', 'sigla'])->first();
-        $acao = $request->action;
-        
         $nivelAcessoDocumento = (  ($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : ( ($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  )    );
-        
-        $qtdForms = Formulario::where('setor_id', $text_setorDono->id)->count();
-
-        $tipoDocumento = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
+        $qtdForms             = Formulario::where('setor_id', $text_setorDono->id)->count();
+        $tipoDocumento        = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
+        $acao                 = $request->action;
+        $tituloFormulario     = $request->tituloFormulario . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
     
         $codigo_final = $tipoDocumento[0]->sigla."-";
         $codigo = 0;
-
         if( count($qtdForms) <= 0 )  {
             $codigo = $this->buildCodDocument(1);
         } else { 
@@ -102,14 +83,22 @@ class FormulariosController extends Controller
         // Concatena e gera o código final
         $codigo_final .= $text_setorDono->sigla. "-".$codigo;
 
+        // Controle de Registros
+        $registroControle = new ControleRegistro($request->except('action'));
+        $registroControle->nivel_acesso = $nivelAcessoDocumento;
+        $registroControle->setor_id     = $request->setor_dono_form;
+        $registroControle->titulo       = $tituloFormulario;
+        $registroControle->avulso       = false; // Não modifique! :)
+
         return view('formularios.define-formulario', [
             'acao'=>$acao,
             'codigoFormulario' => $codigo_final,
-            'tituloFormulario' => $request->tituloFormulario,
+            'tituloFormulario' => $tituloFormulario,
             'nivelAcessoDocumento' => $nivelAcessoDocumento,
             'setorDono' => $request->setor_dono_form,
             'text_setorDono' => $text_setorDono->nome,
-            'grupoDivulgacaoFormulario' => $request->grupoDivulgacaoFormulario
+            'grupoDivulgacaoFormulario' => $request->grupoDivulgacaoFormulario,
+            'registroControle' => $registroControle
         ]);
 
     }
@@ -151,8 +140,9 @@ class FormulariosController extends Controller
     public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest  
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
-        $titulo   = $request->tituloFormulario;
+        $titulo   = $request->nome_formulario;
         $codigo   = $request->codigoFormulario;
+        $registroControle = json_decode($request->registroControle);
         
         $filename =  \App\Classes\Helpers::instance()->escapeFilename($titulo);
         \Storage::disk('speed_office')->put('/formularios/'.$filename .".". $extensao, file_get_contents($file), 'private');
@@ -173,6 +163,12 @@ class FormulariosController extends Controller
         $formulario->nome_completo_em_revisao       = null;
         $formulario->justificativa_cancelar_revisao = null;
         $formulario->save();
+
+        // Controle de Registros
+        $registroControle->codigo        = $formulario->codigo;
+        $registroControle->formulario_id = $formulario->id;
+        $registroControle                = (array) $registroControle;
+        $registro = ControleRegistro::create($registroControle);
 
         // Quando tiver tempo, verificar se deu certo a inserção dos dados do documento
         $workflow = new WorkflowFormulario();
@@ -448,40 +444,65 @@ class FormulariosController extends Controller
                                                             ->select('usuario_id')->get()
                                                             ->pluck('usuario_id')->toArray();
 
-        return view('formularios.update-info', compact('formulario', 'setoresUsuarios', 'usuarioExistentesGrupoDivulgacaoFormulario') );
+        // Controle de Registros
+        $registro = ControleRegistro::firstOrNew(['formulario_id' => $formulario->id]);
+
+        return view('formularios.update-info', compact('formulario', 'setoresUsuarios', 'usuarioExistentesGrupoDivulgacaoFormulario', 'registro') );
     }
 
 
-    public function updateInfo(Request $_request) {  
+    public function updateInfo(Request $_request) { 
+        $continue = $this->makeValidator($_request);
+        if( !$continue ) {
+            return redirect()->back()->withInput();
+        } else {
+            $idForm      = (int) $_request->form_id;
+            $nivelAcesso = ($_request->nivelAcessoFormulario == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : Constants::$NIVEL_ACESSO_DOC_RESTRITO;
+            $formulario  = Formulario::where('id', '=', $idForm)->first();
+            $oldName     = $formulario->nome;
+            $revisaoText = "_rev".last(explode("_rev", $formulario->nome));
+            $formulario->nivel_acesso        = $nivelAcesso;
+            $formulario->nome                = $_request->tituloFormulario.$revisaoText;
+            $formulario->save();
+            
+            // Controle de Registros
+            try {
+                $_request['nivel_acesso']  = $nivelAcesso;
+                $_request['titulo']        = $formulario->nome;
+                $_request['codigo']        = $formulario->codigo;
+                $_request['avulso']        = false;
+                $_request['formulario_id'] = $formulario->id;
+                $_request['setor_id']      = $formulario->setor_id;
 
-        $idForm      = (int) $_request->form_id;
-        $nivelAcesso = ($_request->nivelAcessoFormulario == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : Constants::$NIVEL_ACESSO_DOC_RESTRITO;
-        $formulario  = Formulario::where('id', '=', $idForm)->first();
-        $oldName     = $formulario->nome;
-        $revisaoText = "_rev".last(explode("_rev", $formulario->nome));
-        $formulario->nivel_acesso        = $nivelAcesso;
-        $formulario->nome                = $_request->tituloFormulario." ".$revisaoText;
-        $formulario->save();
-        
-        //Renomeando arquivo no Storage
-        $filename =  \App\Classes\Helpers::instance()->escapeFilename($formulario->nome);
-        \Storage::disk('speed_office')->move('/formularios/'.$oldName .".". $formulario->extensao, '/formularios/'.$filename .".". $formulario->extensao);
-        
-        // Grupo de Divulgação do Formulário
-        $deletedRows = GrupoDivulgacaoFormulario::where('formulario_id', '=', $idForm)->delete();
-        $novaGrupoDivulgacaoForm = $_request->grupoDivulgacaoFormularioUPDATE;
-        if( is_array($novaGrupoDivulgacaoForm) && count($novaGrupoDivulgacaoForm) > 0 ) {
-            foreach($novaGrupoDivulgacaoForm as $key => $user) {
-                $newGrDivulForm = new GrupoDivulgacaoFormulario();
-                $newGrDivulForm->formulario_id  = $idForm;
-                $newGrDivulForm->usuario_id     = $user;
-                $newGrDivulForm->save();
+                $registro = ControleRegistro::updateOrCreate(
+                    ['formulario_id' => $formulario->id],
+                    $_request->all()
+                );
+            } catch (\Throwable $e) {
+                dd($e);
             }
+
+            
+            //Renomeando arquivo no Storage
+            $filename =  \App\Classes\Helpers::instance()->escapeFilename($formulario->nome);
+            if( $oldName .".". $formulario->extensao !=  $filename .".". $formulario->extensao) {
+                \Storage::disk('speed_office')->move('/formularios/'.$oldName .".". $formulario->extensao, '/formularios/'.$filename .".". $formulario->extensao);
+            }
+            
+            // Grupo de Divulgação do Formulário
+            $deletedRows = GrupoDivulgacaoFormulario::where('formulario_id', '=', $idForm)->delete();
+            $novaGrupoDivulgacaoForm = $_request->grupoDivulgacaoFormularioUPDATE;
+            if( is_array($novaGrupoDivulgacaoForm) && count($novaGrupoDivulgacaoForm) > 0 ) {
+                foreach($novaGrupoDivulgacaoForm as $key => $user) {
+                    $newGrDivulForm = new GrupoDivulgacaoFormulario();
+                    $newGrDivulForm->formulario_id  = $idForm;
+                    $newGrDivulForm->usuario_id     = $user;
+                    $newGrDivulForm->save();
+                }
+            }
+
+            return redirect()->route('formularios')->with('update_info_success', 'msg');
         }
-
-        //Alterar nome do arquivo no disco tmb!!!!
-
-        return redirect()->route('formularios')->with('update_info_success', 'msg');
     }
 
 
@@ -579,11 +600,13 @@ class FormulariosController extends Controller
                 }
 
                 //Elaborador
-                \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $formulario[0]->elaborador_id, $idForm);
+                $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+                if( $elaborador[0]->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " foi revisado e aprovado pela Qualidade.", false, $formulario[0]->elaborador_id, $idForm);
+                }
 
                 
                 // [E-mail -> (9)]
-                $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->get();
                 $setor = Setor::where('id', '=', $formulario[0]->setor_id)->select('nome')->get();
 
                 $mergeOne = $usuariosSetorQualidade->merge($usuariosGrupoDivulgacaoForm);
@@ -715,7 +738,7 @@ class FormulariosController extends Controller
             $codigo = ( strlen($n) <= 1 ) ? str_pad($n, 2, '0', STR_PAD_LEFT) : $n;      
         } else if( strlen($padrao) == 3 ) {
             if( strlen($n) <= 1 ) $codigo = str_pad($n, 3, '0', STR_PAD_LEFT);
-            else if( strlen($n) == 2 ) $codigo = str_pad($n, 2, '0', STR_PAD_LEFT);
+            else if( strlen($n) == 2 ) $codigo = str_pad($n, 3, '0', STR_PAD_LEFT);
             else $codigo = $n;
         } else  {
             $valor = $n + ".01";
@@ -912,6 +935,28 @@ class FormulariosController extends Controller
         }
 
         return $list;
+    }
+
+    private function makeValidator(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'tituloFormulario'        => 'required|string|max:350',
+            'meio_distribuicao'       => 'required|string|max:150',
+            'local_armazenamento'     => 'required|string|max:150',
+            'protecao'                => 'required|string|max:150',
+            'recuperacao'             => 'required|string|max:150',
+            'nivelAcessoFormulario'   => 'required|string|max:20',
+            'tempo_retencao_local'    => 'required|string|max:150',
+            'tempo_retencao_deposito' => 'required|string|max:150',
+            'disposicao'              => 'required|string|max:150'
+        ]);
+
+        if( $validator->fails() ) {
+            $request->session()->flash('style', 'danger|close-circle');
+            $request->session()->flash('message', $validator->messages()->first());
+            return false;
+        }
+
+        return true;
     }
 
     
