@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7011c23ddea2f664f39ae01651645fcd",
-    "content-hash": "d16cb33803ba276f0e9108043e44fc34",
+    "hash": "15badd7927dbdd47df49e3196aa5d281",
+    "content-hash": "c4d10cf3de4d4f741139ed187f9a88ec",
     "packages": [
         {
             "name": "adldap2/adldap2",

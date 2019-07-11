@@ -125,6 +125,20 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::put('atualizar', 			['as' => 'controle-registros.update',			'uses' => 'ControleRegistros\ControleRegistrosController@update']);
 		Route::delete('remover', 			['as' => 'controle-registros.delete',			'uses' => 'ControleRegistros\ControleRegistrosController@delete']);
 	});
+	
+	
+	/*
+	* DOCUMENTOS EXTERNOS
+	*/
+	Route::group(['prefix' => 'documentos-externos'], function() {
+		Route::get('',									['as' => 'documentos-externos', 	        		'uses' => 'DocumentosExternos\DocumentosExternosController@index']);
+		Route::post('armazenar',						['as' => 'documentos-externos.store',      			'uses' => 'DocumentosExternos\DocumentosExternosController@store']);
+		Route::post('listar-documentos',				['as' => 'documentos-externos.documentos', 			'uses' => 'DocumentosExternos\DocumentosExternosController@getDocumentsByRegister']);
+		Route::get('acessar-documento/{documentId}',	['as' => 'documentos-externos.acessar', 			'uses' => 'DocumentosExternos\DocumentosExternosController@accessDocument']);
+		Route::delete('remover',						['as' => 'documentos-externos.delete', 				'uses' => 'DocumentosExternos\DocumentosExternosController@delete']);
+		Route::post('atualizar',						['as' => 'documentos-externos.update', 				'uses' => 'DocumentosExternos\DocumentosExternosController@update']);
+		Route::post('aprovar',							['as' => 'documentos-externos.approval',			'uses' => 'DocumentosExternos\DocumentosExternosController@approval']);
+	});
 
 
 

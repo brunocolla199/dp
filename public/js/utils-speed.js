@@ -106,7 +106,9 @@ function swalWithReload(title, text, type) {
         title: title,
         text:  text,
         type:  type,
-        closeOnConfirm: false 
+        closeOnConfirm: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false
     }, function(){   
         location.reload();
     });
