@@ -122,9 +122,20 @@ class DocumentosExternosController extends Controller
 
     public function delete(Request $request) {
         $documentId = $request->document_id;
-        $statusCode = $this->ged->removeDocument($documentId);
 
+        $dbDocument = DocumentoExterno::where('id_documento', $documentId)->first();
+        $registerId = $dbDocument->id_registro;
+
+        $statusCode = $this->ged->removeDocument($documentId);
         if( $statusCode == 200 ) {
+            $dbDocument->delete();
+
+            // Caso não existam mais docs nesse registro, o próprio registro é excluído para evitar "registros fantasmas"
+            $registryDocuments = DocumentoExterno::where('id_registro', $registerId)->get();
+            if( $registryDocuments->count() <= 0 ) {
+                $registerStatusCode = $this->ged->removeRegister($registerId);
+            }
+
             $request->session()->put('removed-doc-success', 'Documento excluído com sucesso!');
             return response()->json(['response' => 'success']);
         } else {

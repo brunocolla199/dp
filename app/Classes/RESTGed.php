@@ -196,6 +196,12 @@ class RESTGed {
     }
 
 
+    public function removeRegister(string $_idRegistro) {
+        $response = $this->REST->delete($this->getURLBASE() . "/registro/" . $_idRegistro, $this->appendTokenHeader());
+        return $response->getStatusCode();
+    }
+
+
 
     /**
      * DOCUMENTS

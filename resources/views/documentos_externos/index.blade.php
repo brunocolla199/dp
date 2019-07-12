@@ -288,7 +288,7 @@
                                     <i class="mdi mdi-file-pdf" style="font-size: 50px"></i>
                                     <h4 class="card-title m-t-10">${value.endereco}</h4>
                                 </center>
-                                <a href="${baseUrl + '/documentos-externos/acessar-documento/' + value.id}" target="_blank" class="btn btn-info btn-block">Acessar</a>
+                                <a href="${baseUrl + '/documentos-externos/acessar-documento/' + value.id}" class="btn btn-info btn-block">Acessar</a>
                             </div>
                         `);
                     });
