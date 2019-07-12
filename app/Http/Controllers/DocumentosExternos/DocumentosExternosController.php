@@ -188,6 +188,12 @@ class DocumentosExternosController extends Controller
     }
 
 
+    public function getBytes(Request $request) {
+        $document = $this->ged->getDocument($request->document_id, 'true');
+        return response()->json(['response' => $document->bytes]);
+    }
+
+
 
     // Private methods
     private function getAreasBySector($areas) {

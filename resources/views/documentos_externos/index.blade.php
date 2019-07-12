@@ -284,7 +284,7 @@
                     result.response.forEach((value, index) => {
                         elmDiv.append(`
                             <div class="col-md-3">
-                                <center class="m-t-20" onclick="window.open('${gedDocumentUrl + areaId + '&idRegistro=' + registerId + '&idDocumento=' + value.id + '&versao=' + value.versao + '&pdf=true'}')" style="cursor: pointer;"> 
+                                <center class="m-t-20 center-open-pdf" data-id="${value.id}" style="cursor: pointer;"> 
                                     <i class="mdi mdi-file-pdf" style="font-size: 50px"></i>
                                     <h4 class="card-title m-t-10">${value.endereco}</h4>
                                 </center>
@@ -299,6 +299,43 @@
                 });
             }
         });
+    </script>
+
+
+    <script>
+        $(document).on('click', '.center-open-pdf', function(event) {
+            let elm = $(this);
+            elm.loading();
+
+            let documentId = $(this).data('id');
+            let obj = {'document_id': documentId};
+
+            ajaxMethod('POST', " {{ URL::route('documentos-externos.bytes') }} ", obj).then(function(result) {
+                let base64EncodedPDF = result.response;
+                let dataURI          = "data:application/pdf;base64," +base64EncodedPDF;
+
+                openPdf(dataURI, elm);
+            }, function(err) {
+                console.log(err);
+            });
+        });
+
+
+        function openPdf(dataURI, elm) {
+            elm.loading('stop');
+            var w = window.open('about:blank');
+
+            setTimeout(function(){ //FireFox seems to require a setTimeout for this to work.
+                let iframe = w.document.createElement('iframe');
+                iframe.setAttribute('frameborder', "0");
+                iframe.setAttribute('style', "border:0; top:0px; left:0px; bottom:0px; right:0px;");
+                iframe.setAttribute('height', "100%");
+                iframe.setAttribute('width', "100%");
+
+                w.document.body.appendChild(iframe)
+                    .src = dataURI;
+            }, 10);
+        }
     </script>
 
 @endsection
