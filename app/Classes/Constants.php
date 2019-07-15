@@ -36,6 +36,36 @@ class Constants {
     
     public static $ID_TIPO_DOCUMENTO_FORMULARIO             = 4;
 
+
+    // Propriedades - Controle de Registros
+    public static $CONTROLE_REGISTROS_MEIO = [
+        'Físico'     => 'Físico',
+        'Eletrônico' => 'Eletrônico',
+    ];
+
+    public static $CONTROLE_REGISTROS_DISPOSICAO = [
+        'Deletar'  => 'Deletar',
+        'Destruir' => 'Destruir',
+    ];
+
+    public static $CONTROLE_REGISTROS_RETENCAO = [
+        '1 ano'   => '1 ano',
+        '2 anos'  => '2 anos',
+        '3 anos'  => '3 anos',
+        '4 anos'  => '4 anos',
+        '5 anos'  => '5 anos',
+        '6 anos'  => '6 anos',
+        '7 anos'  => '7 anos',
+        '8 anos'  => '8 anos',
+        '9 anos'  => '9 anos',
+        '10 anos' => '10 anos',
+        '11 anos' => '11 anos',
+        '12 anos' => '12 anos',
+        '13 anos' => '13 anos',
+        '14 anos' => '14 anos',
+        '15 anos' => '15 anos',
+    ];
+
     
     // Fomatos de Documentos
     public static $EXTENSAO_DOCUMENTO  = '.html';

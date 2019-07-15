@@ -42,7 +42,7 @@
                 {!! Form::label('meio_distribuicao', 'MEIO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('meio_distribuicao', !is_null($registro) ? $registro->meio_distribuicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('meio_distribuicao', Constants::$CONTROLE_REGISTROS_MEIO, !is_null($registro) ? $registro->meio_distribuicao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -101,7 +101,7 @@
                 {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('tempo_retencao_local', !is_null($registro) ? $registro->tempo_retencao_local : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('tempo_retencao_local', Constants::$CONTROLE_REGISTROS_RETENCAO, !is_null($registro) ? $registro->tempo_retencao_local : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div> 
@@ -111,7 +111,7 @@
                 {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('tempo_retencao_deposito', !is_null($registro) ? $registro->tempo_retencao_deposito : '-', ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('tempo_retencao_deposito', Constants::$CONTROLE_REGISTROS_RETENCAO, !is_null($registro) ? $registro->tempo_retencao_deposito : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -124,7 +124,7 @@
                 {!! Form::label('disposicao', 'DISPOSIÇÃO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('disposicao', !is_null($registro) ? $registro->disposicao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('disposicao', Constants::$CONTROLE_REGISTROS_DISPOSICAO, !is_null($registro) ? $registro->disposicao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div> 
