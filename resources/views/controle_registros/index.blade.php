@@ -64,6 +64,9 @@
                                             <th class="text-center">Proteção</th>
                                             <th class="text-center">Recuperação</th>
                                             <th class="text-center">Acesso</th>
+                                            <th class="text-center">Retenção - Local</th>
+                                            <th class="text-center">Retenção - Arquivo Morto</th>
+                                            <th class="text-center">Disposição</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -84,6 +87,9 @@
                                                 <td class="text-center">{{ $registro->protecao }}</td>
                                                 <td class="text-center">{{ $registro->recuperacao }}</td>
                                                 <td class="text-center">{{ $registro->nivel_acesso }}</td>
+                                                <td class="text-center">{{ $registro->tempo_retencao_local }}</td>
+                                                <td class="text-center">{{ $registro->tempo_retencao_deposito }}</td>
+                                                <td class="text-center">{{ $registro->disposicao }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -155,7 +161,12 @@
                 dom: 'Bfrtip',
                 buttons: [
                     { extend: 'excel',  text: 'Excel' },
-                    { extend: 'pdf',    text: 'PDF' },
+                    { 
+                        extend: 'pdf',    
+                        text: 'PDF',
+                        orientation : 'landscape',
+                        pageSize : 'A3', 
+                    },
                     { extend: 'print',  text: 'Imprimir' }
                 ]
             });
