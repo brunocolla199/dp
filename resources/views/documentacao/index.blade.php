@@ -410,13 +410,15 @@
                                                                             <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
                                                                         </div>
                                                                     @else
-                                                                        <div class="col-md-6">
+                                                                        <div class="col-md-4">
+                                                                            <a href="{{ route('documentacao.pendentes_revisao') }}" class="btn btn-block waves-effect waves-light btn-outline-warning"><i class="mdi mdi-calendar-remove"></i> Pend. revisão</a>
+                                                                        </div>
+                                                                        <div class="col-md-4">
                                                                             <a href="{{ route('documentacao') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
                                                                         </div>
-                                                                        <div class="col-md-6">
+                                                                        <div class="col-md-4">
                                                                             <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
                                                                         </div>
-
                                                                     @endif
 
                                                                 </div>
