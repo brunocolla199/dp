@@ -192,7 +192,14 @@
                                 <br>
                             @else
                                 <div class="row">
-                                    <div class="col-md-10"></div>
+                                    <div class="col-md-8"></div>
+                                    
+                                    @if ( !$possuiCopiaControlada )
+                                        <div class="col-md-2 mt-4 pull-right">
+                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-12 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                        </div>
+                                    @endif
+
                                     <div class="col-md-2 mt-4 pull-right">
                                         <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
                                     </div>
