@@ -57,7 +57,7 @@
                                             <h5 class="box-title">Período da Busca</h5>
                                         </div>
                                         <div class="col-md-12">
-                                            <input class="form-control input-daterange-datepicker" type="text" name="daterange" value="{{ \Carbon\Carbon::now()->subDays(7)->format('d/m/Y') }} - {{ \Carbon\Carbon::now()->format('d/m/Y') }}" style="width: 100%" required/> 
+                                            <input class="form-control input-daterange-datepicker" type="text" name="daterange" value="{{ $periodo }}" style="width: 100%" required/> 
                                         </div>
                                     </div>
                                 </div>
