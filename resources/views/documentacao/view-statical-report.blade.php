@@ -83,7 +83,7 @@
                                         <div class="card-body">
                                             <h4 class="card-title"><span class="font-weight-bold">Revisados:</span> {{ $periodo }} </h4>
                                             <div class="text-center m-t-40">
-                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="-100" data-fgColor="#26c6da" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalPendentesRevisao }}" />
+                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="0" data-max="1000" data-fgColor="#26c6da" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalPendentesRevisao }}" />
                                             </div>
                                         </div>
                                     </div>
@@ -93,7 +93,7 @@
                                         <div class="card-body">
                                             <h4 class="card-title"><span class="font-weight-bold">Pendentes Revisão:</span> {{ $periodo }} </h4>
                                             <div class="text-center m-t-40">
-                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="-100" data-fgColor="#ffbc34" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalRevisados }}" />
+                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="0" data-max="1000" data-fgColor="#ffbc34" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalRevisados }}" />
                                             </div>
                                         </div>
                                     </div>
