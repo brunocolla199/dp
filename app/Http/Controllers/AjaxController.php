@@ -254,6 +254,7 @@ class AjaxController extends Controller
         // Populando a tabela DADOS_DOCUMENTO [Quando tiver tempo, verificar se deu certo a inserção do documento]
         $dados_documento = new DadosDocumento();
         $dados_documento->validade                          = $novoDocumento['validadeDocumento'];
+        $dados_documento->validade_anterior                 = $dados_documento->validade;
         $dados_documento->status                            = true;
         $dados_documento->observacao                        = "Documento Novo";
         $dados_documento->copia_controlada                  = $novoDocumento['copiaControlada'];

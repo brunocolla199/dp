@@ -157,6 +157,13 @@
                             </div>
                         </div>
 
+                        <!-- Título e Validade do Documento (apenas texto) -->
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 p-20">
+                                <h2 class="card-title"><b>{{ $nome }}</b> <small class="text-success"> &nbsp; | &nbsp; Validade: {{ Carbon\Carbon::parse($validadeDoc)->format('d/m/Y') }}</small></h2>
+                            </div>
+                        </div>
+
                         
                         @if($finalizado)
                             

@@ -620,6 +620,8 @@ class DocumentacaoController extends Controller
         $documento->save();
 
         // < DadosDocumento >
+        $dadosDoc->validade     = $dadosDoc->validade_anterior;
+        $dadosDoc->data_revisao = $dadosDoc->data_revisao_anterior;
         $dadosDoc->finalizado = true;
         $dadosDoc->necessita_revisao = false;
         $dadosDoc->revisao = $revCorreta;
@@ -923,8 +925,11 @@ class DocumentacaoController extends Controller
                 break;
 
             case 2: // Qualidade
-                $newValidity = Carbon::now()->addYear()->format('Y-m-d');
+                if( is_null($dados_doc[0]->validade_anterior) ) $dados_doc[0]->validade_anterior = $dados_doc[0]->validade;
+                if( is_null($dados_doc[0]->data_revisao_anterior) ) $dados_doc[0]->data_revisao_anterior = $dados_doc[0]->data_revisao;
                 
+                $newValidity = Carbon::now()->addYear()->format('Y-m-d');
+
                 $dados_doc[0]->validade     = $newValidity;
                 $dados_doc[0]->observacao   = "Aprovado pelo setor Processos";
                 $dados_doc[0]->data_revisao = now();
@@ -1095,7 +1100,9 @@ class DocumentacaoController extends Controller
                 break;
 
             case 3: // Área de Interesse
-                $dados_doc[0]->observacao = "Rejeitado pela Área de Interesse";
+                $dados_doc[0]->observacao   = "Rejeitado pela Área de Interesse";
+                $dados_doc[0]->validade     = $dados_doc[0]->validade_anterior;
+                $dados_doc[0]->data_revisao = $dados_doc[0]->data_revisao_anterior;
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
@@ -1124,7 +1131,9 @@ class DocumentacaoController extends Controller
                 break;
 
             default: // Aprovador
-                $dados_doc[0]->observacao = "Rejeitado pelo Aprovador";
+                $dados_doc[0]->observacao   = "Rejeitado pelo Aprovador";
+                $dados_doc[0]->validade     = $dados_doc[0]->validade_anterior;
+                $dados_doc[0]->data_revisao = $dados_doc[0]->data_revisao_anterior;
                 $dados_doc[0]->save();
 
                 $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM;
@@ -1262,6 +1271,8 @@ class DocumentacaoController extends Controller
         $dados_doc->finalizado             = true;
         $dados_doc->em_revisao             = false;
         $dados_doc->id_usuario_solicitante = false;
+        $dados_doc->validade_anterior      = $dados_doc->validade;
+        $dados_doc->data_revisao_anterior  = $dados_doc->data_revisao;
         $dados_doc->save();
 
         // Notificações
