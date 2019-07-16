@@ -72,7 +72,7 @@ class RelatorioEstatistico extends Controller
                 'expired'    => ( Arr::has($expiredDocs, $sectorName) ) ? $expiredDocs[$sectorName] : [],
                 'revised'    => ( Arr::has($revisedDocs, $sectorName) ) ? $revisedDocs[$sectorName] : [],
                 'sectorName' => $sectorName,
-                'identifier' => iconv('UTF-8','ASCII//TRANSLIT',str_replace(' ', '_', $sectorName)),
+                'identifier' => str_replace(' ', '_', $sectorName),
             );
         });
 
