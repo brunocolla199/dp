@@ -56,3 +56,11 @@
     </div>
 
 @endsection
+
+
+@section('footer')
+    <script>
+        $(".select2-selection").css('min-height', '38px');
+        $(".select2-selection__rendered").css('line-height', '38px');
+    </script>
+@endsection

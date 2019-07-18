@@ -55,7 +55,7 @@
                 {!! Form::label('local_armazenamento', 'ARMAZENAMENTO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('local_armazenamento', !is_null($registro) ? $registro->local_armazenamento : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('local_armazenamento', Constants::$CONTROLE_REGISTROS_ARMAZENAMENTO, !is_null($registro) ? $registro->local_armazenamento : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -65,7 +65,7 @@
                 {!! Form::label('protecao', 'PROTEÇÃO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('protecao', !is_null($registro) ? $registro->protecao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('protecao', Constants::$CONTROLE_REGISTROS_PROTECAO, !is_null($registro) ? $registro->protecao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -78,7 +78,7 @@
                 {!! Form::label('recuperacao', 'RECUPERAÇÃO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::text('recuperacao', !is_null($registro) ? $registro->recuperacao : null, ['class' => 'form-control', 'required' => 'required']) !!}
+                {!! Form::select('recuperacao', Constants::$CONTROLE_REGISTROS_RECUPERACAO, !is_null($registro) ? $registro->recuperacao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -88,7 +88,7 @@
                 {!! Form::label('nivel_acesso', 'NÍVEL DE ACESSO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('nivel_acesso', $niveisAcesso, !is_null($registro) ? $registro->nivel_acesso : null, ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
+                {!! Form::select('nivel_acesso', $niveisAcesso, !is_null($registro) ? $registro->nivel_acesso : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -100,8 +100,22 @@
             <div class="col-md-12 control-label font-bold">
                 {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
             </div>
-            <div class="col-md-12">
-                {!! Form::select('tempo_retencao_local', Constants::$CONTROLE_REGISTROS_RETENCAO, !is_null($registro) ? $registro->tempo_retencao_local : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+            <div class="col-md-12">                
+                <select name="tempo_retencao_local" class="select2 m-b-10 select2-multiple" style="width: 100%" data-placeholder="Escolha..." required="required">
+                    @foreach (Constants::$CONTROLE_REGISTROS_RETENCAO_LOCAL as $key => $item)
+                        <optgroup label="{{ $key }}">
+                            @if ( !is_null($registro) )
+                                @foreach ($item as $key => $opt)
+                                    <option value="{{ $key }}" {{ $key == $registro->tempo_retencao_local ? 'selected' : '' }}>{{ $opt }}</option>
+                                @endforeach  
+                            @else
+                                @foreach ($item as $key => $opt)
+                                    <option value="{{ $key }}">{{ $opt }}</option>
+                                @endforeach
+                            @endif
+                        </optgroup>
+                    @endforeach
+                </select>
             </div>
         </div>
     </div> 
@@ -111,7 +125,21 @@
                 {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('tempo_retencao_deposito', Constants::$CONTROLE_REGISTROS_RETENCAO, !is_null($registro) ? $registro->tempo_retencao_deposito : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                <select name="tempo_retencao_deposito" class="select2 m-b-10 select2-multiple" style="width: 100%" data-placeholder="Escolha..." required="required">
+                    @foreach (Constants::$CONTROLE_REGISTROS_RETENCAO_ARQUIVO_MORTO as $key => $item)
+                        <optgroup label="{{ $key }}">
+                            @if ( !is_null($registro) )
+                                @foreach ($item as $key => $opt)
+                                    <option value="{{ $key }}" {{ $key == $registro->tempo_retencao_deposito ? 'selected' : '' }}>{{ $opt }}</option>
+                                @endforeach  
+                            @else
+                                @foreach ($item as $key => $opt)
+                                    <option value="{{ $key }}">{{ $opt }}</option>
+                                @endforeach
+                            @endif
+                        </optgroup>
+                    @endforeach
+                </select>
             </div>
         </div>
     </div>
