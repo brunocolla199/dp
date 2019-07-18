@@ -234,9 +234,15 @@
                                 </div>
                             @endif
 
-                            <div class="row iframe_box">
-                                <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
-                            </div>
+                            @if ( $possuiCopiaControlada )
+                                <div class="row iframe_box">
+                                    <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
+                                </div>
+                            @else
+                                <div class="row iframe_box">
+                                    <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&p=1&action=review' }}" frameborder="0" width="100%" height="600px"></iframe>
+                                </div>
+                            @endif
 
                             <!-- Setor Processos e o Elaborador sempre podem adicionar anexos -->
                             <div class="row mt-4">
