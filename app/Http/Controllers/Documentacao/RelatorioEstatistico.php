@@ -18,8 +18,6 @@ class RelatorioEstatistico extends Controller
     protected $totalOverdue;
     protected $totalRevised;
 
-    // TODO: posso criar 2 propriedades aqui: total de docs revisados e expirados e já preenchê-las enquanto encontro eles
-
     function __construct() {
         $this->docTypes     = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id')->toArray();
         $this->totalOverdue = 0;

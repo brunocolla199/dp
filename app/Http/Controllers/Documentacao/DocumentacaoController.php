@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Arr;
 use App\Jobs\SendEmailsJob;
 
 use App\Jobs\SendEmailComAnexoJob;
@@ -1920,11 +1921,13 @@ class DocumentacaoController extends Controller
                 /* Segundo regras do sistema, o documento será listado para: 
                     Elaborador; ou Todos os membros do setor Qualidade (automaticamente, em virtude de não entrar neste if); 
                         ou para todos os membros da Area de Interesse; ou para todos usuários do grupo de aprovadores do setor dono do documento;
-                        ou para todos os membros do setor dono do documento; ou para todos os usuários extras definidos por algum usuário do setor Qualidade.
+                        ou para todos os membros do setor dono do documento; ou para todos os usuários extras definidos por algum usuário do setor Qualidade;
+                        [19/07/19] ou, caso o usuário atual seja do setor 'Segurança do Trabalho' e o documento em questão seja de um dos seguintes setores: [ Operação, Manutenção, Meio Ambiente; Saúde ]
                 */
                 if( $ID_USUARIO == $value->elaborador_id  ||   in_array($ID_USUARIO, $usuariosDaAreaDeInteresseDoDocumento)  ||  
                     in_array($ID_USUARIO, array_keys($aprovadoresDoSetorDonoDoDocumento))  ||  $ID_SETOR_USUARIO == $value->setor_id  ||  
-                    in_array($ID_USUARIO, $usuariosExtraDoDocumento) ) {
+                    in_array($ID_USUARIO, $usuariosExtraDoDocumento) || 
+                    ( $ID_SETOR_USUARIO == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO  &&  in_array($value->setor_id, Constants::$SETORES_QUE_SET_TEM_ACESSO) ) ) {
                     continue;
                 } else {
                     $docsFinalizadosRestritos->forget($key);
@@ -1964,13 +1967,8 @@ class DocumentacaoController extends Controller
         $documentosEmRevisao[] = $docsFinalizadosRestritos->values()->all();
         $documentosEmRevisao[] = $docsFinalizadosConfidenciais->values()->all();
         
-        // Passa todos os documentos, de cada nível de acesso, para a raiz de um novo array, de forma que tods fiquem no mesmo nível hierrárquico
-        $returnDocumentosEmRevisao = array();
-        foreach ($documentosEmRevisao as $key => $value) {
-            if (is_array($value)) {
-                $returnDocumentosEmRevisao = array_merge($returnDocumentosEmRevisao, $value);
-            }
-        }
+        // Passa todos os documentos, de cada nível de acesso, para a raiz de um novo array, de forma que tods fiquem no mesmo nível hierárquico
+        $returnDocumentosEmRevisao = Arr::flatten($documentosEmRevisao);
 
         // Loop que irá definir quais documentos devem ser mostrados com sua última revisão vigente e quais devem ser mostrados com a respectiva etapa da revisão.
         foreach ($returnDocumentosEmRevisao as $key => $value) {
@@ -2008,7 +2006,7 @@ class DocumentacaoController extends Controller
         // Sorry about that, @zyadkhalil
         $docsFinalizados_restritos = array();
         if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
-        $docsFinalizados_restritos = $cloneBaseQueryDocumentosRestritos->where('dados_documento.finalizado', '=', true)
+            $docsFinalizados_restritos = $cloneBaseQueryDocumentosRestritos->where('dados_documento.finalizado', '=', true)
                         ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
                         ->get();
         } else {
@@ -2029,8 +2027,13 @@ class DocumentacaoController extends Controller
                                                                     ->where('aprovador_setor.setor_id', '=', $value->setor_id)
                                                                     ->get()->pluck('name', 'id')->toArray();
 
-                // lista para todos os envolvidos na criação do doc (elaborador, qualidade, área de interesse e grupo de aprovadores) e para todos os membros do setor dono do documento  + e para todos os usuários extras que alguém da qualidade definir
-                if( $value->elaborador_id == $I_U  ||  $SI_U == Constants::$ID_SETOR_QUALIDADE  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  in_array($I_U, $usuariosExtraDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento))  ||  $SI_U == $value->setor_id ) {
+                /**
+                 * lista para todos os envolvidos na criação do doc (elaborador, qualidade, área de interesse e grupo de aprovadores) e para todos os membros do setor dono do documento  + e para todos os usuários extras que alguém da qualidade definir
+                 * [19/07/19] ou, caso o usuário atual seja do setor 'Segurança do Trabalho' e o documento em questão seja de um dos seguintes setores: [ Operação, Manutenção, Meio Ambiente; Saúde ]
+                */
+                if( $value->elaborador_id == $I_U  ||  $SI_U == Constants::$ID_SETOR_QUALIDADE  ||  in_array($I_U, $usuariosDaAreaDeInteresseDoDocumento)  ||  
+                    in_array($I_U, $usuariosExtraDoDocumento)  ||  in_array($I_U, array_keys($usuariosAprovadoresDoSetorDonoDoDocumento))  ||  $SI_U == $value->setor_id ||
+                    ( $SI_U == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO  &&  in_array($value->setor_id, Constants::$SETORES_QUE_SET_TEM_ACESSO) ) ) {
                     continue;
                 } else {
                     $docsFinalizados_restritos->forget($key);

@@ -240,7 +240,10 @@
                                 </div>
                             @else
                                 <div class="row iframe_box">
-                                    <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&p=1&action=review' }}" frameborder="0" width="100%" height="600px"></iframe>
+                                    <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
+                                    
+                                    {{-- Temporário --}}
+                                    {{-- <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&p=1&action=review' }}" frameborder="0" width="100%" height="600px"></iframe> --}}
                                 </div>
                             @endif
 

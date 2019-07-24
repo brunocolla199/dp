@@ -278,9 +278,20 @@ class Constants {
     
     
     // Extras
-    public static $ID_SETOR_QUALIDADE = 1;
+    public static $ID_SETOR_QUALIDADE = 1; // Processos
 
     public static $ID_SETOR_CAPITAL_HUMANO = 14; // Pessoas & Organização
+    
+    public static $ID_SETOR_SEGURANCA_DO_TRABALHO = 18;
+
+    // Todos os setores que o setor 'Segurança do Trabalho (SET)' pode visualizar
+    public static $SETORES_QUE_SET_TEM_ACESSO = [
+        13, // Operação
+        11, // Manutenção
+        12, // Meio Ambiente
+        17, // Saúde
+    ];
+
     
     public static $ID_USUARIO_ADMIN_SETOR_QUALIDADE = 1; // [CELISE] Verificar se for importado do AD
     
