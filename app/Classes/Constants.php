@@ -176,6 +176,7 @@ class Constants {
             '5 anos' => '5 anos',
         ],
         'Outros' => [
+            '-' => '-',
             'Não mensurável' => 'Não mensurável',
         ],
     ];
