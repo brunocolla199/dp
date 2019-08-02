@@ -111,7 +111,7 @@
                                                             <div class="card">
                                                                 <div class="card-header cursor-pointer-on" role="tab" id="{{ 'reg-'.$register->id }}" data-toggle="collapse" data-parent="#{{ 'registros-'.$areaId }}" href="#{{ $register->id }}" aria-expanded="true" aria-controls="{{ $register->id }}">
                                                                     <h4 class="mb-0 h4-click" data-opened="false" data-id="{{ $register->id }}" data-area-id="{{ $register->idArea }}"> 
-                                                                        <i class="mdi mdi-format-list-bulleted"></i> <small class="text-danger">Lista de Documentos </small>&nbsp;&nbsp; {{ $register->listaIndice[2]->valor }}
+                                                                        <i class="mdi mdi-format-list-bulleted"></i> {{ $register->listaIndice[2]->valor }}
                                                                     </h4>
                                                                 </div>
                                                             
