@@ -25,6 +25,9 @@ use App\Jobs\SendEmailComAnexoJob;
 class DocumentacaoController extends Controller
 {
     
+    private $DATA_VALIDADE = 'dataValidade';
+    private $DATA_REVISAO  = 'dataUltimaRevisao';
+
     public function index() {
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
@@ -445,6 +448,59 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function defineDatasExibidas($_idDocumento) {
+        $documento = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')->join('workflow', 'workflow.documento_id', '=', 'documento.id')->where('documento.id', '=', $_idDocumento)->first();
+        
+        $validadeDisponivel    = is_null($documento->validade_anterior) ? $documento->validade : $documento->validade_anterior;
+        $dataRevisaoDisponivel = is_null($documento->data_revisao_anterior) ? $documento->data_revisao : $documento->data_revisao_anterior;
+        $retorno               = array($this->DATA_VALIDADE => $validadeDisponivel, $this->DATA_REVISAO => $dataRevisaoDisponivel);
+        
+        // Se não tiver validade e data da revisão anterior, é um documento importado e, por isso, só resta exibir os valores que existiam previamente
+        if( is_null($documento->validade_anterior)  &&  is_null($documento->data_revisao_anterior) )
+            return $retorno;
+
+       
+        switch ($documento->etapa_num) {     
+            case 2:
+                $idUsuarioAdminSetorQualidade = Configuracao::where('id', '=', 2)->first();
+                if($documento->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL) {
+                    if( Auth::user()->id == $idUsuarioAdminSetorQualidade->admin_setor_qualidade ) 
+                        $retorno = array($this->DATA_VALIDADE => $documento->validade, $this->DATA_REVISAO => $documento->data_revisao);
+                } else {
+                    if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ) 
+                        $retorno = array($this->DATA_VALIDADE => $documento->validade, $this->DATA_REVISAO => $documento->data_revisao);
+                }
+                break;
+            
+            case 3:
+                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $documento->id)->get()->pluck('usuario_id')->toArray();
+                if( count($usuariosAreaInteresseDocumento) > 0 ) {
+                    if( in_array(Auth::user()->id, $usuariosAreaInteresseDocumento) ) {
+                        $retorno = array($this->DATA_VALIDADE => $documento->validade, $this->DATA_REVISAO => $documento->data_revisao);
+                    }
+                }
+                break;
+            
+            case 4:
+                $aprovadoresDoSetorDonoDoDocumento = AprovadorSetor::join('users', 'users.id', '=', 'usuario_id')->where('aprovador_setor.setor_id', '=', $documento->setor_id)->get()->pluck('usuario_id')->toArray();
+                if( count($aprovadoresDoSetorDonoDoDocumento) > 0 ) {
+                    if( in_array(Auth::user()->id, $aprovadoresDoSetorDonoDoDocumento) ) {
+                        $retorno = array($this->DATA_VALIDADE => $documento->validade, $this->DATA_REVISAO => $documento->data_revisao);
+                    }
+                }
+                break;
+            
+            default: // Etapas: 1, 5 e 6 (Elaborador, Upload Lista de Presença e Correção Lista de Presença)
+                if( Auth::user()->id == $documento->elaborador_id ) {
+                    $retorno = array($this->DATA_VALIDADE => $documento->validade, $this->DATA_REVISAO => $documento->data_revisao);
+                }
+                break;
+        }
+
+        return $retorno;
+    }
+
+
     public function viewDocument(Request $request) {
         if( array_key_exists("notify_id", $request->all()) ) {
             \App\Classes\Helpers::instance()->atualizaNotificacaoVisualizada($request->notify_id);
@@ -610,9 +666,10 @@ class DocumentacaoController extends Controller
         $workflow  = Workflow::where('documento_id', '=', $idDoc)->first();
 
         $nomeCompletoDoc = $documento->nome;
-        $nomeDoc         = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0];
-        $revAtual        = (int) explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[1];
-        $revAtual_txt    = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[1];
+        $nomeDoc         = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $nomeCompletoDoc)[0];
+        $revAtual_txt    = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $nomeCompletoDoc)[1];
+        
+        $revAtual        = (int) $revAtual_txt;
         $revCorreta      = $revAtual - 1;
         $revCorreta      = ($revCorreta <= 9) ? "0{$revCorreta}" : $revCorreta;
 
@@ -621,8 +678,9 @@ class DocumentacaoController extends Controller
         $documento->save();
 
         // < DadosDocumento >
-        $dadosDoc->validade     = $dadosDoc->validade_anterior;
-        $dadosDoc->data_revisao = $dadosDoc->data_revisao_anterior;
+        if( !is_null($dadosDoc->validade_anterior) )     $dadosDoc->validade     = $dadosDoc->validade_anterior;
+        if( !is_null($dadosDoc->data_revisao_anterior) ) $dadosDoc->data_revisao = $dadosDoc->data_revisao_anterior;
+
         $dadosDoc->finalizado = true;
         $dadosDoc->necessita_revisao = false;
         $dadosDoc->revisao = $revCorreta;
@@ -641,21 +699,32 @@ class DocumentacaoController extends Controller
 
         // Notificações
         \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->elaborador_id, $idDoc);
-        if($dadosDoc->id_usuario_solicitante != $dadosDoc->elaborador_id  && $dadosDoc->id_usuario_solicitante != $dadosDoc->aprovador_id) \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->id_usuario_solicitante, $idDoc);
+
+        if($dadosDoc->id_usuario_solicitante != $dadosDoc->elaborador_id  && $dadosDoc->id_usuario_solicitante != $dadosDoc->aprovador_id) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->id_usuario_solicitante, $idDoc);
+
+            if($dadosDoc->aprovador_id != $dadosDoc->elaborador_id) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->aprovador_id, $idDoc);
+            }
+        }
 
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $user->id, $idDoc);
+            if( $user->id != $dadosDoc->elaborador_id   &&  $user->id != $dadosDoc->id_usuario_solicitante  &&  $user->id != $dadosDoc->aprovador_id ) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $user->id, $idDoc);
+            }
         }
         
         $usuariosAreaInteresseDocumento = AreaInteresseDocumento::where('documento_id', '=', $idDoc)->get()->pluck('usuario_id');
         if( count($usuariosAreaInteresseDocumento) > 0 ) {
             foreach ($usuariosAreaInteresseDocumento as $key => $value) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $value, $idDoc);
+                
+                if( $value != $dadosDoc->elaborador_id   &&  $value != $dadosDoc->id_usuario_solicitante  &&  $value != $dadosDoc->aprovador_id  &&  !$usuariosSetorQualidade->contains('id', $value) ) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $value, $idDoc);
+                }
+
             }
         }
-    
-        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " teve a revisão " .$revAtual_txt. " cancelada pelo setor Processos.", false, $dadosDoc->aprovador_id, $idDoc);
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_1 . $revAtual_txt . Constants::$DESCRICAO_WORKFLOW_REVISAO_CANCELADA_PARTE_2, $idDoc);
@@ -1974,8 +2043,12 @@ class DocumentacaoController extends Controller
         foreach ($returnDocumentosEmRevisao as $key => $value) {
             // Se o usuário for do Setor Qualidade, a etapa permanecerá exatamente a mesma que veio do B.D., ou seja, não será mostrada a última revisão vigente finalizada e sim a revisão que está, atualmente, sendo alterada.
             if( $ID_SETOR_USUARIO != Constants::$ID_SETOR_QUALIDADE  ||  ($value->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  &&  $ID_USUARIO != $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) )  {
+                $datasDocumento = $this->defineDatasExibidas($value->id);
+                $value->validade = $datasDocumento[$this->DATA_VALIDADE];
+                $value->data_revisao = $datasDocumento[$this->DATA_REVISAO];
+                
                 $statusDoDocumentoParaListagem = $this->defineStatusDeListagemDoDocumento($value->id);
-                $value->etapa                  = $statusDoDocumentoParaListagem;
+                $value->etapa = $statusDoDocumentoParaListagem;
                 // Se retornar 'Finalizado' é porque este documento, que está em revisão, não necessita de uma ação direta deste usuário e, portanto, exibirá a última revisão vigente.
                 if( $statusDoDocumentoParaListagem == "Finalizado" ) {
                     $numRevisaoAnterior = (int) $value->revisao - 1; 
