@@ -3,22 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
-use App\Setor;
-use App\DocumentoObservacao;
-use App\Documento;
-use App\DadosDocumento;
-use App\Anexo;
-use App\Classes\Constants;
-use App\AreaInteresseDocumento;
-use App\DocumentoFormulario;
-use App\Formulario;
-use App\FormularioRevisao;
-use App\Notificacao;
-use App\NotificacaoFormulario;
-use App\CopiaControlada;
-use App\GrupoTreinamentoDocumento;
-use App\GrupoDivulgacaoDocumento;
+use App\{User, Setor, DocumentoObservacao, Documento, DadosDocumento, Anexo, Classes\Constants, AreaInteresseDocumento, DocumentoFormulario, Formulario, FormularioRevisao, Notificacao, NotificacaoFormulario, CopiaControlada, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ControleRegistro};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -357,6 +342,10 @@ class AjaxController extends Controller
         $form = Formulario::find($request->form_id);
         $form->codigo = $request->new_code;
         $form->save();
+
+        $recordControl = ControleRegistro::where('formulario_id', $form->id)->first();
+        $recordControl->codigo = $form->codigo;
+        $recordControl->save();
         
         return response()->json(['response' => 'success']);
     }
