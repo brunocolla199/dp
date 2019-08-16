@@ -113,3 +113,31 @@ function swalWithReload(title, text, type) {
         location.reload();
     });
 }
+
+
+/**
+ * Warning Message
+ * 
+ * @param {*} text message that will be displayed for more details of the consequence of the action
+ */
+function swal2_warning(text, buttonText = 'Sim, excluir!') {
+    return new Promise((resolve, reject) => {
+        swal({   
+            title: "Você tem certeza?",   
+            text: text,   
+            type: "warning",   
+            showCancelButton: true,   
+            confirmButtonColor: "#DD6B55",   
+            confirmButtonText: buttonText,   
+            cancelButtonText: "Cancelar",   
+            closeOnConfirm: false,   
+            closeOnCancel: false 
+        }, function(isConfirm){   
+            if (isConfirm) {     
+                resolve(true);
+            } else {     
+                reject(false);
+            }  
+        });
+    });
+}

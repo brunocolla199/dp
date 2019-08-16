@@ -124,6 +124,13 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::get('editar/{registro}',		['as' => 'controle-registros.edit',      		'uses' => 'ControleRegistros\ControleRegistrosController@edit']);
 		Route::put('atualizar', 			['as' => 'controle-registros.update',			'uses' => 'ControleRegistros\ControleRegistrosController@update']);
 		Route::delete('remover', 			['as' => 'controle-registros.delete',			'uses' => 'ControleRegistros\ControleRegistrosController@delete']);
+		Route::get('opções',				['as' => 'controle-registros.index-options',	'uses' => 'ControleRegistros\ControleRegistrosController@indexOptions']);
+		Route::get('criar-opção',			['as' => 'controle-registros.create-option',	'uses' => 'ControleRegistros\ControleRegistrosController@createOption']);
+		Route::post('armazenar-opção',		['as' => 'controle-registros.store-option',		'uses' => 'ControleRegistros\ControleRegistrosController@storeOption']);
+		Route::post('filtrar-opções',		['as' => 'controle-registros.filter-options',	'uses' => 'ControleRegistros\ControleRegistrosController@filterOptions']);
+		Route::delete('remover-opção',		['as' => 'controle-registros.delete-option',	'uses' => 'ControleRegistros\ControleRegistrosController@deleteOption']);
+		Route::get('editar-opção/{option}',	['as' => 'controle-registros.edit-option',		'uses' => 'ControleRegistros\ControleRegistrosController@editOption']);
+		Route::put('atualizar-opção',		['as' => 'controle-registros.update-option',	'uses' => 'ControleRegistros\ControleRegistrosController@updateOption']);
 	});
 	
 	

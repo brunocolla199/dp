@@ -146,7 +146,7 @@
                                                     {!! Form::hidden('nome_formulario',             $tituloFormulario) !!}
                                                     {!! Form::hidden('registroControle',            $registroControle) !!}
 
-                                                    @if( count($grupoDivulgacaoFormulario) > 0 )
+                                                    @if( is_array($grupoDivulgacaoFormulario) && count($grupoDivulgacaoFormulario) > 0 )
                                                         @foreach($grupoDivulgacaoFormulario as $usuariosGrupoDivulgacaoFormulario)
                                                             <input type="hidden" name="grupoDivulgacaoFormulario[]" value="<?php echo $usuariosGrupoDivulgacaoFormulario ?>">
                                                         @endforeach

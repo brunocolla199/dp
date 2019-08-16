@@ -38,149 +38,18 @@ class Constants {
 
 
     // Propriedades - Controle de Registros
-    public static $CONTROLE_REGISTROS_MEIO = [
-        'Físico'     => 'Físico',
-        'Eletrônico' => 'Eletrônico',
+    public static $CONTROLE_REGISTROS = [
+        'LOCAL_ARMAZENAMENTO'     => 'Armazenamento',
+        'DISPOSICAO'              => 'Disposição',
+        'MEIO_DISTRIBUICAO'       => 'Meio',
+        'PROTECAO'                => 'Proteção',
+        'RECUPERACAO'             => 'Recuperação',
+        'TEMPO_RETENCAO_DEPOSITO' => 'Retenção Mínima - Arquivo Morto',
+        'TEMPO_RETENCAO_LOCAL'    => 'Retenção Mínima - Local',
     ];
 
-    public static $CONTROLE_REGISTROS_DISPOSICAO = [
-        'Descarte simples' => 'Descarte simples',
-        'Destruir'         => 'Destruir',
-        'Picotar'          => 'Picotar',
-        'Deletar'          => 'Deletar',
-        'Reuso'            => 'Reuso',
-        'Microfilmagem'    => 'Microfilmagem',
-    ];
 
-    public static $CONTROLE_REGISTROS_ARMAZENAMENTO = [
-        'Caderno'                        => 'Caderno',
-        'Caixa Box'                      => 'Caixa Box',
-        'Disco Rígido Local'             => 'Disco Rígido Local',
-        'Disco Rígido Rede(Servidor)'    => 'Disco Rígido Rede(Servidor)',
-        'Disquete/CD/Fita'               => 'Disquete/CD/Fita',
-        'Envelope'                       => 'Envelope',
-        'Gaveta'                         => 'Gaveta',
-        'Pasta A-Z'                      => 'Pasta A-Z',
-        'Pasta Classificada (Plásticos)' => 'Pasta Classificada (Plásticos)',
-        'Pasta de Elástico'              => 'Pasta de Elástico',
-        'Pasta Suspensa'                 => 'Pasta Suspensa',
-    ];
 
-    public static $CONTROLE_REGISTROS_PROTECAO = [
-        'Eletrônico' => 'Eletrônico',
-        'Físico'     => 'Físico',
-    ];
-
-    public static $CONTROLE_REGISTROS_RECUPERACAO = [
-        'Área/Setor'                      => 'Área/Setor',
-        'Cliente'                         => 'Cliente',
-        'Contrato'                        => 'Contrato',
-        'Data'                            => 'Data',
-        'Documento'                       => 'Documento',
-        'Embarque/Reembarque'             => 'Embarque/Reembarque',
-        'Equipamento'                     => 'Equipamento',
-        'Evento'                          => 'Evento',
-        'Fornecedor/Prestador de Serviço' => 'Fornecedor/Prestador de Serviço',
-        'Integrante'                      => 'Integrante',
-        'Navio'                           => 'Navio',
-        'Número sequencial'               => 'Número sequencial',
-        'Ordem Alfabética'                => 'Ordem Alfabética',
-        'Processo'                        => 'Processo',
-        'Produto'                         => 'Produto',
-        'Projeto'                         => 'Projeto',
-        'Registro'                        => 'Registro',
-        'Tema'                            => 'Tema',
-        'Treinamento'                     => 'Treinamento',
-        'Viagem'                          => 'Viagem',
-    ];
-
-    public static $CONTROLE_REGISTROS_RETENCAO_LOCAL = [
-        'Por tempo estimado de retenção em dias, meses ou anos' => [
-            '30 dias' => '30 dias',
-            '60 dias' => '60 dias',
-            '90 dias' => '90 dias',
-            '1 mês' => '1 mês',
-            '2 meses' => '2 meses',
-            '3 meses' => '3 meses',
-            '6 meses' => '6 meses',
-            '9 meses' => '9 meses',
-            '1 ano' => '1 ano',
-            '2 anos' => '2 anos',
-            '3 anos' => '3 anos',
-            '4 anos' => '4 anos',
-            '5 anos' => '5 anos',
-        ],
-        'Por validade, atividade ou vigência' => [
-            'Enquanto ativo' => 'Enquanto ativo',
-            'Enquanto ativo + 30 dias' => 'Enquanto ativo + 30 dias',
-            'Enquanto ativo + 60 dias' => 'Enquanto ativo + 60 dias',
-            'Enquanto ativo + 90 dias' => 'Enquanto ativo + 90 dias',
-            'Enquanto ativo + 1 mês' => 'Enquanto ativo + 1 mês',
-            'Enquanto ativo + 2 meses' => 'Enquanto ativo + 2 meses',
-            'Enquanto ativo + 3 meses' => 'Enquanto ativo + 3 meses',
-            'Enquanto ativo + 6 meses' => 'Enquanto ativo + 6 meses',
-            'Enquanto ativo + 9 meses' => 'Enquanto ativo + 9 meses',
-            'Enquanto ativo + 1 ano' => 'Enquanto ativo + 1 ano',
-            'Enquanto ativo + 2 anos' => 'Enquanto ativo + 2 anos',
-            'Enquanto ativo + 3 anos' => 'Enquanto ativo + 3 anos',
-            'Enquanto ativo + 4 anos' => 'Enquanto ativo + 4 anos',
-            'Enquanto ativo + 5 anos' => 'Enquanto ativo + 5 anos',
-            'Enquanto válido' => 'Enquanto válido',
-            'Enquanto válido + 30 dias' => 'Enquanto válido + 30 dias',
-            'Enquanto válido + 60 dias' => 'Enquanto válido + 60 dias',
-            'Enquanto válido + 90 dias' => 'Enquanto válido + 90 dias',
-            'Enquanto válido + 1 mês' => 'Enquanto válido + 1 mês',
-            'Enquanto válido + 2 meses' => 'Enquanto válido + 2 meses',
-            'Enquanto válido + 3 meses' => 'Enquanto válido + 3 meses',
-            'Enquanto válido + 6 meses' => 'Enquanto válido + 6 meses',
-            'Enquanto válido + 9 meses' => 'Enquanto válido + 9 meses',
-            'Enquanto válido + 1 ano' => 'Enquanto válido + 1 ano',
-            'Enquanto válido + 2 anos' => 'Enquanto válido + 2 anos',
-            'Enquanto válido + 3 anos' => 'Enquanto válido + 3 anos',
-            'Enquanto válido + 4 anos' => 'Enquanto válido + 4 anos',
-            'Enquanto válido + 5 anos' => 'Enquanto válido + 5 anos',
-            'Enquanto vigente' => 'Enquanto vigente',
-            'Enquanto vigente + 30 dias' => 'Enquanto vigente + 30 dias',
-            'Enquanto vigente + 60 dias' => 'Enquanto vigente + 60 dias',
-            'Enquanto vigente + 90 dias' => 'Enquanto vigente + 90 dias',
-            'Enquanto vigente + 1 mês' => 'Enquanto vigente + 1 mês',
-            'Enquanto vigente + 2 meses' => 'Enquanto vigente + 2 meses',
-            'Enquanto vigente + 3 meses' => 'Enquanto vigente + 3 meses',
-            'Enquanto vigente + 6 meses' => 'Enquanto vigente + 6 meses',
-            'Enquanto vigente + 9 meses' => 'Enquanto vigente + 9 meses',
-            'Enquanto vigente + 1 ano' => 'Enquanto vigente + 1 ano',
-            'Enquanto vigente + 2 anos' => 'Enquanto vigente + 2 anos',
-            'Enquanto vigente + 3 anos' => 'Enquanto vigente + 3 anos',
-            'Enquanto vigente + 4 anos' => 'Enquanto vigente + 4 anos',
-        ],
-        'Outros' => [
-            'Atualização permanente' => 'Atualização permanente',
-            'Não mensurável' => 'Não mensurável',
-        ],
-    ];
-
-    public static $CONTROLE_REGISTROS_RETENCAO_ARQUIVO_MORTO = [
-        'Por tempo estimado de retenção em dias, meses ou anos' => [
-            '30 dias' => '30 dias',
-            '60 dias' => '60 dias',
-            '90 dias' => '90 dias',
-            '1 mês' => '1 mês',
-            '2 meses' => '2 meses',
-            '3 meses' => '3 meses',
-            '6 meses' => '6 meses',
-            '9 meses' => '9 meses',
-            '1 ano' => '1 ano',
-            '2 anos' => '2 anos',
-            '3 anos' => '3 anos',
-            '4 anos' => '4 anos',
-            '5 anos' => '5 anos',
-        ],
-        'Outros' => [
-            '-' => '-',
-            'Não mensurável' => 'Não mensurável',
-        ],
-    ];
-    
     // Fomatos de Documentos
     public static $EXTENSAO_DOCUMENTO  = '.html';
 

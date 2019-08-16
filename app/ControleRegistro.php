@@ -9,7 +9,7 @@ class ControleRegistro extends Model
 {
     
     protected $fillable = [
-        'id', 'codigo', 'titulo', 'meio_distribuicao', 'local_armazenamento', 'protecao', 'recuperacao', 'nivel_acesso', 'tempo_retencao_local', 'tempo_retencao_deposito', 'disposicao', 'avulso', 'formulario_id', 'setor_id'
+        'id', 'codigo', 'titulo', 'meio_distribuicao', 'local_armazenamento', 'protecao', 'recuperacao', 'nivel_acesso', 'tempo_retencao_local', 'tempo_retencao_deposito', 'disposicao', 'avulso', 'formulario_id', 'setor_id', 'local_armazenamento_id', 'disposicao_id', 'meio_distribuicao_id', 'protecao_id', 'recuperacao_id', 'tempo_retencao_deposito_id', 'tempo_retencao_local_id',
     ];
 
 

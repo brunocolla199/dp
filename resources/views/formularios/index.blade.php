@@ -155,20 +155,20 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('meio_distribuicao', 'MEIO') !!}
+                                                            {!! Form::label('meio_distribuicao_id', 'MEIO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('meio_distribuicao', Constants::$CONTROLE_REGISTROS_MEIO, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            {!! Form::select('meio_distribuicao_id', $meiosDistribuicao, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('local_armazenamento', 'ARMAZENAMENTO') !!}
+                                                            {!! Form::label('local_armazenamento_id', 'ARMAZENAMENTO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('local_armazenamento', Constants::$CONTROLE_REGISTROS_ARMAZENAMENTO, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            {!! Form::select('local_armazenamento_id', $locaisArmazenamento, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -178,20 +178,20 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('protecao', 'PROTEÇÃO') !!}
+                                                            {!! Form::label('protecao_id', 'PROTEÇÃO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('protecao', Constants::$CONTROLE_REGISTROS_PROTECAO, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            {!! Form::select('protecao_id', $protecao, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('recuperacao', 'RECUPERAÇÃO') !!}
+                                                            {!! Form::label('recuperacao_id', 'RECUPERAÇÃO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('recuperacao', Constants::$CONTROLE_REGISTROS_RECUPERACAO, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            {!! Form::select('recuperacao_id', $recuperacao, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -201,36 +201,20 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
+                                                            {!! Form::label('tempo_retencao_local_id', 'RETENÇÃO MÍNIMA - LOCAL') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            <select name="tempo_retencao_local" class="select2 m-b-10 select2-multiple" style="width: 100%" data-placeholder="Escolha..." required="required">
-                                                                @foreach (Constants::$CONTROLE_REGISTROS_RETENCAO_LOCAL as $key => $item)
-                                                                    <optgroup label="{{ $key }}">
-                                                                        @foreach ($item as $key => $opt)
-                                                                            <option value="{{ $key }}">{{ $opt }}</option>
-                                                                        @endforeach
-                                                                    </optgroup>
-                                                                @endforeach
-                                                            </select>
+                                                            {!! Form::select('tempo_retencao_local_id', $tempoRetLocal, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div> 
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
+                                                            {!! Form::label('tempo_retencao_deposito_id', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            <select name="tempo_retencao_deposito" class="select2 m-b-10 select2-multiple" style="width: 100%" data-placeholder="Escolha..." required="required">
-                                                                @foreach (Constants::$CONTROLE_REGISTROS_RETENCAO_ARQUIVO_MORTO as $key => $item)
-                                                                    <optgroup label="{{ $key }}">
-                                                                        @foreach ($item as $key => $opt)
-                                                                            <option value="{{ $key }}">{{ $opt }}</option>
-                                                                        @endforeach
-                                                                    </optgroup>
-                                                                @endforeach
-                                                            </select>
+                                                            {!! Form::select('tempo_retencao_deposito_id', $tempoRetDeposito, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -250,10 +234,10 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group required">
                                                         <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('disposicao', 'DISPOSIÇÃO') !!}
+                                                            {!! Form::label('disposicao_id', 'DISPOSIÇÃO') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::select('disposicao', Constants::$CONTROLE_REGISTROS_DISPOSICAO, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            {!! Form::select('disposicao_id', $disposicao, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div> 

@@ -2,21 +2,10 @@
 
 namespace App\Classes;
 
-use Illuminate\Http\Request;
-use App\Notificacao;
-use App\NotificacaoFormulario;
-use App\DadosDocumento;
-use App\AreaInteresseDocumento;
-use App\HistoricoDocumento;
-use App\HistoricoFormulario;
-use App\Formulario;
-use App\FormularioRevisao;
-use App\User;
-use App\Configuracao;
 use App\Classes\Constants;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Storage};
+use App\{Notificacao, NotificacaoFormulario, DadosDocumento, AreaInteresseDocumento, HistoricoDocumento, HistoricoFormulario, Formulario, FormularioRevisao, User, Configuracao, OpcoesControleRegistros};
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NecessitaRevisao;
@@ -171,6 +160,13 @@ class Helpers {
         }
 
         return false;
+    }
+
+
+
+    // Controle de Registros
+    static function getDescription($_id) {
+        return OpcoesControleRegistros::find($_id)->descricao;
     }
 
 

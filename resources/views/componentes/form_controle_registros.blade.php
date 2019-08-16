@@ -39,10 +39,10 @@
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-6 control-label font-bold">
-                {!! Form::label('meio_distribuicao', 'MEIO') !!}
+                {!! Form::label('meio_distribuicao_id', 'MEIO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('meio_distribuicao', Constants::$CONTROLE_REGISTROS_MEIO, !is_null($registro) ? $registro->meio_distribuicao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                {!! Form::select('meio_distribuicao_id', $meiosDistribuicao, !is_null($registro) ? $registro->meio_distribuicao_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -52,20 +52,20 @@
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-6 control-label font-bold">
-                {!! Form::label('local_armazenamento', 'ARMAZENAMENTO') !!}
+                {!! Form::label('local_armazenamento_id', 'ARMAZENAMENTO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('local_armazenamento', Constants::$CONTROLE_REGISTROS_ARMAZENAMENTO, !is_null($registro) ? $registro->local_armazenamento : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                {!! Form::select('local_armazenamento_id', $locaisArmazenamento, !is_null($registro) ? $registro->local_armazenamento_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-6 control-label font-bold">
-                {!! Form::label('protecao', 'PROTEÇÃO') !!}
+                {!! Form::label('protecao_id', 'PROTEÇÃO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('protecao', Constants::$CONTROLE_REGISTROS_PROTECAO, !is_null($registro) ? $registro->protecao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                {!! Form::select('protecao_id', $protecao, !is_null($registro) ? $registro->protecao_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -75,10 +75,10 @@
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-6 control-label font-bold">
-                {!! Form::label('recuperacao', 'RECUPERAÇÃO') !!}
+                {!! Form::label('recuperacao_id', 'RECUPERAÇÃO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('recuperacao', Constants::$CONTROLE_REGISTROS_RECUPERACAO, !is_null($registro) ? $registro->recuperacao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                {!! Form::select('recuperacao_id', $recuperacao, !is_null($registro) ? $registro->recuperacao_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -98,48 +98,20 @@
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-12 control-label font-bold">
-                {!! Form::label('tempo_retencao_local', 'RETENÇÃO MÍNIMA - LOCAL') !!}
+                {!! Form::label('tempo_retencao_local_id', 'RETENÇÃO MÍNIMA - LOCAL') !!}
             </div>
-            <div class="col-md-12">                
-                <select name="tempo_retencao_local" class="select2 m-b-10 select2-multiple" style="width: 100%" data-placeholder="Escolha..." required="required">
-                    @foreach (Constants::$CONTROLE_REGISTROS_RETENCAO_LOCAL as $key => $item)
-                        <optgroup label="{{ $key }}">
-                            @if ( !is_null($registro) )
-                                @foreach ($item as $key => $opt)
-                                    <option value="{{ $key }}" {{ $key == $registro->tempo_retencao_local ? 'selected' : '' }}>{{ $opt }}</option>
-                                @endforeach  
-                            @else
-                                @foreach ($item as $key => $opt)
-                                    <option value="{{ $key }}">{{ $opt }}</option>
-                                @endforeach
-                            @endif
-                        </optgroup>
-                    @endforeach
-                </select>
+            <div class="col-md-12">
+                {!! Form::select('tempo_retencao_local_id', $tempoRetLocal, !is_null($registro) ? $registro->tempo_retencao_local_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div> 
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-12 control-label font-bold">
-                {!! Form::label('tempo_retencao_deposito', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
+                {!! Form::label('tempo_retencao_deposito_id', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
             </div>
             <div class="col-md-12">
-                <select name="tempo_retencao_deposito" class="select2 m-b-10 select2-multiple" style="width: 100%" data-placeholder="Escolha..." required="required">
-                    @foreach (Constants::$CONTROLE_REGISTROS_RETENCAO_ARQUIVO_MORTO as $key => $item)
-                        <optgroup label="{{ $key }}">
-                            @if ( !is_null($registro) )
-                                @foreach ($item as $key => $opt)
-                                    <option value="{{ $key }}" {{ $key == $registro->tempo_retencao_deposito ? 'selected' : '' }}>{{ $opt }}</option>
-                                @endforeach  
-                            @else
-                                @foreach ($item as $key => $opt)
-                                    <option value="{{ $key }}">{{ $opt }}</option>
-                                @endforeach
-                            @endif
-                        </optgroup>
-                    @endforeach
-                </select>
+                {!! Form::select('tempo_retencao_deposito_id', $tempoRetDeposito, !is_null($registro) ? $registro->tempo_retencao_deposito_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div>
@@ -149,10 +121,10 @@
     <div class="col-md-6">
         <div class="form-group">
             <div class="col-md-6 control-label font-bold">
-                {!! Form::label('disposicao', 'DISPOSIÇÃO') !!}
+                {!! Form::label('disposicao_id', 'DISPOSIÇÃO') !!}
             </div>
             <div class="col-md-12">
-                {!! Form::select('disposicao', Constants::$CONTROLE_REGISTROS_DISPOSICAO, !is_null($registro) ? $registro->disposicao : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                {!! Form::select('disposicao_id', $disposicao, !is_null($registro) ? $registro->disposicao_id : null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
             </div>
         </div>
     </div> 

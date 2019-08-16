@@ -9,8 +9,8 @@ use App\Jobs\SendEmailsJob;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DadosNovoFormularioRequest;
-use Illuminate\Support\Facades\{Auth, DB, Mail, Validator, View};
-use App\{GrupoDivulgacaoFormulario, GrupoDivulgacao, Setor, Documento, Formulario, DocumentoFormulario, FormularioRevisao, HistoricoFormulario, NotificacaoFormulario, TipoDocumento, Configuracao, User, WorkflowFormulario, ControleRegistro};
+use Illuminate\Support\Facades\{Auth, DB, Mail, Log, Validator, View};
+use App\{GrupoDivulgacaoFormulario, GrupoDivulgacao, Setor, Documento, Formulario, DocumentoFormulario, FormularioRevisao, HistoricoFormulario, NotificacaoFormulario, TipoDocumento, Configuracao, User, WorkflowFormulario, ControleRegistro, OpcoesControleRegistros};
 
 
 class FormulariosController extends Controller
@@ -35,9 +35,21 @@ class FormulariosController extends Controller
             $setoresUsuarios[$setor->nome] = $arrUsers;
         }
         
-        $formularios       = $this->getFormsIndex();
+        $locaisArmazenamento = $this->getOption('LOCAL_ARMAZENAMENTO');
+        $disposicao          = $this->getOption('DISPOSICAO');
+        $meiosDistribuicao   = $this->getOption('MEIO_DISTRIBUICAO');
+        $protecao            = $this->getOption('PROTECAO');
+        $recuperacao         = $this->getOption('RECUPERACAO');
+        $tempoRetDeposito    = $this->getOption('TEMPO_RETENCAO_DEPOSITO');
+        $tempoRetLocal       = $this->getOption('TEMPO_RETENCAO_LOCAL');
 
-        return view('formularios.index', ['formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
+        $formularios = $this->getFormsIndex();
+
+        return view('formularios.index', [
+            'formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 
+            'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status, 'locaisArmazenamento' => $locaisArmazenamento, 'disposicao' => $disposicao, 
+            'meiosDistribuicao' => $meiosDistribuicao, 'protecao' => $protecao, 'recuperacao' => $recuperacao, 'tempoRetDeposito' => $tempoRetDeposito, 'tempoRetLocal' => $tempoRetLocal,
+        ]);
     }
 
     public function filterFormsIndex(Request $request){
@@ -58,10 +70,22 @@ class FormulariosController extends Controller
             }
             $setoresUsuarios[$setor->nome] = $arrUsers;
         }
+        
+        $locaisArmazenamento = $this->getOption('LOCAL_ARMAZENAMENTO');
+        $disposicao          = $this->getOption('DISPOSICAO');
+        $meiosDistribuicao   = $this->getOption('MEIO_DISTRIBUICAO');
+        $protecao            = $this->getOption('PROTECAO');
+        $recuperacao         = $this->getOption('RECUPERACAO');
+        $tempoRetDeposito    = $this->getOption('TEMPO_RETENCAO_DEPOSITO');
+        $tempoRetLocal       = $this->getOption('TEMPO_RETENCAO_LOCAL');
 
-        $formularios       = $this->filterListForms($request->all());
+        $formularios = $this->filterListForms($request->all());
 
-        return view('formularios.index', ['formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status]);
+        return view('formularios.index', [
+            'formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso,
+            'status' => $status, 'locaisArmazenamento' => $locaisArmazenamento, 'disposicao' => $disposicao, 'meiosDistribuicao' => $meiosDistribuicao, 'protecao' => $protecao, 
+            'recuperacao' => $recuperacao, 'tempoRetDeposito' => $tempoRetDeposito, 'tempoRetLocal' => $tempoRetLocal,
+        ]);
     }
     
     public function validateData(DadosNovoFormularioRequest $request) {
@@ -74,7 +98,7 @@ class FormulariosController extends Controller
     
         $codigo_final = $tipoDocumento[0]->sigla."-";
         $codigo = 0;
-        if( count($qtdForms) <= 0 )  {
+        if( $qtdForms <= 0 )  {
             $codigo = $this->buildCodDocument(1);
         } else { 
             $codigo = $this->buildCodDocument($qtdForms + 1);
@@ -356,6 +380,16 @@ class FormulariosController extends Controller
             $value->delete();
         }
 
+        // Marca o registro deste formulário, na tabela de controle de registros, como 'inativo' (ATIVO = FALSE)
+        $registro = ControleRegistro::where('formulario_id', $formulario->id)->first();
+        try {
+            $registro->ativo = false;
+            $registro->save();
+        } catch (\Throwable $th) {
+            Log::debug("Erro ao marcar o registro do formulário {$formulario->id} como inativo - [Id: $registro->id]");
+            Log::error($th->errorInfo);
+        }
+
         // Notificações para todos os usuários envolvidos com o formulário                       
         $elaborador = User::where('id', '=', $formulario->elaborador_id)->get();
 
@@ -387,6 +421,16 @@ class FormulariosController extends Controller
         $formulario = Formulario::where('id', '=', $request->form_id)->first();
         $formulario->obsoleto = false;
         $formulario->save();
+
+        // Marca o registro deste formulário, na tabela de controle de registros, como 'ativo' (ATIVO = TRUE)
+        $registro = ControleRegistro::where('formulario_id', $formulario->id)->first();
+        try {
+            $registro->ativo = true;
+            $registro->save();
+        } catch (\Throwable $th) {
+            Log::debug("Erro ao marcar o registro do formulário {$formulario->id} como ativo - [Id: $registro->id]");
+            Log::error($th->errorInfo);
+        }
 
         return redirect()->route('formularios')->with('make_active_form', 'msg');
     }
@@ -446,8 +490,19 @@ class FormulariosController extends Controller
 
         // Controle de Registros
         $registro = ControleRegistro::firstOrNew(['formulario_id' => $formulario->id]);
+        
+        $locaisArmazenamento = $this->getOption('LOCAL_ARMAZENAMENTO');
+        $disposicao          = $this->getOption('DISPOSICAO');
+        $meiosDistribuicao   = $this->getOption('MEIO_DISTRIBUICAO');
+        $protecao            = $this->getOption('PROTECAO');
+        $recuperacao         = $this->getOption('RECUPERACAO');
+        $tempoRetDeposito    = $this->getOption('TEMPO_RETENCAO_DEPOSITO');
+        $tempoRetLocal       = $this->getOption('TEMPO_RETENCAO_LOCAL');
 
-        return view('formularios.update-info', compact('formulario', 'setoresUsuarios', 'usuarioExistentesGrupoDivulgacaoFormulario', 'registro') );
+        return view('formularios.update-info', compact(
+            'formulario', 'setoresUsuarios', 'usuarioExistentesGrupoDivulgacaoFormulario', 'registro', 'locaisArmazenamento', 'disposicao', 
+            'meiosDistribuicao', 'protecao', 'recuperacao', 'tempoRetDeposito', 'tempoRetLocal'
+        ));
     }
 
 
@@ -479,7 +534,7 @@ class FormulariosController extends Controller
                     $_request->all()
                 );
             } catch (\Throwable $e) {
-                dd($e);
+                Log::error($e->errorInfo);
             }
 
             
@@ -939,15 +994,15 @@ class FormulariosController extends Controller
 
     private function makeValidator(Request $request) {
         $validator = Validator::make($request->all(), [
-            'tituloFormulario'        => 'required|string|max:350',
-            'meio_distribuicao'       => 'required|string|max:150',
-            'local_armazenamento'     => 'required|string|max:150',
-            'protecao'                => 'required|string|max:150',
-            'recuperacao'             => 'required|string|max:150',
-            'nivelAcessoFormulario'   => 'required|string|max:20',
-            'tempo_retencao_local'    => 'required|string|max:150',
-            'tempo_retencao_deposito' => 'required|string|max:150',
-            'disposicao'              => 'required|string|max:150'
+            'tituloFormulario'           => 'required|string|max:350',
+            'meio_distribuicao_id'       => 'required|integer',
+            'local_armazenamento_id'     => 'required|integer',
+            'protecao_id'                => 'required|integer',
+            'recuperacao_id'             => 'required|integer',
+            'nivelAcessoFormulario'      => 'required|string|max:20',
+            'tempo_retencao_local_id'    => 'required|integer',
+            'tempo_retencao_deposito_id' => 'required|integer',
+            'disposicao_id'              => 'required|integer'
         ]);
 
         if( $validator->fails() ) {
@@ -957,6 +1012,10 @@ class FormulariosController extends Controller
         }
 
         return true;
+    }
+
+    private function getOption($_key) {
+        return OpcoesControleRegistros::where('campo', $_key)->where('ativo', true)->orderBy('descricao')->get()->pluck('descricao', 'id');
     }
 
     

@@ -28,15 +28,15 @@ class DadosNovoFormularioRequest extends FormRequest
             'action'              => 'required|max:7|min:5',
             
             // Controle de Registros
-            'setor_dono_form'         => 'required|integer',
-            'nivelAcessoDocumento'    => 'required|string|max:20',
-            'meio_distribuicao'       => 'required|string|max:150',
-            'local_armazenamento'     => 'required|string|max:150',
-            'protecao'                => 'required|string|max:150',
-            'recuperacao'             => 'required|string|max:150',
-            'tempo_retencao_local'    => 'required|string|max:150',
-            'tempo_retencao_deposito' => 'required|string|max:150',
-            'disposicao'              => 'required|string|max:150'
+            'setor_dono_form'            => 'required|integer',
+            'nivelAcessoDocumento'       => 'required|string|max:20',
+            'meio_distribuicao_id'       => 'required|integer',
+            'local_armazenamento_id'     => 'required|integer',
+            'protecao_id'                => 'required|integer',
+            'recuperacao_id'             => 'required|integer',
+            'tempo_retencao_local_id'    => 'required|integer',
+            'tempo_retencao_deposito_id' => 'required|integer',
+            'disposicao_id'              => 'required|integer'
         ];
     }
 

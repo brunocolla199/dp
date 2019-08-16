@@ -225,8 +225,12 @@
                             <li class="{{ (\Request::is('formularios/*')) ? 'active' : '' }}">
                                 <a class="waves-effect waves-dark {{ (\Request::is('formularios/*')) ? 'active' : '' }}" href="{{ url('/formularios') }}" aria-expanded="false"><i class="mdi mdi-file-document"></i><span class="hide-menu">Formulários </span></a>    
                             </li>
-                            <li class="{{ (\Request::is('controle-registros/*')) ? 'active' : '' }}">
-                                <a class="waves-effect waves-dark {{ (\Request::is('controle-registros/*')) ? 'active' : '' }}" href="{{ route('controle-registros') }}" aria-expanded="false"><i class="mdi mdi-format-list-bulleted-type"></i><span class="hide-menu">Controle Registros </span></a>    
+                            <li>
+                                <a class="has-arrow waves-effect waves-dark {{ (\Request::is('controle-registros/*')) ? 'active' : '' }}" href="#3" aria-expanded="false"><i class="mdi mdi-format-list-bulleted-type"></i><span class="hide-menu">Controle Registros </span></a> 
+                                <ul aria-expanded="false" class="collapse">
+                                    <li><a href="{{ route('controle-registros.index-options') }}"> Cadastro </a></li>
+                                    <li><a href="{{ route('controle-registros') }}"> Formulários </a></li>
+                                </ul>
                             </li>
                             <li class="{{ (\Request::is('documentos-externos/*')) ? 'active' : '' }}">
                                 <a class="waves-effect waves-dark {{ (\Request::is('documentos-externos/*')) ? 'active' : '' }}" href="{{ route('documentos-externos') }}" aria-expanded="false"><i class="mdi mdi-file-cloud"></i><span class="hide-menu">Documentos Externos </span></a>    
