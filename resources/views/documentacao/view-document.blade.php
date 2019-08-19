@@ -426,12 +426,12 @@
 
                                         <div class="card">
                                             <div class="card-body">
-                                                <h4 class="card-title"> Upload de lista de presença </h4>
+                                                <h4 class="card-title"> Upload de lista de presença <small>- Apenas arquivos <span class="font-weight-bold">pdf</span> são aceitos.</small> </h4>
                                                 <label for="input-file-now">Por favor, anexe a lista de presença do documento <b>{{ $nome }}</b> .</label>
                                                 {!! Form::hidden('documento_id', $document_id) !!}
-                                                {!! Form::hidden('nome_lista', "Lista Presença - " . $nome) !!}
+                                                {!! Form::hidden('nome_lista', $nome) !!}
                                                 
-                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf']) !!}
                                             </div>
                                         </div>
                                         <div class="col-md-12">

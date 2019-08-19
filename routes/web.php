@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('update-info', 					['as' => 'documentacao.update-info',					'uses' => 'Documentacao\DocumentacaoController@updateInfo']);
 
 		Route::post('replace-document',				['as' => 'documentacao.replace-document',				'uses' => 'Documentacao\DocumentacaoController@replaceDocument']);
+		Route::get('{document}/listas-presença',	['as' => 'documentacao.presence-lists',					'uses' => 'Documentacao\DocumentacaoController@indexPresenceLists']);
 	});
 	
 	

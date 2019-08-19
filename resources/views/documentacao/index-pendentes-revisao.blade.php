@@ -114,6 +114,10 @@
                                                                 @foreach($documentos_vencidos as $docVenc)
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                <a href="{{ route('documentacao.presence-lists', ['id' => $docVenc->id]) }}" class="mr-3"> <i class="fa fa-file-text-o text-primary" data-toggle="tooltip" data-original-title="Ver Listas de Presença"></i> </a>     
+                                                                            @endif
+
                                                                             @if( Auth::user()->permissao_elaborador )
                                                                                 <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docVenc->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
                                                                             @endif

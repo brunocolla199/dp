@@ -458,6 +458,10 @@
                                                                 @foreach($documentos_nao_finalizados as $doc)
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                <a href="{{ route('documentacao.presence-lists', ['id' => $doc->id]) }}" class="mr-3"> <i class="fa fa-file-text-o text-primary" data-toggle="tooltip" data-original-title="Ver Listas de Presença"></i> </a>     
+                                                                            @endif
+                                                                            
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $doc->elaborador_id && $doc->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ) )
                                                                                 <a href="{{ route('documentacao.edit-info', ['id' => $doc->id]) }}"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
                                                                             @endif
@@ -495,6 +499,8 @@
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                <a href="{{ route('documentacao.presence-lists', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-file-text-o text-primary" data-toggle="tooltip" data-original-title="Ver Listas de Presença"></i> </a>     
+                                                                            
                                                                                 <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
 
                                                                                 <a href="#" class="m-r-15" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>

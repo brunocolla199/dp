@@ -976,6 +976,13 @@ class DocumentacaoController extends Controller
     }
 
 
+    public function indexPresenceLists(Documento $document) {
+        $documentName  = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $document->nome)[0];
+        $presenceLists = ListaPresenca::where('documento_id', $document->id)->get();
+        return view('documentacao.index-presence-lists', compact('documentName', 'presenceLists'));
+    }
+
+
 
     /*
     *  WORKFLOW      
@@ -1276,8 +1283,8 @@ class DocumentacaoController extends Controller
 
     public function salvaListaPresenca(Request $request) {
         /**
-         * Novo comportamento do método:
-         *  1. Salva a lista de presença da mesma forma como era feito anteriormente
+         * Novos comportamentos do método:
+         *  1. Salva a lista de presença da mesma forma como era feito anteriormente (porém salvando a revisão do documento em que ela foi anexada)
          *      1.1. Porém, nesse ponto deve-se popular a nova coluna da tabela 'lista_presenca' que armazena os destinatários que receberam o e-mail com a lista de presença em anexo
          *      1.2. Envia um e-mail para todos os integrantes do setor do Capital Humano com a permissão de "Aprovar Lista de Presença" habilitada
          *      1.3. Grava no histórico do documento os usuários que receberam o e-mail
@@ -1290,7 +1297,7 @@ class DocumentacaoController extends Controller
         $dados_doc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
         $file       = $request->file('doc_uploaded', 'local');
         $extensao   = $file->getClientOriginalExtension();
-        $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista);
+        $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $dados_doc->revisao);
 
         $usuariosCapitalHumanoComPermissaoParaAprovarLista = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
         $usuariosSetorQualidade                            = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
@@ -1314,6 +1321,7 @@ class DocumentacaoController extends Controller
         $lista->data                = date('d/m/Y');
         $lista->documento_id        = $idDoc;
         $lista->destinatarios_email = $emailsParaExibir;
+        $lista->revisao_documento   = $dados_doc->revisao;
         $lista->save();
 
         // #1.2 | [E-mail -> (7)]      
@@ -1347,18 +1355,22 @@ class DocumentacaoController extends Controller
 
         // Notificações
         \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->elaborador_id, $idDoc);
+        
+        if($dados_doc->elaborador_id != $dados_doc->aprovador_id) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->aprovador_id, $idDoc);
+        }
 
         foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+            if( $user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id ) \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
         }
 
         if( count($usuariosAreaInteresseDocumento) > 0  ) {
             foreach ($usuariosAreaInteresseDocumento as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+                if( $user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id  &&  $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+                }
             }
         }
-
-        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->aprovador_id, $idDoc);
         
 
         // [E-mail -> (3)]  

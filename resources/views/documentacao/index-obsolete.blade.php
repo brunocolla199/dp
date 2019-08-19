@@ -115,7 +115,11 @@
                                                                 @foreach($documentos_finalizados as $docF)
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
-                                                                            <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Documento"></i> </a> 
+                                                                            @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                <a href="{{ route('documentacao.presence-lists', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-file-text-o text-primary" data-toggle="tooltip" data-original-title="Ver Listas de Presença"></i> </a>     
+                                                                            @endif
+
+                                                                            <a href="javascript:void(0)" class="btn-ativar-documento-modal ml-2" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-success" data-toggle="tooltip" data-original-title="Ativar Documento"></i> </a> 
                                                                         </td>
 
                                                                         <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
