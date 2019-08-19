@@ -48,6 +48,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($this->isHttpException($exception)) {
+            if ($exception->getStatusCode() == 404) {
+                return response()->view('errors.error-custom-production', [], 404);
+            }
+        }    
+
         return parent::render($request, $exception);
         // return response()->view('errors.error-custom-production'); 
     }

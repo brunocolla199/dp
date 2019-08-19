@@ -31,11 +31,11 @@
     <section id="wrapper" class="error-page">
         <div class="error-box">
             <div class="error-body text-center">
-                <h1>Erro</h1>
-                <h3 class="text-uppercase">O sistema gerou um erro interno. Por favor, entre em contato com o suporte !</h3>
-                <p class="text-muted m-t-30 m-b-30"> <b>(54) 2107-9100</b> | <b> contato@speedsoftware.com.br</b></p>
+                <h1>Não Encontrado</h1>
+                <h3 class="text-uppercase">Não foi possível encontrar o documento acessado. Por favor, entre em contato com o suporte !</h3>
+                <p class="text-muted m-t-30 m-b-30"> <b>(54) 2107-9105</b> | <b> <a href="mailto:suporte@weecode.com.br?Subject=Página%20Não%20Encontrada"> suporte@weecode.com.br</a></b></p>
                 <a href="{{ route('documentacao') }}" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Voltar para a tela de documentação</a> </div>
-            <footer class="footer text-center">© <a href="http://speedsoftware.com.br/" target="_blank">Speed Softwares</a></footer>
+            <footer class="footer text-center">© <a href="https://weecode.com.br/site/" target="_blank">Weecode</a></footer>
         </div>
     </section>
     <!-- ============================================================== -->
