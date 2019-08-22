@@ -285,17 +285,32 @@ class FormulariosController extends Controller
 
         $revisaoNova = (int) $formulario[0]->revisao + 1;
         $revisaoNova = ($revisaoNova <= 9) ? "0{$revisaoNova}" : $revisaoNova;
-        $filename = ($request->newTituloFormulario == $formulario[0]->nome) ? $request->newTituloFormulario . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova : $request->newTituloFormulario;
-        $fullFilename = $filename .".". $extensao;
+        
+        $oldName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
+        $newName = $request->newTituloFormulario;
+        $filename = ($newName != $oldName) ? $newName : $oldName;
+        $fullFilename = $filename . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova .".". $extensao;
 
         // Salva nova revisão do formulário (mantém o arquivo origianl e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
         \Storage::disk('speed_office')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
         
+        $oldCode = $formulario[0]->codigo;
+        $newCode = $request->newCodigoFormulario;
+
         $formulario[0]->nome_completo_em_revisao = $fullFilename;
         $formulario[0]->nome                     = $filename;
         $formulario[0]->extensao                 = $extensao;
-        $formulario[0]->codigo                   = $request->newCodigoFormulario;
+        $formulario[0]->codigo                   = $newCode;
         $formulario[0]->save();
+
+        if( $oldCode != $newCode ) {
+            $notifications = NotificacaoFormulario::where('formulario_id', $idForm)->where('texto', 'LIKE', "%$oldCode%")->get();
+            foreach ($notifications as $key => $notify) {
+                $newText = str_replace($oldCode, $newCode, $notify->texto);
+                $notify->texto = $newText;
+                $notify->save();
+            }
+        }
 
         $workflowForm[0]->etapa_num    = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
         $workflowForm[0]->etapa        = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
@@ -468,7 +483,7 @@ class FormulariosController extends Controller
     public function editInfo($_id) {        
         // Formulário
         $formulario = Formulario::where('id', '=', $_id)->select('id', 'nome', 'codigo', 'nivel_acesso')->first();
-        $formulario->nome = explode("_rev", $formulario->nome)[0];
+        $formulario->nome = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario->nome)[0];
         $formulario['nivel_acesso_fake_id'] = ($formulario->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_LIVRE) ? 0 : 1;
 
         // Usuários (com setor): Grupo de Divulgação do Formulário

@@ -81,14 +81,14 @@
                                         <div class="form-group row">
                                             <label for="codigoFormulario" class="col-sm-3 text-right control-label col-form-label"><b>CÓDIGO: </b></label>
                                             <div class="col-md-9">
-                                                <input name="codigoFormulario" id="codigoFormulario" type="text" class="form-control" value=" {{ $codigoFormulario }} " style="max-width: 50%; float: left; margin-left: -5%;">
+                                                <input name="codigoFormulario" id="codigoFormulario" type="text" class="form-control" value="{{ $codigoFormulario }}" style="max-width: 50%; float: left; margin-left: -5%;">
                                             </div>
                                         </div>
                                     </div>
                                 @else
                                     <div class="col-md-6">
                                         <p class="pull-left"><b>CÓDIGO: </b>{{ $codigoFormulario }}  </p>
-                                        <input name="codigoFormulario" id="codigoFormulario" type="hidden" value=" {{ $codigoFormulario }} ">
+                                        <input name="codigoFormulario" id="codigoFormulario" type="hidden" value="{{ $codigoFormulario }}">
                                     </div>
                                 @endif
 
@@ -203,13 +203,23 @@
                 showToast('Opa!', 'Importe um documento antes de salvar!', 'warning');
                 return;
             }
-
-            $(this).prop('disable', true).attr('disabled', 'disabled');
-
+            
             var codigoFormulario = $("#codigoFormulario").val();
-
-            $("#form-upload-form").append("<input type='hidden' name='codigoFormulario' value='"+codigoFormulario+"' >")
-            $("#form-upload-form").submit();
+            let obj = {'codigo': codigoFormulario};
+            ajaxMethod('POST', " {{ URL::route('ajax.formularios.checkIfCodeExists') }} ", obj).then(function(result) {
+                if(result.exist) {
+                    showToast('Opa!', 'Já existe um formulário utilizando esse código!', 'error');
+                    return;
+                }
+                
+                $(this).prop('disable', true).attr('disabled', 'disabled');
+    
+                $("#form-upload-form").append("<input type='hidden' name='codigoFormulario' value='"+codigoFormulario+"' >")
+                $("#form-upload-form").submit();
+            }, function(err) {
+                showToast('Opa!', 'Não conseguimos verificar se existe um formulário com esse código. Por favor, contate o suporte técnico!', 'warning');
+                return;
+            });
         });
     </script>
 

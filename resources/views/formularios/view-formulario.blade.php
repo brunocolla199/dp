@@ -68,7 +68,7 @@
                 <!-- Card Principal -->
                 <div class="col-12">
                     <div class="card">
-                        <div class=" card-body">
+                        <div class="card-body">
 
                             <!-- Timeline do Formulário -->
                             <div class="row">
@@ -183,15 +183,15 @@
 
                                 @elseif($justificativaRejeicaoForm == "" && $em_revisao)
 
-                                    {{ Form::open(['route' => 'formularios.send-new-review', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
+                                    {{ Form::open(['route' => 'formularios.send-new-review', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'id' => 'form-new-review']) }}
                                         <div class="row">
                                             <div class="col-md-8">
                                                 <div class="col-md-12">
                                                     <div class="row card">
                                                         <div class="card-body">
                                                             <h4 class="card-title"> Upload da nova revisão do formulário </h4>
-                                                            <label for="input-file-now">Por favor, anexe a nova revisão do formulário  <b>{{ $nome }}</b> .</label>                                                            
-                                                            {!! Form::file('new_review_form', ['class' => 'dropify', 'id' => 'new_form', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required' => 'required']) !!}
+                                                            <label for="input-file-now">Por favor, anexe a nova revisão do formulário  <b>{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $nome)[0] }}</b> .</label>                                                            
+                                                            {!! Form::file('new_review_form', ['class' => 'dropify', 'id' => 'new_review_form', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls', 'required' => 'required']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -211,7 +211,7 @@
                                                             {!! Form::label('newTituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
                                                         </div>
                                                         <div class="col-md-12">
-                                                            {!! Form::text('newTituloFormulario', $nome, ['class' => 'form-control']) !!}
+                                                            {!! Form::text('newTituloFormulario', explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $nome)[0], ['class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     
@@ -228,7 +228,7 @@
                                                 <div class="col-md-12 pull-right">    
                                                     {{ Form::hidden('formulario_id', $formulario_id) }}
                                                     {{ Form::hidden('etapa_form', $etapa_form) }}
-                                                    {!! Form::button('ENVIAR <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
+                                                    {!! Form::button('ENVIAR <i class="fa fa-send"></i>', ['id' => 'btn-send-new-review', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
                                                 </div>
                                             </div>    
                                         </div>
@@ -478,7 +478,12 @@
         
         var obj = {'form_id': form_id, 'new_code': newCode};
         ajaxMethod('POST', " {{ URL::route('ajax.formularios.updateCode') }} ", obj).then(function(result) {
-            showToast("Sucesso!", "O código do formulário foi atualizado com sucesso.", 'success');
+            if(result.response === 'success') {
+                showToast("Sucesso!", "O código do formulário foi atualizado com sucesso.", 'success');
+            } else {
+                if( 'errorInfo' in result.response && result.response.errorInfo[0] === "23505" ) showToast('Opa!', 'Já existe um formulário utilizando esse código!', 'error');
+                else showToast('Opa!', 'Não conseguimos verificar se existe um formulário com esse código. Por favor, contate o suporte técnico!', 'warning');
+            }
         }, function(err) {
             console.log(err);
         });
@@ -528,6 +533,30 @@
         $('iframe').map((key, iframe) => $(iframe).attr('src', $(iframe).attr('data-src')));
         $('.iframe_box').unblock();
     }, 8000);
+
+    // Click no botão para enviar a nova revisão do formulário
+    $("#btn-send-new-review").on('click', function() {
+        let valueInputFile = $("#new_review_form").val();
+        if( !valueInputFile ) {
+            showToast('Opa!', 'Importe o formulário antes de enviar!', 'warning');
+            return;
+        }
+        
+        let formId  = $('input[name=formulario_id]').val();
+        let newCode = $('#newCodigoFormulario').val();
+        var obj = {'codigo': newCode, 'formulario_id': formId};
+        ajaxMethod('POST', " {{ URL::route('ajax.formularios.checkIfCodeExists') }} ", obj).then(function(result) {
+            if(result.exist) {
+                showToast('Opa!', 'Já existe um formulário utilizando esse código!', 'error');
+                return;
+            }
+            
+            $("#form-new-review").submit();
+        }, function(err) {
+            console.log(err);
+            showToast('Opa!', 'Não conseguimos verificar se existe um formulário com esse código. Por favor, contate o suporte técnico!', 'warning');
+        });
+    });
 
 </script>
 

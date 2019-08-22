@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\{User, Setor, DocumentoObservacao, Documento, DadosDocumento, Anexo, Classes\Constants, AreaInteresseDocumento, DocumentoFormulario, Formulario, FormularioRevisao, Notificacao, NotificacaoFormulario, CopiaControlada, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ControleRegistro};
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\{Auth, DB, Log, Storage};
 
 class AjaxController extends Controller
 {
@@ -339,15 +337,50 @@ class AjaxController extends Controller
 
 
     public function updateCode(Request $request) {
-        $form = Formulario::find($request->form_id);
-        $form->codigo = $request->new_code;
-        $form->save();
+        try {
+            $form = Formulario::find($request->form_id);
+            $oldCode = $form->codigo;
 
-        $recordControl = ControleRegistro::where('formulario_id', $form->id)->first();
-        $recordControl->codigo = $form->codigo;
-        $recordControl->save();
+            $form->codigo = $request->new_code;
+            $form->save();
+
+            $notifications = NotificacaoFormulario::where('formulario_id', $form->id)->where('texto', 'LIKE', "%$oldCode%")->get();
+            foreach ($notifications as $key => $notify) {
+                $newText = str_replace($oldCode, $form->codigo, $notify->texto);
+                $notify->texto = $newText;
+                $notify->save();
+            }
+    
+            $recordControl = ControleRegistro::where('formulario_id', $form->id)->first();
+            if( !empty($recordControl) ) {
+                $recordControl->codigo = $form->codigo;
+                $recordControl->save();
+            }
         
-        return response()->json(['response' => 'success']);
+            return response()->json(['response' => 'success']);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['response' => $th]);
+        }
+    }
+
+
+    public function checkIfCodeExists(Request $request) {
+        $exist = false;
+
+        if( array_key_exists('formulario_id', $request->all()) ) {
+            $forms = Formulario::where('codigo', $request->codigo)->get();
+            if( $forms->count() > 0 )  {
+                foreach ($forms as $form) {
+                    if($form->id != $request->formulario_id) $exist = true;
+                }
+            }
+        } else {
+            $forms = Formulario::where('codigo', $request->codigo)->get();
+            if( $forms->count() > 0 ) $exist = true;
+        }
+
+        return response()->json(['exist' => $exist]);
     }
 
 
