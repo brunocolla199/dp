@@ -139,7 +139,7 @@
                                                 <div class="card-body">
                                                     <h4 class="card-title"> Upload de formulários </h4>
                                                     <label for="input-file-now">Por favor, anexe o arquivo que você deseja controlar dentro do sistema.</label>
-                                                    {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'required' => 'required', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                    {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'required' => 'required', 'data-allowed-file-extensions'=>'doc docx xlsx xls']) !!}
                                                     
                                                     {!! Form::hidden('nivel_acesso',                $nivelAcessoDocumento) !!}
                                                     {!! Form::hidden('setor_dono_form',             $setorDono) !!}                                             
