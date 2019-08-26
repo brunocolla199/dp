@@ -287,18 +287,18 @@ class FormulariosController extends Controller
         $revisaoNova = ($revisaoNova <= 9) ? "0{$revisaoNova}" : $revisaoNova;
         
         $oldName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
-        $newName = $request->newTituloFormulario;
+        $newName = \App\Classes\Helpers::instance()->escapeFilename($request->newTituloFormulario);
         $filename = ($newName != $oldName) ? $newName : $oldName;
         $fullFilename = $filename . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova .".". $extensao;
 
-        // Salva nova revisão do formulário (mantém o arquivo origianl e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
+        // Salva nova revisão do formulário (mantém o arquivo original e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
         \Storage::disk('speed_office')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
         
         $oldCode = $formulario[0]->codigo;
         $newCode = $request->newCodigoFormulario;
 
         $formulario[0]->nome_completo_em_revisao = $fullFilename;
-        $formulario[0]->nome                     = $filename;
+        $formulario[0]->nome                     = $filename . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova;
         $formulario[0]->extensao                 = $extensao;
         $formulario[0]->codigo                   = $newCode;
         $formulario[0]->save();
@@ -528,11 +528,14 @@ class FormulariosController extends Controller
         } else {
             $idForm      = (int) $_request->form_id;
             $nivelAcesso = ($_request->nivelAcessoFormulario == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : Constants::$NIVEL_ACESSO_DOC_RESTRITO;
-            $formulario  = Formulario::where('id', '=', $idForm)->first();
+            $formulario  = Formulario::find($idForm);
             $oldName     = $formulario->nome;
-            $revisaoText = "_rev".last(explode("_rev", $formulario->nome));
-            $formulario->nivel_acesso        = $nivelAcesso;
-            $formulario->nome                = $_request->tituloFormulario.$revisaoText;
+
+            $values      = explode("_rev", $formulario->nome);
+            $revisaoText = Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . end($values);
+
+            $formulario->nivel_acesso  = $nivelAcesso;
+            $formulario->nome          = \App\Classes\Helpers::instance()->escapeFilename($_request->tituloFormulario) . $revisaoText;
             $formulario->save();
             
             // Controle de Registros
@@ -557,6 +560,12 @@ class FormulariosController extends Controller
             $filename =  \App\Classes\Helpers::instance()->escapeFilename($formulario->nome);
             if( $oldName .".". $formulario->extensao !=  $filename .".". $formulario->extensao) {
                 \Storage::disk('speed_office')->move('/formularios/'.$oldName .".". $formulario->extensao, '/formularios/'.$filename .".". $formulario->extensao);
+
+                // Esse valor é utilizado quando um usuário do setor de Processos está visualizando um formulário em revisão. Por isso, se o form estiver em revisão e o valor for diferente de nulo, ele deve ser atualizado (para que não ocorra erro nessa visualização).
+                if( $formulario->em_revisao && !is_null($formulario->nome_completo_em_revisao) ) {
+                    $formulario->nome_completo_em_revisao = $filename . "." . $formulario->extensao;
+                    $formulario->save();
+                }
             }
             
             // Grupo de Divulgação do Formulário
@@ -752,18 +761,25 @@ class FormulariosController extends Controller
         
         $idForm = $request->formulario_id;
         $file   = $request->file('new_form', 'local');
-        $formulario     = Formulario::where('id', '=', $idForm)->get();
-        $workflow_form  = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
-        $filename = \App\Classes\Helpers::instance()->escapeFilename($formulario[0]->nome);
+        $formulario    = Formulario::find($idForm);
+        $workflow_form = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
+        $filename      = \App\Classes\Helpers::instance()->escapeFilename($formulario->nome); // Teoricamente, isso não seria necessário se garantíssemos que nenhum título de formulário seria salvo sem passar por essa função, mas...
 
         // Exclui Formulário Antigo
-        \Storage::disk('speed_office')->delete('formularios/' . $formulario[0]->nome . "." . $formulario[0]->extensao);
+        \Storage::disk('speed_office')->delete('formularios/' . $formulario->nome . "." . $formulario->extensao);
 
-        // Salva novo formulário com o mesmo nome
-        \Storage::disk('speed_office')->put('formularios/' . $filename . "." . $formulario[0]->extensao, file_get_contents($file), 'private');
-        
-        $formulario[0]->nome = $filename;
-        $formulario[0]->save();
+        // Salva novo formulário com o mesmo nome (mas com a extensão do arquivo enviado, que pode ser diferente da anterior)
+        $currentFileExtension = $file->getClientOriginalExtension();
+        \Storage::disk('speed_office')->put('formularios/' . $filename . "." . $currentFileExtension, file_get_contents($file), 'private');
+
+
+        if( $currentFileExtension != $formulario->extensao ) {
+            $formulario->extensao                 = $currentFileExtension;
+            $formulario->nome_completo_em_revisao = $filename . "." . $currentFileExtension;
+        }
+
+        $formulario->nome = $filename;
+        $formulario->save();
 
         $workflow_form[0]->etapa_num     = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM;
         $workflow_form[0]->etapa         = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE;
@@ -773,15 +789,15 @@ class FormulariosController extends Controller
         // Notificações
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " precisa ser analisado.", true, $user->id, $idForm);
+            \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario->codigo . " precisa ser analisado.", true, $user->id, $idForm);
         }
 
         // [E-mail -> (10)]
-        $setor = Setor::where('id', '=', $formulario[0]->setor_id)->select('nome')->get();
-        $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('name')->get();
+        $setor = Setor::where('id', '=', $formulario->setor_id)->select('nome')->get();
+        $elaborador = User::where('id', '=', $formulario->elaborador_id)->select('name')->get();
 
         $icon = "info";
-        $contentF1_P1 = "O formulário "; $codeF1 = $formulario[0]->codigo; $contentF1_P2 = " requer análise.";
+        $contentF1_P1 = "O formulário "; $codeF1 = $formulario->codigo; $contentF1_P2 = " requer análise.";
         $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
         $labelF3 = "Enviado por: "; $valueF3 = $elaborador[0]->name; $label2_F3 = ""; $value2_F3 = "";
         $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
