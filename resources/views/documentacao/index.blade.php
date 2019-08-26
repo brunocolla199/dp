@@ -282,7 +282,7 @@
                                                             <div class="col-md-12">
                                                                 <select multiple id="optgroup-formulariosAtrelados" name="formulariosAtrelados[]" class="form-control select2" style="width:100%;">
                                                                     @foreach($formularios as $key => $form)
-                                                                        <option value="{{ $key }}">{{ $form }}</option>
+                                                                        <option value="{{ $key }}" >{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form)[0] }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -579,7 +579,7 @@
                                     <div class="col-md-12">
                                         <select multiple name="formulariosAtreladosDocs[]" class="form-control select2-vinculos" style="width:100%;">
                                             @foreach($formularios as $key => $form)
-                                                <option value="{{ $key }}" >{{ $form }}</option>
+                                                <option value="{{ $key }}" >{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form)[0] }}</option>
                                             @endforeach
                                         </select>
                                     </div>
