@@ -76,21 +76,14 @@
                                     <p class="pull-left"><b>TÍTULO DO FORMULÁRIO: </b>{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $tituloFormulario)[0] }}  </p>
                                 </div>
                                 
-                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                    <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -3.0%; margin-top: -0.5%;">
-                                        <div class="form-group row">
-                                            <label for="codigoFormulario" class="col-sm-3 text-right control-label col-form-label"><b>CÓDIGO: </b></label>
-                                            <div class="col-md-9">
-                                                <input name="codigoFormulario" id="codigoFormulario" type="text" class="form-control" value="{{ $codigoFormulario }}" style="max-width: 50%; float: left; margin-left: -5%;">
-                                            </div>
+                                <div class="col-md-6 form-material" style="margin-bottom: -2%; margin-left: -6.0%; margin-top: -0.5%;">
+                                    <div class="form-group row">
+                                        <label for="codigoFormulario" class="col-sm-3 text-right control-label col-form-label"><b>CÓDIGO: </b></label>
+                                        <div class="col-md-9">
+                                            <input name="codigoFormulario" id="codigoFormulario" type="text" class="form-control" value="{{ $codigoFormulario }}" style="max-width: 50%; float: left; margin-left: -4%;">
                                         </div>
                                     </div>
-                                @else
-                                    <div class="col-md-6">
-                                        <p class="pull-left"><b>CÓDIGO: </b>{{ $codigoFormulario }}  </p>
-                                        <input name="codigoFormulario" id="codigoFormulario" type="hidden" value="{{ $codigoFormulario }}">
-                                    </div>
-                                @endif
+                                </div>
 
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>SETOR: </b>{{ $text_setorDono }}  </p>
