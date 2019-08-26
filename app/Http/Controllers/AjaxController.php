@@ -384,6 +384,25 @@ class AjaxController extends Controller
     }
 
 
+    public function checkIfDocumentCodeExists(Request $request) {
+        $exist = false;
+
+        if( array_key_exists('documento_id', $request->all()) ) {
+            $docs = Documento::where('codigo', $request->codigo)->get();
+            if( $docs->count() > 0 )  {
+                foreach ($docs as $doc) {
+                    if($doc->id != $request->documento_id) $exist = true;
+                }
+            }
+        } else {
+            $docs = Documento::where('codigo', $request->codigo)->get();
+            if( $docs->count() > 0 ) $exist = true;
+        }
+
+        return response()->json(['exist' => $exist]);
+    }
+
+
     // Anexos
     public function saveAttachment(Request $request) {
         $file = $request->file('anexo_escolhido', 'local');

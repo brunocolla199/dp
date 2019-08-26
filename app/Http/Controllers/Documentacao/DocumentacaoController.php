@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Documentacao;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada};
+use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao};
 use App\Classes\Constants;
 use App\Http\Requests\DadosNovoDocumentoRequest;
 use App\Http\Requests\UploadDocumentRequest;
@@ -541,7 +541,11 @@ class DocumentacaoController extends Controller
         $workflowDoc   = Workflow::where('documento_id', '=', $document_id)->get();
         $dadosDoc      = DadosDocumento::where('documento_id', '=', $document_id)->get();
         $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get(['nome_tipo', 'sigla']);
-        $documento->codigo = $request->codigoDocumento;
+        
+        $oldCode = $documento->codigo;
+        $newCode = $request->codigoDocumento;
+        $documento->codigo = $newCode;
+        
         $formularios   = Formulario::all()->pluck('nome', 'id');
         
         if(isset($request->formulariosAtreladosDocs) && count($request->formulariosAtreladosDocs) > 0 ) {
@@ -559,6 +563,15 @@ class DocumentacaoController extends Controller
         }
         
         if($documento->save()){
+
+            if( $oldCode != $newCode ) {
+                $notifications = Notificacao::where('documento_id', $document_id)->where('texto', 'LIKE', "%$oldCode%")->get();
+                foreach ($notifications as $key => $notify) {
+                    $newText = str_replace($oldCode, $newCode, $notify->texto);
+                    $notify->texto = $newText;
+                    $notify->save();
+                }
+            }
             
             $formsDoc = Formulario::join('documento_formulario', 'documento_formulario.formulario_id', '=', 'formulario.id')->where('documento_formulario.documento_id', '=', $document_id)->pluck('formulario.id as id');
 

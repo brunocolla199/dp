@@ -436,7 +436,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="col-md-offset-2 col-md-3 pull-right">
-                                                {!! Form::submit('Salvar Lista', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-document']) !!}
+                                                {!! Form::submit('Salvar Lista', ['class' => 'btn btn-lg btn-success']) !!}
                                             </div>
                                         </div>
 
@@ -786,23 +786,20 @@
 
     $("#btn-save-document").click(function(){
     
-        // $.blockUI({
-        //     message:'Aguarde! Estamos salvando as alterações realizadas...',
-        //     css: { 
-        //     border: 'none', 
-        //     padding: '15px', 
-        //     backgroundColor: '#000', 
-        //     '-webkit-border-radius': '10px', 
-        //     '-moz-border-radius': '10px', 
-        //     opacity: .9, 
-        //     color: '#fff',
-        //     'font-style':'bolder'
-        // }}); 
-
-        // setTimeout(() => {
-        //     $.unblockUI; 
+        let docId  = $('input[name=document_id]').val();
+        let newCode = $('input[name=codigoDocumento]').val();
+        var obj = {'codigo': newCode, 'documento_id': docId};
+        ajaxMethod('POST', " {{ URL::route('ajax.documentos.checkIfDocumentCodeExists') }} ", obj).then(function(result) {
+            if(result.exist) {
+                showToast('Opa!', 'Já existe um documento utilizando esse código!', 'error');
+                return;
+            }
+            
             $("#form-edit-document").submit();
-        // }, 8000);
+        }, function(err) {
+            console.log(err);
+            showToast('Opa!', 'Não conseguimos verificar se existe um documento com esse código. Por favor, contate o suporte técnico!', 'warning');
+        });
     });
 
     // Quando clicar para salvar observação, invoca Ajax
