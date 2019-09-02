@@ -178,7 +178,7 @@
                                                 <div class="col-md-12">
                                                     <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos-docFinalizado">
                                                         @foreach($formularios as $key => $form)
-                                                            <option value="{{ $key }}" >{{ $form }}</option>
+                                                            <option value="{{ $key }}" >{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form)[0] }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -344,7 +344,7 @@
                                                 <div class="col-md-12">
                                                     <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos">
                                                         @foreach($formularios as $key => $form)
-                                                            <option value="{{ $key }}" >{{ $form }}</option>
+                                                            <option value="{{ $key }}" >{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form)[0] }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -356,9 +356,11 @@
                                                     Pré-visualização de Documento<br>
                                                     <div class="text-center">   
                                                         <br>
-                                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">
-                                                            Visualizar    
-                                                        </a>
+                                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">Visualizar </a>
+
+                                                        @if (  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  ||  (Auth::user()->setor_id == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO && in_array($idSetorDoc, Constants::$SETORES_QUE_SET_TEM_ACESSO))  )
+                                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-success m-l-10"  target="_blank">Download </a>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

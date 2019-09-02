@@ -160,6 +160,7 @@ class Constants {
         11, // Manutenção
         12, // Meio Ambiente
         17, // Saúde
+        18, // Segurança do Trabalho
     ];
 
     
