@@ -138,6 +138,19 @@ class Helpers {
     }
 
 
+    static function updateFormNotifications($_oldCode, $_newCode, $_idForm) {
+        
+        if( $_oldCode != $_newCode ) {
+            $notifications = NotificacaoFormulario::where('formulario_id', $_idForm)->where('texto', 'LIKE', "%$_oldCode%")->get();
+            foreach ($notifications as $key => $notify) {
+                $newText = str_replace($_oldCode, $_newCode, $notify->texto);
+                $notify->texto = $newText;
+                $notify->save();
+            }
+        }
+    }
+
+
 
     // Verificações
     function checkPermissionsToApprove($etapa, $idDoc) {

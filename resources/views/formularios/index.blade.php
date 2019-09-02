@@ -20,6 +20,8 @@
 		<input type="hidden" name="status" id="status" value="make_active_form">
     @elseif (session('update_info_success'))
 		<input type="hidden" name="status" id="status" value="update_info_success">
+    @elseif (session('cancel_review_error'))
+		<input type="hidden" name="status" id="status" value="cancel_review_error">
     @endif
 
     <script>
@@ -44,6 +46,8 @@
                 showToast('Sucesso!', 'O formulário foi ativado com sucesso!', 'success');
             } else if(status == "update_info_success") {
                 showToast('Sucesso!', 'As informações do formulário foram atualizadas com sucesso!', 'success');
+            } else if(status == "cancel_review_error") {
+                showToast('Ops!', 'Esse formulário não possui uma versão anterior. Por favor, contate o suporte!', 'error');
             }
         });
     </script>

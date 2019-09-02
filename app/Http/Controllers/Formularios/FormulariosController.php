@@ -304,6 +304,11 @@ class FormulariosController extends Controller
         $formulario[0]->save();
 
         if( $oldCode != $newCode ) {
+            $registerControl = ControleRegistro::where('formulario_id', $idForm)->first();
+            $registerControl->codigo = $newCode;
+            $registerControl->titulo = $filename;
+            $registerControl->save();
+            
             $notifications = NotificacaoFormulario::where('formulario_id', $idForm)->where('texto', 'LIKE', "%$oldCode%")->get();
             foreach ($notifications as $key => $notify) {
                 $newText = str_replace($oldCode, $newCode, $notify->texto);
@@ -344,45 +349,66 @@ class FormulariosController extends Controller
         $idForm         = $request->formulario_id;
         $formulario     = Formulario::where('id', '=', $idForm)->get();
         $wkfFormulario  = WorkflowFormulario::where('formulario_id', '=', $idForm)->first();
-        $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $formulario[0]->revisao)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registor e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
+        $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $formulario[0]->revisao)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registro e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
 
-        // Notificações
-        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
-        foreach ($usuariosSetorQualidade as $key => $user) {
-            if($user->id != $formulario[0]->elaborador_id) \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pelo setor Processos.", false, $user->id, $idForm);
+        // Atualiza as notificações do formulário para que no texto das mesmas, o código do formulário não permaneça exibindo o valor antigo
+        \App\Classes\Helpers::updateFormNotifications($formulario[0]->codigo, $revisaoAnteriorFormulario[0]->codigo, $idForm);
+
+        if( $revisaoAnteriorFormulario->count() > 0 ) {
+            try {
+
+                // Excluindo arquivo anexado durante a revisão
+                if($formulario[0]->revisao !== '00'){
+                    \Storage::disk('speed_office')->delete('formularios/' . $formulario[0]->nome_completo_em_revisao);
+                }
+
+                // Restaurando versão anterior do form
+                $formulario[0]->nome                            = $revisaoAnteriorFormulario[0]->nome;
+                $formulario[0]->codigo                          = $revisaoAnteriorFormulario[0]->codigo;
+                $formulario[0]->extensao                        = $revisaoAnteriorFormulario[0]->extensao;
+                $formulario[0]->nivel_acesso                    = $revisaoAnteriorFormulario[0]->nivel_acesso;
+                $formulario[0]->finalizado                      = true;
+                $formulario[0]->tipo_documento_id               = $revisaoAnteriorFormulario[0]->tipo_documento_id;
+                $formulario[0]->elaborador_id                   = $revisaoAnteriorFormulario[0]->elaborador_id;
+                $formulario[0]->setor_id                        = $revisaoAnteriorFormulario[0]->setor_id;
+                $formulario[0]->em_revisao                      = false;
+                $formulario[0]->nome_completo_finalizado        = null;
+                $formulario[0]->nome_completo_em_revisao        = null;
+                $formulario[0]->justificativa_cancelar_revisao  = $request->justificativaCancelamentoRevisaoForm;
+                $formulario[0]->save();
+
+                // Modificando etapa do workflow deste formulário para que ele não fique com etapa 'Em Revisão' ou 'Em Análise pela Qualidade', por exemplo
+                $wkfFormulario->etapa = Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO;
+                $wkfFormulario->save();
+
+                // Atualiza as informações do 'Controle de Registros' com base nas informações do formulário que foram restauradas
+                $controleRegistros = ControleRegistro::where('formulario_id', $idForm)->first();
+                $controleRegistros->titulo = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
+                $controleRegistros->codigo = $formulario[0]->codigo;
+                $controleRegistros->save();
+
+
+                // Notificações
+                \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $newCode . " teve a revisão cancelada pelo setor Processos.", true, $formulario[0]->elaborador_id, $idForm);
+
+                $usuariosSetorQualidade = User::where('setor_id', Constants::$ID_SETOR_QUALIDADE)->where('id', '!=', $formulario[0]->elaborador_id)->get();
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $newCode . " teve a revisão cancelada pelo setor Processos.", false, $user->id, $idForm);
+                }
+                
+
+                // Histórico
+                \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REVISAO_FORM_CANCELADA_FULL, $idForm);
+                \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL, $idForm);
+
+                return redirect()->route('formularios')->with('cancel_review_success', 'msg');
+            } catch (\Throwable $th) {
+                Log::error("### WEE_LOG ### Erro ao cancelar um formulário!");
+                Log::error(print_r($th, true));
+            }
         }
-        
-        \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pelo setor Processos.", true, $formulario[0]->elaborador_id, $idForm);
 
-        // Histórico
-        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REVISAO_FORM_CANCELADA_FULL, $idForm);
-        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_RETORNA_REVISAO_ANTERIOR_FORM_FULL, $idForm);
-        
-        // Excluindo arquivo anexado durante a revisão
-        if($formulario[0]->revisao !== '00'){
-            \Storage::disk('speed_office')->delete('formularios/' . $formulario[0]->nome_completo_em_revisao);
-        }
-
-        // Restaurando versão anterior do form
-        $formulario[0]->nome                            = $revisaoAnteriorFormulario[0]->nome;
-        $formulario[0]->codigo                          = $revisaoAnteriorFormulario[0]->codigo;
-        $formulario[0]->extensao                        = $revisaoAnteriorFormulario[0]->extensao;
-        $formulario[0]->nivel_acesso                    = $revisaoAnteriorFormulario[0]->nivel_acesso;
-        $formulario[0]->finalizado                      = true;
-        $formulario[0]->tipo_documento_id               = $revisaoAnteriorFormulario[0]->tipo_documento_id;
-        $formulario[0]->elaborador_id                   = $revisaoAnteriorFormulario[0]->elaborador_id;
-        $formulario[0]->setor_id                        = $revisaoAnteriorFormulario[0]->setor_id;
-        $formulario[0]->em_revisao                      = false;
-        $formulario[0]->nome_completo_finalizado        = null;
-        $formulario[0]->nome_completo_em_revisao        = null;
-        $formulario[0]->justificativa_cancelar_revisao  = $request->justificativaCancelamentoRevisaoForm;
-        $formulario[0]->save();
-
-        // Modificando etapa do workflow deste formulário para que ele não fique com etapa 'Em Revisão' ou 'Em Análise pela Qualidade', por exemplo
-        $wkfFormulario->etapa = Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO;
-        $wkfFormulario->save();
-
-        return redirect()->route('formularios')->with('cancel_review_success', 'msg');
+        return redirect()->route('formularios')->with('cancel_review_error', 'msg');
     }
 
     public function makeObsoleteForm(Request $request) {
