@@ -268,7 +268,11 @@
                 var obj = {'id_setor': id, 'id_user': values[0], 'tipo_grupo': 'aprovadores'};
 
                 ajaxMethod('POST', " {{ URL::route('ajax.usuarios.removerDoGrupo') }} ", obj).then(function(result) {
-                    console.log(result);
+                    if( result.response == 'delete_success' ) {
+                        showToast('Sucesso!', 'Usuário desvinculado com sucesso.', 'success');
+                    } else {
+                        swalWithReload('Ação Bloqueada!', `Este usuário é o aprovador do(s) documento(s) ${result.codes.join(', ')} e por isso não pode ser desvinculado.`, 'warning');
+                    }
                 }, function(err) {
                 });
             }

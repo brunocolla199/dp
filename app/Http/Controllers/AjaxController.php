@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Constants;
 use Illuminate\Http\Request;
-use App\{User, Setor, DocumentoObservacao, Documento, DadosDocumento, Anexo, Classes\Constants, AreaInteresseDocumento, DocumentoFormulario, Formulario, FormularioRevisao, Notificacao, NotificacaoFormulario, CopiaControlada, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ControleRegistro};
 use Illuminate\Support\Facades\{Auth, DB, Log, Storage};
+use App\{Anexo, AreaInteresseDocumento, ControleRegistro, CopiaControlada, DadosDocumento, Documento, DocumentoFormulario, DocumentoObservacao, Formulario, FormularioRevisao, GrupoDivulgacaoDocumento, GrupoTreinamentoDocumento, Notificacao, NotificacaoFormulario, Setor, User};
 
 class AjaxController extends Controller
 {
@@ -39,10 +40,19 @@ class AjaxController extends Controller
                 ['usuario_id', '=', $request->id_user]
             ])->delete();
         } else if($tipoGrupo == "aprovadores") {
-            $aprovSetor = DB::table('aprovador_setor')->where([
-                ['usuario_id', '=', $request->id_user],
-                ['setor_id', '=', $request->id_setor]
-            ])->delete();
+            $relacoes = DadosDocumento::where('aprovador_id', $request->id_user)->where('setor_id', $request->id_setor)->get();
+
+            if( $relacoes->count() > 0 ) {
+                $idsDocumentos = $relacoes->pluck('documento_id');
+                $codigosDocumentos = Documento::whereIn('id', $idsDocumentos)->get()->pluck('codigo')->toArray();
+
+                return response()->json(['response' => 'user_linked', 'codes' => $codigosDocumentos]);        
+            } else {
+                $aprovSetor = DB::table('aprovador_setor')->where([
+                    ['usuario_id', '=', $request->id_user],
+                    ['setor_id', '=', $request->id_setor]
+                ])->delete();
+            }
         }
 
         return response()->json(['response' => 'delete_success']);

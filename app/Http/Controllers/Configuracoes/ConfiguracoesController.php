@@ -2,22 +2,12 @@
 
 namespace App\Http\Controllers\Configuracoes;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Setor;
-use App\Configuracao;
-use App\GrupoTreinamento;
-use App\GrupoTreinamentoUsuario;
-use App\GrupoDivulgacao;
-use App\GrupoDivulgacaoUsuario;
-use App\User;
-use App\AprovadorSetor;
 use App\Classes\Constants;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\NumberDefaultRequest;
-use App\Http\Requests\NewGroupingRequest;
-use App\Http\Requests\EditSectorRequest;
-use Illuminate\Support\Facades\View;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\{DB, View};
+use App\Http\Requests\{EditSectorRequest, NewGroupingRequest, NumberDefaultRequest};
+use App\{AprovadorSetor, Configuracao, GrupoDivulgacao, GrupoDivulgacaoUsuario, GrupoTreinamento, GrupoTreinamentoUsuario, Setor, User};
 
 class ConfiguracoesController extends Controller
 {
