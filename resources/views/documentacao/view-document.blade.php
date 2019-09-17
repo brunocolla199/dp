@@ -188,11 +188,8 @@
                                     <div class="col-md-3 mt-4 pull-right">
                                         <button class="btn col-md-12 btn-success" id="btn-save-forms-doc-finalizado"> <i class="mdi mdi-content-save"></i> Salvar Formulários</button>
                                     </div>
-                                    <div class="col-md-2 mt-4 pull-right">
-                                        <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-12 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
-                                    </div>
-                                    <div class="col-md-2 mt-4 pull-right">
-                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
+                                    <div class="col-md-3 mt-4 pull-right">
+                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-info"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
                                     </div>
                                 </div>
 
@@ -200,12 +197,6 @@
                             @else
                                 <div class="row">
                                     <div class="col-md-8"></div>
-                                    
-                                    @if ( !$possuiCopiaControlada )
-                                        <div class="col-md-2 mt-4 pull-right">
-                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-12 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
-                                        </div>
-                                    @endif
 
                                     <div class="col-md-2 mt-4 pull-right">
                                         <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
@@ -234,18 +225,9 @@
                                 </div>
                             @endif
 
-                            @if ( $possuiCopiaControlada )
-                                <div class="row iframe_box">
-                                    <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
-                                </div>
-                            @else
-                                <div class="row iframe_box">
-                                    <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
-                                    
-                                    {{-- Temporário --}}
-                                    {{-- <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&p=1&action=review' }}" frameborder="0" width="100%" height="600px"></iframe> --}}
-                                </div>
-                            @endif
+                            <div class="row iframe_box">
+                                <iframe src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" frameborder="0" width="100%" height="600px"></iframe>
+                            </div>
 
                             <!-- Setor Processos e o Elaborador sempre podem adicionar anexos -->
                             <div class="row mt-4">
@@ -357,10 +339,6 @@
                                                     <div class="text-center">   
                                                         <br>
                                                         <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">Visualizar </a>
-
-                                                        @if (  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  ||  (Auth::user()->setor_id == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO && in_array($idSetorDoc, Constants::$SETORES_QUE_SET_TEM_ACESSO))  )
-                                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-success m-l-10"  target="_blank">Download </a>
-                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -374,12 +352,12 @@
                                     @if( $documentoEhEditavel ) 
                                         <!-- #46 - Desabilitar para o usuário na etapa "área de interesse" a possibilidade de edição do documento = ou seja, se o doc estiver na etapa de área de interesse e não for um membro do setor Processos, não edita o doc -->
                                         @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM  &&  Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE )   
-                                            <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=view&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=view&user=&fileID=').$docPath }}"> </iframe>
                                         @else
-                                            <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                            <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath }}"> </iframe>
                                         @endif
                                     @else
-                                        <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                        <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath }}"> </iframe>
                                     @endif
                                 </div>
                                 <!-- End Editor -->
@@ -412,13 +390,10 @@
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
                                     <div class="control-label font-bold text-center">
-                                        <h3>Pré-visualização e Download do Documento</h3>
+                                        <h3>Pré-visualização do Documento</h3>
                                         <div class="text-center">   
                                             <br>
                                             <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-lg btn-success" target="_blank"> Visualizar </a>
-                                            <br>
-                                            <br>
-                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-lg btn-success" target="_blank"> <i class="mdi mdi-cloud-download"></i> Download </a>
                                         </div>
                                     </div>
                                 </div>
@@ -467,7 +442,7 @@
 
                             <!-- Editor -->
                             <div class="container iframe_box">
-                                <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                <iframe width="100%" id="speed-onlyoffice-editor" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?action=review&user=&fileID=').$docPath }}"> </iframe>
                             </div>
                             <!-- End Editor -->
 

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "15badd7927dbdd47df49e3196aa5d281",
-    "content-hash": "c4d10cf3de4d4f741139ed187f9a88ec",
+    "hash": "173647609826767bbd1ecce3c9223801",
+    "content-hash": "b94b062631f42077e35462290b1f64c4",
     "packages": [
         {
             "name": "adldap2/adldap2",
@@ -1155,6 +1155,48 @@
             "time": "2017-03-20 17:10:46"
         },
         {
+            "name": "irebega/docx-replacer",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/igorrebega/docx-replacer.git",
+                "reference": "9b097c9ef477aa7ea333bbcaefbb9b31ddbd631f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/igorrebega/docx-replacer/zipball/9b097c9ef477aa7ea333bbcaefbb9b31ddbd631f",
+                "reference": "9b097c9ef477aa7ea333bbcaefbb9b31ddbd631f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-zip": "*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "IRebega\\DocxReplacer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Igor Rebega",
+                    "email": "igorrebega@gmail.com"
+                }
+            ],
+            "description": "PHP extension that allow you replace text to text or text to image in DOCX file",
+            "keywords": [
+                "docx",
+                "php",
+                "replace"
+            ],
+            "time": "2018-04-11 08:00:05"
+        },
+        {
             "name": "jakub-onderka/php-console-color",
             "version": "0.1",
             "source": {
@@ -2136,16 +2178,16 @@
         },
         {
             "name": "phpoffice/phpword",
-            "version": "0.15.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "dfa2f36cad2b632b7ab1c56473e4f5db9a7caf7f"
+                "reference": "8fbd0601485f8930a9ab72ddfb924fd64b6644d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/dfa2f36cad2b632b7ab1c56473e4f5db9a7caf7f",
-                "reference": "dfa2f36cad2b632b7ab1c56473e4f5db9a7caf7f",
+                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/8fbd0601485f8930a9ab72ddfb924fd64b6644d6",
+                "reference": "8fbd0601485f8930a9ab72ddfb924fd64b6644d6",
                 "shasum": ""
             },
             "require": {
@@ -2177,7 +2219,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-develop": "0.16-dev"
+                    "dev-develop": "0.17-dev"
                 }
             },
             "autoload": {
@@ -2199,16 +2241,16 @@
                     "homepage": "http://gabrielbull.com/"
                 },
                 {
+                    "name": "Franck Lefevre",
+                    "homepage": "https://rootslabs.net/blog/"
+                },
+                {
                     "name": "Ivan Lanin",
                     "homepage": "http://ivan.lanin.org"
                 },
                 {
                     "name": "Roman Syroeshko",
                     "homepage": "http://ru.linkedin.com/pub/roman-syroeshko/34/a53/994/"
-                },
-                {
-                    "name": "Franck Lefevre",
-                    "homepage": "https://rootslabs.net/blog/"
                 },
                 {
                     "name": "Antoine de Troostembergh"
@@ -2241,7 +2283,7 @@
                 "word",
                 "writer"
             ],
-            "time": "2018-07-14 16:59:43"
+            "time": "2019-09-01 20:30:21"
         },
         {
             "name": "psr/container",
@@ -5440,7 +5482,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "phpoffice/phpword": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

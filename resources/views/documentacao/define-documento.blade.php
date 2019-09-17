@@ -210,7 +210,7 @@
 
                                 <!-- Editor -->
                                 <div class="container">
-                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath.'&d='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE).'&p='.(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) }}"> </iframe>
+                                    <iframe width="100%" id="speed-onlyoffice-editor" src="{{ asset('plugins/onlyoffice-php/doceditor.php?&user=&fileID=').$docPath }}"> </iframe>
                                 </div>
                                 <!-- End Editor -->
                                         
@@ -272,7 +272,7 @@
 
             <!-- Modal de Anexos -->
             <div id="modal-anexos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: auto">
-                <div class="modal-dialog modal-lg" id="fdpvacacadeladesgracadadodnferno">
+                <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title" id="mySmallModalLabel">Você deseja colocar anexos ao documento <b>{{ $tituloDocumento }} ? </b> </h4>

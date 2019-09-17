@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers\Documentacao;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao};
-use App\Classes\Constants;
-use App\Http\Requests\DadosNovoDocumentoRequest;
-use App\Http\Requests\UploadDocumentRequest;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Input;
+use ZipArchive;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
+use App\Classes\Constants;
 use Illuminate\Support\Arr;
-use App\Jobs\SendEmailsJob;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\{SendEmailsJob, SendEmailComAnexoJob};
+use App\Http\Requests\{DadosNovoDocumentoRequest, UploadDocumentRequest};
+use Illuminate\Support\Facades\{Auth, DB, File, Input, Log, Mail, Storage, View};
+use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao, RegistroImpressoes};
 
-use App\Jobs\SendEmailComAnexoJob;
-
+use IRebega\DocxReplacer\Docx;
+use PhpOffice\PhpWord\{PhpWord, TemplateProcessor, Element\TextRun};
 
 class DocumentacaoController extends Controller
 {
@@ -995,6 +989,74 @@ class DocumentacaoController extends Controller
         $documentName  = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $document->nome)[0];
         $presenceLists = ListaPresenca::where('documento_id', $document->id)->get();
         return view('documentacao.index-presence-lists', compact('documentName', 'presenceLists'));
+    }
+
+
+    public function print(Documento $document) {
+        $message      = "Sucesso! O documento foi atualizado com sucesso e as tarjas para impressão foram aplicadas.";
+        $messageClass = "success";
+        if ($document->extensao != "docx") {
+            $message      = "Opa! O documento que está sendo visualizado não é do formato 'docx' e, com isso, não conseguimos atualizar a tarja. Por favor, contate o suporte e solicite 'análise para um novo formato'.";
+            $messageClass = "warning";
+        } else {
+            // Copia o arquivo original para uma pasta temporária (que é limpa TODO DIA, à cada 2 horas)
+            $date          = date('YmdHis');
+            $documentData  = DadosDocumento::where('documento_id', $document->id)->first(); 
+            $stripe        = ($documentData->copia_controlada) ? "CÓPIA CONTROLADA" : "CÓPIA NÃO CONTROLADA";
+            $documentState = $this->defineVisualizacaoDaRevisaoAtualOuDaUltimaVigente($document->id);            
+            $documentTitle = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $document->nome)[0];
+            $filename      = $documentState['nomeFinal'];
+            $newFilename   = $date . '_' . $filename;
+            $tempPath      = public_path('plugins/onlyoffice-php/Storage/') . 'temp/'.$newFilename;
+
+            try {
+                Storage::disk('speed_office')->copy($filename, 'temp/'.$newFilename);
+        
+                // Substitui todas as ocorrências do título do documento, por o título do documento + a tarja correta
+                $this->rewriteDocument($tempPath, $documentTitle, $stripe);
+
+
+                // TODO: quando for verificado a Issue de atualizar uma única ocorrência do macro ao invés de todas, isso aqui vai permitir estilizar a tarja (itálico, cor, negrito).
+                // PS.: se for utilizar isso, descomentar as linhas abaixo e comentar a chamada de 'rewriteDocument' acima.
+                // $keyMacro = "identificador_copia";
+                // $style    = ($documentData->copia_controlada) ? "success" : "danger";
+                // $this->rewriteDocumentWithMacro($tempPath, $documentTitle, $keyMacro);
+                // $this->replaceMacroByValue($tempPath, $keyMacro, $stripe, $style);
+
+            } catch (\Throwable $th) {
+                $message      = "Opa! Essa ainda é uma funcionalidade recente e, em documentos com detalhes específicos ou muito antigos, estamos sujeitos à adaptação. Por favor, contate o suporte e reporte 'erro para atualizar tarja'.";
+                $messageClass = "danger";
+                Log::error($th);
+            }
+        }
+
+        RegistroImpressoes::create(['status' => $messageClass,'obs' => $message, 'documento_id' => $document->id, 'user_id' => Auth::user()->id]);
+
+        $mode        = "with_stripe";
+        $document_id = $document->id;
+        $validity    = $documentData->validade;
+        return view('documentacao.print-document', compact('document_id', 'documentTitle', 'validity', 'newFilename', 'message', 'messageClass', 'mode'));
+    }
+
+
+    public function printWithoutStripe(Documento $document) {
+
+        try {
+            $documentData  = DadosDocumento::where('documento_id', $document->id)->first(); 
+            $documentState = $this->defineVisualizacaoDaRevisaoAtualOuDaUltimaVigente($document->id);            
+            $documentTitle = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $document->nome)[0];
+            $filename      = $documentState['nomeFinal'];
+        } catch (\Throwable $th) {
+            Log::error("### WEE_LOG ### Tivemos um problema ao capturar o documento original desta impressão [id: {$document->id}]");
+            Log::error($th);
+        }
+
+        RegistroImpressoes::create(['status' => 'success','obs' => 'Impressão no modo Sem Tarja.', 'documento_id' => $document->id, 'user_id' => Auth::user()->id]);
+
+        $mode        = "without_stripe";
+        $document_id = $document->id;
+        $validity    = $documentData->validade;
+        return view('documentacao.print-document', compact('document_id', 'documentTitle', 'validity', 'filename', 'mode'));
     }
 
 
@@ -2192,6 +2254,38 @@ class DocumentacaoController extends Controller
         
         
         return $documentosFinalizados;
+    }
+
+
+    private function rewriteDocument(string $_path, string $_search, string $_replace): void {
+        $docx = new Docx($_path);
+        $docx->replaceText($_search, $_search."\n".$_replace, false);
+    }
+
+
+    private function rewriteDocumentWithMacro(string $_path, string $_search, string $_replace): void {
+        $docx = new Docx($_path);
+        $docx->replaceText($_search, $_search."\n".'${'.$_replace.'}', true);
+    }
+
+
+    private function replaceMacroByValue(string $_path, string $_macroContent, string $_stripe, string $_style): void {
+        $phpWord = new PhpWord();
+        $inline  = new TextRun();
+        $templateProcessor = new TemplateProcessor($_path);
+
+        switch ($_style) {
+            case 'success':
+                $inline->addText($_stripe, array('bold' => true, 'color' => 'green'));
+                break;
+            
+            default:
+                $inline->addText($_stripe, array('bold' => true, 'color' => 'red'));
+                break;
+        }
+
+        $templateProcessor->setComplexValue($_macroContent, $inline);
+        $templateProcessor->saveAs($_path);
     }
 
 

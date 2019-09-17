@@ -338,12 +338,15 @@
                                 <div class="tab-pane active" id="visualizarDocs" role="tabpanel">
                                     <div class="p-20">
                                         <div class="col-md-12">
+                                            {{-- Aviso: prioridade do título do documento no filtro --}}
                                             <div class="row">
                                                 <h5 class="alert alert-info alert-dismissible" role="alert">
                                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                                     Quando o campo <b>Título do Documento</b> for preenchido, os outros filtros serão <b>ignorados</b>. Caso o campo seja deixado em branco, os outros filtros serão aplicados em conjunto.
                                                 </h5>
                                             </div>
+
+                                            {{-- FILTROS --}}
                                             <div class="row">
                                                 <h4>FILTROS</h4>
                                                 <div class="col-md-12">
@@ -429,6 +432,7 @@
                                                 </div>
                                             </div>
 
+                                            {{-- Aviso: pesquisa com datatable --}}
                                             <div class="row mt-5 margin-top-1percent">
                                                 <h5 class="alert alert-warning alert-dismissible" role="alert">
                                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -458,15 +462,17 @@
                                                                 @foreach($documentos_nao_finalizados as $doc)
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
+                                                                            <a href="{{ route('documentacao.print', ['id' => $doc->id]) }}" class="mr-3"> <i class="fa fa-print text-primary" data-toggle="tooltip" data-original-title="Imprimir"></i> </a>  
+
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                                 <a href="{{ route('documentacao.presence-lists', ['id' => $doc->id]) }}" class="mr-3"> <i class="fa fa-file-text-o text-primary" data-toggle="tooltip" data-original-title="Ver Listas de Presença"></i> </a>     
                                                                             @endif
                                                                             
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $doc->elaborador_id && $doc->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ) )
-                                                                                <a href="{{ route('documentacao.edit-info', ['id' => $doc->id]) }}"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                                <a href="{{ route('documentacao.edit-info', ['id' => $doc->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>
                                                                             @endif
 
-                                                                            <a href="#" title="Vincular Formulários" class="ml-3" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+                                                                            <a href="#" title="Vincular Formulários" data-forms="{{ $doc->formularios }}" data-id="{{ $doc->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="false"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                         </td>
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->codigo }} </td>
@@ -495,23 +501,24 @@
 
                                                             @if( $documentos_finalizados != null && count($documentos_finalizados) > 0 )
                                                                 @foreach($documentos_finalizados as $docF)
-
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
+                                                                            <a href="{{ route('documentacao.print', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-print text-primary" data-toggle="tooltip" data-original-title="Imprimir"></i> </a> 
+
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                                                                 <a href="{{ route('documentacao.presence-lists', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-file-text-o text-primary" data-toggle="tooltip" data-original-title="Ver Listas de Presença"></i> </a>     
                                                                             
                                                                                 <a href="{{ route('documentacao.edit-info', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
 
-                                                                                <a href="#" class="m-r-15" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
+                                                                                <a href="#" class="mr-3" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                             @endif
 
                                                                             @if( Auth::user()->permissao_elaborador )
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
                                                                             @endif
 
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                                                                <a href="javascript:void(0)" class="btn-tornar-documento-obsoleto-modal ml-3" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-danger" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
+                                                                                <a href="javascript:void(0)" class="btn-tornar-documento-obsoleto-modal" data-id="{{ $docF->id }}"> <i class="fa fa-power-off text-danger" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
                                                                             @endif
                                                                         </td>
 
@@ -537,7 +544,6 @@
 
                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
                                                                     </tr>
-                                                                    
                                                                 @endforeach
                                                             @endif
 

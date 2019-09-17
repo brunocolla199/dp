@@ -67,30 +67,32 @@ Route::group(['middleware' => ['auth']], function() {
 	* DOCUMENTAÇÃO
 	*/
 	Route::group(['prefix' => 'documentacao'], function() {
-		Route::get('',	       						['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
-		Route::post('validate-data',       			['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
-		// Route::post('save-attached-document',   	['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
-		// Route::post('save-new-document',        	['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
-		Route::post('view-document',   				['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
-		Route::post('save-edited-document',   		['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
-		Route::post('filter-documents-index',  		['as' => 'documentacao.filter-documents-index',	    	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsIndex']);
-		Route::post('make-doc-from-name',        	['as' => 'documentacao.make-doc-from-name',             'uses' => 'Documentacao\DocumentacaoController@makeDocumentPdfFromName']);
-		Route::post('approval-document',  			['as' => 'documentacao.approval-document',	    		'uses' => 'Documentacao\DocumentacaoController@approvalDocument']);
-		Route::post('reject-document',  			['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
-		Route::post('resend-document',  			['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
-		Route::post('salva-lista-presenca',			['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
-		Route::post('save-link-form',	     		['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
-		Route::post('start-review',	     			['as' => 'documentacao.start-review',          			'uses' => 'Documentacao\DocumentacaoController@startReview']);
-		Route::post('cancel-review',				['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
-		Route::post('save-attached-start-workflow',	['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
-		Route::post('make-obsolete-doc',	  		['as' => 'documentacao.make-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@makeObsoleteDoc']);
-		Route::post('make-active-doc',	  	  		['as' => 'documentacao.make-active-doc',				'uses' => 'Documentacao\DocumentacaoController@makeActiveDoc']);
-		Route::post('view-obsolete-doc',	  		['as' => 'documentacao.view-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@viewObsoleteDoc']);
-		Route::get('{id}/edit-info',  				['as' => 'documentacao.edit-info',						'uses' => 'Documentacao\DocumentacaoController@editInfo']);
-		Route::post('update-info', 					['as' => 'documentacao.update-info',					'uses' => 'Documentacao\DocumentacaoController@updateInfo']);
+		Route::get('',	       							['as' => 'documentacao', 	       						'uses' => 'Documentacao\DocumentacaoController@index']);
+		Route::post('validate-data',       				['as' => 'documentacao.validate-data', 	    			'uses' => 'Documentacao\DocumentacaoController@validateData']);
+		// Route::post('save-attached-document',   		['as' => 'documentacao.save-attached-document', 	    'uses' => 'Documentacao\DocumentacaoController@saveAttachedDocument']);
+		// Route::post('save-new-document',        		['as' => 'documentacao.save-new-document', 	            'uses' => 'Documentacao\DocumentacaoController@saveNewDocument']);
+		Route::post('view-document',   					['as' => 'documentacao.view-document', 	    			'uses' => 'Documentacao\DocumentacaoController@viewDocument']);
+		Route::post('save-edited-document',   			['as' => 'documentacao.save-edited-document', 	    	'uses' => 'Documentacao\DocumentacaoController@saveEditDocument']);
+		Route::post('filter-documents-index',  			['as' => 'documentacao.filter-documents-index',	    	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsIndex']);
+		Route::post('make-doc-from-name',        		['as' => 'documentacao.make-doc-from-name',             'uses' => 'Documentacao\DocumentacaoController@makeDocumentPdfFromName']);
+		Route::post('approval-document',  				['as' => 'documentacao.approval-document',	    		'uses' => 'Documentacao\DocumentacaoController@approvalDocument']);
+		Route::post('reject-document',  				['as' => 'documentacao.reject-document',	    		'uses' => 'Documentacao\DocumentacaoController@rejectDocument']);
+		Route::post('resend-document',  				['as' => 'documentacao.resend-document',	    		'uses' => 'Documentacao\DocumentacaoController@resendDocument']);
+		Route::post('salva-lista-presenca',				['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
+		Route::post('save-link-form',	     			['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
+		Route::post('start-review',	     				['as' => 'documentacao.start-review',          			'uses' => 'Documentacao\DocumentacaoController@startReview']);
+		Route::post('cancel-review',					['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
+		Route::post('save-attached-start-workflow',		['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
+		Route::post('make-obsolete-doc',	  			['as' => 'documentacao.make-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@makeObsoleteDoc']);
+		Route::post('make-active-doc',	  	  			['as' => 'documentacao.make-active-doc',				'uses' => 'Documentacao\DocumentacaoController@makeActiveDoc']);
+		Route::post('view-obsolete-doc',	  			['as' => 'documentacao.view-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@viewObsoleteDoc']);
+		Route::get('{id}/edit-info',  					['as' => 'documentacao.edit-info',						'uses' => 'Documentacao\DocumentacaoController@editInfo']);
+		Route::post('update-info', 						['as' => 'documentacao.update-info',					'uses' => 'Documentacao\DocumentacaoController@updateInfo']);
 
-		Route::post('replace-document',				['as' => 'documentacao.replace-document',				'uses' => 'Documentacao\DocumentacaoController@replaceDocument']);
-		Route::get('{document}/listas-presença',	['as' => 'documentacao.presence-lists',					'uses' => 'Documentacao\DocumentacaoController@indexPresenceLists']);
+		Route::post('replace-document',					['as' => 'documentacao.replace-document',				'uses' => 'Documentacao\DocumentacaoController@replaceDocument']);
+		Route::get('{document}/listas-presença',		['as' => 'documentacao.presence-lists',					'uses' => 'Documentacao\DocumentacaoController@indexPresenceLists']);
+		Route::get('{document}/print',					['as' => 'documentacao.print',							'uses' => 'Documentacao\DocumentacaoController@print']);
+		Route::get('{document}/print-without-stripe',	['as' => 'documentacao.printWithoutStripe',				'uses' => 'Documentacao\DocumentacaoController@printWithoutStripe'])->middleware('admin');
 	});
 	
 	
@@ -154,7 +156,7 @@ Route::group(['middleware' => ['auth']], function() {
 
 
 
-	Route::group(['middleware' => ['auth', 'App\Http\Middleware\AdminMiddleware']], function() {
+	Route::group(['middleware' => ['auth', 'restrictedArea']], function() {
 
 		/*
 		* CONFIGURAÇÕES
@@ -200,10 +202,6 @@ Route::group(['middleware' => ['auth']], function() {
 	/*
 	* DOWNLOAD
 	*/
-	Route::get('/download/{file}', function ($file='') {
-		return response()->download(storage_path('app/uploads/'.$file)); 
-	});
-
 	Route::get('/download/formulario/{file}', function ($file='') {
 		return response()->file(storage_path('app/uploads/formularios/'.$file)); 
 	});
