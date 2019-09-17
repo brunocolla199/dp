@@ -2257,19 +2257,19 @@ class DocumentacaoController extends Controller
     }
 
 
-    private function rewriteDocument(string $_path, string $_search, string $_replace): void {
+    private function rewriteDocument(string $_path, string $_search, string $_replace) {
         $docx = new Docx($_path);
         $docx->replaceText($_search, $_search."\n".$_replace, false);
     }
 
 
-    private function rewriteDocumentWithMacro(string $_path, string $_search, string $_replace): void {
+    private function rewriteDocumentWithMacro(string $_path, string $_search, string $_replace) {
         $docx = new Docx($_path);
         $docx->replaceText($_search, $_search."\n".'${'.$_replace.'}', true);
     }
 
 
-    private function replaceMacroByValue(string $_path, string $_macroContent, string $_stripe, string $_style): void {
+    private function replaceMacroByValue(string $_path, string $_macroContent, string $_stripe, string $_style) {
         $phpWord = new PhpWord();
         $inline  = new TextRun();
         $templateProcessor = new TemplateProcessor($_path);
