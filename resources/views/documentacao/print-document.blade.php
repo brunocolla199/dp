@@ -132,9 +132,9 @@
 
                         <div class="container iframe_box">
                             @if ($mode === 'without_stripe')
-                                <iframe id="document-iframe" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$filename.'&p=1&action=review' }}" frameborder="0" width="100%" height="1000px"></iframe>
+                                <iframe id="document-iframe" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$filename.'&p=1&action=view' }}" frameborder="0" width="100%" height="1000px"></iframe>
                             @else
-                                <iframe id="document-iframe" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?folder=temp&fileID=').$newFilename.'&p=1&action=review' }}" frameborder="0" width="100%" height="1000px"></iframe>
+                                <iframe id="document-iframe" src="" data-src="{{ asset('plugins/onlyoffice-php/doceditor.php?folder=temp&fileID=').$newFilename.'&p=1&action=view' }}" frameborder="0" width="100%" height="1000px"></iframe>
                             @endif
                         </div>
                         
