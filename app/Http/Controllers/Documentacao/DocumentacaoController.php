@@ -2249,7 +2249,8 @@ class DocumentacaoController extends Controller
 
 
     private function rewriteDocument(string $_path, string $_search, string $_replace) {
-        $lastWordOfTitle = end(explode(' ', trim($_search)));
+        $titleArray = explode(' ', trim($_search));
+        $lastWordOfTitle = end($titleArray);
 
         $docx = new Docx($_path);
         $docx->replaceText(mb_strtoupper($lastWordOfTitle, 'UTF-8'), mb_strtoupper($lastWordOfTitle, 'UTF-8')."\n".$_replace);
