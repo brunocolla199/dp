@@ -1011,20 +1011,11 @@ class DocumentacaoController extends Controller
 
             try {
                 Storage::disk('speed_office')->copy($filename, 'temp/'.$newFilename);
-        
+
                 // Substitui todas as ocorrências do título do documento, por o título do documento + a tarja correta
                 $this->rewriteDocument($tempPath, $documentTitle, $stripe);
-
-
-                // TODO: quando for verificado a Issue de atualizar uma única ocorrência do macro ao invés de todas, isso aqui vai permitir estilizar a tarja (itálico, cor, negrito).
-                // PS.: se for utilizar isso, descomentar as linhas abaixo e comentar a chamada de 'rewriteDocument' acima.
-                // $keyMacro = "identificador_copia";
-                // $style    = ($documentData->copia_controlada) ? "success" : "danger";
-                // $this->rewriteDocumentWithMacro($tempPath, $documentTitle, $keyMacro);
-                // $this->replaceMacroByValue($tempPath, $keyMacro, $stripe, $style);
-
             } catch (\Throwable $th) {
-                $message      = "Opa! Essa ainda é uma funcionalidade recente e, em documentos com detalhes específicos ou muito antigos, estamos sujeitos à adaptação. Por favor, contate o suporte e reporte 'erro para atualizar tarja'.";
+                $message      = "Opa! Esse documento não se enquadra no padrão ou não encontramos o arquivo correto. Por favor, contate o suporte e solicite ajuda com 'erro para atualizar tarja'.";
                 $messageClass = "danger";
                 Log::error($th);
             }
@@ -2258,8 +2249,10 @@ class DocumentacaoController extends Controller
 
 
     private function rewriteDocument(string $_path, string $_search, string $_replace) {
+        $lastWordOfTitle = end(explode(' ', trim($_search)));
+
         $docx = new Docx($_path);
-        $docx->replaceText($_search, $_search."\n".$_replace, false);
+        $docx->replaceText(mb_strtoupper($lastWordOfTitle, 'UTF-8'), mb_strtoupper($lastWordOfTitle, 'UTF-8')."\n".$_replace);
     }
 
 
