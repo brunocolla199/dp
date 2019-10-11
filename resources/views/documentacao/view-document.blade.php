@@ -188,8 +188,11 @@
                                     <div class="col-md-3 mt-4 pull-right">
                                         <button class="btn col-md-12 btn-success" id="btn-save-forms-doc-finalizado"> <i class="mdi mdi-content-save"></i> Salvar Formulários</button>
                                     </div>
-                                    <div class="col-md-3 mt-4 pull-right">
-                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-info"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
+                                    <div class="col-md-2 mt-4 pull-right">
+                                        <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-12 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
+                                    </div>
+                                    <div class="col-md-2 mt-4 pull-right">
+                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
                                     </div>
                                 </div>
 
@@ -339,6 +342,10 @@
                                                     <div class="text-center">   
                                                         <br>
                                                         <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">Visualizar </a>
+
+                                                        @if ( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  ||  (Auth::user()->setor_id == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO && in_array($idSetorDoc, Constants::$SETORES_QUE_SET_TEM_ACESSO)) )
+                                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-success m-l-10"  target="_blank">Download </a>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -390,10 +397,16 @@
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
                                     <div class="control-label font-bold text-center">
-                                        <h3>Pré-visualização do Documento</h3>
+                                        <h3>Pré-visualização {{ Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ? 'e Download' : '' }} do Documento</h3>
                                         <div class="text-center">   
                                             <br>
                                             <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-lg btn-success" target="_blank"> Visualizar </a>
+
+                                            @if ( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                <br>
+                                                <br>
+                                                <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-lg btn-success" target="_blank"> <i class="mdi mdi-cloud-download"></i> Download </a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
