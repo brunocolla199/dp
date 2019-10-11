@@ -146,14 +146,15 @@ class AjaxController extends Controller
     }
 
 
-    public function saveAttachedDocument(Request $request) { // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
+    public function saveAttachedDocument(Request $request) // USAR QUANDO TIVER TEMPO: UploadDocumentRequest
+    {
         $novoDocumento = $request->all();
 
         $file = $request->file('doc_uploaded', 'local');
         $extensao = $file->getClientOriginalExtension();
         $titulo   = \App\Classes\Helpers::instance()->escapeFilename($novoDocumento['tituloDocumento']) . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
         $codigo   = $novoDocumento['codigoDocumento'];
-        $path     = Storage::disk('speed_office')->putFileAs('', $file, $titulo.".".$extensao);
+        $path     = Storage::disk('speed_office')->putFileAs('', $file, $titulo . "." . $extensao);
         
 
         $documento = new Documento();
@@ -185,8 +186,8 @@ class AjaxController extends Controller
         $dados_documento->save();
         
         // Populando a tabela de vinculação DOCUMENTO -> USUÁRIO
-        if( isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0 ) {
-            foreach($novoDocumento['areaInteresse'] as $key => $user) {
+        if (isset($novoDocumento['areaInteresse']) && count($novoDocumento['areaInteresse']) > 0) {
+            foreach ($novoDocumento['areaInteresse'] as $key => $user) {
                 $areaInteresseDocumento = new AreaInteresseDocumento();
                 $areaInteresseDocumento->documento_id  = $documento->id;
                 $areaInteresseDocumento->usuario_id  = $user;
@@ -195,8 +196,8 @@ class AjaxController extends Controller
         }
 
         // Populando a NOVA tabela de vinculação (GrupoTreinamentoDocumento)
-        if( isset($novoDocumento['grupoTreinamentoDocumento']) && count($novoDocumento['grupoTreinamentoDocumento']) > 0 ) {
-            foreach($novoDocumento['grupoTreinamentoDocumento'] as $key => $user) {
+        if (isset($novoDocumento['grupoTreinamentoDocumento']) && count($novoDocumento['grupoTreinamentoDocumento']) > 0) {
+            foreach ($novoDocumento['grupoTreinamentoDocumento'] as $key => $user) {
                 $novoGrupTreinamDocumento = new GrupoTreinamentoDocumento();
                 $novoGrupTreinamDocumento->documento_id  = $documento->id;
                 $novoGrupTreinamDocumento->usuario_id    = $user;
@@ -205,8 +206,8 @@ class AjaxController extends Controller
         }
         
         // Populando a NOVA tabela de vinculação (GrupoDivulgacaoDocumento)
-        if( isset($novoDocumento['grupoDivulgacaoDocumento']) && count($novoDocumento['grupoDivulgacaoDocumento']) > 0 ) {
-            foreach($novoDocumento['grupoDivulgacaoDocumento'] as $key => $user) {
+        if (isset($novoDocumento['grupoDivulgacaoDocumento']) && count($novoDocumento['grupoDivulgacaoDocumento']) > 0) {
+            foreach ($novoDocumento['grupoDivulgacaoDocumento'] as $key => $user) {
                 $novoGrupDivulgDocumento = new GrupoDivulgacaoDocumento();
                 $novoGrupDivulgDocumento->documento_id  = $documento->id;
                 $novoGrupDivulgDocumento->usuario_id    = $user;
@@ -215,8 +216,8 @@ class AjaxController extends Controller
         }
 
         //Populando a tabela de vinculação Documento -> Formulários
-        if( isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0 ) {
-            foreach($novoDocumento['formsAtrelados'] as $key => $form) {
+        if (isset($novoDocumento['formsAtrelados']) && count($novoDocumento['formsAtrelados']) > 0) {
+            foreach ($novoDocumento['formsAtrelados'] as $key => $form) {
                 $documentoFormulario = new DocumentoFormulario();
                 $documentoFormulario->documento_id  = $documento->id;
                 $documentoFormulario->formulario_id = $form;
@@ -224,7 +225,7 @@ class AjaxController extends Controller
             }
         }
 
-        return response()->json(['response' => $documento->id]);   
+        return response()->json(['response' => $documento->id]);
     }
 
 
@@ -394,19 +395,24 @@ class AjaxController extends Controller
     }
 
 
-    public function checkIfDocumentCodeExists(Request $request) {
+    public function checkIfDocumentCodeExists(Request $request)
+    {
         $exist = false;
 
-        if( array_key_exists('documento_id', $request->all()) ) {
+        if (array_key_exists('documento_id', $request->all())) {
             $docs = Documento::where('codigo', $request->codigo)->get();
-            if( $docs->count() > 0 )  {
+            if ($docs->count() > 0) {
                 foreach ($docs as $doc) {
-                    if($doc->id != $request->documento_id) $exist = true;
+                    if ($doc->id != $request->documento_id) {
+                        $exist = true;
+                    }
                 }
             }
         } else {
             $docs = Documento::where('codigo', $request->codigo)->get();
-            if( $docs->count() > 0 ) $exist = true;
+            if ($docs->count() > 0) {
+                $exist = true;
+            }
         }
 
         return response()->json(['exist' => $exist]);

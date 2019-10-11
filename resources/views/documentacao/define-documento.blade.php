@@ -75,10 +75,14 @@
                                 <div class="col-md-6">
                                     <p class="pull-left"><b>TÍTULO DO DOCUMENTO: </b>{{ $tituloDocumento }}  </p>
                                 </div>
-                                <div class="col-md-6">
-                                    <p class="pull-left"><b>CÓDIGO: </b>{{ $codigoDocumento }}  </p>
+                                <div class="col-md-6 form-material">
+                                    <div class="row">
+                                        <label for="codigoDocumento" class="col-3" style="margin-left: -2%;"><b>CÓDIGO: </b></label>
+                                        <div class="col-6" style="margin-left: -6%; margin-top: -2%;">
+                                            <input class="form-control" type="text" value="{{ $codigoDocumento }}" id="codigoDocumento">
+                                        </div>
+                                    </div>
                                 </div>
-                                
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -105,8 +109,7 @@
                                 </div>
                             </div>
 
-                             @if( count($formsAtrelados) > 0 )
-                                
+                            @if( count($formsAtrelados) > 0 )
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p class="pull-left"><b>FORMULÁRIOS ATRELADOS: </b>{{ $text_formsAtrelados }}  </p>
@@ -405,25 +408,40 @@
                 // [CRIAÇÃO] Ao clicar para salvar documento que foi criado na ferramenta (salva doc e retorna para salvar anexo)
                 $("#btn-save-new-document").click(function(){
                     
+                    if( $("#codigoDocumento").val() == null  ||  $("#codigoDocumento").val() == "" ) {
+                        showToast('Opa!', 'Você precisa fornecer um código para que o documento seja salvo.', 'error');
+                        return;
+                    }
+
+                    var codigoDocumento = $("#codigoDocumento").val();
                     var form = $("#form-upload-new-document");
+                    form.find("input[name=codigoDocumento]").val(codigoDocumento);
                     var formData = new FormData( $("#form-upload-new-document")[0] );
                     var url = form.attr('action');
-                    
-                    $.ajax({  
-                        type: "POST",  
-                        url: url,  
-                        data: formData,
-                        async: false,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function(data) {
-                            $("#modal-anexos").modal({ backdrop: 'static', keyboard: false});
-                            $("#doc_link_attached").val(data.response);
-                            $("#doc_link_attached2").val(data.response);
-                            $("#doc_link_attached3").val(data.response);
-                            $("#btn-lista-anexos").attr('data-document-id', data.response);
+
+                    let obj = {'codigo': codigoDocumento};
+                    ajaxMethod('POST', " {{ URL::route('ajax.documentos.checkIfDocumentCodeExists') }} ", obj).then(function(result) {
+                        if(result.exist) {
+                            showToast('Opa!', 'Já existe um documento utilizando esse código!', 'error');
+                            return;
                         }
+                    
+                        $.ajax({  
+                            type: "POST",  
+                            url: url,  
+                            data: formData,
+                            async: false,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function(data) {
+                                $("#modal-anexos").modal({ backdrop: 'static', keyboard: false});
+                                $("#doc_link_attached").val(data.response);
+                                $("#doc_link_attached2").val(data.response);
+                                $("#doc_link_attached3").val(data.response);
+                                $("#btn-lista-anexos").attr('data-document-id', data.response);
+                            }
+                        });
                     }); 
                 });
 
@@ -435,27 +453,41 @@
                     if( $("#input-file-now").val() == null  ||  $("#input-file-now").val() == "" ) {
                         showToast('Opa!', 'Você precisa escolher um arquivo.', 'error');
                         return;
-                    }        
+                    }
+                    if( $("#codigoDocumento").val() == null  ||  $("#codigoDocumento").val() == "" ) {
+                        showToast('Opa!', 'Você precisa fornecer um código para que o documento seja salvo.', 'error');
+                        return;
+                    }
 
+                    var codigoDocumento = $("#codigoDocumento").val();
                     var form = $(this);
+                    form.find("input[name=codigoDocumento]").val(codigoDocumento);
                     var formData = new FormData($(this)[0]);
                     var url = form.attr('action');
-                    
-                    $.ajax({  
-                        type: "POST",  
-                        url: url,  
-                        data: formData,
-                        async: false,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function(data) {
-                            $("#modal-anexos").modal({ backdrop: 'static', keyboard: false});
-                            $("#doc_link_attached").val(data.response);
-                            $("#doc_link_attached2").val(data.response);
-                            $("#doc_link_attached3").val(data.response);
-                            $("#btn-lista-anexos").attr('data-document-id', data.response);
+
+                    let obj = {'codigo': codigoDocumento};
+                    ajaxMethod('POST', " {{ URL::route('ajax.documentos.checkIfDocumentCodeExists') }} ", obj).then(function(result) {
+                        if(result.exist) {
+                            showToast('Opa!', 'Já existe um documento utilizando esse código!', 'error');
+                            return;
                         }
+
+                        $.ajax({  
+                            type: "POST",  
+                            url: url,  
+                            data: formData,
+                            async: false,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function(data) {
+                                $("#modal-anexos").modal({ backdrop: 'static', keyboard: false});
+                                $("#doc_link_attached").val(data.response);
+                                $("#doc_link_attached2").val(data.response);
+                                $("#doc_link_attached3").val(data.response);
+                                $("#btn-lista-anexos").attr('data-document-id', data.response);
+                            }
+                        });
                     }); 
                 });
 
