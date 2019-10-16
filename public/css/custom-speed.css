@@ -202,9 +202,6 @@ div .slimScrollDiv {
 .documents-by-sector .ct-series-b .ct-bar {
     stroke: #ffbc34; 
 }
-.documents-by-sector .ct-series-c .ct-bar {
-    stroke: #fc4b6c; 
-}
     
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {
