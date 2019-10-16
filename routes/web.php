@@ -182,8 +182,8 @@ Route::group(['middleware' => ['auth']], function() {
 			Route::post('filter-documents-obsolete-index',  	['as' => 'documentacao.filter-documents-obsolete-index',	'uses' => 'Documentacao\DocumentacaoController@filterDocumentsObsoleteIndex']);
 			Route::get('pendentes-revisao',						['as' => 'documentacao.pendentes_revisao',					'uses' => 'Documentacao\DocumentacaoController@indexDocsPendentesRevisao']);
 			Route::post('filter-pendentes-revisao',  			['as' => 'documentacao.filter_pendentes_revisao',			'uses' => 'Documentacao\DocumentacaoController@filterDocumentsPendentesRevisao']);
-			Route::get('relatorio-estatistico',					['as' => 'documentacao.relatorio_estatistico',				'uses' => 'Documentacao\RelatorioEstatistico@index']);
-			Route::post('relatorio',							['as' => 'documentacao.make-statical-report',				'uses' => 'Documentacao\RelatorioEstatistico@makeReport']);
+			Route::get('relatorio-estatistico',					['as' => 'documentacao.relatorio_estatistico',				'uses' => 'Documentacao\RelatorioEstatisticoController@index']);
+			Route::post('relatorio',							['as' => 'documentacao.make-statical-report',				'uses' => 'Documentacao\RelatorioEstatisticoController@makeReport']);
 		});
 
 	});
@@ -227,9 +227,6 @@ Route::group(['middleware' => ['auth']], function() {
 * Usuário não tem permissão para acessar essa página
 */
 Route::get('unauthorized', 	['as' => 'unauthorized', 'uses' => 'UnauthorizedController@index']);
-
-
-Route::get('/teste', 'HomeController@teste');
 
 
 // Authentication Routes...

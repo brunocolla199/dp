@@ -187,6 +187,24 @@ div .slimScrollDiv {
     white-space: -o-pre-wrap; /* Opera 7 */    
     word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
+
+/* Customizando as cores do gráfico de barras exibido na página de RELATÓRIO ESTATÍSTICO */
+.documents-by-sector {
+    position: relative; 
+}
+
+.documents-by-sector .chartist-tooltip {
+    background: #2f3d4a; 
+}
+.documents-by-sector .ct-series-a .ct-bar {
+    stroke: #26c6da; 
+}
+.documents-by-sector .ct-series-b .ct-bar {
+    stroke: #ffbc34; 
+}
+.documents-by-sector .ct-series-c .ct-bar {
+    stroke: #fc4b6c; 
+}
     
 /* TESTES | Vai destacar a div atual para testar posicionamento */
 .destacar {

@@ -81,20 +81,22 @@
                                 <div class="col-lg-6">
                                     <div class="card">
                                         <div class="card-body">
-                                            <h4 class="card-title"><span class="font-weight-bold">Revisados:</span> {{ $periodo }} </h4>
+                                            <h4 class="card-title"><span class="font-weight-bold">Revisados entre:</span> {{ $periodo }} </h4>
                                             <div class="text-center m-t-40">
-                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="0" data-max="1000" data-fgColor="#26c6da" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalPendentesRevisao }}" />
+                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="0" data-max="1000" data-fgColor="#26c6da" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalRevisados }}" />
                                             </div>
+                                            <h6><span class="font-weight-bold">{{ $totalRevisados }}</span> é a quantidade de documentos que foram <span class="font-weight-bold">revisados entre {{ $periodo }}</span>.</h6>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="card">
                                         <div class="card-body">
-                                            <h4 class="card-title"><span class="font-weight-bold">Pendentes Revisão:</span> {{ $periodo }} </h4>
+                                            <h4 class="card-title"><span class="font-weight-bold">Pendentes Revisão</h4>
                                             <div class="text-center m-t-40">
-                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="0" data-max="1000" data-fgColor="#ffbc34" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalRevisados }}" />
+                                                <input data-plugin="knob" data-readOnly=true data-width="250" data-height="250" data-min="0" data-max="1000" data-fgColor="#ffbc34" data-displayPrevious=true data-angleOffset=-125 data-angleArc=250 value="{{ $totalPendentesRevisao }}" />
                                             </div>
+                                            <h6><span class="font-weight-bold">{{ $totalPendentesRevisao }}</span> é a quantidade de documentos que <span class="font-weight-bold">possuem sua data de validade inferior a {{ \Carbon\Carbon::now()->format('d/m/Y') }}</span>.</h6>
                                         </div>
                                     </div>
                                 </div>
@@ -105,8 +107,17 @@
                                 <div class="col-lg-12">
                                     <div class="card">
                                         <div class="card-body">
+                                            <ul class="list-inline pull-right">
+                                                <li>
+                                                    <h6 class="text-muted"><i class="fa fa-circle m-r-5" style="color:#26c6da"></i>Revisados</h6>
+                                                </li>
+                                                <li>
+                                                    <h6 class="text-muted"><i class="fa fa-circle m-r-5" style="color:#ffbc34"></i>Pendentes</h6>
+                                                </li>
+                                            </ul>
                                             <h4 class="card-title">Documentos por Setor</h4>
-                                            <div id="morris-bar-chart"></div>
+                                            <div class="clear"></div>
+                                            <div class="documents-by-sector" style="height: 365px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -115,7 +126,6 @@
                             {{-- Linha Final: lista de documentos por setores --}}
                             <div id="sectorsList" class="accordion" role="tablist" aria-multiselectable="true">
                                 @forelse ($listaDocumentosPorSetor as $sector)
-                                
                                     <div class="card">
                                         <div class="card-header cursor-pointer-on" role="tab" id="headingOne" data-toggle="collapse" data-parent="#sectorsList" href="#{{ $sector['identifier'] }}" aria-expanded="true" aria-controls="{{ $sector['identifier'] }}">
                                             <h4 class="mb-0 text-info">{{ $sector['sectorName'] }}</h4>
@@ -127,10 +137,11 @@
                                                         <h5>Revisados</h5>
                                                         <ul class="list-group">
                                                             @forelse ($sector['revised'] as $docRevised)
-                                                                
-                                                                <li class="list-group-item"><span class="font-weight-bold">{{ $docRevised->codigo }}</span>: {{ \Illuminate\Support\Str::limit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docRevised->nome)[0], 50) }}</li>
+                                                                <li class="list-group-item">
+                                                                    <span class="font-weight-bold">{{ $docRevised->codigo }}</span> ({{ count($docRevised->revisions) }}x): 
+                                                                    {{ \Illuminate\Support\Str::limit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docRevised->nome)[0], 50) }}
+                                                                </li>
                                                             @empty
-                                                                
                                                                 <h6 class="text-center">Não existe nenhum documento revisado no setor {{ $sector['sectorName'] }}!</h6>
                                                             @endforelse 
                                                         </ul>
@@ -138,11 +149,12 @@
                                                     <div class="col-md-6">
                                                         <h5>Pendentes Revisão</h5>
                                                         <ul class="list-group">
-                                                            @forelse ($sector['expired'] as $docExpired)
-                                                                                                                            
-                                                                <li class="list-group-item"><span class="font-weight-bold">{{ $docExpired->codigo }}</span>: {{ \Illuminate\Support\Str::limit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docExpired->nome)[0], 50) }}</li>
+                                                            @forelse ($sector['expired'] as $docExpired)                                                          
+                                                                <li class="list-group-item">
+                                                                    <span class="font-weight-bold">{{ $docExpired->codigo }}</span>: 
+                                                                    {{ \Illuminate\Support\Str::limit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docExpired->nome)[0], 50) }}
+                                                                </li>
                                                             @empty
-
                                                                 <h6 class="text-center">Não existe nenhum documento vencido no setor {{ $sector['sectorName'] }}!</h6>
                                                             @endforelse
                                                         </ul>
@@ -152,7 +164,6 @@
                                         </div>
                                     </div>
                                 @empty
-                                    
                                     <h5 class="text-center">Não existe nenhum documento vencido ou revisado!</h5>
                                 @endforelse
                             </div>  
@@ -182,7 +193,6 @@
     {{-- DateRangePicker.js --}}
     <link href="{{ asset('plugins/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
     <script src="{{ asset('plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-
     <script>
         $('.input-daterange-datepicker').daterangepicker({
             buttonClasses: ['btn', 'btn-sm'],
@@ -213,13 +223,46 @@
     </script>
 
 
-    {{-- Morris JavaScript --}}
-    <link href="{{ asset('plugins/morrisjs/morris.css') }}" rel="stylesheet">
-    <script src="{{ asset('plugins/raphael/raphael-min.js') }}"></script>
-    <script src="{{ asset('plugins/morrisjs/morris.js') }}"></script>
+    {{-- chartist chart | Gráfico de documentos por setor --}}
+    <link href="{{ asset('plugins/chartist-js/dist/chartist.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css') }}" rel="stylesheet">
+    <script src="{{ asset('plugins/chartist-js/dist/chartist.min.js') }}"></script>
+    <script src="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js') }}"></script>
     <script>
-        let docsBySector = @json($documentosPorSetor);
+        const chartist = @json($chartist);
+        const allValues = chartist.expired.concat(chartist.revised);
+        const high = Math.max.apply(null, allValues);
+        const low = Math.min.apply(null, allValues);
+        
+        new Chartist.Bar('.documents-by-sector', {
+            labels: chartist.sectors, 
+            series: [
+                chartist.revised,
+                chartist.expired
+            ]
+        }, {
+            high: high, 
+            low: low,
+            fullWidth: true,
+            plugins: [
+                Chartist.plugins.tooltip()
+            ], 
+            stackBars: true, 
+            axisX: {
+                showGrid: false
+            }, 
+            axisY: {
+                labelInterpolationFnc: function (value) {
+                    return value;
+                }
+            }
+        }).on('draw', function (data) {
+            if (data.type === 'bar') {
+                data.element.attr({
+                    style: 'stroke-width: 10px'
+                });
+            }
+        });
     </script>
-    <script src="{{ asset('js/morris-data.js') }}"></script>
 
 @endsection
