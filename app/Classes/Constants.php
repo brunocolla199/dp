@@ -161,6 +161,9 @@ class Constants {
         12, // Meio Ambiente
         17, // Saúde
         18, // Segurança do Trabalho
+        4,  // CDI
+        14, // Pessoas (PeO)
+        21, // Transporte 
     ];
 
     
@@ -172,6 +175,3 @@ class Constants {
     
     public static $SEPARADOR_PARA_CONCATENACOES = "; ";
 }
-
-
-?>
