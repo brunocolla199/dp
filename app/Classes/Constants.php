@@ -156,13 +156,13 @@ class Constants {
 
     // Todos os setores que o setor 'Segurança do Trabalho (SET)' pode visualizar
     public static $SETORES_QUE_SET_TEM_ACESSO = [
-        13, // Operação
+        4,  // CDI
         11, // Manutenção
         12, // Meio Ambiente
+        13, // Operação
+        14, // Pessoas (PeO)
         17, // Saúde
         18, // Segurança do Trabalho
-        4,  // CDI
-        14, // Pessoas (PeO)
         21, // Transporte 
     ];
 
