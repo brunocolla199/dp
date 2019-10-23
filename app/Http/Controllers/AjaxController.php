@@ -376,19 +376,20 @@ class AjaxController extends Controller
     }
 
 
-    public function checkIfCodeExists(Request $request) {
+    public function checkIfCodeExists(Request $request)
+    {
         $exist = false;
 
-        if( array_key_exists('formulario_id', $request->all()) ) {
-            $forms = Formulario::where('codigo', $request->codigo)->get();
-            if( $forms->count() > 0 )  {
+        if (array_key_exists('formulario_id', $request->all())) {
+            $forms = Formulario::where('codigo', $request->codigo)->where('obsoleto', false)->get();
+            if ($forms->count() > 0) {
                 foreach ($forms as $form) {
-                    if($form->id != $request->formulario_id) $exist = true;
+                    if ($form->id != $request->formulario_id) $exist = true;
                 }
             }
         } else {
-            $forms = Formulario::where('codigo', $request->codigo)->get();
-            if( $forms->count() > 0 ) $exist = true;
+            $forms = Formulario::where('codigo', $request->codigo)->where('obsoleto', false)->get();
+            if ($forms->count() > 0) $exist = true;
         }
 
         return response()->json(['exist' => $exist]);
