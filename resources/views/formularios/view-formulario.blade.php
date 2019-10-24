@@ -476,13 +476,18 @@
         let form_id = $(this).data('form-id');
         let newCode = $('#input-update-code').val();
         
-        var obj = {'form_id': form_id, 'new_code': newCode};
-        ajaxMethod('POST', " {{ URL::route('ajax.formularios.updateCode') }} ", obj).then(function(result) {
-            if(result.response === 'success') {
-                showToast("Sucesso!", "O código do formulário foi atualizado com sucesso.", 'success');
+        var obj = {'formulario_id': form_id, 'codigo': newCode};
+        ajaxMethod('POST', " {{ URL::route('ajax.formularios.checkIfCodeExists') }} ", obj).then(function(result) {
+            if(!result.exist) {
+                
+                ajaxMethod('POST', " {{ URL::route('ajax.formularios.updateCode') }} ", obj).then(function(result) {
+                    showToast("Sucesso!", "O código do formulário foi atualizado com sucesso.", 'success');
+                }, function(err) {
+                    console.log(err);
+                });
+
             } else {
-                if( 'errorInfo' in result.response && result.response.errorInfo[0] === "23505" ) showToast('Opa!', 'Já existe um formulário utilizando esse código!', 'error');
-                else showToast('Opa!', 'Não conseguimos verificar se existe um formulário com esse código. Por favor, contate o suporte técnico!', 'warning');
+                showToast('Opa!', 'Já existe um formulário utilizando esse código!', 'error');
             }
         }, function(err) {
             console.log(err);

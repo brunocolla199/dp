@@ -347,30 +347,53 @@ class AjaxController extends Controller
     }
 
 
-    public function updateCode(Request $request) {
+    public function updateCode(Request $request) 
+    {
+        
         try {
-            $form = Formulario::find($request->form_id);
+
+            $formId = $request->formulario_id;
+            $newCode = $request->codigo;
+
+            $form = Formulario::find($formId);
+
             $oldCode = $form->codigo;
 
-            $form->codigo = $request->new_code;
-            $form->save();
+            $form->codigo = $newCode;
+            $form->save();            
 
-            $notifications = NotificacaoFormulario::where('formulario_id', $form->id)->where('texto', 'LIKE', "%$oldCode%")->get();
+            $this->updateNotificationForm($formId, $newCode, $oldCode);
+
+            return response()->json(['response' => 'success']);
+
+        } catch (\Throwable $th) {
+            Log::error("### WEE_LOG ### Erro ao atualizar códigos do formulário: " . $th->getMessage());
+            return response()->json(['response' => $th]);        
+        }
+    }
+    
+
+    public function updateNotificationForm($formId, $newCode, $oldCode)
+    {
+        
+        try {
+
+            $notifications = NotificacaoFormulario::where('formulario_id', $formId)->where('texto', 'LIKE', "%$oldCode%")->get();
             foreach ($notifications as $key => $notify) {
-                $newText = str_replace($oldCode, $form->codigo, $notify->texto);
+                $newText = str_replace($oldCode, $newCode, $notify->texto);
                 $notify->texto = $newText;
                 $notify->save();
             }
     
-            $recordControl = ControleRegistro::where('formulario_id', $form->id)->first();
+            $recordControl = ControleRegistro::where('formulario_id', $formId)->first();
             if( !empty($recordControl) ) {
-                $recordControl->codigo = $form->codigo;
+                $recordControl->codigo = $newCode;
                 $recordControl->save();
             }
         
             return response()->json(['response' => 'success']);
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::error("### WEE_LOG ### Erro ao atualizar códigos dos formulários nas notificações: " . $th->getMessage());
             return response()->json(['response' => $th]);
         }
     }
