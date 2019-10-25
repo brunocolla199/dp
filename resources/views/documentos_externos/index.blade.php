@@ -92,54 +92,32 @@
                             </div>
                             
                             <hr style="border: 1px solid gray;">
-                            
-                            <div id="sectorsList" class="accordion" role="tablist" aria-multiselectable="true">
-                                <div id="accordionexample" class="accordion" role="tablist" aria-multiselectable="true">
-                                
-                                    @forelse ($areasBySector as $areaId => $areaName)
 
-                                        <div class="card">
-                                            <div class="card-header cursor-pointer-on" role="tab" id="{{ $areaId }}" data-toggle="collapse" data-parent="#accordionexample" href="#{{ 'registros-'.$areaId }}" aria-expanded="false" aria-controls="{{ 'registros-'.$areaId }}">
-                                                <h3 class="mb-0">  {{ $areaName }}  </h3>
-                                            </div>
-                                            <div id="{{ 'registros-'.$areaId }}" class="collapse" role="tabpanel" aria-labelledby="{{ $areaId }}">
-                                                <div class="card-body">
-                                                    
-                                                    <!-- Here we insert another nested accordion -->
-                                                    @if ( !is_null($registers->get($areaId)) && $registers->get($areaId)->count() > 0 )
-                                                        @foreach ($registers->get($areaId) as $register)
-                                                            <div class="card">
-                                                                <div class="card-header cursor-pointer-on" role="tab" id="{{ 'reg-'.$register->id }}" data-toggle="collapse" data-parent="#{{ 'registros-'.$areaId }}" href="#{{ $register->id }}" aria-expanded="true" aria-controls="{{ $register->id }}">
-                                                                    <h4 class="mb-0 h4-click" data-opened="false" data-id="{{ $register->id }}" data-area-id="{{ $register->idArea }}"> 
-                                                                        <i class="mdi mdi-format-list-bulleted"></i> {{ $register->listaIndice[2]->valor }}
-                                                                    </h4>
-                                                                </div>
-                                                            
-                                                                <div id="{{ $register->id }}" class="collapse" role="tabpanel" aria-labelledby="{{ 'reg-'.$register->id }}">
-                                                                    <div class="card-body">
-                                                                        
-                                                                        <div class="row" id='docs-{{ $register->id }}'></div>
-
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    @else
-                                                        <h6 class="text-center">Não existe nenhum documento nesta área!</h6>              
-                                                    @endif
-                                                    <!-- Inner accordion ends here -->
-            
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @empty
-                                    
-                                        <h5 class="text-center">Não existe nenhuma área criada para os setores que você tem acesso!</h5>
-                                    @endforelse
-                                </div>    
-                            </div>  
-
-                            
+                            <div class="table-responsive m-t-40">
+                                <table id="tabela-documentos-externos" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center text-nowrap">Ações</th>
+                                            <th class="text-center text-nowrap">Setor</th>
+                                            <th class="text-center">Título do Documento</th>
+                                            <th class="text-center">Data de Criação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($registers as $register)
+                                            <tr>
+                                                <td class="text-center text-nowrap">
+                                                    <a href="#" ><i class="fa fa-file-text-o text-primary center-open-pdf mr-3" data-id="{{$register->file->id}}" data-toggle="tooltip" data-original-title="Visualizar o arquivo"></i></a>
+                                                    <a href="{{ url('/documentos-externos/acessar-documento/' . $register->file->id) }}" class="mr-3" ><i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i></a>
+                                                </td>
+                                                <td class="text-center text-nowrap">{{$register->areaName}}</td>
+                                                <td class="text-center text-nowrap">{{$register->file->endereco}}</td>
+                                                <td class="text-center text-nowrap">{{$register->listaIndice[2]->valor}}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -220,7 +198,7 @@
     {{-- DataTable --}}
     <script>
         $(document).ready(function() {
-            $('#tabela-controle-registros').DataTable({
+            $('#tabela-documentos-externos').DataTable({
                 "language": {
                     "sEmptyTable": "Nenhum registro encontrado",
                     "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -260,48 +238,6 @@
     <link href="{{ asset('plugins/jquery-loading/jquery.loading.min.css') }}" rel="stylesheet">
     <script src="{{ asset('plugins/jquery-loading/jquery.loading.min.js') }}"></script>
 
-
-
-    {{-- Adiciona os documentos do registro no body do card --}}
-    <script>
-        $(".h4-click").on('click', function() {
-            let opened = $(this).data('opened');
-            $(this).data('opened', !opened); 
-            
-            if(!opened) {
-                let gedDocumentUrl = "{{ env('GED_URL') }}".replace('rest', '') + 'baixarDocumento.do?idArea=';
-                let areaId         = $(this).data('area-id');
-                let registerId     = $(this).data('id');
-                let obj            = {'register_id': registerId};
-                
-                let elmDiv = $("#docs-" + registerId);
-                elmDiv.empty();
-                elmDiv.loading();
-
-                ajaxMethod('POST', " {{ URL::route('documentos-externos.documentos') }} ", obj).then(function(result) {
-                    let baseUrl = "{{ url('/') }}"; 
-
-                    result.response.forEach((value, index) => {
-                        elmDiv.append(`
-                            <div class="col-md-3">
-                                <center class="m-t-20 center-open-pdf" data-id="${value.id}" style="cursor: pointer;"> 
-                                    <i class="mdi mdi-file-pdf" style="font-size: 50px"></i>
-                                    <h4 class="card-title m-t-10">${value.endereco}</h4>
-                                </center>
-                                <a href="${baseUrl + '/documentos-externos/acessar-documento/' + value.id}" class="btn btn-info btn-block">Acessar</a>
-                            </div>
-                        `);
-                    });
-
-                    elmDiv.loading('stop');
-                }, function(err) {
-                    console.log(err);
-                });
-            }
-        });
-    </script>
-
-
     <script>
         $(document).on('click', '.center-open-pdf', function(event) {
             let elm = $(this);
@@ -313,7 +249,7 @@
             ajaxMethod('POST', " {{ URL::route('documentos-externos.bytes') }} ", obj).then(function(result) {
                 let base64EncodedPDF = result.response;
                 let dataURI          = "data:application/pdf;base64," +base64EncodedPDF;
-
+                
                 openPdf(dataURI, elm);
             }, function(err) {
                 console.log(err);

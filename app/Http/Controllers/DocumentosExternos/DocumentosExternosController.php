@@ -18,22 +18,38 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function index() {
+    public function index() 
+    {
         $areas = collect($this->ged->getArea( env('GED_AREA_ID'), "true" ));
         $nonCreatedArea = false;
         $registers      = [];
         
         $areasBySector = $this->getAreasBySector($areas);
-        if( $areasBySector->count() <= 0 ) $nonCreatedArea = true;
+        if ($areasBySector->count() <= 0) $nonCreatedArea = true;
         
-        if( !$nonCreatedArea ) {
+        if (!$nonCreatedArea) {
             $areasList        = $areasBySector->keys()->toArray(); // The keys are the id of each area
             $registersList    = $this->ged->getRegisters($areasList, [], array('removido' => false));
             $objRegistersList = json_decode($registersList);
 
-            $registers = collect($objRegistersList->listaRegistro)->groupBy('idArea');
+            $registersGed = collect($objRegistersList->listaRegistro)->groupBy('idArea');
         }
+
+        $registers = array();
         
+        foreach ($registersGed as $registerGed) {
+            foreach ($registerGed as $value) {
+
+                $value->areaName = $areasBySector[$value->idArea];
+                
+                $file = $this->getDocumentsByRegister($value->id);
+
+                $value->file = $file;
+                
+                array_push($registers, $value);
+            }
+        }
+
         return view('documentos_externos.index', compact('areasBySector', 'registers', 'nonCreatedArea'));
     }
 
@@ -92,11 +108,11 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function getDocumentsByRegister(Request $request) {
-        $registerId = $request->register_id;
+    public function getDocumentsByRegister(string $registerId) 
+    {
         $register   = $this->ged->getRegister($registerId, 'true', 'false');
 
-        return response()->json(['response' => $register->listaDocumento]);
+        return $register->listaDocumento[0];
     }
 
 
