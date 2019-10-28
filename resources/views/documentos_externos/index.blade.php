@@ -97,7 +97,7 @@
                                 <table id="tabela-documentos-externos" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
-                                            <th class="text-center text-nowrap">Ações</th>
+                                            <th class="text-center text-nowrap noExport">Ações</th>
                                             <th class="text-center text-nowrap">Setor</th>
                                             <th class="text-center">Título do Documento</th>
                                             <th class="text-center">Data de Criação</th>
@@ -107,7 +107,7 @@
                                         @foreach ($registers as $register)
                                             <tr>
                                                 <td class="text-center text-nowrap">
-                                                    <a href="#" ><i class="fa fa-file-text-o text-primary center-open-pdf mr-3" data-id="{{$register->file->id}}" data-toggle="tooltip" data-original-title="Visualizar o arquivo"></i></a>
+                                                    <a href="#" ><i class="fa fa-file-text-o text-primary center-open-pdf mr-3" data-id="{{$register->file->id}}" data-toggle="tooltip" data-original-title="Visualizar Arquivo"></i></a>
                                                     <a href="{{ url('/documentos-externos/acessar-documento/' . $register->file->id) }}" class="mr-3" ><i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i></a>
                                                 </td>
                                                 <td class="text-center text-nowrap">{{$register->areaName}}</td>
@@ -138,6 +138,9 @@
 
 
 @section('footer')
+    
+    @include('componentes._script_datatables', ['tableId' => 'tabela-documentos-externos'])
+
 
     {{-- Dropzone Plugin JavaScript --}}
     <link href="{{ asset('plugins/dropzone-master/dist/dropzone.css') }}" rel="stylesheet" type="text/css" />
@@ -179,59 +182,6 @@
             myDropzone.processQueue();
         });
     </script>
-
-
-
-    <!-- This is data table -->
-    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    
-    <!-- start - This is for export functionality only -->
-    <script src="{{ asset('js/dataTables/dataTables-1.2.2.buttons.min.js') }}"></script>
-    <script src="{{ asset('js/dataTables/buttons-1.2.2.flash.min.js') }}"></script>
-    <script src="{{ asset('js/dataTables/jszip-2.5.0.min.js') }}"></script>
-    <script src="{{ asset('js/dataTables/pdfmake-0.1.18.min.js') }}"></script>
-    <script src="{{ asset('js/dataTables/vfs_fonts-0.1.18.js') }}"></script>
-    <script src="{{ asset('js/dataTables/buttons-1.2.2.html5.min.js') }}"></script>
-    <script src="{{ asset('js/dataTables/buttons-1.2.2.print.min.js') }}"></script>
-    <!-- end - This is for export functionality only -->    
-
-    {{-- DataTable --}}
-    <script>
-        $(document).ready(function() {
-            $('#tabela-documentos-externos').DataTable({
-                "language": {
-                    "sEmptyTable": "Nenhum registro encontrado",
-                    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-                    "sInfoPostFix": "",
-                    "sInfoThousands": ".",
-                    "sLengthMenu": "_MENU_ resultados por página",
-                    "sLoadingRecords": "Carregando...",
-                    "sProcessing": "Processando...",
-                    "sZeroRecords": "Nenhum registro encontrado",
-                    "sSearch": "Pesquisar",
-                    "oPaginate": {
-                        "sNext": "Próximo",
-                        "sPrevious": "Anterior",
-                        "sFirst": "Primeiro",
-                        "sLast": "Último"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": Ordenar colunas de forma ascendente",
-                        "sSortDescending": ": Ordenar colunas de forma descendente"
-                    }
-                },
-                dom: 'Bfrtip',
-                buttons: [
-                    { extend: 'excel',  text: 'Excel' },
-                    { extend: 'pdf',    text: 'PDF' },
-                    { extend: 'print',  text: 'Imprimir' }
-                ]
-            });
-        });
-    </script>
-
 
 
     <!-- jQuery Loading Plugin -->

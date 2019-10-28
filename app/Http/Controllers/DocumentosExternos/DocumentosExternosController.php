@@ -28,10 +28,14 @@ class DocumentosExternosController extends Controller
         if ($areasBySector->count() <= 0) $nonCreatedArea = true;
         
         if (!$nonCreatedArea) {
-            $areasList        = $areasBySector->keys()->toArray(); // The keys are the id of each area
-            $registersList    = $this->ged->getRegisters($areasList, [], array('removido' => false));
+            $areasList = $areasBySector->keys()->toArray(); // The keys are the id of each area
+            $registersList = $this->ged->getRegisters($areasList, [], array(
+                'removido' => false,
+                'inicio' => 0,
+                'fim' => 100
+            ));
+            
             $objRegistersList = json_decode($registersList);
-
             $registersGed = collect($objRegistersList->listaRegistro)->groupBy('idArea');
         }
 
@@ -39,13 +43,9 @@ class DocumentosExternosController extends Controller
         
         foreach ($registersGed as $registerGed) {
             foreach ($registerGed as $value) {
-
                 $value->areaName = $areasBySector[$value->idArea];
-                
                 $file = $this->getDocumentsByRegister($value->id);
-
                 $value->file = $file;
-                
                 array_push($registers, $value);
             }
         }
@@ -110,7 +110,7 @@ class DocumentosExternosController extends Controller
 
     public function getDocumentsByRegister(string $registerId) 
     {
-        $register   = $this->ged->getRegister($registerId, 'true', 'false');
+        $register = $this->ged->getRegister($registerId, 'true', 'false');
 
         return $register->listaDocumento[0];
     }
