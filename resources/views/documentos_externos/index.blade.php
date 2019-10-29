@@ -107,12 +107,12 @@
                                         @foreach ($registers as $register)
                                             <tr>
                                                 <td class="text-center text-nowrap">
-                                                    <a href="#" ><i class="fa fa-file-text-o text-primary center-open-pdf mr-3" data-id="{{$register->file->id}}" data-toggle="tooltip" data-original-title="Visualizar Arquivo"></i></a>
-                                                    <a href="{{ url('/documentos-externos/acessar-documento/' . $register->file->id) }}" class="mr-3" ><i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i></a>
+                                                    <a href="#" ><i class="fa fa-file-text-o text-primary center-open-pdf mr-3" data-id="{{$register['file']->id}}" data-toggle="tooltip" data-original-title="Visualizar Arquivo"></i></a>
+                                                    <a href="{{ url('/documentos-externos/acessar-documento/' . $register['file']->id) }}" class="mr-3" ><i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i></a>
                                                 </td>
-                                                <td class="text-center text-nowrap">{{$register->areaName}}</td>
-                                                <td class="text-center text-nowrap">{{$register->file->endereco}}</td>
-                                                <td class="text-center text-nowrap">{{$register->listaIndice[2]->valor}}</td>
+                                                <td class="text-center text-nowrap">{{$register['areaName']}}</td>
+                                                <td class="text-center text-nowrap">{{$register['file']->endereco}}</td>
+                                                <td class="text-center text-nowrap">{{$register['file']->listaIndice[2]->valor}}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

@@ -40,16 +40,17 @@ class DocumentosExternosController extends Controller
         }
 
         $registers = array();
-        
+
         foreach ($registersGed as $registerGed) {
             foreach ($registerGed as $value) {
-                $value->areaName = $areasBySector[$value->idArea];
-                $file = $this->getDocumentsByRegister($value->id);
-                $value->file = $file;
-                array_push($registers, $value);
+                $files = $this->getDocumentsByRegister($value->id);
+                foreach ($files as $file){
+                    $arquivo['areaName'] = $areasBySector[$value->idArea];
+                    $arquivo['file'] = $file;
+                    array_push($registers, $arquivo);   
+                }
             }
         }
-
         return view('documentos_externos.index', compact('areasBySector', 'registers', 'nonCreatedArea'));
     }
 
@@ -108,11 +109,13 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function getDocumentsByRegister(string $registerId) 
-    {
-        $register = $this->ged->getRegister($registerId, 'true', 'false');
+    public function getDocumentsByRegister(string $registerId)
+    {   
 
-        return $register->listaDocumento[0];
+            $register = $this->ged->getRegister($registerId, 'true', 'false');
+            
+            return $register->listaDocumento;
+   
     }
 
 
