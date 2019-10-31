@@ -83,7 +83,6 @@ class RelatorioEstatisticoController extends Controller
                 'identifier' => str_replace(' ', '_', $sectorName),
             );
         });
-
         
         return view('documentacao.view-statical-report', [
             'tipoDocumentos' => $this->docTypes,
@@ -110,7 +109,7 @@ class RelatorioEstatisticoController extends Controller
         if ($_docTypeId == 99) { // Todos
             $documents = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
                                     ->join('setor', 'setor.id', '=', 'dados_documento.setor_id')
-                                    ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome')
+                                    ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome', 'setor.sigla AS sSigla')
                                     ->orderBy('setor.nome')->get();
         } else {
             $documents = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
@@ -139,7 +138,7 @@ class RelatorioEstatisticoController extends Controller
         });
 
         $this->totalOverdue = $filteredDocuments->count();
-        $groupedDocuments = $filteredDocuments->groupBy('sNome');
+        $groupedDocuments = $filteredDocuments->groupBy('sSigla');
 
         return $groupedDocuments;
     }
@@ -190,7 +189,7 @@ class RelatorioEstatisticoController extends Controller
         });
 
         $this->totalRevised = $docsWithRevisions->count();
-        $groupedDocuments = $docsWithRevisions->groupBy('sNome');
+        $groupedDocuments = $docsWithRevisions->groupBy('sSigla');
         
         return $groupedDocuments;
     }
