@@ -234,11 +234,9 @@
 
                             <!-- Setor Processos e o Elaborador sempre podem adicionar anexos -->
                             <div class="row mt-4">
-                                @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
-                                    </div>
-                                @endif
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                </div>
                                 <div class="col-md-3">    
                                 </div>
                                 <div class="col-md-4">    
@@ -374,11 +372,9 @@
                                 <!-- Se o documento ainda não estiver finalizado, pode inserir observações | Setor de Processos e o Elaborador sempre podem adicionar anexos -->
                                 @if( $documentoEhEditavel )
                                     <div class="row mt-4">
-                                        @if( Auth::user()->id == $elaborador_id  ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
-                                            </div>
-                                        @endif
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-lg btn-rounded btn-info" data-toggle="modal" data-target="#modal-anexos">ANEXOS</button>
+                                        </div>
                                         <div class="col-md-3">    
                                             <button type="button" class="btn btn-lg btn-rounded btn-primary" data-toggle="modal" data-target="#modal-save-obs">NOVA OBSERVAÇÃO</button>
                                         </div>
@@ -928,7 +924,7 @@
                 var dateF = hour +":"+ minutes +"  "+ date1 +"/"+ month +"/" + year;
 
                 var tr = '<tr>';
-                tr += '<td class="text-nowrap text-center"><a href="{{ asset("plugins/onlyoffice-php/doceditor.php?type=embedded&folder=anexos&fileID=") }}'+key.encodeFilePath+' " target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
+                tr += '<td class="text-nowrap text-center"><a href="{{ asset("plugins/onlyoffice-php/doceditor.php?p=1&folder=anexos&fileID=") }}'+key.encodeFilePath+' " target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
                 tr += '</tr>';
                 $("#attachment-table-body").append(tr);
             });
