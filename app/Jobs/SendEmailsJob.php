@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Mail\TemplateEmail;
 
 class SendEmailsJob implements ShouldQueue
@@ -69,7 +70,13 @@ class SendEmailsJob implements ShouldQueue
      */
     public function handle(Mail $mail)
     {
-        $mail::to($this->destinatarios)->send(new TemplateEmail($this->assunto,   $this->icon, $this->contentF1_P1, $this->codeF1, $this->contentF1_P2, $this->labelF2, $this->valueF2, $this->labelF3, $this->valueF3, $this->label2_F3, $this->value2_F3));
+        try {
+            $mail::to($this->destinatarios)->send(new TemplateEmail($this->assunto,   $this->icon, $this->contentF1_P1, $this->codeF1, $this->contentF1_P2, $this->labelF2, $this->valueF2, $this->labelF3, $this->valueF3, $this->label2_F3, $this->value2_F3));
+        } catch (\Throwable $th) {
+            Log::info("CATCH EMAIL");
+            Log::info(($th->getMessage()));
+            Log::info(print_r($th, true));
+        }
     }
 
 

@@ -1080,7 +1080,8 @@ class DocumentacaoController extends Controller
                 $dados_doc[0]->data_revisao = now();
                 $dados_doc[0]->save();
 
-                $usuariosAreaInteresseDocumento = AreaInteresseDocumento::join('users', 'users.id', '=', 'area_interesse_documento.usuario_id')->where('documento_id', '=', $idDoc)->select('usuario_id', 'name', 'username', 'email', 'setor_id')->get();
+                $usuariosAreaInteresseDocumento = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('usuario_id AS id', 'name', 'username', 'email', 'setor_id')->get();
+
                 if( count($usuariosAreaInteresseDocumento) > 0  ) {
                     $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_AREA_DE_INTERESSE_NUM;
                     $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE;
@@ -1091,9 +1092,8 @@ class DocumentacaoController extends Controller
                     foreach ($usuariosSetorQualidade as $key => $user) {
                         \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " foi revisado e aprovado pelo setor Processos.", false, $user->id, $idDoc);
                     }
-
                     foreach ($usuariosAreaInteresseDocumento as $key => $user) {
-                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $user->usuario_id, $idDoc);
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " precisa ser analisado.", true, $user->id, $idDoc);
                     }
 
                     // [E-mail -> (4)]
@@ -1101,12 +1101,12 @@ class DocumentacaoController extends Controller
                     $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " requer análise.";
                     $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
                     $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
-                    $this->dispatch(new SendEmailsJob($usuariosAreaInteresseDocumento, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
+                    $this->dispatch(new SendEmailsJob($usuariosAreaInteresseDocumento, "Novo documento para aprovação", $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
                     // Histórico
                     \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_AREA_DE_QUALIDADE, $idDoc);
                     \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE, $idDoc);
-
+               
                 } else {
                     $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_APROVADOR_NUM;
                     $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR;
