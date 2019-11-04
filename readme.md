@@ -65,7 +65,7 @@ Para executar em modo de produção, é necessário configurar um `supervisor`, 
 
 **NOTE:** Rodar _php artisan migrate_
 
-
+```
 public function handleError($level, $message, $file = '', $line = 0, $context = [])
     {
         if (error_reporting() & $level) {
@@ -75,3 +75,4 @@ public function handleError($level, $message, $file = '', $line = 0, $context = 
             throw new ErrorException($message, 0, $level, $file, $line);
         }
     }
+```

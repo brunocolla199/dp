@@ -13,19 +13,22 @@ class DocumentosExternosController extends Controller
     
     protected $ged;
 
-    public function __construct() {
-        $this->ged = new RESTGed( env('GED_URL'), env('GED_USER_ID'), env('GED_USER_TOKEN') );
+    public function __construct()
+    {
+        $this->ged = new RESTGed(env('GED_URL'), env('GED_USER_ID'), env('GED_USER_TOKEN'));
     }
 
 
-    public function index() 
+    public function index()
     {
-        $areas = collect($this->ged->getArea( env('GED_AREA_ID'), "true" ));
+        $areas = collect($this->ged->getArea(env('GED_AREA_ID'), "true"));
         $nonCreatedArea = false;
         $registers      = [];
         
         $areasBySector = $this->getAreasBySector($areas);
-        if ($areasBySector->count() <= 0) $nonCreatedArea = true;
+        if ($areasBySector->count() <= 0) {
+            $nonCreatedArea = true;
+        }
         
         if (!$nonCreatedArea) {
             $areasList = $areasBySector->keys()->toArray(); // The keys are the id of each area
@@ -44,10 +47,10 @@ class DocumentosExternosController extends Controller
         foreach ($registersGed as $registerGed) {
             foreach ($registerGed as $value) {
                 $files = $this->getDocumentsByRegister($value->id);
-                foreach ($files as $file){
+                foreach ($files as $file) {
                     $arquivo['areaName'] = $areasBySector[$value->idArea];
                     $arquivo['file'] = $file;
-                    array_push($registers, $arquivo);   
+                    array_push($registers, $arquivo);
                 }
             }
         }
@@ -55,7 +58,8 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $documentList   = array();
         $sectorName     = $request->sector_name;
         $databaseSector = Setor::where('nome', 'ILIKE', $sectorName)->first();
@@ -63,7 +67,7 @@ class DocumentosExternosController extends Controller
         
         $validated = false;
         $userId    = null;
-        if($request->i_approve == "true") {
+        if ($request->i_approve == "true") {
             $validated = true;
             $userId    = Auth::user()->id;
         }
@@ -72,10 +76,14 @@ class DocumentosExternosController extends Controller
             'id_area_sector' => 'required|string|max:40'
         ]);
 
-        if( $validator->fails() ) {
-            return response()->json(['error' => 'Tivemos um problema ao salvar os arquivos. Por favor, contate o suporte.']);
-        } else if( is_null($databaseSector) ) {
-            return response()->json(['error' => 'O nome da área para armazenar os documentos deve ser igual ao nome do setor escolhido. Por favor, peça ao suporte para criá-la.']);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Tivemos um problema ao salvar os arquivos. Por favor, contate o suporte.'
+            ]);
+        } elseif (is_null($databaseSector)) {
+            return response()->json([
+                'error' => 'O nome da área para armazenar os documentos deve ser igual ao nome do setor escolhido. Por favor, peça ao suporte para criá-la.'
+            ]);
         }
 
 
@@ -95,11 +103,11 @@ class DocumentosExternosController extends Controller
         foreach ($fullRegister->listaDocumento as $key => $document) {
             DocumentoExterno::create([
                 'id_documento'          => $document->id,
-                'id_registro'           => $registerId, 
-                'id_area'               => $idAreaSector, 
-                'validado'              => $validated, 
-                'responsavel_upload_id' => Auth::user()->id, 
-                'user_id'               => $userId, 
+                'id_registro'           => $registerId,
+                'id_area'               => $idAreaSector,
+                'validado'              => $validated,
+                'responsavel_upload_id' => Auth::user()->id,
+                'user_id'               => $userId,
                 'setor_id'              => $databaseSector->id
             ]);
         }
@@ -110,23 +118,23 @@ class DocumentosExternosController extends Controller
 
 
     public function getDocumentsByRegister(string $registerId)
-    {   
-
-            $register = $this->ged->getRegister($registerId, 'true', 'false');
-            
-            return $register->listaDocumento;
-   
+    {
+        $register = $this->ged->getRegister($registerId, 'true', 'false');
+        return $register->listaDocumento;
     }
 
 
-    public function accessDocument(string $documentId) {
+    public function accessDocument(string $documentId)
+    {
         $document          = $this->ged->getDocument($documentId);
         $dbDocument        = DocumentoExterno::where('id_documento', $document->id)->first();
         $validated         = $dbDocument->validado;
         $approver          = 'Não possui';
         $responsibleUpload = $dbDocument->responsavelUpload;
 
-        if( $validated ) $approver = $dbDocument->aprovador;
+        if ($validated) {
+            $approver = $dbDocument->aprovador;
+        }
 
         return view('documentos_externos.access', [
             'document'          => $document,
@@ -139,19 +147,20 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $documentId = $request->document_id;
 
         $dbDocument = DocumentoExterno::where('id_documento', $documentId)->first();
         $registerId = $dbDocument->id_registro;
 
         $statusCode = $this->ged->removeDocument($documentId);
-        if( $statusCode == 200 ) {
+        if ($statusCode == 200) {
             $dbDocument->delete();
 
-            // Caso não existam mais docs nesse registro, o próprio registro é excluído para evitar "registros fantasmas"
+            // Se não existir mais docs nesse registro, o próprio registro é excluído para evitar "registros fantasmas"
             $registryDocuments = DocumentoExterno::where('id_registro', $registerId)->get();
-            if( $registryDocuments->count() <= 0 ) {
+            if ($registryDocuments->count() <= 0) {
                 $registerStatusCode = $this->ged->removeRegister($registerId);
             }
 
@@ -163,18 +172,19 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'document_updated' => 'required|file|mimes:pdf'
         ]);
 
-        if( $validator->fails() ) {
+        if ($validator->fails()) {
             $request->session()->flash('style', 'danger|close-circle');
             $request->session()->flash('message', 'É obrigatório que você insira um arquivo e que ele seja em formato .pdf. Por favor, revise o campo do arquivo!');
             return redirect()->back()->withInput();
         }
         
-        // Como o documento para ser atualizado já foi pesquisado anteriormente, a view já contém as informações necessárias para atualizá-lo
+        // A view já contém as informações necessárias para atualizar o documento (doc já foi pesquisado anteriormente)
         $documentUpdated = $request->file('document_updated');
         
         $properties = [
@@ -188,9 +198,12 @@ class DocumentosExternosController extends Controller
         ];
         
         $finalDocument = $this->ged->updateDocument($properties);
-        if( isset($finalDocument->id) ) {
-            $dbDocument                        = DocumentoExterno::where('id', $request->db_document_id)->where('id_documento', $request->document_id)->first();
-            $dbDocument->validado              = false;
+        if (isset($finalDocument->id)) {
+            $dbDocument = DocumentoExterno::where('id', $request->db_document_id)->where(
+                'id_documento',
+                $request->document_id
+            )->first();
+            $dbDocument->validado = false;
             $dbDocument->responsavel_upload_id = Auth::user()->id;
             $dbDocument->save();
 
@@ -205,8 +218,12 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function approval(Request $request) {
-        $dbDocument = DocumentoExterno::where('id', $request->db_document_id)->where('id_documento', $request->document_id)->first();
+    public function approval(Request $request)
+    {
+        $dbDocument = DocumentoExterno::where('id', $request->db_document_id)->where(
+            'id_documento',
+            $request->document_id
+        )->first();
         
         $dbDocument->validado = true;
         $dbDocument->user_id  = Auth::user()->id;
@@ -218,7 +235,8 @@ class DocumentosExternosController extends Controller
     }
 
 
-    public function getBytes(Request $request) {
+    public function getBytes(Request $request)
+    {
         $document = $this->ged->getDocument($request->document_id, 'true');
         return response()->json(['response' => $document->bytes]);
     }
@@ -226,17 +244,17 @@ class DocumentosExternosController extends Controller
 
 
     // Private methods
-    private function getAreasBySector($areas) {
-
+    private function getAreasBySector($areas)
+    {
         $userSectorId = Auth::user()->setor_id;
-        if( $userSectorId != Constants::$ID_SETOR_QUALIDADE ) {
+        if ($userSectorId != Constants::$ID_SETOR_QUALIDADE) {
             $userSector = Setor::find($userSectorId);
 
-            $areasBySector = $areas->filter(function($area, $key) use ($userSector) {
+            $areasBySector = $areas->filter(function ($area, $key) use ($userSector) {
                 return strtolower($userSector->nome) ==  strtolower($area->nome);
             });
 
-            if( $areasBySector->count() > 0) {                 
+            if ($areasBySector->count() > 0) {
                 $areasBySector = $areasBySector->pluck('nome', 'id');
                 $areasBySector = $areasBySector->forget(env('GED_AREA_ID'));
             }
@@ -247,5 +265,4 @@ class DocumentosExternosController extends Controller
 
         return $areasBySector;
     }
-
 }
