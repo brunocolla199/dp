@@ -161,11 +161,9 @@ class RelatorioEstatisticoController extends Controller
                 'descricao',
                 Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO
             )->get();
-            
             if ($docHistory->count() > 0) {
                 $visualRevisions = array();
                 $currentRevision = (int) $item->revisao;
-
                 $revisionsNumber = 0;
                 $counter = $docHistory->count();
                 while ($counter > 0) {
@@ -179,12 +177,13 @@ class RelatorioEstatisticoController extends Controller
                     $counter--;
                     $currentRevision--;
                 }
-                $item['revisions_number'] = $revisionsNumber;
-                $item['revisions'] = $visualRevisions;
-
-                return $item;
+                if($revisionsNumber){
+                    $item['revisions_number'] = $revisionsNumber;
+                    $item['revisions'] = $visualRevisions;
+                    return $item;
+                }
+                return false;
             }
-
             return false;
         });
 
