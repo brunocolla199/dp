@@ -16,7 +16,7 @@ class CreateFakeRecords extends Command
      * @var string
      */
     protected $signature = 'fake:records  
-                            {code : the form code that will be imported}
+                            {code : the form code that will be imported ("form code" or "all" to iterate over all)}
                             {--obsolete : defines whether obsolete forms should be considered}';
 
     /**
@@ -25,6 +25,7 @@ class CreateFakeRecords extends Command
      * @var string
      */
     protected $description = 'Creates "fake" records to temporarily solve the problem of canceling the first form revisions.';
+
 
     /**
      * Create a new command instance.
@@ -36,6 +37,7 @@ class CreateFakeRecords extends Command
         parent::__construct();
     }
 
+
     /**
      * Execute the console command.
      *
@@ -44,16 +46,58 @@ class CreateFakeRecords extends Command
     public function handle()
     {
         $code = explode('=', $this->argument('code'))[1];
-        // TODO: aqui daria para verificar se o usuário mandou 'all' como parâmetro, por exemplo, e então buscar todos os formulários que não tem revisão salva e, automaticamente, criar uma para cada um.
         $obsolete = (!empty($this->option('obsolete'))) ? true : false;
+        
+        if ($code == "all") {
+            $this->iterateOverAll($obsolete);
+        } else {
+            $this->insertOnlyOne($code, $obsolete);
+        }
+        
+        $this->info("-- Finalizado. --");
+    }
 
-        $qtdForms = Formulario::where('codigo', $code)->where('obsoleto', $obsolete)->count();
+
+    /**
+     * Busca todos os formulários que não possuem um registro de revisão para criar um registro 'fake'.
+     *
+     * @param bool $_obsolete
+     * @return void
+     */
+    private function iterateOverAll(bool $_obsolete)
+    {
+        if ($_obsolete) {
+            $forms = Formulario::all();
+        } else {
+            $forms = Formulario::where('obsoleto', $_obsolete)->get();
+        }
+
+        foreach ($forms as $form) {
+            $qtdRevision = FormularioRevisao::where('formulario_id', $form->id)->count();
+            if ($qtdRevision <= 0) {
+                $this->info("- [{$form->id}] Formulário {$form->codigo} terá um registro criado...");
+                $this->createFakeRecord($form);
+            }
+        }
+    }
+
+
+    /**
+     * Insere apenas um registro 'fake', com base no código recebido por parâmetro.
+     *
+     * @param string $_code
+     * @param bool $_obsolete
+     * @return void
+     */
+    private function insertOnlyOne(string $_code, bool $_obsolete)
+    {
+        $qtdForms = Formulario::where('codigo', $_code)->where('obsoleto', $_obsolete)->count();
         if ($qtdForms != 1) {
             $this->warn("-- Encontramos {$qtdForms} formulários com esse código. Sugiro que você revise seu comando ou verifique se isso está correto.");
             return;
         }
 
-        $form = Formulario::where("codigo", $code)->first();
+        $form = Formulario::where("codigo", $_code)->first();
         $qtdReviews = FormularioRevisao::where("formulario_id", $form->id)->count();
         if ($qtdReviews > 0) {
             if (!$this->confirm("Esse formulário já possui {$qtdReviews} revisões salvas. Você deseja mesmo criar mais um que seja o 'backup' do estado atual?")) {
@@ -62,11 +106,16 @@ class CreateFakeRecords extends Command
         }
 
         $this->createFakeRecord($form);
-        $this->info("-- Finalizado. --");
     }
 
 
-    public function createFakeRecord(Formulario $_form)
+    /**
+     * Cria um registro 'fake' na tabela FormularioRevisao.
+     *
+     * @param Formulario $_form
+     * @return void
+     */
+    private function createFakeRecord(Formulario $_form)
     {
         $formRevisao = new FormularioRevisao();
         $formRevisao->codigo = $_form->codigo;
