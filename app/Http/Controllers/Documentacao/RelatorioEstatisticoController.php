@@ -177,7 +177,7 @@ class RelatorioEstatisticoController extends Controller
                     $counter--;
                     $currentRevision--;
                 }
-                if($revisionsNumber){
+                if ($revisionsNumber) {
                     $item['revisions_number'] = $revisionsNumber;
                     $item['revisions'] = $visualRevisions;
                     return $item;

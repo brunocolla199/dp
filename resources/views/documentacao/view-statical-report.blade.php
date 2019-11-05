@@ -259,9 +259,9 @@
         toolbox: {
             show: true,
             feature: {
-                magicType: {show: true, type: ['line', 'bar']},
-                restore: {show: true},
-                saveAsImage: {show: true}
+                magicType: {show: true, type: ['line', 'bar'], title: {line: 'Gráfico de linhas', bar: 'Gráfico de barras'}},
+                restore: {show: true, title: 'Restaurar'},
+                saveAsImage: {show: true, title: "Salvar"}
             }
         },
         color: ["#26c6da", "#ffbc34"],
