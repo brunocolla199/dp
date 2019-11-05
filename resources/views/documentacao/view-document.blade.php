@@ -279,10 +279,10 @@
                                                 <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target=".bs-example-modal-sm">REJEITAR <i class="fa fa-remove"></i></button>
                                             </div>
                                             <div class="col-md-5">    
-                                                {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST']) }}
+                                                {{ Form::open(['route' => 'documentacao.approval-document', 'method' => 'POST', 'id' => 'approval-document']) }}
                                                     {{ Form::hidden('documento_id', $document_id) }}
                                                     {{ Form::hidden('etapa_doc', $etapa_doc) }}
-                                                    {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                    {!! Form::button('APROVAR <i class="fa fa-check"></i>', ['class' => 'btn btn-lg btn-success btn-aprovar'] )  !!}
                                                 {{ Form::close() }}
                                             </div>
                                         </div>
@@ -952,6 +952,11 @@
             $("#btn-lista-anexos").trigger('click');
         }, function(err) {
         });
+    });
+
+    $(".btn-aprovar").click(function(e){
+        $(this).attr("disabled", true);
+        $("#approval-document").submit();
     });
 
 </script>
