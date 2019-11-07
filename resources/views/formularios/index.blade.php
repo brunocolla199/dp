@@ -90,175 +90,181 @@
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div class="tab-pane p-20" id="novoForm" role="tabpanel">
-                                    
-                                    <!-- Se erros ocorrerem -->
-                                    <div class="row mb-2">
-                                        <div class="col-md-12 mb-4">
-                                            @if ($errors->any())
-                                                <div class="alert alert-danger">
-                                                    <ul>
-                                                        @foreach ($errors->all() as $error)
-                                                            <li>{{ $error }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
+                                    @if(Auth::user()->permissao_elaborador)
+
+                                        <!-- Se erros ocorrerem -->
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 mb-4">
+                                                @if ($errors->any())
+                                                    <div class="alert alert-danger">
+                                                        <ul>
+                                                            @foreach ($errors->all() as $error)
+                                                                <li>{{ $error }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="col-md-12">
-                                        {!! Form::open(['route' => 'formularios.validate-data', 'method' => 'POST', 'id' => 'form-save-new-document', 'enctype' => 'multipart/form-data']) !!}
-                                        
-                                            {{ csrf_field() }}
-
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('setor_dono_form', 'Setor:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('setor_dono_form', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO], '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <div class="col-md-10 control-label font-bold">
-                                                            {!! Form::label('grupoDivulgacaoFormulario', 'GRUPO DE DIVULGAÇÃO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <select multiple id="optgroup-newGrupoDivulgacaoFormulario" name="grupoDivulgacaoFormulario[]">
-                                                                @foreach($setoresUsuarios as $key => $su)
-                                                                    <optgroup label="{{ $key }}">
-                                                                        @foreach($su as $key2 => $user)
-                                                                            <option value="{{ $key2 }}">{{ $user }}</option>
-                                                                        @endforeach
-                                                                    </optgroup>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>   
-                                                </div>                                                    
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('meio_distribuicao_id', 'MEIO') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('meio_distribuicao_id', $meiosDistribuicao, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('local_armazenamento_id', 'ARMAZENAMENTO') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('local_armazenamento_id', $locaisArmazenamento, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('protecao_id', 'PROTEÇÃO') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('protecao_id', $protecao, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('recuperacao_id', 'RECUPERAÇÃO') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('recuperacao_id', $recuperacao, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('tempo_retencao_local_id', 'RETENÇÃO MÍNIMA - LOCAL') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('tempo_retencao_local_id', $tempoRetLocal, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div> 
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('tempo_retencao_deposito_id', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('tempo_retencao_deposito_id', $tempoRetDeposito, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-12 control-label font-bold">
-                                                            {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::text('tituloFormulario', null, ['class' => 'form-control', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group required">
-                                                        <div class="col-md-6 control-label font-bold">
-                                                            {!! Form::label('disposicao_id', 'DISPOSIÇÃO') !!}
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            {!! Form::select('disposicao_id', $disposicao, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
-                                                        </div>
-                                                    </div>
-                                                </div> 
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-6"></div>
-                                                <div class="col-md-6 margin-top-1percent">
-                                                    <div class="col-md-12">
-                                                        <button type="button" id="importFormulario" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >IMPORTAR FORMULÁRIO</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
+                                        <div class="col-md-12">
+                                            {!! Form::open(['route' => 'formularios.validate-data', 'method' => 'POST', 'id' => 'form-save-new-document', 'enctype' => 'multipart/form-data']) !!}
                                             
-                                        {!! Form::close() !!}
-                                    </div>
+                                                {{ csrf_field() }}
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('setor_dono_form', 'Setor:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('setor_dono_form', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('nivelAcessoDocumento', 'NÍVEL DE ACESSO AO DOCUMENTO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('nivelAcessoDocumento', [Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO], '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-10 control-label font-bold">
+                                                                {!! Form::label('grupoDivulgacaoFormulario', 'GRUPO DE DIVULGAÇÃO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <select multiple id="optgroup-newGrupoDivulgacaoFormulario" name="grupoDivulgacaoFormulario[]">
+                                                                    @foreach($setoresUsuarios as $key => $su)
+                                                                        <optgroup label="{{ $key }}">
+                                                                            @foreach($su as $key2 => $user)
+                                                                                <option value="{{ $key2 }}">{{ $user }}</option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>   
+                                                    </div>                                                    
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('meio_distribuicao_id', 'MEIO') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('meio_distribuicao_id', $meiosDistribuicao, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('local_armazenamento_id', 'ARMAZENAMENTO') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('local_armazenamento_id', $locaisArmazenamento, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('protecao_id', 'PROTEÇÃO') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('protecao_id', $protecao, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('recuperacao_id', 'RECUPERAÇÃO') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('recuperacao_id', $recuperacao, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('tempo_retencao_local_id', 'RETENÇÃO MÍNIMA - LOCAL') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('tempo_retencao_local_id', $tempoRetLocal, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div> 
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('tempo_retencao_deposito_id', 'RETENÇÃO MÍNIMA - ARQUIVO MORTO') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('tempo_retencao_deposito_id', $tempoRetDeposito, null, ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('tituloFormulario', 'TÍTULO DO FORMULÁRIO:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('tituloFormulario', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group required">
+                                                            <div class="col-md-6 control-label font-bold">
+                                                                {!! Form::label('disposicao_id', 'DISPOSIÇÃO') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::select('disposicao_id', $disposicao, '', ['class' => 'form-control custom-select', 'required' => 'required']) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div> 
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6"></div>
+                                                    <div class="col-md-6 margin-top-1percent">
+                                                        <div class="col-md-12">
+                                                            <button type="button" id="importFormulario" class="btn waves-effect waves-light btn-block btn-lg btn-secondary" >IMPORTAR FORMULÁRIO</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                
+                                            {!! Form::close() !!}
+                                        </div>
+                                    @else
+                                        <div class="col-md-12">
+                                            <h3>Você não possui permissão para criar formulários. Por favor, contate seu superior.</h3>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="tab-pane active" id="verForms" role="tabpanel">
@@ -407,13 +413,15 @@
                                                                     @elseif( !$form->obsoleto )
                                                                         <tr>
                                                                             <td class="text-nowrap text-center"> 
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $form->elaborador_id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ) )
+                                                                                @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $form->elaborador_id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ))
                                                                                     <a href="{{ route('formularios.edit-info', ['id' => $form->id]) }}"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
                                                                                 @endif
 
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-form-review ml-2" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a> 
+                                                                                @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $form->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
+                                                                                    <a href="javascript:void(0)" class="btn-open-confirm-form-review ml-2" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i></a> 
+                                                                                @endif
 
-                                                                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+                                                                                @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE)
                                                                                     <a href="javascript:void(0)" class="btn-tornar-formulario-obsoleto-modal ml-2" data-id="{{ $form->id }}"> <i class="fa fa-power-off text-danger" data-toggle="tooltip" data-original-title="Tornar Obsoleto"></i> </a> 
                                                                                 @endif
                                                                             </td>
