@@ -371,8 +371,11 @@
                                                                         
                                                                         <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
-                                                                        
-                                                                        <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
+                                                                        @if ($form->etapa == "Finalizado")
+                                                                            <td><p class="font-weight-bold text-success"> Finalizado </p></td>
+                                                                        @else
+                                                                           <td><p class="text-muted font-weight-bold"> {{ $form->etapa }} </p></td>
+                                                                        @endif 
 
                                                                         <td><p class="text-center"> {{ $form->nivel_acesso }} </p></td>
                                                                         

@@ -16,7 +16,8 @@ use App\{GrupoDivulgacaoFormulario, GrupoDivulgacao, Setor, Documento, Formulari
 class FormulariosController extends Controller
 {
     
-    public function index() {
+    public function index()
+    {
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
@@ -127,37 +128,41 @@ class FormulariosController extends Controller
 
     }
 
-    public function viewForm(Request $request){ 
-        if( array_key_exists("notify_id", $request->all()) ) {
+    public function viewForm(Request $request)
+    {
+        if (array_key_exists("notify_id", $request->all())) {
             \App\Classes\Helpers::instance()->atualizaNotificacaoFormVisualizada($request->notify_id);
-        }       
-    
-        $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();    
-        $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->get();
+        }
+        
+        $formulario   = Formulario::find($request->formulario_id);
+        $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->first();
         $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
                                             ->join('users', 'users.id', '=', 'formulario.elaborador_id')
                                             ->where('formulario_id', '=', $request->formulario_id)
                                             ->orderby('finalizado')->get(['formulario.finalizado', 'historico_formulario.descricao', 'historico_formulario.nome_usuario_responsavel', 'historico_formulario.created_at']);
 
-        $filePath = ($formulario[0]->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario[0]->nome_completo_em_revisao : $formulario[0]->nome.".".$formulario[0]->extensao;
+        $filePath = ($formulario->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario->nome_completo_em_revisao : $formulario->nome_completo_finalizado;
 
-        return View::make('formularios.view-formulario', array(
-            'nome'=>$formulario[0]->nome,  
-            'acao'=>$request->action,  
-            'formulario_id'=>$request->formulario_id, 
-            'historico'=>$historico, 
-            'codigo'=>$formulario[0]->codigo, 
-            'extensao'=>$formulario[0]->extensao,
-            'filePath'=> $filePath, 
-            'formData'=>trim($formulario[0]->conteudo, '"'), 
-            'etapa_form'=>$workflowForm[0]->etapa_num,
-            'elaborador_id'=>$formulario[0]->elaborador_id,
-            'finalizado'=>$formulario[0]->finalizado,
-            'em_revisao'=>$formulario[0]->em_revisao,
-            'justificativaRejeicaoForm'=>$workflowForm[0]->justificativa,
-            'id_usuario_solicitante'=>$formulario[0]->id_usuario_solicitante,
-            'justificativa_cancelar_revisao'=>$formulario[0]->justificativa_cancelar_revisao,
-            'resp'=>false)
+        return View::make(
+            'formularios.view-formulario',
+            array(
+                'nome' => $formulario->nome,
+                'acao' => $request->action,
+                'formulario_id' => $request->formulario_id,
+                'historico' => $historico,
+                'codigo' => $formulario->codigo,
+                'extensao' => $formulario->extensao,
+                'filePath' =>  $filePath,
+                'formData' => trim($formulario->conteudo, '"'),
+                'etapa_form' => $workflowForm->etapa_num,
+                'elaborador_id' => $formulario->elaborador_id,
+                'finalizado' => $formulario->finalizado,
+                'em_revisao' => $formulario->em_revisao,
+                'justificativaRejeicaoForm' => $workflowForm->justificativa,
+                'id_usuario_solicitante' => $formulario->id_usuario_solicitante,
+                'justificativa_cancelar_revisao' => $formulario->justificativa_cancelar_revisao,
+                'resp' => false
+            )
         );
     }
 
@@ -251,6 +256,8 @@ class FormulariosController extends Controller
         if($alterarElaborador) $formulario[0]->elaborador_id = Auth::user()->id;
         $formulario[0]->finalizado = false;
         $formulario[0]->em_revisao = true;
+        $novaVersao = $formulario[0]->revisao + 1;
+        $formulario[0]->revisao = ($novaVersao <= 10) ? "0{$novaVersao}" : $novaVersao;
         $formulario[0]->id_usuario_solicitante = Auth::user()->id;
         $formulario[0]->nome_completo_em_revisao = $formulario[0]->nome .".". $formulario[0]->extensao;
         $formulario[0]->save();
@@ -283,8 +290,7 @@ class FormulariosController extends Controller
         $formulario     = Formulario::where('id', '=', $idForm)->get();
         $workflowForm   = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
 
-        $revisaoNova = (int) $formulario[0]->revisao + 1;
-        $revisaoNova = ($revisaoNova <= 9) ? "0{$revisaoNova}" : $revisaoNova;
+        $revisaoNova = $formulario[0]->revisao;
         
         $oldName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
         $newName = \App\Classes\Helpers::instance()->escapeFilename($request->newTituloFormulario);
@@ -639,8 +645,7 @@ class FormulariosController extends Controller
 
                 // Uma revisão acabou de ser aprovada e não apenas um formulário que foi criado
                 if( isset($request->aprovacao_revisao) && $request->aprovacao_revisao == "aprovar") {
-                    $revisao = (int) $formulario[0]->revisao + 1;
-                    $revisao = ($revisao <= 9) ? "0{$revisao}" : $revisao;
+                    $revisao = $formulario[0]->revisao;
 
                     $nome_completo_finalizado = $formulario[0]->nome_completo_em_revisao;
                     
@@ -866,40 +871,57 @@ class FormulariosController extends Controller
         return $codigo;
     }
 
-    public function getFormsIndex() {
+    public function getFormsIndex()
+    {
         $base_query = DB::table('formulario')
-                                ->join('workflow_formulario',   'workflow_formulario.formulario_id',    '=',    'formulario.id')
-                                ->select('formulario.*', 
-                                        'workflow_formulario.id AS wkf_id', 'workflow_formulario.etapa_num', 'workflow_formulario.etapa'
-                                );
+            ->join('workflow_formulario', 'workflow_formulario.formulario_id', '=', 'formulario.id')
+            ->select('formulario.*', 'workflow_formulario.id AS wkf_id', 'workflow_formulario.etapa_num', 'workflow_formulario.etapa');
 
         $clonedBaseQuery2 = clone $base_query;
         $clonedBaseQuery3 = clone $base_query;
         $clonedBaseQuery4 = clone $base_query;
         $clonedBaseQuery5 = clone $base_query;
         $clonedBaseQuery6 = clone $base_query;
+        $clonedBaseQuery7 = clone $base_query;
 
 
-        $forms_NAOFinalizados = array(); 
-        $formsFinalizados = array(); 
+        $forms_NAOFinalizados = array();
+        $formsFinalizados = array();
 
         // A) FORMS não finalizados
-        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
             $formsQualidade = $clonedBaseQuery2->where('formulario.finalizado', '=', false)->get();
 
-            if( count($formsQualidade) > 0 ) 
-                for ($i=0; $i < count($formsQualidade); $i++) 
-                    $forms_NAOFinalizados[] = $formsQualidade[$i]; 
-
-        } else if( Auth::user()->setor_id != Constants::$ID_SETOR_QUALIDADE) {
+            if (count($formsQualidade) > 0) {
+                for ($i = 0; $i < count($formsQualidade); $i++) {
+                    $forms_NAOFinalizados[] = $formsQualidade[$i];
+                }
+            }
+        } else {
             $formsNOTQualidade = $clonedBaseQuery3->where('formulario.finalizado', '=', false)
-                                                    ->where('formulario.elaborador_id', '=', Auth::user()->id)
-                                                    ->where('workflow_formulario.etapa_num', '=', Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM)
+                                                    ->where('formulario.revisao', '!=', '00')
+                                                    ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
                                                     ->get();
 
-            if( count($formsNOTQualidade) > 0 ) 
-                for ($i=0; $i < count($formsNOTQualidade); $i++) 
-                    $forms_NAOFinalizados[] = $formsNOTQualidade[$i]; 
+            $formsNOTQualidadeRestrito = $clonedBaseQuery7->where('formulario.finalizado', '=', false)
+                                                    ->where('formulario.revisao', '!=', '00')
+                                                    ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
+                                                    ->where('formulario.setor_id', '=', Auth::user()->setor_id)
+                                                    ->get();
+
+            $formsNOTQualidade = $formsNOTQualidade->merge($formsNOTQualidadeRestrito);
+            
+            if (count($formsNOTQualidade) > 0) {
+                foreach ($formsNOTQualidade as $key => $form) {
+                    if (!($form->elaborador_id ==  Auth::user()->id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM )) {
+                        $numRevisaoAnterior = (int) $form->revisao - 1;
+                        $form->revisao = ($form->revisao <= 10) ? "0{$numRevisaoAnterior}" : $numRevisaoAnterior;
+                        $form->etapa = "Finalizado";
+                    }
+                    $forms_NAOFinalizados[] = $form;
+                }
+            }
         }
 
         // B) FORMS finalizados
@@ -908,7 +930,7 @@ class FormulariosController extends Controller
                                                     ->get();
 
         $formsFinalizados_restritos = array();
-        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
             $formsFinalizados_restritos = $clonedBaseQuery5->where('formulario.finalizado', '=', true)
                                                             ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
                                                             ->get();
@@ -916,35 +938,38 @@ class FormulariosController extends Controller
             // Como o fluxo de WF dos formulários tem apenas elaborados e qualidade e qualidade cai no if acima, só precisa verificar os que ele é elaborador
             $formsFinalizados_restritos = $clonedBaseQuery6->where('formulario.finalizado', '=', true)
                                                             ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
-                                                            // ->where('formulario.elaborador_id', '=', Auth::user()->id)
                                                             ->where('formulario.setor_id', '=', Auth::user()->setor_id)
                                                             ->get();
-        } 
+        }
         
-        
-        if( count($formsFinalizados_livre) > 0 ) 
-            for ($i=0; $i < count($formsFinalizados_livre); $i++) 
-                $formsFinalizados[] = $formsFinalizados_livre[$i]; 
-
-        if( count($formsFinalizados_restritos) > 0 ) 
-            for ($i=0; $i < count($formsFinalizados_restritos); $i++) 
-                $formsFinalizados[] = $formsFinalizados_restritos[$i];  
+        if (count($formsFinalizados_livre) > 0) {
+            for ($i = 0; $i < count($formsFinalizados_livre); $i++) {
+                $formsFinalizados[] = $formsFinalizados_livre[$i];
+            }
+        }
+            
+        if (count($formsFinalizados_restritos) > 0) {
+            for ($i = 0; $i < count($formsFinalizados_restritos); $i++) {
+                $formsFinalizados[] = $formsFinalizados_restritos[$i];
+            }
+        }
 
 
 
          // Criando array final para a listagem de formulários
-         $forms = array();
-         if( count($forms_NAOFinalizados) > 0 ) {
-             usort($forms_NAOFinalizados, array($this, "cmp"));
-             $forms["nao_finalizados"] = $forms_NAOFinalizados;
-         }
- 
-         if( count($formsFinalizados) > 0 ) {
-             usort($formsFinalizados, array($this, "cmp"));
-             $forms["finalizados"] = $formsFinalizados;
-         }
+        $forms = array();
+        
+        if (count($forms_NAOFinalizados) > 0) {
+            usort($forms_NAOFinalizados, array($this, "cmp"));
+            $forms["nao_finalizados"] = $forms_NAOFinalizados;
+        }
+
+        if (count($formsFinalizados) > 0) {
+            usort($formsFinalizados, array($this, "cmp"));
+            $forms["finalizados"] = $formsFinalizados;
+        }
          
-         return $forms;
+        return $forms;
     }
 
     private function cmp($a, $b) {
