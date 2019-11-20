@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\{SendEmailsJob, SendEmailComAnexoJob};
 use App\Http\Requests\{DadosNovoDocumentoRequest, UploadDocumentRequest};
 use Illuminate\Support\Facades\{Auth, DB, File, Input, Log, Mail, Storage, View};
-use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao, RegistroImpressoes};
+use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao, RegistroImpressoes, DocumentoObservacao };
 
 use IRebega\DocxReplacer\Docx;
 use PhpOffice\PhpWord\{PhpWord, TemplateProcessor, Element\TextRun};
@@ -1222,6 +1222,8 @@ class DocumentacaoController extends Controller
                 $workflow_doc[0]->etapa     = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
                 $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
                 $workflow_doc[0]->save();
+                
+                $this->saveMessageRejectInComments($request->justificativaReprovacaoDoc, $idDoc);
 
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
@@ -1255,6 +1257,8 @@ class DocumentacaoController extends Controller
                 $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
                 $workflow_doc[0]->save();
 
+                $this->saveMessageRejectInComments($request->justificativaReprovacaoDoc, $idDoc);
+
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
                 foreach ($usuariosSetorQualidade as $key => $user) {
@@ -1285,6 +1289,8 @@ class DocumentacaoController extends Controller
                 $workflow_doc[0]->etapa = Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO;
                 $workflow_doc[0]->justificativa = $request->justificativaReprovacaoDoc;
                 $workflow_doc[0]->save();
+               
+                $this->saveMessageRejectInComments($request->justificativaReprovacaoDoc, $idDoc);
 
                 // Notificações
                 $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
@@ -2283,4 +2289,13 @@ class DocumentacaoController extends Controller
     }
 
 
+    private function saveMessageRejectInComments($message, $document) 
+    {
+        $obs = new DocumentoObservacao();
+        $obs->observacao                = $message;
+        $obs->nome_usuario_responsavel  = Auth::user()->name;
+        $obs->documento_id              = $document;
+        $obs->usuario_id                = Auth::user()->id;
+        $obs->save();
+    }
 }
