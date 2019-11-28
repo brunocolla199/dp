@@ -159,13 +159,14 @@ class RelatorioEstatisticoController extends Controller
         $docsWithRevisions = $_docs->filter(function ($item) use ($_startDate, $_endDate) {
             $docHistory = HistoricoDocumento::where('documento_id', $item->id)->where(
                 'descricao',
-                Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO
+                Constants::$DESCRICAO_WORKFLOW_EM_REVISAO
             )->get();
             if ($docHistory->count() > 0) {
                 $visualRevisions = array();
                 $currentRevision = (int) $item->revisao;
                 $revisionsNumber = 0;
                 $counter = $docHistory->count();
+
                 while ($counter > 0) {
                     $reviewedAt = $docHistory[$counter - 1]->created_at;
                     if ($reviewedAt->between($_startDate, $_endDate)) {
