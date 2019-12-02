@@ -142,7 +142,7 @@ class FormulariosController extends Controller
                                             ->orderby('finalizado')->get(['formulario.finalizado', 'historico_formulario.descricao', 'historico_formulario.nome_usuario_responsavel', 'historico_formulario.created_at']);
 
 
-        $filePath = ($formulario->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario->nome_completo_em_revisao : $formulario->nome . "." . $formulario->extensao;
+        $filePath = ($formulario->em_revisao && Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) ? $formulario->nome_completo_em_revisao : $formulario->nome_completo_finalizado ?? $formulario->nome . "." . $formulario->extensao;
 
         return View::make(
             'formularios.view-formulario',
