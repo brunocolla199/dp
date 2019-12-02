@@ -464,12 +464,13 @@ class AjaxController extends Controller
     }
 
 
-    public function getAnexos(Request $request) {
-        $anexos = Anexo::where('documento_id', '=', $request->document_id)->get();
+    public function getAnexos(Request $request)
+    {
+        $anexos = Anexo::where('documento_id', '=', $request->document_id)->orderBy('nome')->get();
         foreach ($anexos as $key => $value) {
-            $value['encodeFilePath'] = $value->hash .".". $value->extensao;
+            $value['encodeFilePath'] = $value->hash . "." . $value->extensao;
         }
-        return response()->json(['response' => $anexos]);   
+        return response()->json(['response' => $anexos]);
     }
 
 
