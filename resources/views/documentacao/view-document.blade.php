@@ -192,7 +192,7 @@
                                         <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" target="_blank" id="down-doc" class="btn col-md-12 btn-info"> <i class="mdi mdi-cloud-download"></i> Download</a>
                                     </div>
                                     <div class="col-md-2 mt-4 pull-right">
-                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
+                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&action=view' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
                                     </div>
                                 </div>
 
@@ -202,7 +202,7 @@
                                     <div class="col-md-8"></div>
 
                                     <div class="col-md-2 mt-4 pull-right">
-                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
+                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&action=view' }}" class="btn col-md-12 btn-success"  target="_blank"> <i class="mdi mdi-eye"></i> Visualizar </a>
                                     </div>
                                 </div>
 
@@ -339,7 +339,7 @@
                                                     Pré-visualização de Documento<br>
                                                     <div class="text-center">   
                                                         <br>
-                                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-success"  target="_blank">Visualizar </a>
+                                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&action=view' }}" class="btn btn-success"  target="_blank">Visualizar </a>
 
                                                         @if ( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  ||  (Auth::user()->setor_id == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO && in_array($idSetorDoc, Constants::$SETORES_QUE_SET_TEM_ACESSO)) )
                                                             <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-success m-l-10"  target="_blank">Download </a>
