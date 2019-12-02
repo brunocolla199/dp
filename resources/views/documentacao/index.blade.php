@@ -453,7 +453,7 @@
                                                                 
                                                                 <th class="text-center">Status</th>
                                                                 <th class="text-center">Nível Acesso</th>
-                                                                <th class="text-center">Validade</th>
+                                                                {{-- <th class="text-center">Validade</th> --}}
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -494,8 +494,8 @@
 
                                                                         <td class="text-center">{{ $doc->nivel_acesso }}</td>
 
-                                                                        <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
-                                                                    </tr>
+{{--                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
+ --}}                                                                    </tr>
                                                                 @endforeach
                                                             @endif
 
@@ -542,7 +542,7 @@
 
                                                                         <td class="text-center">{{ $docF->nivel_acesso }}</td>
 
-                                                                        <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td>
+                                                                        {{-- <td class="text-center">{{ date("d/m/Y", strtotime($docF->validade)) }}</td> --}}
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
