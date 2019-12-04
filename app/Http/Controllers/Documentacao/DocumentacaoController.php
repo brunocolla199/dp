@@ -12,7 +12,7 @@ use App\Jobs\{SendEmailsJob, SendEmailComAnexoJob};
 use App\Http\Requests\{DadosNovoDocumentoRequest, UploadDocumentRequest};
 use Illuminate\Support\Facades\{Auth, DB, File, Input, Log, Mail, Storage, View};
 use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao, RegistroImpressoes, DocumentoObservacao };
-
+use App\Classes\Helpers;
 use IRebega\DocxReplacer\Docx;
 use PhpOffice\PhpWord\{PhpWord, TemplateProcessor, Element\TextRun};
 
@@ -893,10 +893,30 @@ class DocumentacaoController extends Controller
     }
 
 
-    public function updateInfo(Request $request) {
+    public function updateInfo(Request $request)
+    {
         $idDoc = (int) $request->doc_id;
         $dadosDoc = DadosDocumento::where('documento_id', '=', $idDoc)->select('id', 'copia_controlada', 'aprovador_id', 'validade')->first();
-      
+
+        $documento = Documento::find($idDoc);
+        $infoDocAntigo = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome);
+        
+        $novoTitulo = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
+
+        if ($infoDocAntigo[0] != $novoTitulo) {
+
+            $documentos = DB::table('documento')->whereRaw("split_part(nome, '".Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS."', 1) = '" .$novoTitulo. "'")->get();
+    
+            if ($documentos->count() > 0) {
+                return redirect()->route('documentacao')->with('document_name_already_exists', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!');
+            }
+        
+            if (!$this->atualizaNomesDocumentos($idDoc, $infoDocAntigo[0], $novoTitulo, $infoDocAntigo[1])) {
+                return redirect()->route('documentacao')->with('error_update_doc', "As informações do documento não foram atualizadas!");
+            }
+
+        }
+        
         // dados_documento
         $dadosDoc->copia_controlada = ($request->copiaControlada == "false") ? false : true;
 
@@ -2297,5 +2317,28 @@ class DocumentacaoController extends Controller
         $obs->documento_id              = $document;
         $obs->usuario_id                = Auth::user()->id;
         $obs->save();
+    }
+
+    private function atualizaNomesDocumentos($documento, $tituloAntigo, $tituloNovo, $revAtual)
+    {
+        try {
+            $completed = [];
+            foreach (Helpers::instance()->getListAllReviewsDocument($tituloAntigo) as $key => $file) {
+                $revPlusExtension = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $file)[1];
+                $newName = $tituloNovo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revPlusExtension;
+                Storage::disk('speed_office')->move($file, $newName);
+                $completed[] = array('old' => $file, 'new' => $newName);
+            }
+            $documento = Documento::find($documento);
+            $documento->nome = $tituloNovo . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revAtual;
+            $documento->save();
+
+            return true;
+        } catch (\Throwable $th) {
+            foreach ($completed as $file) {
+                Storage::disk('speed_office')->move($file['new'], $file['old']);
+            } 
+            return false;
+        }
     }
 }

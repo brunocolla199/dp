@@ -30,6 +30,8 @@
 		<input type="hidden" name="status" id="status" value="make_active_doc">
     @elseif (session('update_info_success'))
 		<input type="hidden" name="status" id="status" value="update_info_success">
+    @elseif (session('error_update_doc'))
+		<input type="hidden" name="status" id="status" value="error_update_doc">
     @endif
 
     <script>
@@ -58,6 +60,8 @@
                 showToast('Sucesso!', 'O documento foi ativado com sucesso!', 'success');
             } else if(status == "update_info_success") {
                 showToast('Sucesso!', 'As informações do documento foram atualizadas com sucesso!', 'success');
+            } else if(status == "error_update_doc") {
+                showToast('Falhou!', 'As informações do documento não foram atualizadas!', 'error');
             }
         });
     </script>

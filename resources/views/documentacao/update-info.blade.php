@@ -214,7 +214,20 @@
                                     </div>
                                 </div>    
 
-                                <!-- Linha 7 --> 
+                                <!-- Linha 8 --> 
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-6 control-label font-bold">
+                                                {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                            </div>
+                                            <div class="col-md-12">
+                                                {!! Form::text('tituloDocumento', explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0], ['class' => 'form-control']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <!-- Linha 7 --> 
                                 <div class="row">
                                     <div class="col-md-6"></div>
                                     <div class="col-md-6">
