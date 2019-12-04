@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\DocumentosExternos;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Classes\{Constants, RESTGed, RESTServices};
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\{Auth, Validator};
 
 class DocumentosExternosController extends Controller
 {
-    
+
     protected $ged;
 
     public function __construct()
@@ -24,12 +25,12 @@ class DocumentosExternosController extends Controller
         $areas = collect($this->ged->getArea(env('GED_AREA_ID'), "true"));
         $nonCreatedArea = false;
         $registers      = [];
-        
+
         $areasBySector = $this->getAreasBySector($areas);
         if ($areasBySector->count() <= 0) {
             $nonCreatedArea = true;
         }
-        
+
         if (!$nonCreatedArea) {
             $areasList = $areasBySector->keys()->toArray(); // The keys are the id of each area
             $registersList = $this->ged->getRegisters($areasList, [], array(
@@ -37,7 +38,7 @@ class DocumentosExternosController extends Controller
                 'inicio' => 0,
                 'fim' => 100
             ));
-            
+
             $objRegistersList = json_decode($registersList);
             $registersGed = collect($objRegistersList->listaRegistro)->groupBy('idArea');
         }
@@ -64,7 +65,7 @@ class DocumentosExternosController extends Controller
         $sectorName     = $request->sector_name;
         $databaseSector = Setor::where('nome', 'ILIKE', $sectorName)->first();
         $idAreaSector   = $request->id_area_sector;
-        
+
         $validated = false;
         $userId    = null;
         if ($request->i_approve == "true") {
@@ -89,17 +90,19 @@ class DocumentosExternosController extends Controller
 
         // Cria o registro de documento externo e salva o arquivo no GED
         $externalDocuments = $request->file('file');
+        
         foreach ($externalDocuments as $document) {
             array_push($documentList, [
                 'endereco'  => $document->getClientOriginalName(),
                 'idUsuario' => $this->ged->getUSERID(),
-                'bytes'     => base64_encode(file_get_contents($document))
+                'bytes'     => base64_encode(file_get_contents($document)),
+                'dataAlteracao'     => Carbon::now()->toIso8601String(),
+                'dataCriacao'     => Carbon::now()->toIso8601String()
             ]);
         }
-
         $registerId   = $this->ged->createRegister($idAreaSector, $this->ged->getUSERID(), [], $documentList);
         $fullRegister = $this->ged->getRegister($registerId);
-        
+
         foreach ($fullRegister->listaDocumento as $key => $document) {
             DocumentoExterno::create([
                 'id_documento'          => $document->id,
@@ -112,7 +115,7 @@ class DocumentosExternosController extends Controller
             ]);
         }
 
-        
+
         return response()->json(['success' => 'Seus arquivos foram salvos com sucesso.']);
     }
 
@@ -183,10 +186,10 @@ class DocumentosExternosController extends Controller
             $request->session()->flash('message', 'É obrigatório que você insira um arquivo e que ele seja em formato .pdf. Por favor, revise o campo do arquivo!');
             return redirect()->back()->withInput();
         }
-        
+
         // A view já contém as informações necessárias para atualizar o documento (doc já foi pesquisado anteriormente)
         $documentUpdated = $request->file('document_updated');
-        
+
         $properties = [
             'id'         => $request->document_id,
             'idRegistro' => $request->register_id,
@@ -196,7 +199,7 @@ class DocumentosExternosController extends Controller
             'endereco'   => $documentUpdated->getClientOriginalName(),
             'removido'   => false,
         ];
-        
+
         $finalDocument = $this->ged->updateDocument($properties);
         if (isset($finalDocument->id)) {
             $dbDocument = DocumentoExterno::where('id', $request->db_document_id)->where(
@@ -224,7 +227,7 @@ class DocumentosExternosController extends Controller
             'id_documento',
             $request->document_id
         )->first();
-        
+
         $dbDocument->validado = true;
         $dbDocument->user_id  = Auth::user()->id;
         $dbDocument->save();
