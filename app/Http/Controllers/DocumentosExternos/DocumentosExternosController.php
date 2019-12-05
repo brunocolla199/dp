@@ -241,7 +241,9 @@ class DocumentosExternosController extends Controller
     public function getBytes(Request $request)
     {
         $document = $this->ged->getDocument($request->document_id, 'true');
-        return response()->json(['response' => $document->bytes]);
+        $decoded = base64_decode($document->bytes);
+        file_put_contents($request->nome, $decoded);
+        return response()->file($request->nome)->deleteFileAfterSend(true);
     }
 
 

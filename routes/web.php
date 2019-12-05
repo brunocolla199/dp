@@ -150,7 +150,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::delete('remover',						['as' => 'documentos-externos.delete', 				'uses' => 'DocumentosExternos\DocumentosExternosController@delete']);
 		Route::post('atualizar',						['as' => 'documentos-externos.update', 				'uses' => 'DocumentosExternos\DocumentosExternosController@update']);
 		Route::post('aprovar',							['as' => 'documentos-externos.approval',			'uses' => 'DocumentosExternos\DocumentosExternosController@approval']);
-		Route::post('bytes',							['as' => 'documentos-externos.bytes', 				'uses' => 'DocumentosExternos\DocumentosExternosController@getBytes']);
+		Route::get('bytes',							    ['as' => 'documentos-externos.bytes', 				'uses' => 'DocumentosExternos\DocumentosExternosController@getBytes']);
 	});
 
 

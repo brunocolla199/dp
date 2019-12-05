@@ -107,7 +107,7 @@
                                         @foreach ($registers as $register)
                                             <tr>
                                                 <td class="text-center text-nowrap">
-                                                    <a href="#" ><i class="fa fa-file-text-o text-primary center-open-pdf mr-3" data-id="{{$register['file']->id}}" data-toggle="tooltip" data-original-title="Visualizar Arquivo"></i></a>
+                                                    <a href="{{ route('documentos-externos.bytes', ["document_id" => $register['file']->id, "nome" => $register['file']->endereco]) }}" target="_blank" ><i class="fa fa-file-text-o text-primary mr-3" data-id="{{$register['file']->id}}" data-toggle="tooltip" data-original-title="Visualizar Arquivo"></i></a>
                                                     <a href="{{ url('/documentos-externos/acessar-documento/' . $register['file']->id) }}" class="mr-3" ><i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i></a>
                                                 </td>
                                                 <td class="text-center text-nowrap">{{$register['areaName']}}</td>
@@ -183,45 +183,8 @@
         });
     </script>
 
-
     <!-- jQuery Loading Plugin -->
     <link href="{{ asset('plugins/jquery-loading/jquery.loading.min.css') }}" rel="stylesheet">
     <script src="{{ asset('plugins/jquery-loading/jquery.loading.min.js') }}"></script>
-
-    <script>
-        $(document).on('click', '.center-open-pdf', function(event) {
-            let elm = $(this);
-            elm.loading();
-
-            let documentId = $(this).data('id');
-            let obj = {'document_id': documentId};
-
-            ajaxMethod('POST', " {{ URL::route('documentos-externos.bytes') }} ", obj).then(function(result) {
-                let base64EncodedPDF = result.response;
-                let dataURI          = "data:application/pdf;base64," +base64EncodedPDF;
-                
-                openPdf(dataURI, elm);
-            }, function(err) {
-                console.log(err);
-            });
-        });
-
-
-        function openPdf(dataURI, elm) {
-            elm.loading('stop');
-            var w = window.open('about:blank');
-
-            setTimeout(function(){ //FireFox seems to require a setTimeout for this to work.
-                let iframe = w.document.createElement('iframe');
-                iframe.setAttribute('frameborder', "0");
-                iframe.setAttribute('style', "border:0; top:0px; left:0px; bottom:0px; right:0px;");
-                iframe.setAttribute('height', "100%");
-                iframe.setAttribute('width', "100%");
-
-                w.document.body.appendChild(iframe)
-                    .src = dataURI;
-            }, 10);
-        }
-    </script>
 
 @endsection
