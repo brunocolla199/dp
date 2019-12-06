@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/copiaControlada/save',								['as' => 'ajax.copiaControlada.save',								'uses' => 'AjaxController@saveControlledCopy']);
 	Route::post('ajax/copiaControlada/getCopias',							['as' => 'ajax.copiaControlada.getCopias',							'uses' => 'AjaxController@getCopias']);
 	Route::post('ajax/copiaControlada/removeCopy',							['as' => 'ajax.copiaControlada.remove',								'uses' => 'AjaxController@removeCopy']);
+	Route::get('ajax/listaAprovadores/getAprovadores',						['as' => 'ajax.listaAprovadores.getAprovadores',					'uses' => 'AjaxController@getListAprovadores']);
 
 
     /*

@@ -27,10 +27,10 @@ class FormulariosController extends Controller
         // Usuários (com setor): Grupo de Divulgação do Formulário
         $setoresUsuarios = [];
         $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
-        foreach($todosSetores as $key => $setor) {
+        foreach ($todosSetores as $key => $setor) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $setor->id)->get();
-            foreach($users as $key => $user) {
+            foreach ($users as $key => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
             $setoresUsuarios[$setor->nome] = $arrUsers;
@@ -46,14 +46,39 @@ class FormulariosController extends Controller
 
         $formularios = $this->getFormsIndex();
 
+        $sectorsAccess = $setorUsuarioAtual;
+
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+            $sectorsAccess = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)
+            ->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)
+            ->orderBy('nome')
+            ->get()
+            ->pluck('nome', 'id')
+            ->toArray();
+        }
+
+        
         return view('formularios.index', [
-            'formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 
-            'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso, 'status' => $status, 'locaisArmazenamento' => $locaisArmazenamento, 'disposicao' => $disposicao, 
-            'meiosDistribuicao' => $meiosDistribuicao, 'protecao' => $protecao, 'recuperacao' => $recuperacao, 'tempoRetDeposito' => $tempoRetDeposito, 'tempoRetLocal' => $tempoRetLocal,
+            'formularios' => $formularios,
+            'setoresUsuarios' => $setoresUsuarios,
+            'sectorsAccess' => $sectorsAccess,
+            'setores' => $setores,
+            'setorUsuarioAtual' => $setorUsuarioAtual,
+            'documentosTipo' => $documentos,
+            'nivel_acesso' => $nivel_acesso,
+            'status' => $status,
+            'locaisArmazenamento' => $locaisArmazenamento,
+            'disposicao' => $disposicao,
+            'meiosDistribuicao' => $meiosDistribuicao,
+            'protecao' => $protecao,
+            'recuperacao' => $recuperacao,
+            'tempoRetDeposito' => $tempoRetDeposito,
+            'tempoRetLocal' => $tempoRetLocal,
         ]);
     }
 
-    public function filterFormsIndex(Request $request){
+    public function filterFormsIndex(Request $request)
+    {
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $documentos        = Documento::join('tipo_documento','tipo_documento.id','=', 'documento.tipo_documento_id')->get(['documento.id as doc_id', 'nome', 'nome_tipo', 'sigla'])->groupBy('nome_tipo')->toArray();
@@ -63,10 +88,10 @@ class FormulariosController extends Controller
         // Usuários (com setor): Grupo de Divulgação do Formulário
         $setoresUsuarios = [];
         $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
-        foreach($todosSetores as $key => $setor) {
+        foreach ($todosSetores as $key => $setor) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $setor->id)->get();
-            foreach($users as $key => $user) {
+            foreach ($users as $key => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
             $setoresUsuarios[$setor->nome] = $arrUsers;
@@ -82,10 +107,33 @@ class FormulariosController extends Controller
 
         $formularios = $this->filterListForms($request->all());
 
+        $sectorsAccess = $setorUsuarioAtual;
+
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+            $sectorsAccess = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)
+            ->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)
+            ->orderBy('nome')
+            ->get()
+            ->pluck('nome', 'id')
+            ->toArray();
+        }
+
         return view('formularios.index', [
-            'formularios'=>$formularios, 'setoresUsuarios' => $setoresUsuarios, 'setores'=>$setores, 'setorUsuarioAtual'=>$setorUsuarioAtual, 'documentosTipo'=>$documentos, 'nivel_acesso' => $nivel_acesso,
-            'status' => $status, 'locaisArmazenamento' => $locaisArmazenamento, 'disposicao' => $disposicao, 'meiosDistribuicao' => $meiosDistribuicao, 'protecao' => $protecao, 
-            'recuperacao' => $recuperacao, 'tempoRetDeposito' => $tempoRetDeposito, 'tempoRetLocal' => $tempoRetLocal,
+            'formularios' => $formularios,
+            'setoresUsuarios' => $setoresUsuarios,
+            'setores' => $setores,
+            'sectorsAccess' => $sectorsAccess,
+            'setorUsuarioAtual' => $setorUsuarioAtual,
+            'documentosTipo' => $documentos,
+            'nivel_acesso' => $nivel_acesso,
+            'status' => $status,
+            'locaisArmazenamento' => $locaisArmazenamento,
+            'disposicao' => $disposicao,
+            'meiosDistribuicao' => $meiosDistribuicao,
+            'protecao' => $protecao,
+            'recuperacao' => $recuperacao,
+            'tempoRetDeposito' => $tempoRetDeposito,
+            'tempoRetLocal' => $tempoRetLocal,
         ]);
     }
     

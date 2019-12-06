@@ -119,7 +119,7 @@
                                                                 {!! Form::label('setor_dono_form', 'Setor:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('setor_dono_form', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
+                                                                {!! Form::select('setor_dono_form', $sectorsAccess, key($setorUsuarioAtual), ['class' => 'form-control  custom-select', 'required' => 'required']) !!}
                                                             </div>
                                                         </div>
                                                     </div>

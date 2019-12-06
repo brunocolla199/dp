@@ -132,7 +132,7 @@
                                                                 {!! Form::label('setor_dono_doc', 'Setor:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-                                                                {!! Form::select('setor_dono_doc', $setorUsuarioAtual, '', ['class' => 'form-control  custom-select']) !!}
+                                                                {!! Form::select('setor_dono_doc', $sectorsAccess, key($setorUsuarioAtual), ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -163,10 +163,9 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <div class="col-md-6 control-label font-bold">
-                                                                {!! Form::label('aprovadores', 'APROVADORES:') !!}
+                                                                {!! Form::label('aprovador', 'APROVADORES:') !!}
                                                             </div>
                                                             <div class="col-md-12">
-
                                                                 {!! Form::select('aprovador', $aprovadoresSetorAtual, '', ['class' => 'form-control  custom-select']) !!}
                                                             </div>
                                                         </div>
@@ -675,10 +674,18 @@
                         $('#form-generate-document').append($(input));
                         $('#form-generate-document').submit();
                     });
-
                     
-                    // Chama trigger quando a página é recarregada
-                    $("#setor_dono_doc").val( $("#setor_dono_doc").val() ).trigger("change");
+                    $("#setor_dono_doc").change(function(){
+                        var obj = {'setor': $("#setor_dono_doc").val()};        
+                        ajaxMethod('GET', "{{ URL::route('ajax.listaAprovadores.getAprovadores') }}", obj).then(function(result) {
+                            $('#aprovador').empty();
+                            $.each(result, function(key, value) {
+                                $('#aprovador').append($('<option>', { value : key }).text(value));
+                            });
+                        }, function(err) {
+                            console.log(err)
+                        });
+                    });
 
                     // Ao clicar no botão que abrirá o modal de confirmação para revisão do documento
                     $(".btn-open-confirm-review").click(function(){

@@ -22,29 +22,56 @@ class DocumentacaoController extends Controller
     private $DATA_VALIDADE = 'dataValidade';
     private $DATA_REVISAO  = 'dataUltimaRevisao';
 
-    public function index() {
+    public function index()
+    {
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
-        $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
-        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO );
+        
+        $nivel_acesso = array(
+            Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE,
+            Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO,
+            Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL
+        );
+        
+        $status = array(
+            Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,
+            Constants::$DESCRICAO_WORKFLOW_EM_REVISAO => Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,
+            Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,
+            Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR => Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,
+            Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT => Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT,
+            Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT => Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT,
+            Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO
+        );
+        
         $filtroCopiaControladaAtivo = false;
         
+        $sectorsAccess = $setorUsuarioAtual;
+
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+            $sectorsAccess = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)
+            ->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)
+            ->orderBy('nome')
+            ->get()
+            ->pluck('nome', 'id')
+            ->toArray();
+        }
+    
         // Aprovadores
         $aprovadoresSetorAtual = User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
-                                    ->where('aprovador_setor.setor_id', '=', Auth::user()->setor_id)
-                                    ->get()->pluck('name', 'usuario_id')->toArray();
+            ->where('aprovador_setor.setor_id', '=', Auth::user()->setor_id)
+            ->get()->pluck('name', 'usuario_id')->toArray();
 
     
         // Área de Interesse
         $setoresUsuarios = [];
         $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
-        foreach($todosSetores as $key => $setor) {
+        foreach ($todosSetores as $key => $setor) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $setor->id)->get();
-            foreach($users as $key => $user) {
+            foreach ($users as $key => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
             $setoresUsuarios[$setor->nome] = $arrUsers;
@@ -54,26 +81,51 @@ class DocumentacaoController extends Controller
         $documentos = $this->getDocumentsIndex();
         $docsNAOFinalizados = ( array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
         $docsFinalizados = ( array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
-
-        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
-                                            'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
-                                            'setores' => $setores, 'setorUsuarioAtual' => $setorUsuarioAtual,
-                                            'setoresUsuarios' => $setoresUsuarios, 
-                                            'formularios' => $formularios,
-                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados,
-                                            'nivel_acesso' => $nivel_acesso, 'status' => $status, 'filtroCopiaControlada' => $filtroCopiaControladaAtivo ]);
+        
+        return view(
+            'documentacao.index',
+            [
+                'tipoDocumentos' => $tipoDocumentos,
+                'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
+                'setores' => $setores,
+                'sectorsAccess' => $sectorsAccess,
+                'setorUsuarioAtual' => $setorUsuarioAtual,
+                'setoresUsuarios' => $setoresUsuarios,
+                'formularios' => $formularios,
+                'documentos_nao_finalizados' => $docsNAOFinalizados,
+                'documentos_finalizados' => $docsFinalizados,
+                'nivel_acesso' => $nivel_acesso,
+                'status' => $status,
+                'filtroCopiaControlada' => $filtroCopiaControladaAtivo
+            ]
+        );
     }
 
 
-    public function filterDocumentsIndex(Request $request) {
+    public function filterDocumentsIndex(Request $request)
+    {
 
         // Valores 'comuns' necessários
         $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
-        $nivel_acesso      = array( Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE, Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO, Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL );
-        $status            = array( Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,  Constants::$DESCRICAO_WORKFLOW_EM_REVISAO=>Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,  Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE=>Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,  Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR=>Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,  Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT=>Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT, Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT=>Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT, Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO=>Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO );
+        $nivel_acesso = array(
+            Constants::$NIVEL_ACESSO_DOC_LIVRE => Constants::$NIVEL_ACESSO_DOC_LIVRE,
+            Constants::$NIVEL_ACESSO_DOC_RESTRITO => Constants::$NIVEL_ACESSO_DOC_RESTRITO,
+            Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL => Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL
+        );
+
+        $status = array(
+            Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE,
+            Constants::$DESCRICAO_WORKFLOW_EM_REVISAO => Constants::$DESCRICAO_WORKFLOW_EM_REVISAO,
+            Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE => Constants::$DESCRICAO_WORKFLOW_ANALISE_AREA_DE_INTERESSE,
+            Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR => Constants::$DESCRICAO_WORKFLOW_ANALISE_APROVADOR,
+            Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT => Constants::$ETAPA_WORKFLOW_APROVADOR_TEXT,
+            Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT => Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT,
+            Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO => Constants::$DESCRICAO_WORKFLOW_EM_ELABORACAO
+        );
+
         $filtroCopiaControladaAtivo = ( array_key_exists('possuiCopiaControlada', $request->all()) ) ? true : false;
 
         // Aprovadores
@@ -84,27 +136,48 @@ class DocumentacaoController extends Controller
         // Área de Interesse
         $setoresUsuarios = [];
         $todosSetores = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->get();
-        foreach($todosSetores as $key => $setor) {
+        foreach ($todosSetores as $key => $setor) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $setor->id)->get();
-            foreach($users as $key => $user) {
+            foreach ($users as $key => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
             $setoresUsuarios[$setor->nome] = $arrUsers;
         }
 
+        $sectorsAccess = $setorUsuarioAtual;
+
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+            $sectorsAccess = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)
+            ->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)
+            ->orderBy('nome')
+            ->get()
+            ->pluck('nome', 'id')
+            ->toArray();
+        }
+
         // Documentos já criados (para listagem)
-        $documentos  = $this->filterListDocuments($request->all()); 
+        $documentos  = $this->filterListDocuments($request->all());
         $docsNAOFinalizados = ( is_array($documentos) && array_key_exists("nao_finalizados", $documentos) && count($documentos["nao_finalizados"]) > 0 )  ? $documentos["nao_finalizados"] : null;
         $docsFinalizados = ( is_array($documentos) && array_key_exists("finalizados", $documentos) && count($documentos["finalizados"]) > 0 )  ? $documentos["finalizados"] : null;
 
-        return view('documentacao.index', ['tipoDocumentos' => $tipoDocumentos, 
-                                            'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
-                                            'setores' => $setores, 'setorUsuarioAtual' => $setorUsuarioAtual,
-                                            'setoresUsuarios' => $setoresUsuarios, 
-                                            'formularios' => $formularios,
-                                            'documentos_nao_finalizados' => $docsNAOFinalizados, 'documentos_finalizados' => $docsFinalizados,
-                                            'nivel_acesso' => $nivel_acesso, 'status' => $status, 'filtroCopiaControlada' => $filtroCopiaControladaAtivo ]);
+        return view(
+            'documentacao.index',
+            [
+                'tipoDocumentos' => $tipoDocumentos,
+                'aprovadoresSetorAtual' => $aprovadoresSetorAtual,
+                'setores' => $setores,
+                'setorUsuarioAtual' => $setorUsuarioAtual,
+                'sectorsAccess' => $sectorsAccess,
+                'setoresUsuarios' => $setoresUsuarios,
+                'formularios' => $formularios,
+                'documentos_nao_finalizados' => $docsNAOFinalizados,
+                'documentos_finalizados' => $docsFinalizados,
+                'nivel_acesso' => $nivel_acesso,
+                'status' => $status,
+                'filtroCopiaControlada' => $filtroCopiaControladaAtivo
+            ]
+        );
     }
 
 

@@ -552,4 +552,11 @@ class AjaxController extends Controller
         return $copias;
     }
 
+    public function getListAprovadores(Request $_request)
+    {
+        return User::join('aprovador_setor', 'aprovador_setor.usuario_id', '=', 'users.id')
+            ->where('aprovador_setor.setor_id', '=', $_request->setor)
+            ->orderBy("name", "ASC")
+            ->get()->pluck('name', 'usuario_id')->toArray();
+    }
 }
