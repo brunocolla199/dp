@@ -517,7 +517,7 @@
                                                                                 <a href="#" class="mr-3" data-forms="{{ $docF->formularios }}" data-id="{{ $docF->id }}" data-toggle="modal" data-target="#vinculos-form-modal" data-finalizado="true"><i class="fa fa-exchange text-info" data-toggle="tooltip" data-original-title="Vincular Formulários"></i></a>
                                                                             @endif
 
-                                                                            @if( Auth::user()->permissao_elaborador )
+                                                                            @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $docF->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
                                                                                 <a href="javascript:void(0)" class="btn-open-confirm-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
                                                                             @endif
 
