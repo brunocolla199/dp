@@ -13,6 +13,7 @@
 
 <script>
   let tableId = "{{ $tableId }}";
+  let reportTitle = "{{ $reportTitle ?? env('APP_NAME')}}";
 
   $(document).ready(function() {
     $("#" + tableId).DataTable({
@@ -45,6 +46,7 @@
         { 
           extend: 'excel',  
           text: 'Excel',
+          title: reportTitle,
           exportOptions: {
             columns: "thead th:not(.noExport)"
           }  
@@ -52,6 +54,7 @@
         { 
           extend: 'pdf',
           text: 'PDF',
+          title: reportTitle,
           exportOptions: {
             // columns: [ 0, 1]
             columns: "thead th:not(.noExport)"
@@ -60,6 +63,7 @@
         { 
           extend: 'print',  
           text: 'Imprimir',
+          title: reportTitle,
           exportOptions: {
             columns: "thead th:not(.noExport)"
           } 

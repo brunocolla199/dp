@@ -139,7 +139,7 @@
 
 @section('footer')
     
-    @include('componentes._script_datatables', ['tableId' => 'tabela-documentos-externos'])
+    @include('componentes._script_datatables', ['tableId' => 'tabela-documentos-externos', 'reportTitle' => 'Relação de Documentos Externos'])
 
 
     {{-- Dropzone Plugin JavaScript --}}
