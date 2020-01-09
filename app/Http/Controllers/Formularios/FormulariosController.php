@@ -404,8 +404,10 @@ class FormulariosController extends Controller
         $idForm         = $request->formulario_id;
         $formulario     = Formulario::where('id', '=', $idForm)->get();
         $wkfFormulario  = WorkflowFormulario::where('formulario_id', '=', $idForm)->first();
-        $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $formulario[0]->revisao)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registro e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
 
+        $versaoAnterior = $formulario[0]->revisao - 1;
+        $versaoAnterior = ($versaoAnterior <= 10) ? "0{$versaoAnterior}" : $versaoAnterior;
+        $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $versaoAnterior)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registro e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
         // Atualiza as notificações do formulário para que no texto das mesmas, o código do formulário não permaneça exibindo o valor antigo
         \App\Classes\Helpers::updateFormNotifications(
             $formulario[0]->codigo,
@@ -430,6 +432,7 @@ class FormulariosController extends Controller
                 $formulario[0]->elaborador_id = $revisaoAnteriorFormulario[0]->elaborador_id;
                 $formulario[0]->setor_id = $revisaoAnteriorFormulario[0]->setor_id;
                 $formulario[0]->em_revisao = false;
+                $formulario[0]->revisao = $versaoAnterior;
                 $formulario[0]->nome_completo_finalizado = null;
                 $formulario[0]->nome_completo_em_revisao = null;
                 $formulario[0]->justificativa_cancelar_revisao  = $request->justificativaCancelamentoRevisaoForm;
