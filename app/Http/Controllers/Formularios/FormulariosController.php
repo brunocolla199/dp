@@ -137,24 +137,33 @@ class FormulariosController extends Controller
         ]);
     }
     
-    public function validateData(DadosNovoFormularioRequest $request) {
-        $text_setorDono       = Setor::where('id', '=', $request->setor_dono_form)->get(['id', 'nome', 'sigla'])->first();
-        $nivelAcessoDocumento = (  ($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : ( ($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  )    );
-        $qtdForms             = Formulario::where('setor_id', $text_setorDono->id)->count();
-        $tipoDocumento        = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
-        $acao                 = $request->action;
-        $tituloFormulario     = $request->tituloFormulario . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
+    public function validateData(DadosNovoFormularioRequest $request)
+    {
+        $text_setorDono = Setor::where('id', '=', $request->setor_dono_form)->get(['id', 'nome', 'sigla'])->first();
+        
+        $nivelAcessoDocumento = (($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : (($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL));
+        
+        $qtdForms = Formulario::selectRaw("CAST(split_part(formulario.codigo, '-', 3) AS INTEGER ) AS cod")
+            ->where('setor_id', $text_setorDono->id)
+            ->orderBy('cod', 'desc')
+            ->first();
+        $tipoDocumento = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
+        
+        $acao = $request->action;
+        
+        $tituloFormulario = $request->tituloFormulario . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "00";
     
-        $codigo_final = $tipoDocumento[0]->sigla."-";
+        $codigo_final = $tipoDocumento[0]->sigla . "-";
+
         $codigo = 0;
-        if( $qtdForms <= 0 )  {
+        if ($qtdForms->cod <= 0) {
             $codigo = $this->buildCodDocument(1);
-        } else { 
-            $codigo = $this->buildCodDocument($qtdForms + 1);
+        } else {
+            $codigo = $this->buildCodDocument($qtdForms->cod + 1);
         }
         
         // Concatena e gera o código final
-        $codigo_final .= $text_setorDono->sigla. "-".$codigo;
+        $codigo_final .= $text_setorDono->sigla . "-" . $codigo;
 
         // Controle de Registros
         $registroControle = new ControleRegistro($request->except('action'));
@@ -164,7 +173,7 @@ class FormulariosController extends Controller
         $registroControle->avulso       = false; // Não modifique! :)
 
         return view('formularios.define-formulario', [
-            'acao'=>$acao,
+            'acao' => $acao,
             'codigoFormulario' => $codigo_final,
             'tituloFormulario' => $tituloFormulario,
             'nivelAcessoDocumento' => $nivelAcessoDocumento,

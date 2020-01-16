@@ -232,14 +232,15 @@ class DocumentacaoController extends Controller
     }
 
 
-    public function validateData(DadosNovoDocumentoRequest $request) { 
+    public function validateData(DadosNovoDocumentoRequest $request)
+    {
         $tituloDocumento = \App\Classes\Helpers::instance()->escapeFilename($request->tituloDocumento);
 
         $documentos = DB::table('documento')
-                            ->whereRaw("split_part(nome, '".Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS."', 1) = '" .$tituloDocumento. "'")
+                            ->whereRaw("split_part(nome, '" . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . "', 1) = '" . $tituloDocumento . "'")
                             ->get();
 
-        if( $documentos->count() > 0 ) {
+        if ($documentos->count() > 0) {
             return redirect()->route('documentacao')->with('document_name_already_exists', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!');
         } else {
             $setorDono               = $request->setor_dono_doc;
@@ -253,61 +254,62 @@ class DocumentacaoController extends Controller
             $aprovador               = $request->aprovador;
             $text_aprovador          = User::where('id', '=', $request->aprovador)->get();
             
-            $copiaControlada         = ($request->copiaControlada) ? true : false;
+             $copiaControlada         = ($request->copiaControlada) ? true : false;
             $text_copiaControlada    = ($request->copiaControlada) ? 'Sim' : 'Não';
     
             $validadeDocumento       = $request->validadeDocumento;
     
             $acao                    = $request->action;
-            $areaInteresse           = $request->areaInteresse;        
+            $areaInteresse           = $request->areaInteresse;
             
             $codigo_final = $text_tipo_documento[0]->sigla . "-";
             $codigo = 0;
     
-            if($request->formulariosAtrelados){
-                $formsIDs = array_map('intval', $request->formulariosAtrelados);   
-                $text_formsAtrelados = Formulario::whereIn('id', $formsIDs)->get(['nome'])->implode('nome',', ');
+            if ($request->formulariosAtrelados) {
+                $formsIDs = array_map('intval', $request->formulariosAtrelados);
+                $text_formsAtrelados = Formulario::whereIn('id', $formsIDs)->get(['nome'])->implode('nome', ', ');
             } else {
                 $text_formsAtrelados = '';
             }
             
     
             // Define código do documento
-            if($text_tipo_documento[0]->sigla == "IT") { // Incremento depende do setor (cada setor tem seu incremento)
+            if ($text_tipo_documento[0]->sigla == "IT") { // Incremento depende do setor (cada setor tem seu incremento)
                 $lastDoc = DB::table('documento')
-                            ->join('dados_documento',   'dados_documento.documento_id', '=', 'documento.id')
-                            ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
+                            ->join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
+                            ->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id')
                             ->select('documento.id', 'documento.codigo')
+                            ->selectRaw("CAST(split_part(documento.codigo, '-', 3) AS INTEGER ) AS cod")
                             ->where('documento.tipo_documento_id', '=', $tipo_documento)
                             ->where('dados_documento.setor_id', '=', $setorDono)
-                            ->orderBy('id', 'desc')
+                            ->orderBy('cod', 'desc')
                             ->get()->first();
 
-                if( empty($lastDoc) ) { // Ainda não existe documento para esse setor...
+                if (empty($lastDoc)) { // Ainda não existe documento para esse setor...
                     $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                 } else {
                     $arr = explode("-", $lastDoc->codigo);
-                    if( count($arr) != 3) { // Houve algum erro ao criar o código do último documento desse setor...
+                    if (count($arr) != 3) { // Houve algum erro ao criar o código do último documento desse setor...
                         $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                     } else {
                         $lastCode = (int) $arr[2];
                         $codigo = $this->buildCodDocument($lastCode + 1, $text_tipo_documento[0]->sigla);
                     }
                 }
-
             } else { // Incremento único (independente de setor)
                 $lastDoc2 = DB::table('documento')
-                            ->join('tipo_documento',    'tipo_documento.id',            '=', 'documento.tipo_documento_id')
+                            ->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id')
                             ->select('documento.id', 'documento.codigo')
+                            ->selectRaw("CAST(split_part(documento.codigo, '-', 2) AS INTEGER ) AS cod")
                             ->where('documento.tipo_documento_id', '=', $tipo_documento)
-                            ->orderBy('id', 'desc')
+                            ->orderBy('cod', 'desc')
                             ->get()->first();
 
-                if( empty($lastDoc2) ) { // Ainda não existe documento deste tipo...
+                if (empty($lastDoc2)) { // Ainda não existe documento deste tipo...
                     $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
-                } else { 
+                } else {
                     $arr = explode("-", $lastDoc2->codigo);
-                    if( count($arr) != 2) { // Houve algum erro ao criar o código do último documento desse tipo...
+                    if (count($arr) != 2) { // Houve algum erro ao criar o código do último documento desse tipo...
                         $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
                     } else {
                         $lastCode = (int) $arr[1];
@@ -315,24 +317,38 @@ class DocumentacaoController extends Controller
                     }
                 }
             }
-
             // Concatena e gera o código final
             $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla . "-" : "";
             $codigo_final .= $codigo;
 
             //Copiando modelo de documento para ser editado!
-            Storage::disk('speed_office')->put($tituloDocumento . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx', File::get(public_path()."/doc_templates/".strtoupper($text_tipo_documento[0]->sigla)."/".strtoupper($text_tipo_documento[0]->sigla).".docx"));
+            Storage::disk('speed_office')->put($tituloDocumento . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx', File::get(public_path() . "/doc_templates/" . strtoupper($text_tipo_documento[0]->sigla) . "/" . strtoupper($text_tipo_documento[0]->sigla) . ".docx"));
 
-            return view('documentacao.define-documento', ['tipo_documento' => $tipo_documento, 'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
-                                                            'nivelAcessoDocumento' => $nivelAcessoDocumento,
-                                                            'aprovador' => $aprovador, 'text_aprovador' => $text_aprovador[0]->name,
-                                                            'grupoTreinamento' => $request->grupoTreinamentoDoc, 'grupoDivulgacao' => $request->grupoDivulgacaoDoc, 
-                                                            'setorDono' => $setorDono, 'text_setorDono' => $text_setorDono[0]->nome, 
-                                                            'copiaControlada' => $copiaControlada, 'text_copiaControlada' => $text_copiaControlada,
-                                                            'tituloDocumento' => $tituloDocumento, 'codigoDocumento' => $codigo_final, 'validadeDocumento' => $validadeDocumento, 
-                                                            'acao' => $acao, 'areaInteresse' => $areaInteresse, 'formsAtrelados'=>$request->formulariosAtrelados, 'text_formsAtrelados'=>$text_formsAtrelados, 'docPath'=>$tituloDocumento.Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS.'00.docx' ]);
+            return view(
+                'documentacao.define-documento',
+                [
+                    'tipo_documento' => $tipo_documento,
+                    'text_tipo_documento' => $text_tipo_documento[0]->nome_tipo,
+                    'nivelAcessoDocumento' => $nivelAcessoDocumento,
+                    'aprovador' => $aprovador,
+                    'text_aprovador' => $text_aprovador[0]->name,
+                    'grupoTreinamento' => $request->grupoTreinamentoDoc,
+                    'grupoDivulgacao' => $request->grupoDivulgacaoDoc,
+                    'setorDono' => $setorDono,
+                    'text_setorDono' => $text_setorDono[0]->nome,
+                    'copiaControlada' => $copiaControlada,
+                    'text_copiaControlada' => $text_copiaControlada,
+                    'tituloDocumento' => $tituloDocumento,
+                    'codigoDocumento' => $codigo_final,
+                    'validadeDocumento' => $validadeDocumento,
+                    'acao' => $acao,
+                    'areaInteresse' => $areaInteresse,
+                    'formsAtrelados' => $request->formulariosAtrelados,
+                    'text_formsAtrelados' => $text_formsAtrelados,
+                    'docPath' => $tituloDocumento . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . '00.docx'
+                ]
+            );
         }
-
     }
 
 
@@ -1619,7 +1635,6 @@ class DocumentacaoController extends Controller
             else if( strlen($n) == 2 ) $codigo = str_pad($valor, 2, '0', STR_PAD_LEFT);
             else $codigo = $valor;
         }
-
         return $codigo;
     }
 
