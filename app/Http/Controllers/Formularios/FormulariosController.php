@@ -418,6 +418,7 @@ class FormulariosController extends Controller
         $versaoAnterior = ($versaoAnterior <= 10) ? "0{$versaoAnterior}" : $versaoAnterior;
         $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $versaoAnterior)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registro e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
         // Atualiza as notificações do formulário para que no texto das mesmas, o código do formulário não permaneça exibindo o valor antigo
+       
         \App\Classes\Helpers::updateFormNotifications(
             $formulario[0]->codigo,
             $revisaoAnteriorFormulario[0]->codigo,
@@ -447,15 +448,18 @@ class FormulariosController extends Controller
                 $formulario[0]->justificativa_cancelar_revisao  = $request->justificativaCancelamentoRevisaoForm;
                 $formulario[0]->save();
 
+
                 // Modificando etapa do workflow deste formulário para que ele não fique com etapa 'Em Revisão' ou 'Em Análise pela Qualidade', por exemplo
                 $wkfFormulario->etapa = Constants::$DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO;
                 $wkfFormulario->save();
 
                 // Atualiza as informações do 'Controle de Registros' com base nas informações do formulário que foram restauradas
                 $controleRegistros = ControleRegistro::where('formulario_id', $idForm)->first();
-                $controleRegistros->titulo = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
-                $controleRegistros->codigo = $formulario[0]->codigo;
-                $controleRegistros->save();
+                if ($controleRegistros) {
+                    $controleRegistros->titulo = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
+                    $controleRegistros->codigo = $formulario[0]->codigo;
+                    $controleRegistros->save();
+                }
 
                 // Notificações
                 \App\Classes\Helpers::instance()->gravaNotificacaoFormulario("O formulário " . $formulario[0]->codigo . " teve a revisão cancelada pelo setor Processos.", true, $formulario[0]->elaborador_id, $idForm);

@@ -16,5 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoDocumentoTableSeeder::class);
         $this->call(UsersTableSeeder::class);
         $this->call(ConfiguracoesTableSeeder::class);
+        $this->call(FormularioRevisaoTableSeeder::class);
     }
 }
