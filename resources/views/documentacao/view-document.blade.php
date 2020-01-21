@@ -648,12 +648,12 @@
                                             <h4 class="card-title"> Upload de anexo </h4>
                                             {!! Form::open(['route' => 'ajax.anexos.save', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'id' => 'form-save-attachment']) !!}
                                                 <label for="input-file-now">Por favor, selecione o arquivo que você deseja anexar ao documento atual.</label>
-                                                {!! Form::file('anexo_escolhido', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                {!! Form::file('anexo_escolhido[]', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'multiple' => 'multiple', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
 
                                                 <div class="col-md-12 mt-3">
                                                     <div class="col-md-9 pull-left">
                                                         {!! Form::hidden('document_id', $document_id) !!}
-                                                        {!! Form::text('nome_anexo', null, ['class' => 'form-control', 'id' => 'nome_anexo', 'required' => 'required', 'placeholder' => 'Nome do Anexo']) !!} 
+                                                        {{-- {!! Form::text('nome_anexo', null, ['class' => 'form-control', 'id' => 'nome_anexo', 'required' => 'required', 'placeholder' => 'Nome do Anexo']) !!}  --}}
                                                     </div>
                                                     <div class="col-md-3 pull-right">
                                                         {!! Form::submit('Salvar Anexo', ['class' => 'btn btn-lg btn-success', 'id' => 'btn-save-attachment']) !!}
@@ -892,22 +892,27 @@
         }); 
     });
 
+    $("#anexo_escolhido").dropify({
+        tpl: {
+            filename: '<p class="dropify-filename"><span class="file-icon"></span> <span class="dropify-filename-inner-multiple"></span></p>',
+        }
+    });
+
     // Coloca o nome original do arquivo no campo do nome
     $(document).on("change", "#anexo_escolhido", function(e){
-        var file = $("#anexo_escolhido")[0].files[0];
-        if(file) {
-            var completo = file.name;
-            var sem_extensao = completo.split('.')[0];
-            $("#nome_anexo").val(sem_extensao);
-        }  
+        var files = $("#anexo_escolhido")[0].files;
+
+        $.each(files, function (i, el) {
+            $(".dropify-filename-inner-multiple").text($(".dropify-filename-inner-multiple").text() + "   " + el.name);
+        });
     });
 
     // Toda vez que o modal de anexos for fechado, limpa os dois valores do form
     $('#modal-anexos').on('hidden.bs.modal', function (e) {
         $("#anexo_escolhido").val('');
         $(".dropify-clear").trigger('click');
-        $("#nome_anexo").val('');
-    })
+/*         $("#nome_anexo").val('');
+ */    })
 
     // Toda vez que a listagem de anexos do documento for aberta
     $('#btn-lista-anexos').click(function () {

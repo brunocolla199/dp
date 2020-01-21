@@ -444,23 +444,28 @@ class AjaxController extends Controller
 
 
     // Anexos
-    public function saveAttachment(Request $request) {
-        $file = $request->file('anexo_escolhido', 'local');
-        $nome = $request->nome_anexo;
+    public function saveAttachment(Request $request)
+    {
+        $files = $request->file('anexo_escolhido', 'local');
 
-        $extensao  = $file->getClientOriginalExtension();
-        $hash      = rand(000000000000000, 999999999999999);
+        foreach ($files as $key => $file) {
+            $extensao = $file->getClientOriginalExtension();
 
-        Storage::disk('speed_office')->put('/anexos/'.$hash . ".".$extensao, file_get_contents($file), 'private');
+            $nome = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-        $anexo = new Anexo();
-        $anexo->nome = $nome;
-        $anexo->hash = $hash;
-        $anexo->extensao = $extensao;
-        $anexo->documento_id = $request->document_id;
-        $anexo->save();
+            $hash = rand(000000000000000, 999999999999999);
 
-        return response()->json(['response' => 'success']);  
+            Storage::disk('speed_office')->put('/anexos/' . $hash . "." . $extensao, file_get_contents($file), 'private');
+
+            $anexo = new Anexo();
+            $anexo->nome = $nome;
+            $anexo->hash = $hash;
+            $anexo->extensao = $extensao;
+            $anexo->documento_id = $request->document_id;
+            $anexo->save();
+        }
+
+        return response()->json(['response' => 'success']);
     }
 
 
