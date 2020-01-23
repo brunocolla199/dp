@@ -142,11 +142,7 @@ class FormulariosController extends Controller
         $text_setorDono = Setor::where('id', '=', $request->setor_dono_form)->get(['id', 'nome', 'sigla'])->first();
         
         $nivelAcessoDocumento = (($request->nivelAcessoDocumento == 0) ? Constants::$NIVEL_ACESSO_DOC_LIVRE : (($request->nivelAcessoDocumento == 1) ? Constants::$NIVEL_ACESSO_DOC_RESTRITO : Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL));
-        
-        $qtdForms = Formulario::selectRaw("CAST(split_part(formulario.codigo, '-', 3) AS INTEGER ) AS cod")
-            ->where('setor_id', $text_setorDono->id)
-            ->orderBy('cod', 'desc')
-            ->first();
+
         $tipoDocumento = TipoDocumento::where('id', '=', Constants::$ID_TIPO_DOCUMENTO_FORMULARIO)->get(['nome_tipo', 'sigla']);
         
         $acao = $request->action;
@@ -155,13 +151,8 @@ class FormulariosController extends Controller
     
         $codigo_final = $tipoDocumento[0]->sigla . "-";
 
-        $codigo = 0;
-        if ($qtdForms->cod <= 0) {
-            $codigo = $this->buildCodDocument(1);
-        } else {
-            $codigo = $this->buildCodDocument($qtdForms->cod + 1);
-        }
-        
+        $codigo = $this->buildCodDocument(\App\Classes\Helpers::instance()->nextCode("formulario", $text_setorDono->id));
+
         // Concatena e gera o código final
         $codigo_final .= $text_setorDono->sigla . "-" . $codigo;
 
@@ -532,26 +523,37 @@ class FormulariosController extends Controller
         return redirect()->route('formularios')->with('make_obsolete_form', 'msg');
     }
 
-    public function makeActiveForm(Request $request) {
+
+    public function makeActiveForm(Request $request)
+    {
+        
         $formulario = Formulario::where('id', '=', $request->form_id)->first();
-        $formulario->obsoleto = false;
-        $formulario->save();
 
-        // Marca o registro deste formulário, na tabela de controle de registros, como 'ativo' (ATIVO = TRUE)
-        $registro = ControleRegistro::where('formulario_id', $formulario->id)->first();
-        try {
-            $registro->ativo = true;
-            $registro->save();
-        } catch (\Throwable $th) {
-            Log::debug("Erro ao marcar o registro do formulário {$formulario->id} como ativo - [Id: $registro->id]");
-            Log::error($th->errorInfo);
+        $forms = Formulario::where('codigo', $formulario->codigo)->where('obsoleto', false)->get()->count();
+
+        if (!$forms) {
+            $formulario->obsoleto = false;
+            $formulario->save();
+            
+            // Marca o registro deste formulário, na tabela de controle de registros, como 'ativo' (ATIVO = TRUE)
+            $registro = ControleRegistro::where('formulario_id', $formulario->id)->first();
+            try {
+                $registro->ativo = true;
+                $registro->save();
+            } catch (\Throwable $th) {
+                Log::debug("Erro ao marcar o registro do formulário {$formulario->id} como ativo - [Id: $registro->id]");
+                Log::error($th->errorInfo);
+            }
+            
+            return redirect()->route('formularios')->with('make_active_form', 'msg');
         }
-
-        return redirect()->route('formularios')->with('make_active_form', 'msg');
+        return redirect()->route('formularios')->with('fail_active_form', 'msg');
     }
 
-    public function viewObsoleteForm(Request $request) {
-        $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();    
+
+    public function viewObsoleteForm(Request $request)
+    {
+        $formulario   = Formulario::where('id', '=', $request->formulario_id)->get();
         $workflowForm = WorkflowFormulario::where('formulario_id', '=', $request->formulario_id)->get();
         $historico    = HistoricoFormulario::join('formulario', 'formulario.id', '=', 'historico_formulario.formulario_id')
                                             ->join('users', 'users.id', '=', 'formulario.elaborador_id')
@@ -965,12 +967,10 @@ class FormulariosController extends Controller
             }
         } else {
             $formsNOTQualidade = $clonedBaseQuery3->where('formulario.finalizado', '=', false)
-                                                    ->where('formulario.revisao', '!=', '00')
                                                     ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_LIVRE)
                                                     ->get();
 
             $formsNOTQualidadeRestrito = $clonedBaseQuery7->where('formulario.finalizado', '=', false)
-                                                    ->where('formulario.revisao', '!=', '00')
                                                     ->where('formulario.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
                                                     ->where('formulario.setor_id', '=', Auth::user()->setor_id)
                                                     ->get();
@@ -979,12 +979,18 @@ class FormulariosController extends Controller
             
             if (count($formsNOTQualidade) > 0) {
                 foreach ($formsNOTQualidade as $key => $form) {
-                    if (!($form->elaborador_id ==  Auth::user()->id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM )) {
+                    if ($form->revisao == "00") {
+                        if ($form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $form->elaborador_id ==  Auth::user()->id) {
+                            $forms_NAOFinalizados[] = $form;
+                        }
+                    } elseif (!($form->elaborador_id ==  Auth::user()->id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM )) {
                         $numRevisaoAnterior = (int) $form->revisao - 1;
                         $form->revisao = ($form->revisao <= 10) ? "0{$numRevisaoAnterior}" : $numRevisaoAnterior;
                         $form->etapa = "Finalizado";
+                        $forms_NAOFinalizados[] = $form;
+                    } else {
+                        $forms_NAOFinalizados[] = $form;
                     }
-                    $forms_NAOFinalizados[] = $form;
                 }
             }
         }

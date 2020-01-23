@@ -254,7 +254,7 @@ class DocumentacaoController extends Controller
             $aprovador               = $request->aprovador;
             $text_aprovador          = User::where('id', '=', $request->aprovador)->get();
             
-             $copiaControlada         = ($request->copiaControlada) ? true : false;
+            $copiaControlada         = ($request->copiaControlada) ? true : false;
             $text_copiaControlada    = ($request->copiaControlada) ? 'Sim' : 'Não';
     
             $validadeDocumento       = $request->validadeDocumento;
@@ -272,51 +272,8 @@ class DocumentacaoController extends Controller
                 $text_formsAtrelados = '';
             }
             
-    
-            // Define código do documento
-            if ($text_tipo_documento[0]->sigla == "IT") { // Incremento depende do setor (cada setor tem seu incremento)
-                $lastDoc = DB::table('documento')
-                            ->join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
-                            ->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id')
-                            ->select('documento.id', 'documento.codigo')
-                            ->selectRaw("CAST(split_part(documento.codigo, '-', 3) AS INTEGER ) AS cod")
-                            ->where('documento.tipo_documento_id', '=', $tipo_documento)
-                            ->where('dados_documento.setor_id', '=', $setorDono)
-                            ->orderBy('cod', 'desc')
-                            ->get()->first();
+            $codigo = $this->buildCodDocument(\App\Classes\Helpers::instance()->nextCode("documento", $setorDono, $text_tipo_documento[0]->sigla, $tipo_documento), $text_tipo_documento[0]->sigla);
 
-                if (empty($lastDoc)) { // Ainda não existe documento para esse setor...
-                    $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
-                } else {
-                    $arr = explode("-", $lastDoc->codigo);
-                    if (count($arr) != 3) { // Houve algum erro ao criar o código do último documento desse setor...
-                        $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
-                    } else {
-                        $lastCode = (int) $arr[2];
-                        $codigo = $this->buildCodDocument($lastCode + 1, $text_tipo_documento[0]->sigla);
-                    }
-                }
-            } else { // Incremento único (independente de setor)
-                $lastDoc2 = DB::table('documento')
-                            ->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id')
-                            ->select('documento.id', 'documento.codigo')
-                            ->selectRaw("CAST(split_part(documento.codigo, '-', 2) AS INTEGER ) AS cod")
-                            ->where('documento.tipo_documento_id', '=', $tipo_documento)
-                            ->orderBy('cod', 'desc')
-                            ->get()->first();
-
-                if (empty($lastDoc2)) { // Ainda não existe documento deste tipo...
-                    $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
-                } else {
-                    $arr = explode("-", $lastDoc2->codigo);
-                    if (count($arr) != 2) { // Houve algum erro ao criar o código do último documento desse tipo...
-                        $codigo = $this->buildCodDocument(1, $text_tipo_documento[0]->sigla);
-                    } else {
-                        $lastCode = (int) $arr[1];
-                        $codigo = $this->buildCodDocument($lastCode + 1, $text_tipo_documento[0]->sigla);
-                    }
-                }
-            }
             // Concatena e gera o código final
             $codigo_final .= ($text_tipo_documento[0]->sigla == "IT") ? $text_setorDono[0]->sigla . "-" : "";
             $codigo_final .= $codigo;
@@ -895,12 +852,21 @@ class DocumentacaoController extends Controller
     }
 
     
-    public function makeActiveDoc(Request $request) {
-        $dadosDoc = DadosDocumento::where('documento_id', '=', $request->doc_id)->first();
-        $dadosDoc->obsoleto = false;
-        $dadosDoc->save();
+    public function makeActiveDoc(Request $request)
+    {
+        $dadosDoc = DadosDocumento::with('documento')->where('documento_id', '=', $request->doc_id)->first();
 
-        return redirect()->route('documentacao')->with('make_active_doc', 'msg');
+        $docs = Documento::whereHas('dados', function ($q) {
+            $q->where('obsoleto', false);
+        })->where('codigo', $dadosDoc->documento->codigo)->get();
+
+        if ($docs->count() > 0) {
+            return redirect()->route('documentacao')->with('fail_active_doc', 'msg');
+        } else {
+            $dadosDoc->obsoleto = false;
+            $dadosDoc->save();
+            return redirect()->route('documentacao')->with('make_active_doc', 'msg');
+        }
     }
 
 

@@ -374,4 +374,44 @@ class Helpers {
         return new Helpers();
     }
 
+
+    public function nextCode($arquivo, $setor, $sigla = "", $tipoDoc = "")
+    {
+        if ($arquivo == "formulario") {
+            $docsForms = Formulario::selectRaw("CAST(split_part(formulario.codigo, '-', 3) AS INTEGER ) AS cod")
+            ->where('setor_id', $setor)->where('obsoleto', 'false')->orderBy('cod', 'asc')->get();
+        } elseif ($arquivo == 'documento') {
+            if ($sigla == "IT") {
+                $docsForms = DB::table('documento')
+                ->join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
+                ->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id')
+                ->select('documento.id', 'documento.codigo')
+                ->selectRaw("CAST(split_part(documento.codigo, '-', 3) AS INTEGER ) AS cod")
+                ->where('documento.tipo_documento_id', '=', $tipoDoc)
+                ->where('dados_documento.obsoleto', '=', 'false')
+                ->where('dados_documento.setor_id', '=', $setor)
+                ->orderBy('cod', 'asc')
+                ->get();
+            } else {
+                $docsForms = DB::table('documento')
+                ->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id')
+                ->join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
+                ->select('documento.id', 'documento.codigo')
+                ->selectRaw("CAST(split_part(documento.codigo, '-', 2) AS INTEGER ) AS cod")
+                ->where('dados_documento.obsoleto', '=', 'false')
+                ->where('documento.tipo_documento_id', '=', $tipoDoc)
+                ->orderBy('cod', 'asc')
+                ->get();
+            }
+        }
+
+        $newCode = 1;
+        foreach ($docsForms as $key => $docForm) {
+            if ($newCode != $docForm->cod) {
+                return $newCode;
+            }
+            $newCode++;
+        }
+        return $newCode;
+    }
 }

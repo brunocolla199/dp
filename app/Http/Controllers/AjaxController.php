@@ -422,23 +422,24 @@ class AjaxController extends Controller
     public function checkIfDocumentCodeExists(Request $request)
     {
         $exist = false;
-
+        
         if (array_key_exists('documento_id', $request->all())) {
-            $docs = Documento::where('codigo', $request->codigo)->get();
+            $docs = Documento::whereHas('dados', function ($q) {
+                $q->where('obsoleto', false);
+            })->where('codigo', $request->codigo)->get();
             if ($docs->count() > 0) {
                 foreach ($docs as $doc) {
-                    if ($doc->id != $request->documento_id) {
-                        $exist = true;
-                    }
+                    $exist = true;
                 }
             }
         } else {
-            $docs = Documento::where('codigo', $request->codigo)->get();
+            $docs = Documento::whereHas('dados', function ($q) {
+                $q->where('obsoleto', false);
+            })->where('codigo', $request->codigo)->get();
             if ($docs->count() > 0) {
                 $exist = true;
             }
         }
-
         return response()->json(['exist' => $exist]);
     }
 

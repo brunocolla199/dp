@@ -28,6 +28,8 @@
 		<input type="hidden" name="status" id="status" value="make_obsolete_doc">
     @elseif (session('make_active_doc'))
 		<input type="hidden" name="status" id="status" value="make_active_doc">
+    @elseif (session('fail_active_doc'))
+		<input type="hidden" name="status" id="status" value="fail_active_doc">
     @elseif (session('update_info_success'))
 		<input type="hidden" name="status" id="status" value="update_info_success">
     @elseif (session('error_update_doc'))
@@ -56,6 +58,8 @@
                 showToast('Sucesso!', 'A revisão do documento foi cancelada com sucesso.', 'success');
             } else if(status == "make_obsolete_doc") {
                 showToast('Sucesso!', 'O documento foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
+            } else if(status == "fail_active_doc") {
+                showToast('Falhou!', 'O documento não foi reativado, verifique se o código ainda está diponível!', 'error');
             } else if(status == "make_active_doc") {
                 showToast('Sucesso!', 'O documento foi ativado com sucesso!', 'success');
             } else if(status == "update_info_success") {

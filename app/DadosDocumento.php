@@ -13,4 +13,9 @@ class DadosDocumento extends Model
         'id', 'validade', 'status', 'observacao', 'copia_controlada', 'nivel_acesso', 'finalizado', 'necessita_revisao', 'id_usuario_solicitante', 'revisao', 'justificativa_rejeicao_revisao', 'em_revisao', 'justificativa_cancelar_revisao', 'setor_id', 'grupo_treinamento_id', 'grupo_divulgacao_id', 'elaborador_id', 'aprovador_id', 'documento_id', 'obsoleto', 'data_revisao', 'validade_anterior', 'data_revisao_anterior', 
     ];
 
+
+    public function documento()
+    {
+        return $this->belongsTo('App\Documento', 'documento_id');
+    }
 }

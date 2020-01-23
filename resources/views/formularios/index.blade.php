@@ -18,6 +18,8 @@
 		<input type="hidden" name="status" id="status" value="make_obsolete_form">
     @elseif (session('make_active_form'))
 		<input type="hidden" name="status" id="status" value="make_active_form">
+    @elseif (session('fail_active_form'))
+		<input type="hidden" name="status" id="status" value="fail_active_form">
     @elseif (session('update_info_success'))
 		<input type="hidden" name="status" id="status" value="update_info_success">
     @elseif (session('cancel_review_error'))
@@ -44,6 +46,8 @@
                 showToast('Sucesso!', 'O formulário foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
             } else if(status == "make_active_form") {
                 showToast('Sucesso!', 'O formulário foi ativado com sucesso!', 'success');
+            } else if(status == "fail_active_form") {
+                showToast('Falhou!', 'O formulário não foi reativado, verifique se o código ainda está diponível!', 'error');
             } else if(status == "update_info_success") {
                 showToast('Sucesso!', 'As informações do formulário foram atualizadas com sucesso!', 'success');
             } else if(status == "cancel_review_error") {
