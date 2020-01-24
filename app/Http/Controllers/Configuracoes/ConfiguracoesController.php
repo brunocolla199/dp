@@ -198,16 +198,20 @@ class ConfiguracoesController extends Controller
     }
 
 
-    public function linkApproverSector($id) {
+    public function linkApproverSector($id)
+    {
         $usersAndSectors = [];
 
         $allSectors = Setor::where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get();
-        foreach($allSectors as $key => $sector) {
+    
+        foreach ($allSectors as $key => $sector) {
             $arrUsers = [];
             $users = User::where('setor_id', '=', $sector->id)->get();
-            foreach($users as $key2 => $user) {
+    
+            foreach ($users as $key2 => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
+            
             $usersAndSectors[$sector->nome] = $arrUsers;
         }
         

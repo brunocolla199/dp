@@ -190,14 +190,14 @@ class ControleRegistrosController extends Controller
     }
 
 
-    private function getRecordsByUser() {
+    private function getRecordsByUser()
+    {
         $idUserSector = Auth::user()->setor_id;
-        if( $idUserSector != Constants::$ID_SETOR_QUALIDADE ) {
-            $records = ControleRegistro::with('setor')->where('setor_id', $idUserSector)->where('ativo', true)->orderBy('codigo')->get();
+        if ($idUserSector != Constants::$ID_SETOR_QUALIDADE) {
+            $records = ControleRegistro::with('setor')->where('setor_id', $idUserSector)->orderBy('codigo')->get();
         } else {
-            $records = ControleRegistro::with('setor')->where('ativo', true)->orderBy('codigo')->get();
+            $records = ControleRegistro::with('setor')->orderBy('codigo')->get();
         }
-
         return $records;
     }
 
