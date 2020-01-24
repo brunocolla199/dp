@@ -196,7 +196,7 @@
                                                                             <td>{{ $setor->descricao }}</td>
                                                                             <td class="text-nowrap">
                                                                                 <center>
-                                                                                    @if( $setor->id == Constants::$ID_SETOR_CAPITAL_HUMANO )
+                                                                                    @if( in_array($setor->id, [Constants::$ID_SETOR_CAPITAL_HUMANO, Constants::$ID_SETOR_QUALIDADE]))
                                                                                         <a href="{{ route('configuracoes.lista_presenca.aprovadores', ['id' => $setor->id]) }}" class="sa-warning mr-3" data-toggle="tooltip" data-original-title="Definir Aprovadores de Lista"> <i class="fa fa-check-square-o text-danger"></i> </a>
                                                                                     @endif
 

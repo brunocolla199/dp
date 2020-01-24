@@ -1448,7 +1448,7 @@ class DocumentacaoController extends Controller
         $extensao   = $file->getClientOriginalExtension();
         $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $dados_doc->revisao);
 
-        $usuariosCapitalHumanoComPermissaoParaAprovarLista = User::where('setor_id', '=', Constants::$ID_SETOR_CAPITAL_HUMANO)->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
+        $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista = User::whereIn('setor_id', [Constants::$ID_SETOR_CAPITAL_HUMANO, Constants::$ID_SETOR_QUALIDADE])->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
         $usuariosSetorQualidade                            = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
         $usuariosAreaInteresseDocumento                    = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
 
@@ -1458,7 +1458,7 @@ class DocumentacaoController extends Controller
         $nomeLista = $request->nome_lista .".". $extensao;
         $pathLista = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix() . "/lists/" . $nomeLista;
 
-        $emailsParaExibir = $usuariosCapitalHumanoComPermissaoParaAprovarLista->reduce(function ($textoAtual, $emailIteracao) {
+        $emailsParaExibir = $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista->reduce(function ($textoAtual, $emailIteracao) {
             return $textoAtual . $emailIteracao->email . Constants::$SEPARADOR_PARA_CONCATENACOES;
         }, Constants::$TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS);
 
@@ -1480,14 +1480,14 @@ class DocumentacaoController extends Controller
         $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
         $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento->codigo; $label2_F3 = ""; $value2_F3 = "";
         
-        $this->dispatch(new SendEmailComAnexoJob($usuariosCapitalHumanoComPermissaoParaAprovarLista, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3, $pathLista, $nomeLista, 'application/octet-stream' ));
+        $this->dispatch(new SendEmailComAnexoJob($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3, $pathLista, $nomeLista, 'application/octet-stream' ));
 
 
         // #1.3
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento($emailsParaExibir, $idDoc);
         
         // #1.4
-        foreach ($usuariosCapitalHumanoComPermissaoParaAprovarLista as $key => $user) {
+        foreach ($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista as $key => $user) {
             \App\Classes\Helpers::instance()->gravaNotificacao("Você recebeu um e-mail com a lista de presença do documento " . $documento->codigo . " , que foi divulgado.", false, $user->id, $idDoc);
         }
 
