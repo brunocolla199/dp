@@ -405,9 +405,15 @@ class FormulariosController extends Controller
         $formulario     = Formulario::where('id', '=', $idForm)->get();
         $wkfFormulario  = WorkflowFormulario::where('formulario_id', '=', $idForm)->first();
 
-        $versaoAnterior = $formulario[0]->revisao - 1;
-        $versaoAnterior = ($versaoAnterior <= 10) ? "0{$versaoAnterior}" : $versaoAnterior;
+        $versaoAnterior = $formulario[0]->revisao;
+        if ($formulario[0]->revisao != "00") {
+            $versaoAnterior = $formulario[0]->revisao - 1;
+            $versaoAnterior = ($versaoAnterior <= 10) ? "0{$versaoAnterior}" : $versaoAnterior;
+        }
+        
         $revisaoAnteriorFormulario = FormularioRevisao::where('formulario_id', '=', $idForm)->where('revisao', '=', $versaoAnterior)->get(); // Se não enviar o parâmetro da revisão atual, ele vai pegar o primeiro registro e restaurar a 1º versão do formulário, mesmo que exista mais que uma revisão
+        //dd($revisaoAnteriorFormulario);
+        //exit();
         // Atualiza as notificações do formulário para que no texto das mesmas, o código do formulário não permaneça exibindo o valor antigo
        
         \App\Classes\Helpers::updateFormNotifications(
@@ -724,8 +730,8 @@ class FormulariosController extends Controller
 
                 // Popula tabela que irá armazenar um "histórico" das revisões (quase como um backup das 'versões')
                 $formRevisao = new FormularioRevisao();
-                $formRevisao->codigo                    = $formulario[0]->codigo;  
-                $formRevisao->revisao                   = $revisao;   
+                $formRevisao->codigo                    = $formulario[0]->codigo;
+                $formRevisao->revisao                   = $revisao; 
                 $formRevisao->nome                      = $formulario[0]->nome;
                 $formRevisao->nome_completo             = $formulario[0]->nome .".". $formulario[0]->extensao;   
                 $formRevisao->extensao                  = $formulario[0]->extensao;
