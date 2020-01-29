@@ -775,7 +775,7 @@
         let docId  = $('input[name=document_id]').val();
         let newCode = $('input[name=codigoDocumento]').val();
         var obj = {'codigo': newCode, 'documento_id': docId};
-        ajaxMethod('POST', " {{ URL::route('ajax.documentos.checkIfDocumentCodeExists') }} ", obj).then(function(result) {
+        ajaxMethod('POST', " {{ URL::route('ajax.documentos.checkIfDocumentCodeExistsInEdition') }} ", obj).then(function(result) {
             if(result.exist) {
                 showToast('Opa!', 'Já existe um documento utilizando esse código!', 'error');
                 return;
