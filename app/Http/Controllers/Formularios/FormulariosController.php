@@ -864,6 +864,35 @@ class FormulariosController extends Controller
         return redirect()->route('formularios')->with('reject_success', 'message');
     }
 
+    
+    public function resendFormWithoutElaborador(Request $request)
+    {
+        $idForm = $request->formulario_id;
+        $file   = $request->file('new_form', 'local');
+        $formulario    = Formulario::find($idForm);
+        $filename      = \App\Classes\Helpers::instance()->escapeFilename($formulario->nome);
+        
+        // Exclui Formulário Antigo
+        \Storage::disk('speed_office')->delete('formularios/' . $formulario->nome . "." . $formulario->extensao);
+
+        $currentFileExtension = $file->getClientOriginalExtension();
+        \Storage::disk('speed_office')->put('formularios/' . $filename . "." . $currentFileExtension, file_get_contents($file), 'private');
+
+
+        if ($currentFileExtension != $formulario->extensao) {
+            $formulario->extensao                 = $currentFileExtension;
+            $formulario->nome_completo_em_revisao = $filename . "." . $currentFileExtension;
+        }
+
+        $formulario->nome = $filename;
+        $formulario->save();
+
+        \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_UPDATE_FILE_SEM_ELABORADOR, $idForm);
+
+        return redirect()->route('formularios')->with('update_info_success', 'message');
+    }
+
+
     protected function resendForm(Request $request) {
         
         $idForm = $request->formulario_id;

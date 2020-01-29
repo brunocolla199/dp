@@ -117,6 +117,7 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('view-obsolete-form',	  ['as' => 'formularios.view-obsolete-form',		'uses' => 'Formularios\FormulariosController@viewObsoleteForm']);
 		Route::get('{id}/edit-info',  		  ['as' => 'formularios.edit-info',					'uses' => 'Formularios\FormulariosController@editInfo']);
 		Route::post('update-info', 			  ['as' => 'formularios.update-info',				'uses' => 'Formularios\FormulariosController@updateInfo']);
+		Route::post('resend-form-without-elaborador', ['as' => 'formularios.resend-form-without-elaborador', 'uses' => 'Formularios\FormulariosController@resendFormWithoutElaborador']);
 	});
 	
 	

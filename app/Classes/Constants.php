@@ -116,6 +116,8 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_REJEITADO_APROVADOR                   = "Devolvido para correção pelo Aprovador";
     
     public static $DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR                 = "Reenviado pelo Elaborador";
+
+    public static $DESCRICAO_WORKFLOW_UPDATE_FILE_SEM_ELABORADOR            = "Formulário atualizado";
     
     public static $DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA          = "Aguardando lista de presença";
     

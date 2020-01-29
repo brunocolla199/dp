@@ -259,6 +259,30 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                {{ Form::open(['route' => 'formularios.resend-form-without-elaborador', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
+                                <div class="row mt-2">
+                                    <div class="col-md-8">
+                                        <div class="col-md-12">
+                                            <div class="row card">
+                                                <div class="card-body">
+                                                    <h4 class="card-title"> Upload de formulário corrigido </h4>
+                                                    <label for="input-file-now">Anexe a versão corrigida do formulário <b>{{ $nome }}</b> caso seja necessário. </label>                                                            
+                                                    {!! Form::file('new_form', ['class' => 'dropify', 'id' => 'new_form', 'data-allowed-file-extensions'=>'doc docx xlsx xls', 'required' => 'required']) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col-md-4">
+                                        <div class="col-md-12 pull-right">    
+                                            {{ Form::hidden('formulario_id', $formulario_id) }}
+                                            {{ Form::hidden('etapa_form', $etapa_form) }}
+                                            {!! Form::button('Atualizar formulário', ['type' => 'submit', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
+                                        </div>
+                                    </div>    
+                                </div>
+                                {{ Form::close() }}
                             @endif
 
 
