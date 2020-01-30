@@ -55,6 +55,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/copiaControlada/getCopias',							['as' => 'ajax.copiaControlada.getCopias',							'uses' => 'AjaxController@getCopias']);
 	Route::post('ajax/copiaControlada/removeCopy',							['as' => 'ajax.copiaControlada.remove',								'uses' => 'AjaxController@removeCopy']);
 	Route::get('ajax/listaAprovadores/getAprovadores',						['as' => 'ajax.listaAprovadores.getAprovadores',					'uses' => 'AjaxController@getListAprovadores']);
+	Route::post('ajax/aprovadorSubstituto',							 		['as' => 'ajax.aprovador.substituto',    							'uses' => 'AjaxController@aprovadorSubstituto']);
+
 
 
     /*

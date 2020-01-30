@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Classes\Constants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, DB, Log, Storage};
-use App\{Anexo, AreaInteresseDocumento, ControleRegistro, CopiaControlada, DadosDocumento, Documento, DocumentoFormulario, DocumentoObservacao, Formulario, FormularioRevisao, GrupoDivulgacaoDocumento, GrupoTreinamentoDocumento, Notificacao, NotificacaoFormulario, Setor, User};
+use App\{Anexo, AprovadorSetor, AreaInteresseDocumento, ControleRegistro, CopiaControlada, DadosDocumento, Documento, DocumentoFormulario, DocumentoObservacao, Formulario, FormularioRevisao, GrupoDivulgacaoDocumento, GrupoTreinamentoDocumento, Notificacao, NotificacaoFormulario, Setor, User};
 
 class AjaxController extends Controller
 {
@@ -460,6 +460,29 @@ class AjaxController extends Controller
         }
 
         return response()->json(['exist' => $exist]);
+    }
+
+
+    public function aprovadorSubstituto(Request $request)
+    {
+        return DB::transaction(function () use ($request) {
+            try {
+                DadosDocumento::where('aprovador_id', $request->old_aprovador)
+                ->where('setor_id', $request->id_setor)
+                ->update(['aprovador_id' => $request->new_aprovador]);
+
+                DB::table('aprovador_setor')->where([
+                    ['usuario_id', '=', $request->old_aprovador],
+                    ['setor_id', '=', $request->id_setor]
+                ])->delete();
+
+                AprovadorSetor::firstOrCreate(['usuario_id' => $request->new_aprovador], ['setor_id' => $request->id_setor]);
+                
+                return response()->json(['response' => 'success']);
+            } catch (Exception $e) {
+                return response()->json(['response' => 'error']);
+            }
+        });
     }
 
 

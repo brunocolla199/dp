@@ -15,7 +15,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link href="{{ asset('css/style-material-pro-main.css') }}" rel="stylesheet">

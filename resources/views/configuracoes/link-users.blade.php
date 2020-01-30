@@ -44,8 +44,8 @@
                                     <h5 class="box-title">Para desvincular, selecione <b>um</b> usuário por vez. <small>Pedimos isso em razão da definição de um novo setor para cada usuário desvinculado.</small></h5>
                                 </div>
                             @endif
+
                             
-                                
                             <div class="mt-4">
 
                                 {!! Form::open(['route' => 'configuracoes.link.save', 'class' => 'form-horizontal', 'id' => 'form-generate-document']) !!}
@@ -94,7 +94,34 @@
                                             @endforeach
                                         </select>
 
-
+                                        <div class="modal fade" id="modalChangeAprovador" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document" style="width:40%">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Novo aprovador</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" id="aprovadorVelho" />
+                                                        <select class="form-control custom-select" id="optgroup-new-aprovador" data-setor="{{$setorDosAprovadores->id}}">
+                                                            @foreach($setoresUsuarios as $key => $su)
+                                                                <optgroup label="{{$key}}">
+                                                                    @foreach($su as $key2 => $user)
+                                                                        <option value="{{$key2}}">{{$user}}</option>
+                                                                    @endforeach
+                                                                </optgroup>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                        <button type="button" class="btn btn-success" onclick="atualizaAprovador();" >Salvar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                     @elseif( isset($grupoT) )
                                         {!! Form::hidden('tipo_agrupamento', Constants::$ID_TIPO_AGRUPAMENTO_GRUPO_TREINAMENTO) !!}
@@ -161,6 +188,31 @@
 <script src="{{ asset('plugins/multiselect/js/jquery.multi-select.js') }}"></script>
 <script src="{{ asset('plugins/quicksearch/jquery.quicksearch.js') }}"></script>
 <script>
+
+    $('#modalChangeAprovador').on('hidden.bs.modal', function () {
+        location.reload();
+    })
+
+
+    function atualizaAprovador() {
+  
+        let setor = $("#optgroup-new-aprovador").data('setor');
+        let newAprovador = $("#optgroup-new-aprovador").val();
+        let oldAprovador = $("#aprovadorVelho").val();
+        
+        let obj = {'id_setor': setor, 'new_aprovador': newAprovador, 'old_aprovador': oldAprovador, 'tipo_grupo': 'aprovadores'};
+
+        ajaxMethod('POST', " {{ URL::route('ajax.aprovador.substituto') }} ", obj).then(result => {
+            showToast('Sucesso!', 'Usuário desvinculado e novo aprovador vinculado com sucesso.', 'success');
+            setTimeout(() => { location.reload() }, 1000);
+        })
+        .catch( error => {
+            showToast('Erro!', 'Falha ao desvincular o usuário.', 'error');
+            setTimeout(() => { location.reload() }, 1000);
+        });
+    }
+
+
         /*
         * 
         * MultiSelect de SETOR
@@ -271,14 +323,29 @@
                     if( result.response == 'delete_success' ) {
                         showToast('Sucesso!', 'Usuário desvinculado com sucesso.', 'success');
                     } else {
-                        swalWithReload('Ação Bloqueada!', `Este usuário é o aprovador do(s) documento(s) ${result.codes.join(', ')} e por isso não pode ser desvinculado.`, 'warning');
+                        swal({   
+                            title: "Ação Bloqueada!",   
+                            text: `Este usuário é o aprovador do(s) documento(s) ${result.codes.join(', ')} e por isso não pode ser desvinculado sem selecionar outro aprovador. `,   
+                            type: "warning",   
+                            showCancelButton: true,   
+                            confirmButtonText: "Vincular novo aprovador",   
+                            cancelButtonText: "Cancelar",   
+                            closeOnConfirm: false,   
+                            closeOnCancel: false 
+                        }, function(isConfirm){   
+                            if (isConfirm) {
+                                $("#aprovadorVelho").val(values[0])     
+                                $("#modalChangeAprovador").modal('show');
+                                swal.close();
+                            } else {     
+                                location.reload();
+                            }  
+                        });
                     }
                 }, function(err) {
                 });
             }
         });
-
-
 
         /*
         * 

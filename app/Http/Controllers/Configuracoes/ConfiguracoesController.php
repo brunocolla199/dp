@@ -174,7 +174,7 @@ class ConfiguracoesController extends Controller
         $allSectors = Setor::orderBy('nome')->get();
         foreach($allSectors as $key => $sector) {
             $arrUsers = [];
-            $users = User::where('setor_id', '=', $sector->id)->get();
+            $users = User::where('setor_id', '=', $sector->id)->get()->sortBy('name');
             foreach($users as $key2 => $user) {
                 $arrUsers[$user->id] = $user->name;
             }
@@ -206,7 +206,7 @@ class ConfiguracoesController extends Controller
     
         foreach ($allSectors as $key => $sector) {
             $arrUsers = [];
-            $users = User::where('setor_id', '=', $sector->id)->get();
+            $users = User::where('setor_id', '=', $sector->id)->get()->sortBy('name');
     
             foreach ($users as $key2 => $user) {
                 $arrUsers[$user->id] = $user->name;
@@ -223,6 +223,8 @@ class ConfiguracoesController extends Controller
         */
         //Khalil is out
         // Big John: "Given mission is accomplished mission"
+        //The KING is come, bitches! @CrixinSadBoy, Eu to triste :D
+
 
 
         $setorAtual = Setor::where('id', '=', $id)->get();
