@@ -65,36 +65,9 @@
                                 <div class="tab-pane active" id="docsObsoletos" role="tabpanel">
                                     <div class="p-20">
                                         <div class="col-md-12">
-                                            <div class="row">
-                                                <h4>FILTROS</h4>
-                                                <div class="col-md-12">
-
-                                                    {!! Form::open(['route' => 'documentacao.filter-documents-obsolete-index', 'class' => 'form-horizontal', 'style' => 'width: 96%']) !!}
-                                                        <div class="row margin-top-1percent" style="width: 109%">    
-                                                            <div class="col-md-6"> 
-                                                                <div class="row">
-                                                                    {!! Form::text('search_tituloDocObsoleto', null, ['class' => 'form-control', 'placeholder' => 'Título do Documento']) !!}
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="row">
-                                                                    <div class="col-md-5">
-                                                                        <a href="{{ route('documentacao.obsoletos') }}" class="btn btn-block waves-effect waves-light btn-secondary"><i class="fa fa-ban"></i> Limpar</a>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <button type="submit" class="btn btn-block waves-effect waves-light btn-outline-success"><i class="fa fa-search"></i> Buscar</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>                                                          
-                                                    {!! Form::close() !!} 
-                                                    
-                                                </div>
-                                            </div>
-
                                             <div class="row mt-5 margin-top-1percent">
                                                 <div class="table-responsive">
-                                                    <table class="table">
+                                                    <table class="table" id="obsolet-table">
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-center text-nowrap">Ação</th>
@@ -124,10 +97,10 @@
 
                                                                         <td class="text-center text-nowrap"> {{ $docF->codigo }} </td>
 
-                                                                        {{ Form::open(['route' => 'documentacao.view-obsolete-doc', 'method' => 'POST']) }}
+                                                                        {{ Form::open(['route' => 'documentacao.view-obsolete-doc', 'method' => 'POST', 'id'=>'view-documento-'.$docF->id]) }}
                                                                             {{ Form::hidden('document_id', $docF->id) }}
-                                                                            <td class="text-center">
-                                                                                {!! Form::submit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0], ['class' => 'a-href-submit force-break-word']) !!}
+                                                                            <td class="text-center a-href-submit force-break-word text-nowrap">
+                                                                                <p class="text-center a-href-submit force-break-word submit-view-documento" data-id="{{ $docF->id }}"> {{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docF->nome)[0] }}</p>
                                                                             </td>
                                                                         {{ Form::close() }}
 
@@ -215,5 +188,48 @@
     <!-- End Page wrapper -->
     <!-- ============================================================== -->
 
+@endsection
 
+@section('footer')
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    
+    <script type="text/javascript">
+        
+        $('#obsolet-table').DataTable({ 
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            },
+            dom: 'Bfrtip',
+            buttons: [
+                { extend: 'excel',  text: 'Excel' },
+                { extend: 'pdf',    text: 'PDF' },
+                { extend: 'print',  text: 'Imprimir' }
+            ]
+        });
+
+        $(document).on("click", ".submit-view-documento", (elm) => {
+            let id = $(elm.target).attr('data-id');
+            $(`#view-documento-${id}`)[0].submit();
+        });
+    </script>
 @endsection
