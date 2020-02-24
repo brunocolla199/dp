@@ -232,9 +232,14 @@
                                     <li><a href="{{ route('controle-registros') }}"> Formulários </a></li>
                                 </ul>
                             </li>
-                            <li class="{{ (\Request::is('documentos-externos/*')) ? 'active' : '' }}">
-                                <a class="waves-effect waves-dark {{ (\Request::is('documentos-externos/*')) ? 'active' : '' }}" href="{{ route('documentos-externos') }}" aria-expanded="false"><i class="mdi mdi-file-cloud"></i><span class="hide-menu">Documentos Externos </span></a>    
+                            <li>
+                                <a class="has-arrow waves-effect waves-dark {{ (\Request::is('documentos-externos/*')) ? 'active' : '' }}" href="#3" aria-expanded="false"><i class="mdi mdi-file-cloud"></i><span class="hide-menu">Documentos Externos </span></a> 
+                                <ul aria-expanded="false" class="collapse">
+                                    <li><a href="{{ route('documentos-externos') }}"> Documentos </a></li>
+                                    <li><a href="{{ route('fornecedores.index') }}"> Fornecedores </a></li>
+                                </ul>
                             </li>
+
                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
                                 <li class="{{ (\Request::is('bpmn/*')) ? 'active' : '' }}">
                                     <a class="waves-effect waves-dark {{ (\Request::is('bpmn/*')) ? 'active' : '' }}" href="{{ url('/bpmn') }}" aria-expanded="false"><i class="mdi mdi-file-tree"></i><span class="hide-menu">BPMN 2.0 </span></a>    

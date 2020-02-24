@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Classes\{Constants, RESTGed, RESTServices};
-use App\{DocumentoExterno, Setor};
+use App\{DocumentoExterno, Fornecedor, Setor};
 use Illuminate\Support\Facades\{Auth, Validator};
 
 class DocumentosExternosController extends Controller
@@ -48,14 +48,32 @@ class DocumentosExternosController extends Controller
         foreach ($registersGed as $registerGed) {
             foreach ($registerGed as $value) {
                 $files = $this->getDocumentsByRegister($value->id);
-                foreach ($files as $file) {
-                    $arquivo['areaName'] = $areasBySector[$value->idArea];
-                    $arquivo['file'] = $file;
-                    array_push($registers, $arquivo);
+                $fornecedor = null;
+
+                foreach ($value->listaIndice as $key => $indice) {
+                    if ($indice->identificador == "Fornecedor") {
+                        $fornecedor = $indice->valor;
+                    }
                 }
+
+                foreach ($files as $file) {
+                    if ($fornecedor) {
+                        $fornecedorPesquisa = Fornecedor::find($fornecedor);
+                        $registers[$areasBySector[$value->idArea]][$fornecedorPesquisa->nome]['files'][] = $file;
+                        $registers[$areasBySector[$value->idArea]][$fornecedorPesquisa->nome]['dados_fornecedor'] = Fornecedor::find($fornecedor);
+                        $registers[$areasBySector[$value->idArea]][$fornecedorPesquisa->nome][$file->id] = DocumentoExterno::where('id_documento', $file->id)->first();
+                    } else {
+                        $registers[$areasBySector[$value->idArea]]['SemFornecedor']['files'][] = $file;
+                        $registers[$areasBySector[$value->idArea]]['SemFornecedor'][$file->id] = DocumentoExterno::where('id_documento', $file->id)->first();
+                    }
+                }
+                asort($registers[$areasBySector[$value->idArea]]);
             }
         }
-        return view('documentos_externos.index', compact('areasBySector', 'registers', 'nonCreatedArea'));
+
+        $fornecedores = Fornecedor::where('inativo', 0)->orderBy('nome')->get();
+
+        return view('documentos_externos.index', compact('areasBySector', 'registers', 'nonCreatedArea', 'fornecedores'));
     }
 
 
@@ -100,7 +118,16 @@ class DocumentosExternosController extends Controller
                 'dataCriacao'     => Carbon::now()->toIso8601String()
             ]);
         }
-        $registerId   = $this->ged->createRegister($idAreaSector, $this->ged->getUSERID(), [], $documentList);
+
+        $indicesRegistro = [
+            [
+                'valor' => $request->fornecedor,
+                'idTipoIndice' => 8,
+                'identificador' => "Fornecedor",
+            ]
+        ];
+
+        $registerId   = $this->ged->createRegister($idAreaSector, $this->ged->getUSERID(), $indicesRegistro, $documentList);
         $fullRegister = $this->ged->getRegister($registerId);
 
         foreach ($fullRegister->listaDocumento as $key => $document) {
@@ -111,7 +138,10 @@ class DocumentosExternosController extends Controller
                 'validado'              => $validated,
                 'responsavel_upload_id' => Auth::user()->id,
                 'user_id'               => $userId,
-                'setor_id'              => $databaseSector->id
+                'setor_id'              => $databaseSector->id,
+                'fornecedor_id'         => $request->fornecedor,
+                'revisao'               => $request->revisao,
+                'validade'              => $request->validade
             ]);
         }
 
@@ -130,7 +160,7 @@ class DocumentosExternosController extends Controller
     public function accessDocument(string $documentId)
     {
         $document          = $this->ged->getDocument($documentId);
-        $dbDocument        = DocumentoExterno::where('id_documento', $document->id)->first();
+        $dbDocument        = DocumentoExterno::with('fornecedor')->where('id_documento', $document->id)->first();
         $validated         = $dbDocument->validado;
         $approver          = 'Não possui';
         $responsibleUpload = $dbDocument->responsavelUpload;
@@ -141,7 +171,7 @@ class DocumentosExternosController extends Controller
 
         return view('documentos_externos.access', [
             'document'          => $document,
-            'dbDocumentId'      => $dbDocument->id,
+            'dbDocument'        => $dbDocument,
             'filename'          => $document->listaIndice[0]->valor,
             'validated'         => $validated,
             'approver'          => $approver,
@@ -228,12 +258,17 @@ class DocumentosExternosController extends Controller
             $request->document_id
         )->first();
 
-        $dbDocument->validado = true;
-        $dbDocument->user_id  = Auth::user()->id;
+        if ($request->i_approve) {
+            $dbDocument->validado = true;
+            $dbDocument->user_id  = Auth::user()->id;
+        }
+        
+        $dbDocument->revisao  = $request->revisao;
+        $dbDocument->validade = $request->validade;
         $dbDocument->save();
 
         $request->session()->flash('style', 'success|check-circle');
-        $request->session()->flash('message', 'Documento validado com sucesso!');
+        $request->session()->flash('message', 'Documento atualizado com sucesso!');
         return redirect()->back()->withInput();
     }
 

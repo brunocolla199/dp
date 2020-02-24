@@ -156,8 +156,25 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('atualizar',						['as' => 'documentos-externos.update', 				'uses' => 'DocumentosExternos\DocumentosExternosController@update']);
 		Route::post('aprovar',							['as' => 'documentos-externos.approval',			'uses' => 'DocumentosExternos\DocumentosExternosController@approval']);
 		Route::get('bytes',							    ['as' => 'documentos-externos.bytes', 				'uses' => 'DocumentosExternos\DocumentosExternosController@getBytes']);
+
 	});
 
+	/*
+	* FORNECEDORES
+	*/
+	Route::group(['prefix' => 'fornecedores','as' => 'fornecedores.'], function () {
+
+		Route::get('', ['as' => 'index',   'uses' => 'FornecedoresController@index']);
+		Route::get('visualizar/{id}', ['as' => 'visualizar',   'uses' => 'FornecedoresController@show']);
+
+		Route::get('novo', ['as' => 'novo',   'uses' => 'FornecedoresController@create']);
+		Route::post('salvar', ['as' => 'salvar',   'uses' => 'FornecedoresController@store']);
+
+		Route::get('editar/{id}', ['as' => 'editar',   'uses' => 'FornecedoresController@edit']);
+		Route::post('alterar', ['as' => 'alterar',   'uses' => 'FornecedoresController@update']);
+
+		Route::post('ativarInativar', ['as' => 'ativarInativar',   'uses' => 'FornecedoresController@ativarInativar']);
+	});
 
 
 

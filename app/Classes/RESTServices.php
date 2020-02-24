@@ -80,7 +80,6 @@ class RESTServices {
             return (string) $response->getBody();;
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
-                dd($e);
                 return $e->getResponse();
             }
             return $e->getMessage();
