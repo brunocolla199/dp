@@ -96,7 +96,7 @@
                                                         <select class="form-control selectpicker" data-size="10" data-live-search="true" data-actions-box="true" name="fornecedor" id="fornecedor" required>
                                                             <option value="">Nenhum</option>
                                                             @foreach($fornecedores as $key => $fornecedor)
-                                                                <option value="{{$key}}">{{$fornecedor->nome}} </option>
+                                                                <option value="{{$fornecedor->id}}">{{$fornecedor->nome}} </option>
                                                             @endforeach
                                                         </select>
                                                     </div>

@@ -45,7 +45,7 @@ class DocumentosExternosController extends Controller
 
         $registers = array();
 
-        foreach ($registersGed as $registerGed) {
+        foreach ($registersGed ?? [] as $registerGed) {
             foreach ($registerGed as $value) {
                 $files = $this->getDocumentsByRegister($value->id);
                 $fornecedor = null;
