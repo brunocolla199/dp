@@ -7,9 +7,9 @@ use App\Classes\Constants;
 use Illuminate\Http\Request;
 use Illuminate\Support\{Arr, Str};
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\{Validator, Auth};
 use Illuminate\Database\Eloquent\Collection;
-use App\{Documento, HistoricoDocumento, TipoDocumento};
+use App\{Documento, HistoricoDocumento, TipoDocumento, Setor};
 
 class RelatorioEstatisticoController extends Controller
 {
@@ -22,17 +22,20 @@ class RelatorioEstatisticoController extends Controller
     {
         $this->totalOverdue = 0;
         $this->totalRevised = 0;
-
         $this->docTypes = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck(
             'nome_tipo',
             'id'
         )->toArray();
     }
-
-
+    
+    
     public function index()
     {
-        return view('documentacao.index-statical-report', ['tipoDocumentos' => $this->docTypes]);
+        $setores = Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ?
+        Setor::all()->toArray() :
+        Setor::where('setor_id', Auth::user()->setor_id)->get()->toArray();
+
+        return view('documentacao.index-statical-report', ['tipoDocumentos' => $this->docTypes, 'setores' => $setores]);
     }
 
 
@@ -46,14 +49,19 @@ class RelatorioEstatisticoController extends Controller
             'daterange' => 'required',
             'tipo_documento' => 'required',
         ]);
-
+        
         if ($validator->fails()) {
             return back()->withErrors(['message' => $validator->messages()->first()]);
         }
 
         // Não existe nenhuma verificação inicial (opção está liberada apenas para o setor Processos)
         $docTypeId = ( $request->tipo_documento == "todos" ) ? 99 : (int) $request->tipo_documento;
-        $docs = $this->getDocuments($docTypeId);
+    
+        $setores = Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ?
+        Setor::all() :
+        Setor::where('setor_id', Auth::user()->setor_id);
+
+        $docs = $this->getDocuments($docTypeId, $request->setores ?? $setores->pluck('id')->toArray());
 
         $expiredDocs = $this->getExpiredDocsBySector($docs);
         $revisedDocs = $this->getRevisedDocsBySector(
@@ -70,6 +78,7 @@ class RelatorioEstatisticoController extends Controller
         $chartist = [];
 
         $chartist['sectors'] = $allSectors->toArray();
+
         foreach ($allSectors->toArray() as $sectorName) {
             $chartist['revised'][] = (Arr::has($revisedDocs, $sectorName)) ? $revisedDocs[$sectorName]->count() : 0;
             $chartist['expired'][] = (Arr::has($expiredDocs, $sectorName)) ? $expiredDocs[$sectorName]->count() : 0;
@@ -83,14 +92,16 @@ class RelatorioEstatisticoController extends Controller
                 'identifier' => str_replace(' ', '_', $sectorName),
             );
         });
-        
+    
         return view('documentacao.view-statical-report', [
             'tipoDocumentos' => $this->docTypes,
             'periodo' => $request->daterange,
             'totalPendentesRevisao' => $this->totalOverdue,
             'totalRevisados' => $this->totalRevised,
             'chartist' => $chartist,
-            'listaDocumentosPorSetor' => $listDocsBySector
+            'listaDocumentosPorSetor' => $listDocsBySector,
+            'setores' => $setores->toArray(),
+            'setoresSelected' => $request->setores
         ]);
     }
 
@@ -104,18 +115,20 @@ class RelatorioEstatisticoController extends Controller
      *
      * @return Collection
      */
-    private function getDocuments(int $_docTypeId)
+    private function getDocuments(int $_docTypeId, array $_sectors)
     {
         if ($_docTypeId == 99) { // Todos
             $documents = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
                                     ->join('setor', 'setor.id', '=', 'dados_documento.setor_id')
                                     ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome', 'setor.sigla AS sSigla')
+                                    ->whereIn('setor.id', $_sectors)
                                     ->orderBy('setor.nome')->get();
         } else {
             $documents = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
                                     ->join('setor', 'setor.id', '=', 'dados_documento.setor_id')
                                     ->where('documento.tipo_documento_id', $_docTypeId)
-                                    ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome')
+                                    ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome', 'setor.sigla AS sSigla')
+                                    ->whereIn('setor.id', $_sectors)
                                     ->orderBy('setor.nome')->get();
         }
                             

@@ -51,7 +51,7 @@
                             
                             {{-- Formulário de Filtro: define o período e os tipos de documentos selecionados --}}
                             {!! Form::open(['route' => 'documentacao.make-statical-report', 'method' => 'POST', 'class' => 'form-inline m-t-20']) !!}
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <div class="col-md-12 control-label font-bold">
                                             <h5 class="box-title">Período da Busca</h5>
@@ -61,7 +61,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <div class="col-md-12 control-label font-bold">
                                             <h5 class="box-title">Tipo de Documento</h5>
@@ -71,7 +71,21 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="col-md-12 control-label font-bold">
+                                            <h5 class="box-title">Setores</h5>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <select class="form-control selectpicker" data-size="10" data-live-search="true" data-actions-box="true" name="setores[]" id="setores" multiple>
+                                                @foreach($setores as $key => $setor)
+                                                    <option value="{{$setor['id']}}">{{$setor['nome']}} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <button class="btn btn-block btn-success m-t-30"> <i class="mdi mdi-search"></i> Buscar</button>
                                 </div>
                             {!! Form::close() !!}
@@ -100,7 +114,11 @@
 
     {{-- DateRangePicker.js --}}
     <link href="{{ asset('plugins/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/bootstrap-select/bootstrap-select.min.css') }}" rel="stylesheet" type="text/css" />
+
     <script src="{{ asset('plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+    <script src="{{ asset('plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
+
 
     <script>
         $('.input-daterange-datepicker').daterangepicker({
