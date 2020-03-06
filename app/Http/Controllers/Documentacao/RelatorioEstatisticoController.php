@@ -33,7 +33,7 @@ class RelatorioEstatisticoController extends Controller
     {
         $setores = Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ?
         Setor::all()->toArray() :
-        Setor::where('setor_id', Auth::user()->setor_id)->get()->toArray();
+        Setor::where('id', Auth::user()->setor_id)->get()->toArray();
 
         return view('documentacao.index-statical-report', ['tipoDocumentos' => $this->docTypes, 'setores' => $setores]);
     }
@@ -59,7 +59,7 @@ class RelatorioEstatisticoController extends Controller
     
         $setores = Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ?
         Setor::all() :
-        Setor::where('setor_id', Auth::user()->setor_id);
+        Setor::where('id', Auth::user()->setor_id)->get();
 
         $docs = $this->getDocuments($docTypeId, $request->setores ?? $setores->pluck('id')->toArray());
 

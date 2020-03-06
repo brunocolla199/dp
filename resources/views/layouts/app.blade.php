@@ -146,11 +146,9 @@
                             </ul>
                             <ul class="navbar-nav my-lg-0">          
                                 
-                                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="{{ route('documentacao.relatorio_estatistico') }}"> <i class="mdi mdi-file-chart"></i></a>
-                                    </li>
-                                @endif
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="{{ route('documentacao.relatorio_estatistico') }}"> <i class="mdi mdi-file-chart"></i></a>
+                                </li>
 
                                 <!-- ============================================================== -->
                                 <!-- Language -->
