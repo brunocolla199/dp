@@ -10,6 +10,8 @@
 		<input type="hidden" name="status" id="status" value="padrao_sucesso_dg">
     @elseif (session('padrao_sucesso_pg'))
 		<input type="hidden" name="status" id="status" value="padrao_sucesso_pg">
+    @elseif (session('padrao_sucesso_mseg'))
+		<input type="hidden" name="status" id="status" value="padrao_sucesso_mseg">
     @elseif (session('new_grouping_sucesso'))
 		<input type="hidden" name="status" id="status" value="new_grouping_sucesso">
     @elseif (session('edit_sector_success'))
@@ -34,6 +36,8 @@
                 showToast('Sucesso!', 'O número padrão para geração do código das DIRETRIZES DE GESTÃO foi atualizado.', 'success');
             } else if(status == "padrao_sucesso_pg") {
                 showToast('Sucesso!', 'O número padrão para geração do código dos PROCEDIMENTOS DE GESTÃO foi atualizado.', 'success');
+            } else if(status == "padrao_sucesso_pg") {
+                showToast('Sucesso!', 'O número padrão para geração do código dos MANUAL SEG foi atualizado.', 'success');
             } else if(status == "new_grouping_sucesso") {
                 showToast('Sucesso!', 'Novo agrupamento criado com sucesso.', 'success');
             } else if(status == "edit_sector_success") {
@@ -403,6 +407,22 @@
                                                             </div>
                                                             <div class="col-md-12">
                                                                 {!! Form::text('numeroPadraoPG', $numeroPadraoPG, ['class' => 'form-control input-validation']) !!}
+                                                            </div>
+                                                            <div class="col-md-offset-8 pull-right col-md-4">
+                                                                <button type="submit" class="btn btn-block btn-outline-success mt-2">Salvar</button>
+                                                            </div>
+                                                        </div>
+                                                        {!! Form::close() !!}
+                                                    </div>
+                                                    
+                                                    <div class="col-md-12 mt-5 mb-4">
+                                                        {!! Form::open(['route' => 'configuracoes.save.number-default-mseg', 'class' => 'form-horizontal']) !!}
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 control-label font-bold">
+                                                                {!! Form::label('numeroPadraoMSEG', 'PADRÃO PARA CÓDIGO - MANUAL SEG:') !!}
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                {!! Form::text('numeroPadraoMSEG', $numeroPadraoMSEG, ['class' => 'form-control input-validation']) !!}
                                                             </div>
                                                             <div class="col-md-offset-8 pull-right col-md-4">
                                                                 <button type="submit" class="btn btn-block btn-outline-success mt-2">Salvar</button>

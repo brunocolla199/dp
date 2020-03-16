@@ -28,7 +28,7 @@ class ConfiguracoesController extends Controller
 
         return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores,
                                             'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'numeroPadraoDG' => $configs[2]->numero_padrao_codigo, 'numeroPadraoPG' => $configs[3]->numero_padrao_codigo, 
-                                            'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
+                                            'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'numeroPadraoMSEG' => $configs[4]->numero_padrao_codigo, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
 
 
@@ -48,7 +48,7 @@ class ConfiguracoesController extends Controller
 
         return view('configuracoes.index', ['usuariosCadastrados' => $usuariosCadastrados, 'setoresEmpresa' => $setoresEmpresa, 'setores' => $setores,
                                             'numeroPadraoParaCodigo' => $configs[0]->numero_padrao_codigo, 'numeroPadraoDG' => $configs[2]->numero_padrao_codigo, 'numeroPadraoPG' => $configs[3]->numero_padrao_codigo, 
-                                            'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
+                                            'adminSetorQualidade' => $configs[1]->admin_setor_qualidade, 'numeroPadraoMSEG' => $configs[4]->numero_padrao_codigo, 'usuariosSetorQualidade' => $usuariosSetorQualidade ]);
     }
 
     // Salva número padrão para as Instruções de Trabalho
@@ -114,6 +114,29 @@ class ConfiguracoesController extends Controller
         }
 
         return redirect()->route('configuracoes')->with(['padrao_sucesso_pg' => 'valor']);
+    }
+
+    // Salva número padrão para os MANUAL SEG
+    public function saveNumberDefaultMSEG(Request $request) {
+        $c = "0";
+
+        if( strlen($request->numeroPadraoMSEG) < 4 ) {
+            if( strlen($request->numeroPadraoMSEG) == 1 ) $c = "0";
+            else if( strlen($request->numeroPadraoMSEG) == 2)  $c = "00";
+            else $c = "000";
+        } else {
+            $c = "000.";
+        }
+        
+        try {
+            $config = Configuracao::find(5);
+            $config->numero_padrao_codigo = $c;
+            $config->save();
+        } catch (\Exception $th) {
+            //throw $th;
+        }
+
+        return redirect()->route('configuracoes')->with(['padrao_sucesso_mseg' => 'valor']);
     }
 
 

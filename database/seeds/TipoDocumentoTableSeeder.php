@@ -31,5 +31,10 @@ class TipoDocumentoTableSeeder extends Seeder
         $tp_doc4->nome_tipo  = "Formulários";
         $tp_doc4->sigla = "FR";
         $tp_doc4->save();
+
+        $tp_doc5        = new TipoDocumento();
+        $tp_doc5->nome_tipo  = "Manual SEG";
+        $tp_doc5->sigla = "MSEG";
+        $tp_doc5->save();
     }
 }
