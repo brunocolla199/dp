@@ -20,6 +20,12 @@
                         <li class="breadcrumb-item active">Visualização de Documento</li>
                     </ol>
                 </div>
+                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  &&  $canExclude)
+                    <div class="col-3">
+                        <button class="btn btn-lg btn-danger" type="button" data-toggle="modal" data-target="#excluirDoc" aria-expanded="false" aria-controls="excluirDoc">Excluir</button>
+                    </div>
+                @endif
+                
                 <div class="col-3">
                     <button class="btn btn-lg btn-info" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Ver Linha do Tempo</button>
                 </div>
@@ -33,9 +39,8 @@
             
             
             <!-- Start Page Content -->
-            <div class="row">
+            <div class="row">   
                 
-
                 @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE   &&  $em_revisao  )    
                     
                     <!-- Card "Documento em Revisão" -->
@@ -500,6 +505,30 @@
                 <!-- /.modal-dialog -->
             </div>
             <!-- /.modal justificativa reprovação do documento -->
+
+            <div class="modal fade" id="excluirDoc" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Deseja excluir o documento?</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        {{ Form::open(['route' => 'documentacao.delete', 'method' => 'POST']) }}
+                        
+                            {{ Form::hidden('documento_id', $document_id, ['id' => 'document_id']) }}
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Não</button>
+                                <button class="btn btn-danger waves-effect">Sim, excluir!</button>
+                            </div>
+
+                        {!! Form::close() !!}
+
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
 
             <!-- modal para salvar observação no documento -->
             <div class="modal fade" id="modal-save-obs" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">

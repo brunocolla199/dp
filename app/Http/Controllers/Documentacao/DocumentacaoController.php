@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\{SendEmailsJob, SendEmailComAnexoJob};
 use App\Http\Requests\{DadosNovoDocumentoRequest, UploadDocumentRequest};
 use Illuminate\Support\Facades\{Auth, DB, File, Input, Log, Mail, Storage, View};
-use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao, RegistroImpressoes, DocumentoObservacao };
+use App\{HistoricoDocumento, AprovadorSetor, AreaInteresseDocumento, Configuracao, DadosDocumento, Documento, DocumentoFormulario, Formulario, GrupoTreinamentoDocumento, GrupoDivulgacaoDocumento, ListaPresenca, Setor, TipoDocumento, User, UsuarioExtra, Workflow, CopiaControlada, Notificacao, RegistroImpressoes, DocumentoObservacao, Anexo };
 use App\Classes\Helpers;
 use IRebega\DocxReplacer\Docx;
 use PhpOffice\PhpWord\{PhpWord, TemplateProcessor, Element\TextRun};
@@ -25,7 +25,7 @@ class DocumentacaoController extends Controller
     public function index()
     {
         // Valores 'comuns' necessários
-        $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
+        $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orWhere('id', '=', '5')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
@@ -106,7 +106,7 @@ class DocumentacaoController extends Controller
     {
 
         // Valores 'comuns' necessários
-        $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
+        $tipoDocumentos    = TipoDocumento::where('id', '<=', '3')->orWhere('id', '=', '5')->orderBy('nome_tipo')->get()->pluck('nome_tipo', 'id');
         $setores           = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $setorUsuarioAtual = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)->where('id', '=', Auth::user()->setor_id)->orderBy('nome')->get()->pluck('nome', 'id')->toArray();
         $formularios       = Formulario::all()->pluck('nome', 'id');
@@ -566,13 +566,36 @@ class DocumentacaoController extends Controller
         $docPath                  = $storagePath . $nomeDocumentoComExtensao;
         $documento->docData       = "";
     
-        return view('documentacao.view-document', array(
-            'nome'=>explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0], 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento[0]->updated_at, 'docPath'=>$docPath, 'document_id'=>$document_id, 
-            'codigo'=>$documento[0]->codigo, 'docData'=>$documento->docData, 'resp'=>false, 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
-            'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento[0]->extensao, 'filePath'=>$filePath, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
-            'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'em_revisao' => $dadosDoc[0]->em_revisao, 'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao, 
-            'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc, 'documentoEhEditavel'=>$documentoEhEditavel, 'possuiCopiaControlada' => $dadosDoc[0]->copia_controlada, 
-            'idSetorDoc' => $dadosDoc[0]->setor_id ));
+        return view(
+            'documentacao.view-document',
+            array(
+                'nome' => explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento[0]->nome)[0],
+                'tipo_doc' => $tipoDocumento[0]->sigla, 'doc_date' => $documento[0]->updated_at,
+                'docPath' => $docPath, 'document_id' => $document_id,
+                'codigo' => $documento[0]->codigo,
+                'docData' => $documento->docData,
+                'resp' => false,
+                'etapa_doc' => $workflowDoc[0]->etapa_num,
+                'elaborador_id' => $dadosDoc[0]->elaborador_id,
+                'aprovador_id' => $dadosDoc[0]->aprovador_id,
+                'justificativa' => $workflowDoc[0]->justificativa,
+                'extensao' => $documento[0]->extensao,
+                'filePath' => $filePath,
+                'finalizado' => $dadosDoc[0]->finalizado,
+                'necessita_revisao' => $dadosDoc[0]->necessita_revisao,
+                'id_usuario_solicitante' => $dadosDoc[0]->id_usuario_solicitante,
+                'justificativa_rejeicao_revisao' => $dadosDoc[0]->justificativa_rejeicao_revisao,
+                'em_revisao' => $dadosDoc[0]->em_revisao,
+                'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao,
+                'validadeDoc' => $dadosDoc[0]->validade,
+                'formularios' => $formularios,
+                'formsDoc' => $formsDoc,
+                'documentoEhEditavel' => $documentoEhEditavel,
+                'possuiCopiaControlada' => $dadosDoc[0]->copia_controlada,
+                'idSetorDoc' => $dadosDoc[0]->setor_id,
+                'canExclude' => $this->checkDocExclusion($document_id)
+            )
+        );
     }
 
     
@@ -2395,4 +2418,65 @@ class DocumentacaoController extends Controller
             return false;
         }
     }
+
+
+    private function checkDocExclusion($_idDocumento)
+    {
+        $documento = DadosDocumento::where('documento_id', '=', $_idDocumento)->first();
+        return $documento->finalizado == false && $documento->revisao == "00";
+    }
+
+
+    public function delete(Request $_request)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $documentoId = $_request->documento_id;
+
+            $documento = Documento::find($documentoId);
+
+            $anexos = Anexo::where('documento_id', $documentoId)->get();
+
+            Anexo::where('documento_id', $documentoId)->delete();
+            Workflow::where('documento_id', $documentoId)->delete();
+            Notificacao::where('documento_id', $documentoId)->delete();
+            DadosDocumento::where('documento_id', $documentoId)->delete();
+            CopiaControlada::where('documento_id', $documentoId)->delete();
+            HistoricoDocumento::where('documento_id', $documentoId)->delete();
+            RegistroImpressoes::where('documento_id', $documentoId)->delete();
+            DocumentoFormulario::where('documento_id', $documentoId)->delete();
+            DocumentoObservacao::where('documento_id', $documentoId)->delete();
+            AreaInteresseDocumento::where('documento_id', $documentoId)->delete();
+            GrupoDivulgacaoDocumento::where('documento_id', $documentoId)->delete();
+            GrupoTreinamentoDocumento::where('documento_id', $documentoId)->delete();
+            
+            Documento::where('id', $documentoId)->delete();
+
+            foreach ($anexos as $key => $anexo) {
+                if (Storage::disk('speed_office')->exists('anexos/' . $anexo->hash . "." . $anexo->extensao)) {
+                    if (!Storage::disk('speed_office')->delete('anexos/' . $anexo->hash . "." . $anexo->extensao)) {
+                        DB::rollBack();
+                        return redirect()->route('documentacao')->with('delete_document_error', 'message');
+                    }
+                }
+            }
+            
+            if (Storage::disk('speed_office')->exists($documento->nome . "." . $documento->extensao)) {
+                if (!Storage::disk('speed_office')->delete($documento->nome . "." . $documento->extensao)) {
+                    DB::rollBack();
+                    return redirect()->route('documentacao')->with('delete_document_error', 'message');
+                }
+            }
+
+            DB::commit();
+           
+            return redirect()->route('documentacao')->with('delete_document_success', 'message');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            dd($th);
+            return redirect()->route('documentacao')->with('delete_document_error', 'message');
+        }
+    }
 }
+  

@@ -34,6 +34,10 @@
 		<input type="hidden" name="status" id="status" value="update_info_success">
     @elseif (session('error_update_doc'))
 		<input type="hidden" name="status" id="status" value="error_update_doc">
+    @elseif (session('delete_document_success'))
+		<input type="hidden" name="status" id="status" value="delete_document_success">
+    @elseif (session('delete_document_error'))
+		<input type="hidden" name="status" id="status" value="delete_document_error">
     @endif
 
     <script>
@@ -66,6 +70,10 @@
                 showToast('Sucesso!', 'As informações do documento foram atualizadas com sucesso!', 'success');
             } else if(status == "error_update_doc") {
                 showToast('Falhou!', 'As informações do documento não foram atualizadas!', 'error');
+            } else if(status == "delete_document_success") {
+                showToast('Sucesso!', 'O documento foi deletado!', 'success');
+            } else if(status == "delete_document_error") {
+                showToast('Falhou!', 'O documento não foi deletado!', 'error');
             }
         });
     </script>
