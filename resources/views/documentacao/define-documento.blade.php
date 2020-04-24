@@ -317,7 +317,7 @@
                                             <h4 class="card-title"> Upload de anexo </h4>
                                             {!! Form::open(['route' => 'ajax.anexos.save', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'id' => 'form-save-attachment']) !!}
                                                 <label for="input-file-now">Por favor, selecione o arquivo que você deseja anexar ao documento atual.</label>
-                                                {!! Form::file('anexo_escolhido[]', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'multiple' => 'multiple', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls']) !!}
+                                                {!! Form::file('anexo_escolhido[]', ['class' => 'dropify', 'id' => 'anexo_escolhido', 'multiple' => 'multiple', 'data-allowed-file-extensions'=>'pdf doc docx xlsx xls png jpg jpeg tif']) !!}
 
                                                 <div class="col-md-12 mt-3">
                                                     <div class="col-md-9 pull-left">
@@ -547,14 +547,23 @@
                     ajaxMethod('POST', " {{ URL::route('ajax.anexos.getAnexos') }} ", obj).then(function(result) {
                         $("#attachment-table-body").empty();
                         var data = result.response;
-                        
                         data.forEach(function(key) {
+                            let arrayImag = ["png", "jpg", "jpeg", "tif", "gif"];
                             var event = new Date(key.created_at);
                             var year = event.getFullYear(), month = event.getMonth()+1, date1 = event.getDate(), hour = event.getHours(), minutes = event.getMinutes();
                             var dateF = hour +":"+ minutes +"  "+ date1 +"/"+ month +"/" + year;
 
+                            console.log(key);
                             var tr = '<tr>';
-                            tr += '<td class="text-nowrap text-center"><a href="{{ asset("plugins/onlyoffice-php/doceditor.php?type=embedded&folder=anexos&fileID=") }}'+key.encodeFilePath+'" target="_blank">'+ key.nome +'</a></td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
+                            tr += '<td class="text-nowrap text-center">';
+                            
+                            if (arrayImag.indexOf(key.extensao) >= 0) {
+                                tr += '<a href="{{ asset("plugins/onlyoffice-php/Storage/anexos")}}/' + key.hash + '.' + key.extensao + '" target="_blank">'+ key.nome +'</a>';
+                            } else {
+                                tr += '<a href="{{ asset("plugins/onlyoffice-php/doceditor.php?p=1&folder=anexos&fileID=") }}'+key.encodeFilePath+' " target="_blank">'+ key.nome +'</a>';
+                            }
+
+                            tr += '</td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
                             tr += '</tr>';
                             $("#attachment-table-body").append(tr);
                         });
