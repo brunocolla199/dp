@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
 
             $hojeMaisUmMes = Carbon::now()->addMonth()->format('Y-m-d');
             $documentosParaVencer = DB::table('documento')->join('dados_documento', 'documento_id', '=', 'documento.id')->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id' )
-                                        ->where('dados_documento.validade', '=', $hojeMaisUmMes)->where('dados_documento.finalizado', '=', true)
+                                        ->where('dados_documento.validade', '=', $hojeMaisUmMes)->where('dados_documento.finalizado', '=', true)->where('dados_documento.obsoleto', false)
                                         ->select('documento.id', 'documento.codigo', 'documento.nome', 'dados_documento.validade', 'dados_documento.finalizado', 'dados_documento.setor_id', 'tipo_documento.nome_tipo')->get();
             
             

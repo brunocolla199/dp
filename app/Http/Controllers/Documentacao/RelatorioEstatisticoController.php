@@ -92,7 +92,7 @@ class RelatorioEstatisticoController extends Controller
                 'identifier' => str_replace(' ', '_', $sectorName),
             );
         });
-    
+
         return view('documentacao.view-statical-report', [
             'tipoDocumentos' => $this->docTypes,
             'periodo' => $request->daterange,
@@ -122,6 +122,7 @@ class RelatorioEstatisticoController extends Controller
                                     ->join('setor', 'setor.id', '=', 'dados_documento.setor_id')
                                     ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome', 'setor.sigla AS sSigla')
                                     ->whereIn('setor.id', $_sectors)
+                                    ->where('dados_documento.obsoleto', false)
                                     ->orderBy('setor.nome')->get();
         } else {
             $documents = Documento::join('dados_documento', 'dados_documento.documento_id', '=', 'documento.id')
@@ -129,6 +130,7 @@ class RelatorioEstatisticoController extends Controller
                                     ->where('documento.tipo_documento_id', $_docTypeId)
                                     ->select('documento.id', 'documento.nome', 'documento.codigo', 'dados_documento.validade', 'dados_documento.revisao', 'setor.nome AS sNome', 'setor.sigla AS sSigla')
                                     ->whereIn('setor.id', $_sectors)
+                                    ->where('dados_documento.obsoleto', false)
                                     ->orderBy('setor.nome')->get();
         }
                             
