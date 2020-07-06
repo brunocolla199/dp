@@ -953,7 +953,7 @@
             var data = result.response;
             
             data.forEach(function(key) {
-                let arrayImag = ["png", "jpg", "jpeg", "tif", "gif"];
+                let arrayImag = ["png", "jpg", "jpeg", "tif", "gif", 'pdf'];
                 var event = new Date(key.created_at);
                 var year = event.getFullYear(), month = event.getMonth()+1, date1 = event.getDate(), hour = event.getHours(), minutes = event.getMinutes();
                 var dateF = hour +":"+ minutes +"  "+ date1 +"/"+ month +"/" + year;
@@ -965,7 +965,7 @@
                 if (arrayImag.indexOf(key.extensao) >= 0) {
                     tr += '<a href="{{ asset("plugins/onlyoffice-php/Storage/anexos")}}/' + key.hash + '.' + key.extensao + '" target="_blank">'+ key.nome +'</a>';
                 } else {
-                    tr += '<a href="{{ asset("plugins/onlyoffice-php/doceditor.php?p=1&folder=anexos&fileID=") }}'+key.encodeFilePath+' " target="_blank">'+ key.nome +'</a>';
+                    tr += '<a href="{{ asset("plugins/onlyoffice-php/doceditor.php?p=1&d=1&folder=anexos&fileID=") }}'+key.encodeFilePath+' " target="_blank">'+ key.nome +'</a>';
                 }
 
                 tr += '</td><td class="text-nowrap text-center">'+ dateF +'</td><td class="text-nowrap text-center"><button type="button" id="btn-delete-attachment-modal" class="btn btn-rounded btn-danger" data-anexo-id="'+ key.id +'"> <i class="fa fa-close"></i> </button></td>'; 
