@@ -643,15 +643,39 @@ class DocumentacaoController extends Controller
                 
             $docData = trim(json_encode($request->docData), '"');
             
-            return view('documentacao.view-document', array(
-                'nome'=>explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0], 'tipo_doc'=>$tipoDocumento[0]->sigla, 'doc_date'=>$documento->updated_at, 'docPath'=>$documento->nome.".".$documento->extensao, 'document_id'=>$document_id, 
-                'codigo'=>$documento->codigo, 'docData'=>$docData, 'resp'=>['status'=>'success', 'msg'=>'Documento Atualizado!', 'title'=>'Sucesso!'], 'etapa_doc'=>$workflowDoc[0]->etapa_num, 'elaborador_id'=>$dadosDoc[0]->elaborador_id, 
-                'justificativa'=>$workflowDoc[0]->justificativa, 'extensao'=>$documento->extensao, 'finalizado'=>$dadosDoc[0]->finalizado, 'necessita_revisao'=>$dadosDoc[0]->necessita_revisao, 'id_usuario_solicitante'=>$dadosDoc[0]->id_usuario_solicitante, 
-                'justificativa_rejeicao_revisao'=>$dadosDoc[0]->justificativa_rejeicao_revisao, 'em_revisao' => $dadosDoc[0]->em_revisao, 'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao, 
-                'validadeDoc' => $dadosDoc[0]->validade, 'formularios'=>$formularios, 'formsDoc'=>$formsDoc, 'documentoEhEditavel'=>true, 'possuiCopiaControlada' => $dadosDoc[0]->copia_controlada, 
-                'idSetorDoc' => $dadosDoc[0]->setor_id ));
+            return view(
+                'documentacao.view-document',
+                array(
+                    'nome' => explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $documento->nome)[0],
+                    'tipo_doc' => $tipoDocumento[0]->sigla,
+                    'doc_date' => $documento->updated_at,
+                    'docPath' => $documento->nome . "." . $documento->extensao,
+                    'document_id' => $document_id,
+                    'codigo' => $documento->codigo,
+                    'docData' => $docData,
+                    'resp' => ['status' => 'success',
+                    'msg' => 'Documento Atualizado!',
+                    'title' => 'Sucesso!'],
+                    'etapa_doc' => $workflowDoc[0]->etapa_num,
+                    'elaborador_id' => $dadosDoc[0]->elaborador_id,
+                    'justificativa' => $workflowDoc[0]->justificativa,
+                    'extensao' => $documento->extensao,
+                    'finalizado' => $dadosDoc[0]->finalizado,
+                    'necessita_revisao' => $dadosDoc[0]->necessita_revisao,
+                    'id_usuario_solicitante' => $dadosDoc[0]->id_usuario_solicitante,
+                    'justificativa_rejeicao_revisao' => $dadosDoc[0]->justificativa_rejeicao_revisao,
+                    'em_revisao' => $dadosDoc[0]->em_revisao,
+                    'justificativa_cancelar_revisao' => $dadosDoc[0]->justificativa_cancelar_revisao,
+                    'validadeDoc' => $dadosDoc[0]->validade,
+                    'formularios' => $formularios,
+                    'formsDoc' => $formsDoc,
+                    'documentoEhEditavel' => true,
+                    'possuiCopiaControlada' => $dadosDoc[0]->copia_controlada,
+                    'idSetorDoc' => $dadosDoc[0]->setor_id,
+                    'canExclude' => $this->checkDocExclusion($document_id)
+                )
+            );
         }
-
     }
 
     public function makeDocumentPdfFromName(Request $request){       
