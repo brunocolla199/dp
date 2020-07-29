@@ -173,7 +173,7 @@
                                                         {{ \Illuminate\Support\Str::limit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docExpired->nome)[0], 50) }}
                                                     </li>
                                                     @empty
-                                                    <h6 class="text-center">Não existe nenhum documento vencido no setor
+                                                    <h6 class="text-center">Não existe nenhum documento pendente de revisão no setor
                                                         {{ $sector['sectorName'] }}!</h6>
                                                     @endforelse
                                                 </ul>
@@ -183,7 +183,7 @@
                                 </div>
                             </div>
                             @empty
-                            <h5 class="text-center">Não existe nenhum documento vencido ou revisado!</h5>
+                            <h5 class="text-center">Não existe nenhum pendente de revisão ou revisado!</h5>
                             @endforelse
                         </div>
 

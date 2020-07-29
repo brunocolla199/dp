@@ -274,22 +274,17 @@
                                                                             </tr>
                                                                         @endforeach
                                                                     @endif
-
-                                                                    
                                                                 </tbody>
-
                                                             </table>
-                                                         
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
                                             @endforeach
                                         </div>
                                     </div>
                                 @empty
-                                    <h5 class="text-center">Não existe nenhum documento vencido ou revisado!</h5>
+                                    <h5 class="text-center">Não existe nenhum pendente de revisão ou revisado!</h5>
                                 @endforelse
                             </div>
                         </div>
