@@ -20,10 +20,14 @@
 		<input type="hidden" name="status" id="status" value="import_list_success">
     @elseif (session('start_review_success'))
 		<input type="hidden" name="status" id="status" value="start_review_success">
+    @elseif (session('start_short_review_success'))
+		<input type="hidden" name="status" id="status" value="start_short_review_success">
     @elseif (session('document_name_already_exists'))
 		<input type="hidden" name="status" id="status" value="document_name_already_exists">
     @elseif (session('cancel_review_success'))
 		<input type="hidden" name="status" id="status" value="cancel_review_success">
+    @elseif (session('cancel_short_review_success'))
+		<input type="hidden" name="status" id="status" value="cancel_short_review_success">
     @elseif (session('make_obsolete_doc'))
 		<input type="hidden" name="status" id="status" value="make_obsolete_doc">
     @elseif (session('make_active_doc'))
@@ -56,10 +60,14 @@
                 showToast('Sucesso!', 'A lista de presença foi salva.', 'success');
             } else if(status == "start_review_success") {
                 showToast('Sucesso!', 'A revisão do documento foi iniciada.', 'success');
+            } else if(status == "start_short_review_success") {
+                showToast('Sucesso!', 'A revisão curta do documento foi iniciada.', 'success');
             } else if(status == "document_name_already_exists") {
                 showToast('Nome já existe!', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!', 'warning');
             } else if(status == "cancel_review_success") {
                 showToast('Sucesso!', 'A revisão do documento foi cancelada com sucesso.', 'success');
+            } else if(status == "cancel_short_review_success") {
+                showToast('Sucesso!', 'A revisão curta do documento foi cancelada com sucesso.', 'success');
             } else if(status == "make_obsolete_doc") {
                 showToast('Sucesso!', 'O documento foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
             } else if(status == "fail_active_doc") {
@@ -465,7 +473,6 @@
                                                                 <th class="text-center">Título do Documento</th>
                                                                 <th class="text-center">Última Revisão</th>
                                                                 <th class="text-center text-nowrap ">Revisão</th>
-                                                                
                                                                 <th class="text-center">Status</th>
                                                                 <th class="text-center">Nível Acesso</th>
                                                                 {{-- <th class="text-center">Validade</th> --}}
@@ -502,15 +509,13 @@
                                                                         <td class="text-center">{{ ($doc->data_revisao) ?  date("d/m/Y H:i:s", strtotime($doc->data_revisao)) :  '-' }}</td>
 
                                                                         <td class="text-center text-nowrap"> {{ $doc->revisao }} </td>
-                                                                        
-                                                                        
 
                                                                         <td class="text-center"><p class="text-muted font-weight-bold {{ ($doc->etapa == 'Finalizado') ? ' text-success' : '' }} "> {{ $doc->etapa }} </p></td>
 
                                                                         <td class="text-center">{{ $doc->nivel_acesso }}</td>
 
-{{--                                                                         <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td>
- --}}                                                                    </tr>
+                                                                        {{-- <td class="text-center">{{ date("d/m/Y", strtotime($doc->validade)) }}</td> --}}
+                                                                    </tr>
                                                                 @endforeach
                                                             @endif
 
@@ -530,6 +535,8 @@
 
                                                                             @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $docF->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
                                                                                 <a href="javascript:void(0)" class="btn-open-confirm-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
+																				
+																				<a href="javascript:void(0)" class="btn-open-confirm-short-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" style="color: brown !important" data-toggle="tooltip" data-original-title="Iniciar Revisão Curta"></i> </a>
                                                                             @endif
 
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
@@ -623,12 +630,12 @@
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-body"> 
-                            Deseja iniciar uma revisão para este documento? 
+                            <label id="label-revisao-modal"></label>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Não</button>
 
-                            {{ Form::open(['route' => 'documentacao.start-review', 'method' => 'POST']) }}
+                            {{ Form::open(['route' => 'documentacao.start-review', 'method' => 'POST', 'id' => "form_review"]) }}
                                 {{ Form::hidden('document_id', '', ['id' => 'document_id_request_review']) }}
                                 <button type="submit" class="btn btn-success waves-effect"> Sim </button>
                             {!! Form::close() !!}
@@ -703,7 +710,22 @@
                     $(".btn-open-confirm-review").click(function(){
                         var id = $(this).data('id');
                         $("#document_id_request_review").val(id);
+                        $("#form_review").attr("action", "{{ route('documentacao.start-review') }}");
                         
+                        $("#label-revisao-modal").text('Deseja iniciar uma revisão para este documento?');
+                        $("#iniciar-revisao-modal").modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                    });
+
+                    $(".btn-open-confirm-short-review").click(function(){
+                        var id = $(this).data('id');
+                        $("#document_id_request_review").val(id);
+                        
+                        $("#label-revisao-modal").text('Deseja iniciar uma revisão curta para este documento?');
+						$("#form_review").attr("action", "{{ route('documentacao.start-short-review') }}");
+
                         $("#iniciar-revisao-modal").modal({
                             backdrop: 'static',
                             keyboard: false

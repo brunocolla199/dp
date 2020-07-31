@@ -41,9 +41,10 @@
             <!-- Start Page Content -->
             <div class="row">   
                 
-                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE   &&  $em_revisao  )    
+                @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE && $em_revisao)    
                     
                     <!-- Card "Documento em Revisão" -->
+                    
                     <div class="col-md-6">
                         <div class="card card-outline-info">
                             <div class="card-header">
@@ -63,26 +64,28 @@
                     </div>
 
                     <!-- Card "Upload de Documento" -->
-                    <div class="col-md-6">
-                        <div class="card card-outline-info">
-                            <div class="card-header">
-                                <h4 class="m-b-0 text-white">Substituição de documento  </h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <p class="card-text">Você pode realizar a substituição do documento atual fazendo <i>upload</i> de um <b>.docx</b> ou <b>.xlsx (o nome será mantido)</b></p>
+                    @if (!$documento->dados->revisao_curta)
+                        <div class="col-md-6">
+                            <div class="card card-outline-info">
+                                <div class="card-header">
+                                    <h4 class="m-b-0 text-white">Substituição de documento  </h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <p class="card-text">Você pode realizar a substituição do documento atual fazendo <i>upload</i> de um <b>.docx</b> ou <b>.xlsx (o nome será mantido)</b></p>
 
-                                    {!! Form::open(['route' => 'documentacao.replace-document', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'style' => 'width: 100%']) !!}
-                                        {!! Form::hidden('document_id', $document_id) !!}
+                                        {!! Form::open(['route' => 'documentacao.replace-document', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'style' => 'width: 100%']) !!}
+                                            {!! Form::hidden('document_id', $document_id) !!}
 
-                                        <input type="file" name="new_document" class="dropify m-t-10" data-allowed-file-extensions='["docx", "xlsx"]' required/>
-                                        <button type="submit" class="btn btn-block btn-success m-t-10">Salvar</button>
-                                    {!! Form::close() !!}
+                                            <input type="file" name="new_document" class="dropify m-t-10" data-allowed-file-extensions='["docx", "xlsx"]' required/>
+                                            <button type="submit" class="btn btn-block btn-success m-t-10">Salvar</button>
+                                        {!! Form::close() !!}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
+                        
+                    @endif
                 @endif
                 
                 
@@ -250,10 +253,25 @@
                                 </div>
                             </div>
 
-                        @elseif( $etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM )
+                        @elseif( ($etapa_doc >= Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $etapa_doc <= Constants::$ETAPA_WORKFLOW_APROVADOR_NUM) || $etapa_doc == Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM_SHORT)
 
+                            @if ($documento->dados->revisao_curta)
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row text-center">
+                                            <div class="col-md-5 align-middle">    
+                                                {{ Form::open(['route' => 'documentacao.short-approval-document', 'method' => 'POST']) }}
+                                                    {{ Form::hidden('documento_id', $document_id) }}
+                                                    {{ Form::hidden('etapa_doc', $etapa_doc) }}
+                                                    {!! Form::button('Aprovar documento <i class="fa fa-send"></i>', ['type' => 'submit', 'class' => 'btn btn-lg btn-success'] )  !!}
+                                                {{ Form::close() }}
+                                            </div>
+                                            <br> <br> <br> <br>
+                                        </div>
+                                    </div>
+                                </div>
                             <!-- Div com os botões de aprovar ou rejeitar -->
-                            @if( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
+                            @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM && $elaborador_id == Auth::user()->id) 
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="row text-center">
@@ -294,68 +312,70 @@
                                     </div>
                                 </div>
                             @endif
+                            
+                            @if (!$documento->dados->revisao_curta)
+                                <!-- Campos do documento e o editor -->
+                                {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
+                                    {{ csrf_field() }}
 
-                            <!-- Campos do documento e o editor -->
-                            {!! Form::open(['route' => 'documentacao.save-edited-document', 'method' => 'POST', 'id' => 'form-edit-document', 'enctype' => 'multipart/form-data']) !!}
-                                {{ csrf_field() }}
-
-                                {!! Form::hidden('document_id', $document_id) !!}
-                                <div class="col-md-12">
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="col-md-12 control-label font-bold">
-                                                    {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
-                                                </div>
-                                                <div class="col-md-12">
-                                                    {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control ', 'readonly']) !!}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="col-md-12 control-label font-bold">
-                                                    {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
-                                                </div>
-                                                <div class="col-md-12">
-                                                    {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
-                                                </div>
-                                            </div>
-                                        </div> 
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="col-md-12 control-label font-bold" style="margin-bottom:10px;">
-                                                    FORMULÁRIOS: 
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos">
-                                                        @foreach($formularios as $key => $form)
-                                                            <option value="{{ $key }}" >{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form)[0] }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 small">
-                                            <div class="form-group">
-                                                <div class="control-label font-bold text-uppercase text-center">
-                                                    Pré-visualização de Documento<br>
-                                                    <div class="text-center">   
-                                                        <br>
-                                                        <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&action=view' }}" class="btn btn-success"  target="_blank">Visualizar </a>
-
-                                                        @if ( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  ||  (Auth::user()->setor_id == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO && in_array($idSetorDoc, Constants::$SETORES_QUE_SET_TEM_ACESSO)) )
-                                                            <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-success m-l-10"  target="_blank">Download </a>
-                                                        @endif
+                                    {!! Form::hidden('document_id', $document_id) !!}
+                                    <div class="col-md-12">
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold">
+                                                        {!! Form::label('tituloDocumento', 'TÍTULO DO DOCUMENTO:') !!}
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        {!! Form::text('tituloDocumento', $nome, ['class' => 'form-control ', 'readonly']) !!}
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div> 
-                                    </div>
-                                </div>
 
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold">
+                                                        {!! Form::label('codigoDocumento', 'CÓDIGO DO DOCUMENTO:') !!}
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        {!! Form::text('codigoDocumento', $codigo, ['class' => 'form-control']) !!}
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 control-label font-bold" style="margin-bottom:10px;">
+                                                        FORMULÁRIOS: 
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <select multiple name="formulariosAtreladosDocs[]" data-forms="{{ $formsDoc }}" class="form-control select2-vinculos">
+                                                            @foreach($formularios as $key => $form)
+                                                                <option value="{{ $key }}" >{{ explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $form)[0] }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 small">
+                                                <div class="form-group">
+                                                    <div class="control-label font-bold text-uppercase text-center">
+                                                        Pré-visualização de Documento<br>
+                                                        <div class="text-center">   
+                                                            <br>
+                                                            <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&action=view' }}" class="btn btn-success"  target="_blank">Visualizar </a>
+
+                                                            @if ( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE  ||  (Auth::user()->setor_id == Constants::$ID_SETOR_SEGURANCA_DO_TRABALHO && in_array($idSetorDoc, Constants::$SETORES_QUE_SET_TEM_ACESSO)) )
+                                                                <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-success m-l-10"  target="_blank">Download </a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+
+                                @endif
 
                                 <!-- Editor -->
                                 <div class="container iframe_box" >
@@ -386,14 +406,16 @@
                                         <div class="col-md-4">    
                                             <button type="button" class="btn btn-lg btn-rounded btn-primary ml-3" data-toggle="modal" data-target="#modal-view-obs">VISUALIZAR OBSERVAÇÕES</button>
                                         </div>
-                                        <div class="col-md-3 ">
-                                            <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
-                                        </div>
+                                        @if (!$documento->dados->revisao_curta)
+                                            <div class="col-md-3 ">
+                                                <input type="button" id="btn-save-document" class="btn btn-lg btn-success" value="Salvar Alterações">
+                                            </div>
+                                        @endif
                                     </div>
                                 @endif
                             {!! Form::close() !!}
 
-                        @elseif( $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) )
+                        @elseif (($etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM && ($elaborador_id == Auth::user()->id || $aprovador_id == Auth::user()->id ||  Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE)) || $etapa_doc == Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM_SHORT)
 
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
@@ -421,6 +443,7 @@
                                                 <label for="input-file-now">Por favor, anexe a lista de presença do documento <b>{{ $nome }}</b> .</label>
                                                 {!! Form::hidden('documento_id', $document_id) !!}
                                                 {!! Form::hidden('nome_lista', $nome) !!}
+                                                {!! Form::hidden('rev_curta', $documento->dados->revisao_curta) !!}
                                                 
                                                 {!! Form::file('doc_uploaded', ['class' => 'dropify', 'id' => 'input-file-now', 'data-allowed-file-extensions'=>'pdf']) !!}
                                             </div>
@@ -606,8 +629,13 @@
                             <h4 class="modal-title" id="mySmallModalLabel">Cancelar revisão</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         </div>
-                        {{ Form::open(['route' => 'documentacao.cancel-review', 'method' => 'POST']) }}
-                            {{ Form::hidden('documento_id', $document_id) }}
+                        @if ($documento->dados->revisao_curta)
+                            {{ Form::open(['route' => 'documentacao.cancel-short-review', 'method' => 'POST']) }}
+                            <div class="modal-body"> 
+                                Deseja, realmente, cancelar a revisão curta deste documento ?                            
+                            </div>
+                        @else
+                            {{ Form::open(['route' => 'documentacao.cancel-review', 'method' => 'POST']) }}
                             <div class="modal-body"> 
                                 Deseja, realmente, reverter todas alterações realizadas e cancelar a revisão deste documento ?
                                 <div class="row mt-3">
@@ -621,6 +649,9 @@
                                     </div>
                                 </div> 
                             </div>
+                        @endif
+                            {{ Form::hidden('documento_id', $document_id) }}
+         
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secundary waves-effect" data-dismiss="modal">Cancelar</button>
                                 <button type="submit" class="btn btn-danger waves-effect">Rejeitar</button>

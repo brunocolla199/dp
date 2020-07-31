@@ -99,7 +99,7 @@
 
                         {{-- Linha Inicial: TOTALIZADORES --}}
                         <div class="row m-t-20">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
                                         <h4 class="card-title"><span class="font-weight-bold">Revisados entre:</span>
@@ -111,7 +111,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><span class="font-weight-bold">Revisões curtas entre:</span>
+                                            {{ $periodo }} </h4>
+                                        <div class="text-center m-t-40">
+                                            <label style="font-size:75px; color:purple">{{$totalShortRevisados}}</label>
+                                        </div>
+                                        <h6><span class="font-weight-bold">{{ $totalShortRevisados }}</span> é a quantidade de documentos que <span class="font-weight-bold">revisados entre {{ $periodo }}</span>.</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
                                         <h4 class="card-title"><span class="font-weight-bold">Pendentes Revisão</h4>
@@ -149,7 +161,7 @@
                                     role="tabpanel" aria-labelledby="headingOne">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <h5>Revisados</h5>
                                                 <ul class="list-group">
                                                     @forelse ($sector['revised'] as $docRevised)
@@ -164,7 +176,22 @@
                                                     @endforelse
                                                 </ul>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
+                                                <h5>Revisões Curtas</h5>
+                                                <ul class="list-group">
+                                                    @forelse ($sector['shortRevised'] as $docRevised)
+                                                    <li class="list-group-item">
+                                                        <span class="font-weight-bold">{{ $docRevised->codigo }}</span>
+                                                        ({{ count($docRevised->revisions) }}x):
+                                                        {{ \Illuminate\Support\Str::limit(explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $docRevised->nome)[0], 50) }}
+                                                    </li>
+                                                    @empty
+                                                    <h6 class="text-center">Não existe nenhum documento revisado no
+                                                        setor {{ $sector['sectorName'] }}!</h6>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-4">
                                                 <h5>Pendentes Revisão</h5>
                                                 <ul class="list-group">
                                                     @forelse ($sector['expired'] as $docExpired)
@@ -266,13 +293,23 @@
         };
     });
 
+    let markPointShortRevisedValues = [];
+    $.each(chartist.shortRevised, function (i, el) { 
+        markPointShortRevisedValues[i] = {
+            'value': el,
+            'xAxis': i,
+            'yAxis': el + 1,
+            'symbolSize' : 11,
+        };
+    });
+
     // specify chart configuration item and data
     option = {
         tooltip : {
             trigger: 'axis'
         },
         legend: {
-            data: ['Revisados', 'Pendentes'], 
+            data: ['Revisados', 'Revisões Curtas','Pendentes'], 
         },
         toolbox: {
             show: true,
@@ -282,7 +319,7 @@
                 saveAsImage: {show: true, title: "Salvar"}
             }
         },
-        color: ["#26c6da", "#ffbc34"],
+        color: ["#26c6da", "purple", "#ffbc34"],
         calculable: true,
         xAxis: [
             {
@@ -302,6 +339,14 @@
                 data: chartist.revised,
                 markPoint: {
                     data: markPointRevisedValues
+                },
+            },
+            {
+                name:'Revisões Curtas',
+                type:'bar',
+                data: chartist.shortRevised,
+                markPoint: {
+                    data: markPointShortRevisedValues
                 },
             },
             {

@@ -574,6 +574,7 @@ class DocumentacaoController extends Controller
                 'docPath' => $docPath, 'document_id' => $document_id,
                 'codigo' => $documento[0]->codigo,
                 'docData' => $documento->docData,
+                'documento' => $documento[0],
                 'resp' => false,
                 'etapa_doc' => $workflowDoc[0]->etapa_num,
                 'elaborador_id' => $dadosDoc[0]->elaborador_id,
@@ -685,9 +686,66 @@ class DocumentacaoController extends Controller
         exit();
     }
 
-    protected function startReview(Request $request) {        
-        $idDoc = $request->document_id;
+    
+    protected function startShortReview(Request $_request)
+    {
+        $idDoc = $_request->document_id;
+        $documento = Documento::find($_request->document_id);
+        $dadosDoc = DadosDocumento::where('documento_id', '=', $idDoc)->first();
+        $elaborador = User::find($dadosDoc->elaborador_id);
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get();
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
+
         
+        $usuarioSolicitanteRevisao = User::find(Auth::user()->id);
+        
+        $mensagemNotificacao = "O documento " . $documento->codigo . " teve uma revisão curta iniciada.";
+        
+        // NOTIFICAÇÕES
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao($mensagemNotificacao, false, $user->id, $idDoc);
+        }
+        
+        // [E-mail -> (4)]
+        $icon = "info";
+        $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " requer análise.";
+        $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+        $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo documento para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
+
+
+        // HISTÓRICO
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Iniciada revisão curta no documento. Elaborador alterado de " . $elaborador->name . " para " . $usuarioSolicitanteRevisao->name . ".", $idDoc);
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_REVISAO_CURTA, $idDoc);
+        
+
+        // DADOS DO DOCUMENTO
+        $dadosDoc->elaborador_id                  = $usuarioSolicitanteRevisao->id;
+        $dadosDoc->finalizado                     = false;
+        $dadosDoc->observacao                     = Constants::$DESCRICAO_WORKFLOW_EM_REVISAO_CURTA;
+        $dadosDoc->necessita_revisao              = false;
+        $dadosDoc->id_usuario_solicitante         = $usuarioSolicitanteRevisao->id;
+        $dadosDoc->justificativa_rejeicao_revisao = null;
+        $dadosDoc->em_revisao                     = true;
+        $dadosDoc->revisao_curta                  = true;
+        $dadosDoc->save();
+
+        // WORKFLOW
+        $workflow = Workflow::where('documento_id', '=', $idDoc)->first();
+        $workflow->etapa_num = Constants::$ETAPA_WORKFLOW_QUALIDADE_NUM_SHORT;
+        $workflow->etapa     = Constants::$ETAPA_WORKFLOW_QUALIDADE_TEXT_SHORT;
+        $workflow->save();
+    
+        return redirect()->route('documentacao')->with('start_short_review_success', 'message');
+    }
+
+
+    protected function startReview(Request $request)
+    {
+        $idDoc     = $request->document_id;
         $documento = Documento::find($request->document_id);
         $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
         $workflow  = Workflow::where('documento_id', '=', $idDoc)->first();
@@ -698,7 +756,7 @@ class DocumentacaoController extends Controller
 
         // Notificações
         $usuarioSolicitanteRevisao = User::find(Auth::user()->id);
-        $mensagemNotificacao       = "O documento " . $documento->codigo . " teve a revisão " .$revisaoNova. " iniciada.";
+        $mensagemNotificacao       = "O documento " . $documento->codigo . " teve a revisão " . $revisaoNova . " iniciada.";
         $elaborador                = User::find($dadosDoc->elaborador_id);
         $aprovador                 = User::find($dadosDoc->aprovador_id);
 
@@ -740,6 +798,7 @@ class DocumentacaoController extends Controller
         $dadosDoc->revisao                        = $revisaoNova;
         $dadosDoc->justificativa_rejeicao_revisao = null;
         $dadosDoc->em_revisao                     = true;
+        $dadosDoc->revisao_curta                  = false;
         $dadosDoc->save();
 
         // workflow
@@ -758,6 +817,42 @@ class DocumentacaoController extends Controller
 
 
         return redirect()->route('documentacao')->with('start_review_success', 'message');
+    }
+
+
+    protected function cancelShortReview(Request $_request)
+    {
+        $idDoc     = $_request->documento_id;
+        $documento = Documento::find($idDoc);
+        $dadosDoc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
+        $workflow  = Workflow::where('documento_id', '=', $idDoc)->first();
+
+        // DADOS DOCUMENTO
+        $dadosDoc->finalizado = true;
+        $dadosDoc->necessita_revisao = false;
+        $dadosDoc->justificativa_rejeicao_revisao = null;
+        $dadosDoc->em_revisao = false;
+        $dadosDoc->revisao_curta = false;
+        $dadosDoc->save();
+
+        // ISSO EU NAO SEI SE VAI FUNCIONAR PQ É GAMBIARRA DO JOÃO
+        // < Workflow > [Por prevenção, coloca na etapa 5 - pois isso não fará diferença enquanto o documento estiver como 'finalizado']
+        $workflow->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM;
+        $workflow->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT;
+        $workflow->save();
+
+
+        // NOTIFICAÇÕES
+        $mensagemNotificacao = "O documento " . $documento->codigo . " teve a revisão curta cancelada pelo setor Processos.";
+
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao($mensagemNotificacao, false, $user->id, $idDoc);
+        }
+
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_CANCELA_SHORT_REVIEW, $idDoc);
+        
+        return redirect()->route('documentacao')->with('cancel_short_review_success', 'message');
     }
 
 
@@ -1172,11 +1267,68 @@ class DocumentacaoController extends Controller
         return view('documentacao.print-document', compact('document_id', 'documentTitle', 'validity', 'filename', 'mode'));
     }
 
+   
+    protected function shortApprovalDocument(Request $_request)
+    {
+        $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
+
+        $idDoc = $_request->documento_id;
+
+        $documento = Documento::where('id', '=', $idDoc)->get();
+        $workflow_doc = Workflow::where('documento_id', '=', $idDoc)->get();
+        $dados_doc = DadosDocumento::where('documento_id', '=', $idDoc)->get();
+        $tipoDocumento = TipoDocumento::where('id', '=', $documento[0]->tipo_documento_id)->get();
+     
+        $newValidity = Carbon::now()->addYear()->format('Y-m-d');
+        
+        if (is_null($dados_doc[0]->validade_anterior)) $dados_doc[0]->validade_anterior = $dados_doc[0]->validade;
+        if (is_null($dados_doc[0]->data_revisao_anterior)) $dados_doc[0]->data_revisao_anterior = $dados_doc[0]->data_revisao;
+        
+        $dados_doc[0]->validade     = $newValidity;
+        $dados_doc[0]->observacao = "Aprovado pelo Aprovador";
+        $dados_doc[0]->data_revisao = now();
+        $dados_doc[0]->save();
+
+        $workflow_doc[0]->etapa_num = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM_SHORT;
+        $workflow_doc[0]->etapa     = Constants::$ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT_SHORT;
+        $workflow_doc[0]->save();
+
+        $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
+        $elaborador = User::where('id', $dados_doc[0]->elaborador_id)->select('id', 'name', 'username', 'email', 'setor_id')->first();
 
 
-    /*
-    *  WORKFLOW      
-    */
+        // Notificações
+        foreach ($usuariosSetorQualidade as $key => $user) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita lista de presença.", true, $user->id, $idDoc);
+        }
+
+        // [E-mail -> (eu não achei o documento que padroniza de que tipo é, mas é isso ai heuhuehe)]
+        $icon = "info";
+        $contentF1_P1 = "O documento "; $codeF1 = $documento[0]->codigo; $contentF1_P2 = " necessita lista de presença.";
+        $labelF2 = "Tipo do Documento: "; $valueF2 = $tipoDocumento[0]->nome_tipo;
+        $labelF3 = "Enviado por: "; $valueF3 = $responsavelPelaAcao[0]->name; $label2_F3 = ""; $value2_F3 = "";
+
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Necessário lista de presença", $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        
+        // Se o elaborador não é do setor da Qualidade, envia o e-mail e notificação para ele também (Evita duplicidade)
+        if ($elaborador->setor_id != Constants::$ID_SETOR_QUALIDADE) {
+            \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento[0]->codigo . " necessita lista de presença.", true, $dados_doc[0]->elaborador_id, $idDoc);
+            $this->dispatch(new SendEmailsJob($elaborador, "Necessário lista de presença", $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        }
+
+        // Histórico
+        if ($documento[0]->tipo_documento_id == Constants::$ID_TIPO_DOCUMENTO_DIRETRIZES_DE_GESTAO) {
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_DIRETORIA, $idDoc);
+        } else {
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_APROVADO_GERENCIA, $idDoc);
+        }
+
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_AGUARDANDO_LISTA_DE_PRESENCA, $idDoc);
+        
+        return redirect()->route('documentacao')->with('approval_success', 'message');
+    }
+
+
     protected function approvalDocument(Request $request) {
         $responsavelPelaAcao = User::join('setor', 'setor.id', '=', 'users.setor_id')->where('setor.id', '=', Auth::user()->setor_id)->where('users.id', '=', Auth::user()->id)->select('name', 'nome')->get();
         $idDoc = $request->documento_id;
@@ -1477,7 +1629,8 @@ class DocumentacaoController extends Controller
     }
 
 
-    public function salvaListaPresenca(Request $request) {
+    public function salvaListaPresenca(Request $request)
+    {
         /**
          * Novos comportamentos do método:
          *  1. Salva a lista de presença da mesma forma como era feito anteriormente (porém salvando a revisão do documento em que ela foi anexada)
@@ -1492,126 +1645,251 @@ class DocumentacaoController extends Controller
         $documento  = Documento::find($idDoc);
         $dados_doc  = DadosDocumento::where('documento_id', '=', $idDoc)->first();
         $file       = $request->file('doc_uploaded', 'local');
-        $extensao   = $file->getClientOriginalExtension();
-        $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $dados_doc->revisao);
 
-        $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista = User::whereIn('setor_id', [Constants::$ID_SETOR_CAPITAL_HUMANO, Constants::$ID_SETOR_QUALIDADE])->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
-        $usuariosSetorQualidade                            = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-        $usuariosAreaInteresseDocumento                    = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
+        if (!$request->rev_curta) {
+            $extensao   = $file->getClientOriginalExtension();
+            $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $dados_doc->revisao);
 
-
-        // COMPORTAMENTO #1
-        Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
-        $nomeLista = $request->nome_lista .".". $extensao;
-        $pathLista = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix() . "/lists/" . $nomeLista;
-
-        $emailsParaExibir = $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista->reduce(function ($textoAtual, $emailIteracao) {
-            return $textoAtual . $emailIteracao->email . Constants::$SEPARADOR_PARA_CONCATENACOES;
-        }, Constants::$TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS);
-
-        // #1.1
-        $lista                      = new ListaPresenca();
-        $lista->nome                = $request->nome_lista;
-        $lista->extensao            = $extensao;
-        $lista->descricao           = "Lista de Presença anexada";
-        $lista->data                = date('d/m/Y');
-        $lista->documento_id        = $idDoc;
-        $lista->destinatarios_email = $emailsParaExibir;
-        $lista->revisao_documento   = $dados_doc->revisao;
-        $lista->save();
-
-        // #1.2 | [E-mail -> (7)]      
-        $elaborador = User::where('id', '=', $dados_doc->elaborador_id)->select('name')->get();
-        $icon = "info";
-        $contentF1_P1 = "A lista de presença em anexo"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
-        $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
-        $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento->codigo; $label2_F3 = ""; $value2_F3 = "";
-        
-        $this->dispatch(new SendEmailComAnexoJob($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3, $pathLista, $nomeLista, 'application/octet-stream' ));
+            $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista = User::whereIn('setor_id', [Constants::$ID_SETOR_CAPITAL_HUMANO, Constants::$ID_SETOR_QUALIDADE])->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
+            $usuariosSetorQualidade                            = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            $usuariosAreaInteresseDocumento                    = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
 
 
-        // #1.3
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento($emailsParaExibir, $idDoc);
-        
-        // #1.4
-        foreach ($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista as $key => $user) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("Você recebeu um e-mail com a lista de presença do documento " . $documento->codigo . " , que foi divulgado.", false, $user->id, $idDoc);
-        }
+            // COMPORTAMENTO #1
+            Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
+            $nomeLista = $request->nome_lista .".". $extensao;
+            $pathLista = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix() . "/lists/" . $nomeLista;
+
+            $emailsParaExibir = $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista->reduce(function ($textoAtual, $emailIteracao) {
+                return $textoAtual . $emailIteracao->email . Constants::$SEPARADOR_PARA_CONCATENACOES;
+            }, Constants::$TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS);
+
+            // #1.1
+            $lista                      = new ListaPresenca();
+            $lista->nome                = $request->nome_lista;
+            $lista->extensao            = $extensao;
+            $lista->descricao           = "Lista de Presença anexada";
+            $lista->data                = date('d/m/Y');
+            $lista->documento_id        = $idDoc;
+            $lista->destinatarios_email = $emailsParaExibir;
+            $lista->revisao_documento   = $dados_doc->revisao;
+            $lista->save();
+
+            // #1.2 | [E-mail -> (7)]      
+            $elaborador = User::where('id', '=', $dados_doc->elaborador_id)->select('name')->get();
+            $icon = "info";
+            $contentF1_P1 = "A lista de presença em anexo"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
+            $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
+            $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento->codigo; $label2_F3 = ""; $value2_F3 = "";
+            
+            $this->dispatch(new SendEmailComAnexoJob($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3, $pathLista, $nomeLista, 'application/octet-stream' ));
 
 
-        
-        // COMPORTAMENTO #2
-        $dados_doc->observacao             = "Lista de Presença anexada pelo elaborador e documento divulgado";
-        $dados_doc->finalizado             = true;
-        $dados_doc->em_revisao             = false;
-        $dados_doc->id_usuario_solicitante = false;
-        $dados_doc->validade_anterior      = $dados_doc->validade;
-        $dados_doc->data_revisao_anterior  = $dados_doc->data_revisao;
-        $dados_doc->save();
+            // #1.3
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento($emailsParaExibir, $idDoc);
+            
+            // #1.4
+            foreach ($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista as $key => $user) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("Você recebeu um e-mail com a lista de presença do documento " . $documento->codigo . " , que foi divulgado.", false, $user->id, $idDoc);
+            }
 
-        // Notificações
-        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->elaborador_id, $idDoc);
-        
-        if($dados_doc->elaborador_id != $dados_doc->aprovador_id) {
-            \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->aprovador_id, $idDoc);
-        }
 
-        foreach ($usuariosSetorQualidade as $key => $user) {
-            if( $user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id ) \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
-        }
+            
+            // COMPORTAMENTO #2
+            $dados_doc->observacao             = "Lista de Presença anexada pelo elaborador e documento divulgado";
+            $dados_doc->finalizado             = true;
+            $dados_doc->em_revisao             = false;
+            $dados_doc->id_usuario_solicitante = false;
+            $dados_doc->validade_anterior      = $dados_doc->validade;
+            $dados_doc->data_revisao_anterior  = $dados_doc->data_revisao;
+            $dados_doc->save();
 
-        if( count($usuariosAreaInteresseDocumento) > 0  ) {
-            foreach ($usuariosAreaInteresseDocumento as $key => $user) {
-                if( $user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id  &&  $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+            // Notificações
+            \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->elaborador_id, $idDoc);
+            
+            if($dados_doc->elaborador_id != $dados_doc->aprovador_id) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->aprovador_id, $idDoc);
+            }
+
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                if( $user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id ) \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+            }
+
+            if( count($usuariosAreaInteresseDocumento) > 0  ) {
+                foreach ($usuariosAreaInteresseDocumento as $key => $user) {
+                    if( $user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id  &&  $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+                    }
+                }
+            }
+            
+
+            // [E-mail -> (3)]  
+            $elaborador    = User::where('id', '=', $dados_doc->elaborador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            $aprovador     = User::where('id', '=', $dados_doc->aprovador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            $setor         = Setor::where('id', '=', $dados_doc->setor_id)->select('nome')->first();
+            $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get();
+
+            $mergeOne = $usuariosSetorQualidade->merge($elaborador);
+            $mergeTwo = $mergeOne->merge($aprovador);
+            $allUsersInvolved = $mergeTwo->merge($usuariosAreaInteresseDocumento);
+
+            $icon = "success";
+            $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " foi divulgado.";
+            $labelF2 = "Setor do documento: "; $valueF2 = $setor->nome;
+            $labelF3 = "Nível de acesso do documento: "; $valueF3 = $dados_doc->nivel_acesso; $label2_F3 = " / Tipo do documento: "; $value2_F3 = $tipoDocumento[0]->nome_tipo;
+            $this->dispatch(new SendEmailsJob($allUsersInvolved, "Documento divulgado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
+            // Notificação específica para documentos que possuem Cópia Controlada
+            if($dados_doc->copia_controlada) {
+                
+                // [E-mail -> (5)]
+                $icon = "info";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " possui cópia controlada.";
+                $labelF2 = "Este documento teve uma nova"; $valueF2 = " revisão divulgada.";
+                $labelF3 = ""; $valueF3 = "Não esqueça de substituir as cópias!"; $label2_F3 = ""; $value2_F3 = "";
+
+
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", true, $user->id, $idDoc);
+                    $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                }
+
+                $responsaveisPorSubstituirCopias = CopiaControlada::where('documento_id', $idDoc)->get()->pluck('usuario_id')->toArray();
+                foreach ($responsaveisPorSubstituirCopias as $idResponsavel) {
+                    $user = User::find($idResponsavel);
+                    if( $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", false, $user->id, $idDoc);
+                        $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                    }
+                }
+            }
+            
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO, $idDoc);
+        } else {
+            $observacao = "Documento divulgado";
+            $usuariosSetorQualidade                            = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            $usuariosAreaInteresseDocumento                    = User::join('area_interesse_documento', 'area_interesse_documento.usuario_id', '=', 'users.id')->where('area_interesse_documento.documento_id', '=', $idDoc)->select('users.id', 'name', 'username', 'email', 'setor_id')->get();
+            $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista = User::whereIn('setor_id', [Constants::$ID_SETOR_CAPITAL_HUMANO, Constants::$ID_SETOR_QUALIDADE])->where('permissao_aprovar_lista_presenca', '=', true)->select('id', 'email')->get();
+
+            if ($file != "local") {
+                $extensao   = $file->getClientOriginalExtension() ?? "";
+                $request->nome_lista = \App\Classes\Helpers::instance()->escapeFilename($request->nome_lista . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $dados_doc->revisao);
+    
+                // COMPORTAMENTO #1
+                Storage::disk('speed_office')->put('/lists/'.$request->nome_lista . ".".$extensao, file_get_contents($file), 'private');
+                $nomeLista = $request->nome_lista .".". $extensao;
+                $pathLista = Storage::disk('speed_office')->getDriver()->getAdapter()->getPathPrefix() . "/lists/" . $nomeLista;
+    
+                $emailsParaExibir = $usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista->reduce(function ($textoAtual, $emailIteracao) {
+                    return $textoAtual . $emailIteracao->email . Constants::$SEPARADOR_PARA_CONCATENACOES;
+                }, Constants::$TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS);
+    
+                // #1.1
+                $lista                      = new ListaPresenca();
+                $lista->nome                = $request->nome_lista;
+                $lista->extensao            = $extensao;
+                $lista->descricao           = "Lista de Presença anexada";
+                $lista->data                = date('d/m/Y');
+                $lista->documento_id        = $idDoc;
+                $lista->destinatarios_email = $emailsParaExibir;
+                $lista->revisao_documento   = $dados_doc->revisao;
+                $lista->save();
+    
+                // #1.2 | [E-mail -> (7)]      
+                $elaborador = User::where('id', '=', $dados_doc->elaborador_id)->select('name')->get();
+                $icon = "info";
+                $contentF1_P1 = "A lista de presença em anexo"; $codeF1 = ""; $contentF1_P2 = " requer análise.";
+                $labelF2 = "Elaborador do documento: "; $valueF2 = $elaborador[0]->name;
+                $labelF3 = "Lista de presença vinculada ao documento: "; $valueF3 = $documento->codigo; $label2_F3 = ""; $value2_F3 = "";
+                
+                $this->dispatch(new SendEmailComAnexoJob($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista, "Nova lista de presença para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3, $pathLista, $nomeLista, 'application/octet-stream' ));
+    
+    
+                // #1.3
+                \App\Classes\Helpers::instance()->gravaHistoricoDocumento($emailsParaExibir, $idDoc);
+                
+                // #1.4
+                foreach ($usuariosCapitalHumanoAndProcessosComPermissaoParaAprovarLista as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("Você recebeu um e-mail com a lista de presença do documento " . $documento->codigo . " , que foi divulgado.", false, $user->id, $idDoc);
+                }
+
+                $observacao = "Lista de Presença anexada pelo elaborador e documento divulgado";
+            }
+
+            // COMPORTAMENTO #2
+            $dados_doc->observacao             = $observacao;
+            $dados_doc->finalizado             = true;
+            $dados_doc->em_revisao             = false;
+            $dados_doc->revisao_curta          = false;
+            $dados_doc->id_usuario_solicitante = false;
+            $dados_doc->validade_anterior      = $dados_doc->validade;
+            $dados_doc->data_revisao_anterior  = $dados_doc->data_revisao;
+            $dados_doc->save();
+
+            // Notificações
+            \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->elaborador_id, $idDoc);
+            
+            if ($dados_doc->elaborador_id != $dados_doc->aprovador_id) {
+                \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $dados_doc->aprovador_id, $idDoc);
+            }
+
+            foreach ($usuariosSetorQualidade as $key => $user) {
+                if ($user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id ) {
                     \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
                 }
             }
-        }
-        
 
-        // [E-mail -> (3)]  
-        $elaborador    = User::where('id', '=', $dados_doc->elaborador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-        $aprovador     = User::where('id', '=', $dados_doc->aprovador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
-        $setor         = Setor::where('id', '=', $dados_doc->setor_id)->select('nome')->first();
-        $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get();
-
-        $mergeOne = $usuariosSetorQualidade->merge($elaborador);
-        $mergeTwo = $mergeOne->merge($aprovador);
-        $allUsersInvolved = $mergeTwo->merge($usuariosAreaInteresseDocumento);
-
-        $icon = "success";
-        $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " foi divulgado.";
-        $labelF2 = "Setor do documento: "; $valueF2 = $setor->nome;
-        $labelF3 = "Nível de acesso do documento: "; $valueF3 = $dados_doc->nivel_acesso; $label2_F3 = " / Tipo do documento: "; $value2_F3 = $tipoDocumento[0]->nome_tipo;
-        $this->dispatch(new SendEmailsJob($allUsersInvolved, "Documento divulgado",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-
-        // Notificação específica para documentos que possuem Cópia Controlada
-        if($dados_doc->copia_controlada) {
-            
-            // [E-mail -> (5)]
-            $icon = "info";
-            $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " possui cópia controlada.";
-            $labelF2 = "Este documento teve uma nova"; $valueF2 = " revisão divulgada.";
-            $labelF3 = ""; $valueF3 = "Não esqueça de substituir as cópias!"; $label2_F3 = ""; $value2_F3 = "";
-
-
-            foreach ($usuariosSetorQualidade as $key => $user) {
-                \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", true, $user->id, $idDoc);
-                $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
-            }
-
-            $responsaveisPorSubstituirCopias = CopiaControlada::where('documento_id', $idDoc)->get()->pluck('usuario_id')->toArray();
-            foreach ($responsaveisPorSubstituirCopias as $idResponsavel) {
-                $user = User::find($idResponsavel);
-                if( $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
-                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", false, $user->id, $idDoc);
-                    $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+            if (count($usuariosAreaInteresseDocumento) > 0) {
+                foreach ($usuariosAreaInteresseDocumento as $key => $user) {
+                    if ($user->id != $dados_doc->elaborador_id  &&  $user->id != $dados_doc->aprovador_id  &&  $user->setor_id != Constants::$ID_SETOR_QUALIDADE) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O processo de elaboração do documento " . $documento->codigo . " foi divulgado.", false, $user->id, $idDoc);
+                    }
                 }
             }
-        }
 
-        // Histórico
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO, $idDoc);
+            // [E-mail -> (3)]  
+            $elaborador    = User::where('id', '=', $dados_doc->elaborador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            $aprovador     = User::where('id', '=', $dados_doc->aprovador_id)->where('setor_id', '!=', Constants::$ID_SETOR_CAPITAL_HUMANO)->select('id', 'name', 'username', 'email', 'setor_id')->get();
+            $setor         = Setor::where('id', '=', $dados_doc->setor_id)->select('nome')->first();
+            $tipoDocumento = TipoDocumento::where('id', '=', $documento->tipo_documento_id)->get();
+
+            $mergeOne = $usuariosSetorQualidade->merge($elaborador);
+            $mergeTwo = $mergeOne->merge($aprovador);
+            $allUsersInvolved = $mergeTwo->merge($usuariosAreaInteresseDocumento);
+
+            $icon = "success";
+            $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " foi divulgado.";
+            $labelF2 = "Setor do documento: "; $valueF2 = $setor->nome;
+            $labelF3 = "Nível de acesso do documento: "; $valueF3 = $dados_doc->nivel_acesso; $label2_F3 = " / Tipo do documento: "; $value2_F3 = $tipoDocumento[0]->nome_tipo;
+
+            $this->dispatch(new SendEmailsJob($allUsersInvolved, "Documento divulgado", $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+
+            // Notificação específica para documentos que possuem Cópia Controlada
+            if ($dados_doc->copia_controlada) {
+                // [E-mail -> (5)]
+                $icon = "info";
+                $contentF1_P1 = "O documento "; $codeF1 = $documento->codigo; $contentF1_P2 = " possui cópia controlada.";
+                $labelF2 = "Este documento teve uma nova"; $valueF2 = " revisão divulgada.";
+                $labelF3 = ""; $valueF3 = "Não esqueça de substituir as cópias!"; $label2_F3 = ""; $value2_F3 = "";
+
+
+                foreach ($usuariosSetorQualidade as $key => $user) {
+                    \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", true, $user->id, $idDoc);
+                    $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                }
+
+                $responsaveisPorSubstituirCopias = CopiaControlada::where('documento_id', $idDoc)->get()->pluck('usuario_id')->toArray();
+                foreach ($responsaveisPorSubstituirCopias as $idResponsavel) {
+                    $user = User::find($idResponsavel);
+                    if( $user->setor_id != Constants::$ID_SETOR_QUALIDADE ) {
+                        \App\Classes\Helpers::instance()->gravaNotificacao("O documento " . $documento->codigo . " possui cópia controlada e teve uma nova revisão divulgada.", false, $user->id, $idDoc);
+                        $this->dispatch(new SendEmailsJob($user, "Documento com Cópia Controlada - Nova Revisão",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+                    }
+                }
+            }
+            \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO_SHORT, $idDoc);
+        }
 
         return redirect()->route('documentacao')->with('import_list_success', 'message');
     }

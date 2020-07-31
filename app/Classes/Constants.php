@@ -72,13 +72,17 @@ class Constants {
     public static $ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM       = 5;
     public static $ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT      = "Upload da Lista de Presença";
     
-
     public static $_DEPRECATED_ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_NUM  = 6;
-    public static $_DEPRECATED_ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT = "Correção da Lista de Presença";
+    public static $_DEPRECATED_ETAPA_WORKFLOW_CORRECAO_DA_LISTA_DE_PRESENCA_TEXT = "Processos";
+    
     public static $_DEPRECATED_ETAPA_WORKFLOW_CAPITAL_HUMANO_NUM                 = 7;
     public static $_DEPRECATED_ETAPA_WORKFLOW_CAPITAL_HUMANO_TEXT                = "Análise da Lista de Presença";
-
-
+    
+    public static $ETAPA_WORKFLOW_QUALIDADE_NUM_SHORT = 8;
+    public static $ETAPA_WORKFLOW_QUALIDADE_TEXT_SHORT = "Em análise pela área de processos / Rev. curta";
+    
+    public static $ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_NUM_SHORT = 9;
+    public static $ETAPA_WORKFLOW_UPLOAD_LISTA_DE_PRESENCA_TEXT_SHORT = "Upload da Lista de Presença Rev. Curta";
 
     // Descrição do Workflow
     public static $DESCRICAO_WORKFLOW_ANALISE_AREA_DE_QUALIDADE             = "Em análise pela área de processos";
@@ -98,8 +102,12 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_EM_TREINAMENTO                        = "Em treinamento";
     
     public static $DESCRICAO_WORKFLOW_EM_REVISAO                            = "Em revisão";
+
+    public static $DESCRICAO_WORKFLOW_EM_REVISAO_CURTA                      = "Em revisão curta";
     
     public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO                   = "Documento divulgado";
+
+    public static $DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO_SHORT             = "Documento com revisão curta divulgado";
     
     public static $DESCRICAO_WORKFLOW_FORMULARIO_DIVULGADO                  = "Formulário divulgado";
     
@@ -140,6 +148,8 @@ class Constants {
     public static $DESCRICAO_WORKFLOW_DOC_MARCADO_COMO_OBSOLETO             = "Marcou o documento como obsoleto.";
     
     public static $TEXTO_EMAIL_ENVIO_LISTA_PRESENCA_AO_SETOR_PESSOAS        = "Lista de presença enviada para: ";
+
+    public static $DESCRICAO_WORKFLOW_CANCELA_SHORT_REVIEW                  = "Revisão curta cancelada";
 
     public static $DOCUMENTO_SUBSTITUIDO                                    = "Documento substituído através da função de upload pelo usuário: ";
     

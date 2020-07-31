@@ -56,6 +56,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('ajax/copiaControlada/removeCopy',							['as' => 'ajax.copiaControlada.remove',								'uses' => 'AjaxController@removeCopy']);
 	Route::get('ajax/listaAprovadores/getAprovadores',						['as' => 'ajax.listaAprovadores.getAprovadores',					'uses' => 'AjaxController@getListAprovadores']);
 	Route::post('ajax/aprovadorSubstituto',							 		['as' => 'ajax.aprovador.substituto',    							'uses' => 'AjaxController@aprovadorSubstituto']);
+	
+	Route::post('ajax/ged/buscaInfoArea',							 		['as' => 'ajax.ged.buscaInfoArea',    							    'uses' => 'AjaxController@buscaInfoArea']);
 
 
 
@@ -85,7 +87,10 @@ Route::group(['middleware' => ['auth']], function() {
 		Route::post('salva-lista-presenca',				['as' => 'documentacao.salva-lista-presenca',    		'uses' => 'Documentacao\DocumentacaoController@salvaListaPresenca']);
 		Route::post('save-link-form',	     			['as' => 'documentacao.save-link-form',          		'uses' => 'Documentacao\DocumentacaoController@salvaVinculoFormulario']);
 		Route::post('start-review',	     				['as' => 'documentacao.start-review',          			'uses' => 'Documentacao\DocumentacaoController@startReview']);
+		Route::post('start-short-review', 				['as' => 'documentacao.start-short-review',             'uses' => 'Documentacao\DocumentacaoController@startShortReview']);
+		Route::post('short-approval-document',			['as' => 'documentacao.short-approval-document',        'uses' => 'Documentacao\DocumentacaoController@shortApprovalDocument']);
 		Route::post('cancel-review',					['as' => 'documentacao.cancel-review', 					'uses' => 'Documentacao\DocumentacaoController@cancelReview']);
+		Route::post('cancel-short-review',			    ['as' => 'documentacao.cancel-short-review',     		'uses' => 'Documentacao\DocumentacaoController@cancelShortReview']);
 		Route::post('save-attached-start-workflow',		['as' => 'documentacao.save-attached-start-workflow',	'uses' => 'Documentacao\DocumentacaoController@salvaAnexoElaboradorEIniciaWorkflow']);
 		Route::post('make-obsolete-doc',	  			['as' => 'documentacao.make-obsolete-doc',				'uses' => 'Documentacao\DocumentacaoController@makeObsoleteDoc']);
 		Route::post('make-active-doc',	  	  			['as' => 'documentacao.make-active-doc',				'uses' => 'Documentacao\DocumentacaoController@makeActiveDoc']);

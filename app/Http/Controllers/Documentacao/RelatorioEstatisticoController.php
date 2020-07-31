@@ -17,11 +17,13 @@ class RelatorioEstatisticoController extends Controller
     protected $docTypes;
     protected $totalOverdue;
     protected $totalRevised;
+    protected $totalShortRevised;
 
     public function __construct()
     {
         $this->totalOverdue = 0;
         $this->totalRevised = 0;
+        $this->totalShortRevised = 0;
         $this->docTypes = TipoDocumento::where('id', '<=', '3')->orderBy('nome_tipo')->get()->pluck(
             'nome_tipo',
             'id'
@@ -70,11 +72,19 @@ class RelatorioEstatisticoController extends Controller
             Carbon::createFromFormat('d/m/Y', $endDate)->endOfDay()
         );
 
+        $shortRevisedDocs = $this->getShortRevisedDocsBySector(
+            $docs,
+            Carbon::createFromFormat('d/m/Y', $startDate)->startOfDay(),
+            Carbon::createFromFormat('d/m/Y', $endDate)->endOfDay()
+        );
 
         // Prepara os dados para serem exibidos na view
         $sectorsContainExpired = $expiredDocs->keys();
         $sectorsContainRevised = $revisedDocs->keys();
+        $sectorsContainRevisedShort = $revisedDocs->keys();
         $allSectors = $sectorsContainExpired->merge($sectorsContainRevised)->unique();
+        $allSectors = $allSectors->merge($sectorsContainRevisedShort)->unique();
+
         $chartist = [];
 
         $chartist['sectors'] = $allSectors->toArray();
@@ -82,22 +92,23 @@ class RelatorioEstatisticoController extends Controller
         foreach ($allSectors->toArray() as $sectorName) {
             $chartist['revised'][] = (Arr::has($revisedDocs, $sectorName)) ? $revisedDocs[$sectorName]->count() : 0;
             $chartist['expired'][] = (Arr::has($expiredDocs, $sectorName)) ? $expiredDocs[$sectorName]->count() : 0;
+            $chartist['shortRevised'][] = (Arr::has($shortRevisedDocs, $sectorName)) ? $shortRevisedDocs[$sectorName]->count() : 0;
         }
-
-        $listDocsBySector = $allSectors->map(function ($sectorName) use ($expiredDocs, $revisedDocs) {
+        $listDocsBySector = $allSectors->map(function ($sectorName) use ($expiredDocs, $revisedDocs, $shortRevisedDocs) {
             return array(
                 'expired'    => (Arr::has($expiredDocs, $sectorName)) ? $expiredDocs[$sectorName] : [],
                 'revised'    => (Arr::has($revisedDocs, $sectorName)) ? $revisedDocs[$sectorName] : [],
+                'shortRevised' => (Arr::has($shortRevisedDocs, $sectorName)) ? $shortRevisedDocs[$sectorName] : [],
                 'sectorName' => $sectorName,
                 'identifier' => str_replace(' ', '_', $sectorName),
             );
         });
-
         return view('documentacao.view-statical-report', [
             'tipoDocumentos' => $this->docTypes,
             'periodo' => $request->daterange,
             'totalPendentesRevisao' => $this->totalOverdue,
             'totalRevisados' => $this->totalRevised,
+            'totalShortRevisados' => $this->totalShortRevised,
             'chartist' => $chartist,
             'listaDocumentosPorSetor' => $listDocsBySector,
             'setores' => $setores->toArray(),
@@ -204,6 +215,47 @@ class RelatorioEstatisticoController extends Controller
         });
 
         $this->totalRevised = $docsWithRevisions->count();
+        $groupedDocuments = $docsWithRevisions->groupBy('sSigla');
+        
+        return $groupedDocuments;
+    }
+
+
+    private function getShortRevisedDocsBySector(Collection $_docs, Carbon $_startDate, Carbon $_endDate)
+    {
+        $docsWithRevisions = $_docs->filter(function ($item) use ($_startDate, $_endDate) {
+            $docHistory = HistoricoDocumento::where('documento_id', $item->id)->where(
+                'descricao',
+                Constants::$DESCRICAO_WORKFLOW_DOCUMENTO_DIVULGADO_SHORT
+            )->get();
+            if ($docHistory->count() > 0) {
+                $visualRevisions = array();
+                $currentRevision = (int) $item->revisao;
+                $revisionsNumber = 0;
+                $counter = $docHistory->count();
+
+                while ($counter > 0) {
+                    $reviewedAt = $docHistory[$counter - 1]->created_at;
+                    if ($reviewedAt->between($_startDate, $_endDate)) {
+                        $revision = $currentRevision;
+                        $visualRevisions[] = $item->codigo . ' - Revisão ' . $revision;
+                        $revisionsNumber++;
+                    }
+
+                    $counter--;
+                    $currentRevision--;
+                }
+                if ($revisionsNumber) {
+                    $item['revisions_number'] = $revisionsNumber;
+                    $item['revisions'] = $visualRevisions;
+                    return $item;
+                }
+                return false;
+            }
+            return false;
+        });
+
+        $this->totalShortRevised = $docsWithRevisions->count();
         $groupedDocuments = $docsWithRevisions->groupBy('sSigla');
         
         return $groupedDocuments;
