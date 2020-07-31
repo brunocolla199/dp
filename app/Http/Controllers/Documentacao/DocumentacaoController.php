@@ -699,7 +699,7 @@ class DocumentacaoController extends Controller
         
         $usuarioSolicitanteRevisao = User::find(Auth::user()->id);
         
-        $mensagemNotificacao = "O documento " . $documento->codigo . " teve uma revisão curta iniciada.";
+        $mensagemNotificacao = "O documento " . $documento->codigo . " teve uma validação iniciada.";
         
         // NOTIFICAÇÕES
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
@@ -718,7 +718,7 @@ class DocumentacaoController extends Controller
 
 
         // HISTÓRICO
-        \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Iniciada revisão curta no documento. Elaborador alterado de " . $elaborador->name . " para " . $usuarioSolicitanteRevisao->name . ".", $idDoc);
+        \App\Classes\Helpers::instance()->gravaHistoricoDocumento("Iniciada validação no documento. Elaborador alterado de " . $elaborador->name . " para " . $usuarioSolicitanteRevisao->name . ".", $idDoc);
         \App\Classes\Helpers::instance()->gravaHistoricoDocumento(Constants::$DESCRICAO_WORKFLOW_EM_REVISAO_CURTA, $idDoc);
         
 
@@ -843,7 +843,7 @@ class DocumentacaoController extends Controller
 
 
         // NOTIFICAÇÕES
-        $mensagemNotificacao = "O documento " . $documento->codigo . " teve a revisão curta cancelada pelo setor Processos.";
+        $mensagemNotificacao = "O documento " . $documento->codigo . " teve a validação cancelada pelo setor Processos.";
 
         $usuariosSetorQualidade = User::where('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->get();
         foreach ($usuariosSetorQualidade as $key => $user) {

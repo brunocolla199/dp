@@ -61,13 +61,13 @@
             } else if(status == "start_review_success") {
                 showToast('Sucesso!', 'A revisão do documento foi iniciada.', 'success');
             } else if(status == "start_short_review_success") {
-                showToast('Sucesso!', 'A revisão curta do documento foi iniciada.', 'success');
+                showToast('Sucesso!', 'A validação do documento foi iniciada.', 'success');
             } else if(status == "document_name_already_exists") {
                 showToast('Nome já existe!', 'Já existe um documento no sistema com esse mesmo nome. Por favor, escolha outro!', 'warning');
             } else if(status == "cancel_review_success") {
                 showToast('Sucesso!', 'A revisão do documento foi cancelada com sucesso.', 'success');
             } else if(status == "cancel_short_review_success") {
-                showToast('Sucesso!', 'A revisão curta do documento foi cancelada com sucesso.', 'success');
+                showToast('Sucesso!', 'A validação do documento foi cancelada com sucesso.', 'success');
             } else if(status == "make_obsolete_doc") {
                 showToast('Sucesso!', 'O documento foi marcado como obsoleto. Você pode ativá-lo a qualquer momento!', 'success');
             } else if(status == "fail_active_doc") {
@@ -536,7 +536,7 @@
                                                                             @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $docF->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
                                                                                 <a href="javascript:void(0)" class="btn-open-confirm-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
 																				
-																				<a href="javascript:void(0)" class="btn-open-confirm-short-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" style="color: brown !important" data-toggle="tooltip" data-original-title="Iniciar Revisão Curta"></i> </a>
+																				<a href="javascript:void(0)" class="btn-open-confirm-short-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" style="color: brown !important" data-toggle="tooltip" data-original-title="Iniciar validação"></i> </a>
                                                                             @endif
 
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
@@ -723,7 +723,7 @@
                         var id = $(this).data('id');
                         $("#document_id_request_review").val(id);
                         
-                        $("#label-revisao-modal").text('Deseja iniciar uma revisão curta para este documento?');
+                        $("#label-revisao-modal").text('Deseja iniciar uma validação para este documento?');
 						$("#form_review").attr("action", "{{ route('documentacao.start-short-review') }}");
 
                         $("#iniciar-revisao-modal").modal({

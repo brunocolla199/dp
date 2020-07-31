@@ -114,7 +114,7 @@
                             <div class="col-lg-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="card-title"><span class="font-weight-bold">Revisões curtas entre:</span>
+                                        <h4 class="card-title"><span class="font-weight-bold">Validações entre:</span>
                                             {{ $periodo }} </h4>
                                         <div class="text-center m-t-40">
                                             <label style="font-size:75px; color:purple">{{$totalShortRevisados}}</label>
@@ -177,7 +177,7 @@
                                                 </ul>
                                             </div>
                                             <div class="col-md-4">
-                                                <h5>Revisões Curtas</h5>
+                                                <h5>Validações</h5>
                                                 <ul class="list-group">
                                                     @forelse ($sector['shortRevised'] as $docRevised)
                                                     <li class="list-group-item">
@@ -309,7 +309,7 @@
             trigger: 'axis'
         },
         legend: {
-            data: ['Revisados', 'Revisões Curtas','Pendentes'], 
+            data: ['Revisados', 'Validações','Pendentes'], 
         },
         toolbox: {
             show: true,
@@ -342,7 +342,7 @@
                 },
             },
             {
-                name:'Revisões Curtas',
+                name:'Validações',
                 type:'bar',
                 data: chartist.shortRevised,
                 markPoint: {
