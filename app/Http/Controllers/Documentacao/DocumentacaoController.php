@@ -50,7 +50,7 @@ class DocumentacaoController extends Controller
         
         $sectorsAccess = $setorUsuarioAtual;
 
-        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+        if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE /* || Auth::user()->setor_id == Constants::$SETOR_DIRETORES_GERENTES */) {
             $sectorsAccess = Setor::where('tipo_setor_id', '=', Constants::$ID_TIPO_SETOR_SETOR_NORMAL)
             ->where('nome', '!=', Constants::$NOME_SETOR_SEM_SETOR)
             ->orderBy('nome')
@@ -653,6 +653,7 @@ class DocumentacaoController extends Controller
                     'docPath' => $documento->nome . "." . $documento->extensao,
                     'document_id' => $document_id,
                     'codigo' => $documento->codigo,
+                    'documento' => $documento,
                     'docData' => $docData,
                     'resp' => ['status' => 'success',
                     'msg' => 'Documento Atualizado!',
@@ -2364,7 +2365,7 @@ class DocumentacaoController extends Controller
         $cloneBaseQueryTodasEtapasMaioresQue2 = clone $baseQueryLocal;
 
         // Conforme regras do sistema, se o usuário for do Setor Qualidade, ele poderá ver os documentos em todas as etapas        
-        if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ) {
+        if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
             
             // Detalhe específico para documentos confidenciais: apenas o administrador do Setor Qualidade pode vê-los.
             if( Auth::user()->id == $idUsuarioAdminSetorQualidade->admin_setor_qualidade )  {
@@ -2459,9 +2460,9 @@ class DocumentacaoController extends Controller
         $docsFinalizadosRestritos     = $cloneBaseQueryDocsRestritos->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)->get();
         $docsFinalizadosConfidenciais = $cloneBaseQueryDocsConfidenciais->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)->get();
 
-
         // Se for do Setor Qualidade, seguindo as regras atuais, todos os documentos restritos devem ser listados
-        if( $ID_SETOR_USUARIO != Constants::$ID_SETOR_QUALIDADE ) {
+        if( $ID_SETOR_USUARIO != Constants::$ID_SETOR_QUALIDADE && $ID_SETOR_USUARIO != Constants::$SETOR_DIRETORES_GERENTES ) {
+
             $aux_docsFinalizadosRestritos = clone $docsFinalizadosRestritos;
             foreach ($aux_docsFinalizadosRestritos as $key => $value) {
                 $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
@@ -2491,7 +2492,7 @@ class DocumentacaoController extends Controller
         }
 
         // Se for o Administrador do Setor Qualidade, seguindo as regras atuais, todos os documentos confidenciais devem ser listados
-        if(Auth::user()->id != $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) {
+        if(Auth::user()->id != $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade ) {
             $aux_docsFinalizadosConfidenciais = clone $docsFinalizadosConfidenciais;
             foreach ($aux_docsFinalizadosConfidenciais as $key => $value) {
                 $usuariosDaAreaDeInteresseDoDocumento = AreaInteresseDocumento::where('documento_id', '=', $value->id)->get()->pluck('usuario_id')->toArray();
@@ -2527,7 +2528,7 @@ class DocumentacaoController extends Controller
         // Loop que irá definir quais documentos devem ser mostrados com sua última revisão vigente e quais devem ser mostrados com a respectiva etapa da revisão.
         foreach ($returnDocumentosEmRevisao as $key => $value) {
             // Se o usuário for do Setor Qualidade, a etapa permanecerá exatamente a mesma que veio do B.D., ou seja, não será mostrada a última revisão vigente finalizada e sim a revisão que está, atualmente, sendo alterada.
-            if( $ID_SETOR_USUARIO != Constants::$ID_SETOR_QUALIDADE  ||  ($value->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  &&  $ID_USUARIO != $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) )  {
+            if( $ID_SETOR_USUARIO != Constants::$ID_SETOR_QUALIDADE || ($value->nivel_acesso == Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL  &&  $ID_USUARIO != $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) )  {
                 $datasDocumento = $this->defineDatasExibidas($value->id);
                 $value->validade = $datasDocumento[$this->DATA_VALIDADE];
                 $value->data_revisao = $datasDocumento[$this->DATA_REVISAO];
@@ -2563,7 +2564,7 @@ class DocumentacaoController extends Controller
 
         // Sorry about that, @zyadkhalil
         $docsFinalizados_restritos = array();
-        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE) {
+        if(Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || Auth::user()->setor_id == Constants::$SETOR_DIRETORES_GERENTES) {
             $docsFinalizados_restritos = $cloneBaseQueryDocumentosRestritos->where('dados_documento.finalizado', '=', true)
                         ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_RESTRITO)
                         ->get();
@@ -2601,7 +2602,7 @@ class DocumentacaoController extends Controller
         }
 
         $docsFinalizados_confidenciais = array();
-        if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade) {
+        if(Auth::user()->id == $idUsuarioAdminSetorQualidade[0]->admin_setor_qualidade || Auth::user()->setor_id == Constants::$SETOR_DIRETORES_GERENTES) {
             $docsFinalizados_confidenciais = $cloneBaseQueryDocumentosConfidenciais->where('dados_documento.finalizado', '=', true)
                                                                                         ->where('dados_documento.nivel_acesso', '=', Constants::$NIVEL_ACESSO_DOC_CONFIDENCIAL)
                                                                                         ->get();

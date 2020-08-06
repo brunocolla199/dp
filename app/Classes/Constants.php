@@ -178,6 +178,7 @@ class Constants {
         21, // Transporte 
     ];
 
+    public static $SETOR_DIRETORES_GERENTES = 23;
     
     public static $ID_USUARIO_ADMIN_SETOR_QUALIDADE = 1; // [CELISE] Verificar se for importado do AD
     
