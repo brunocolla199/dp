@@ -47,12 +47,14 @@ class Kernel extends ConsoleKernel
             $hojeMaisUmMes = Carbon::now()->addMonth()->format('Y-m-d');
             $documentosParaVencer = DB::table('documento')->join('dados_documento', 'documento_id', '=', 'documento.id')->join('tipo_documento', 'tipo_documento.id', '=', 'documento.tipo_documento_id' )
                                         ->where('dados_documento.validade', '=', $hojeMaisUmMes)->where('dados_documento.finalizado', '=', true)->where('dados_documento.obsoleto', false)
-                                        ->select('documento.id', 'documento.codigo', 'documento.nome', 'dados_documento.validade', 'dados_documento.finalizado', 'dados_documento.setor_id', 'tipo_documento.nome_tipo')->get();
+                                        ->select('documento.id', 'documento.codigo', 'documento.nome', 'dados_documento.validade', 'dados_documento.finalizado', 'dados_documento.setor_id', 'tipo_documento.nome_tipo', 'dados_documento.aprovador_id', 'dados_documento.elaborador_id')->get();
             
             
             foreach ($documentosParaVencer as $key => $doc) {
-                $usuariosDoSetorComPermissaoElaborador = User::where('setor_id', '=', $doc->setor_id)->where('permissao_elaborador', '=', true)
-                                                            ->orWhere('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)->select('id', 'name', 'username', 'email', 'setor_id', 'permissao_elaborador')->get();
+                $usuariosDoSetorComPermissaoElaborador = User::where('id', '=', $doc->aprovador_id)
+                ->orWhere('id', '=', $doc->elaborador_id)
+                ->orWhere('setor_id', '=', Constants::$ID_SETOR_QUALIDADE)
+                ->select('id', 'name', 'username', 'email', 'setor_id', 'permissao_elaborador')->get();
 
                 // [E-mail -> (O documento irá vencer em 30 dias)]
                 $icon = "info";
