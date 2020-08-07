@@ -142,7 +142,7 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <div class="col-md-10 control-label font-bold">
-                                                                {!! Form::label('validade', 'Data de Validade:') !!}
+                                                                {!! Form::label('validade', 'Data de Revisão:') !!}
                                                             </div>
                                                             <div class="col-md-12">
                                                                 {!! Form::date('validade', $dbDocument->validade, ['class' => "form-control"]

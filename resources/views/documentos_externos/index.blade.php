@@ -117,7 +117,7 @@
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <div class="col-md-10 control-label font-bold">
-                                                        {!! Form::label('validade', 'Data de Validade:') !!}
+                                                        {!! Form::label('validade', 'Data de Revisão:') !!}
                                                     </div>
                                                     <div class="col-md-12">
                                                         {!! Form::date('validade', null, ['class' => "form-control"] ) !!}
@@ -151,7 +151,7 @@
                                         <td class="nowrap">Fornecedor</td>
                                         <td class="nowrap">Título do Documento</td>
                                         <td class="nowrap">Data de Criação</td>
-                                        <td class="nowrap">Data de Vencimento</td>
+                                        <td class="nowrap">Data de Revisão</td>
                                    </tr>    
                                 </thead>
                                 <tbody> 
@@ -195,7 +195,7 @@
                                                          <td class="nowrap">Fornecedor</td>
                                                          <td class="nowrap">Título do Documento</td>
                                                          <td class="nowrap">Data de Criação</td>
-                                                         <td class="nowrap">Data de Vencimento</td>
+                                                         <td class="nowrap">Data de Revisão</td>
                                                     </tr>    
                                                 </thead>
                                                 <tbody>
@@ -243,7 +243,7 @@
                                                                         <td class="nowrap">Ações</td>
                                                                         <td class="nowrap">Título do Documento</td>
                                                                         <td class="nowrap">Data de Criação</td>
-                                                                        <td class="nowrap">Data de Vencimento</td>
+                                                                        <td class="nowrap">Data de Revisão</td>
                                                                     </tr>
                                                                 </thead>
                                                                 
