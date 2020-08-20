@@ -343,7 +343,7 @@
                                                                 <th class="text-nowrap text-center">Ações</th>
                                                                 <th class="text-center">Código</th>
                                                                 <th class="text-center">Título do Formulário</th>
-                                                                <th class="text-center">Data Emissão</th>
+                                                                {{-- <th class="text-center">Data Emissão</th> --}}
                                                                 <th class="text-nowrap text-center">Revisão</th>
                                                                 <th>Status</th>
                                                                 <th class="text-center">Nível Acesso</th>
@@ -371,7 +371,7 @@
                                                                             </td>
                                                                         {{ Form::close() }}
 
-                                                                        <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                        {{-- <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td> --}}
                                                                         
                                                                         <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
@@ -406,7 +406,7 @@
                                                                                 </td>
                                                                             {{ Form::close() }}
 
-                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                            {{-- <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td> --}}
 
 
                                                                             <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
@@ -444,7 +444,7 @@
                                                                             {{ Form::close() }}
 
 
-                                                                            <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td>
+                                                                            {{-- <td><p class="text-center"> {{ date("d/m/Y H:i:s", strtotime($form->created_at)) }} </p></td> --}}
 
                                                                             <td><p class="text-nowrap text-center"> {{ $form->revisao }} </p></td>
 
