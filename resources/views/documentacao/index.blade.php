@@ -523,6 +523,10 @@
                                                                 @foreach($documentos_finalizados as $docF)
                                                                     <tr>
                                                                         <td class="text-nowrap text-center">
+                                                                            @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $docF->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-short-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" style="color: brown !important" data-toggle="tooltip" data-original-title="Iniciar validação"></i> </a>
+                                                                            @endif
+
                                                                             <a href="{{ route('documentacao.print', ['id' => $docF->id]) }}" class="mr-3"> <i class="fa fa-print text-primary" data-toggle="tooltip" data-original-title="Imprimir"></i> </a> 
 
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
@@ -534,9 +538,7 @@
                                                                             @endif
 
                                                                             @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $docF->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
-                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>
-																				
-																				<a href="javascript:void(0)" class="btn-open-confirm-short-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" style="color: brown !important" data-toggle="tooltip" data-original-title="Iniciar validação"></i> </a>
+                                                                                <a href="javascript:void(0)" class="btn-open-confirm-review mr-3" data-id="{{ $docF->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i> </a>																		
                                                                             @endif
 
                                                                             @if( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
