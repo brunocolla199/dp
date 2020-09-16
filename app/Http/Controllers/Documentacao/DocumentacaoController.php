@@ -2450,7 +2450,6 @@ class DocumentacaoController extends Controller
         
         $baseQueryLocal = clone $base_query;
         $baseQueryLocal->where('dados_documento.finalizado', '=', false)
-                        ->where('dados_documento.revisao', '!=', '00')
                         ->where('dados_documento.em_revisao', '=', true);
 
         $cloneBaseQueryDocsLivres         = clone $baseQueryLocal;
