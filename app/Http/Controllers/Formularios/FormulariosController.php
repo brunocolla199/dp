@@ -291,24 +291,39 @@ class FormulariosController extends Controller
         return View::make('formularios.define-formulario', array('overlay_sucesso' => 'valor'));
     }
 
-    public function startReview(Request $request) {
+    public function startReview(Request $request)
+    {
         $alterarElaborador = false;
         $nomeAntigoElaborador = "";
         
         $formulario = Formulario::where('id', '=', $request->form_id)->get();
         
-        if($formulario[0]->elaborador_id != Auth::user()->id) {
+        if ($formulario[0]->elaborador_id != Auth::user()->id) {
             $alterarElaborador = true;
             $nomeAntigoElaborador = User::where('id', '=', $formulario[0]->elaborador_id)->get()[0]->name;
         }
+
+        $novaVersao = $formulario[0]->revisao + 1;
+        $novaVersao = ($novaVersao <= 10) ? "0{$novaVersao}" : $novaVersao;
+
+        $nomeForm = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
+
+        $nomeNovaVersao = $nomeForm . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $novaVersao . "." . $formulario[0]->extensao;
+       
+        \Storage::disk('speed_office')->copy(
+            "/formularios/" . $formulario[0]->nome . "." . $formulario[0]->extensao,
+            "/formularios/" . $nomeNovaVersao
+        );
         
-        if($alterarElaborador) $formulario[0]->elaborador_id = Auth::user()->id;
+        if ($alterarElaborador) {
+            $formulario[0]->elaborador_id = Auth::user()->id;
+        }
+
         $formulario[0]->finalizado = false;
         $formulario[0]->em_revisao = true;
-        $novaVersao = $formulario[0]->revisao + 1;
-        $formulario[0]->revisao = ($novaVersao <= 10) ? "0{$novaVersao}" : $novaVersao;
+        $formulario[0]->revisao = $novaVersao;
         $formulario[0]->id_usuario_solicitante = Auth::user()->id;
-        $formulario[0]->nome_completo_em_revisao = $formulario[0]->nome .".". $formulario[0]->extensao;
+        $formulario[0]->nome_completo_em_revisao = $nomeNovaVersao;
         $formulario[0]->save();
 
         $workflowForm                = WorkflowFormulario::where('formulario_id', '=', $request->form_id)->get();
@@ -326,29 +341,42 @@ class FormulariosController extends Controller
 
         // Grava histórico do documento
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_FORM_REVISAO_INICIADA, $formulario[0]->id);
-        if($alterarElaborador) \App\Classes\Helpers::instance()->gravaHistoricoFormulario("Elaborador alterado de ". $nomeAntigoElaborador ." para ". Auth::user()->name .".", $formulario[0]->id);
+        if ($alterarElaborador) {
+            \App\Classes\Helpers::instance()->gravaHistoricoFormulario("Elaborador alterado de " . $nomeAntigoElaborador . " para " . Auth::user()->name . ".", $formulario[0]->id);
+        }
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_EM_REVISAO, $formulario[0]->id);
 
         return redirect()->route('formularios')->with('start_review_success', 'msg');
     }
 
-    public function sendNewReview(Request $request) {
+    public function sendNewReview(Request $request)
+    {
         $idForm     = $request->formulario_id;
-        $file       = $request->file('new_review_form', 'local');
-        $extensao   = $file->getClientOriginalExtension();
         $formulario     = Formulario::where('id', '=', $idForm)->get();
         $workflowForm   = WorkflowFormulario::where('formulario_id', '=', $idForm)->get();
 
         $revisaoNova = $formulario[0]->revisao;
         
-        $oldName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome)[0];
+        $oldName = explode(Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS, $formulario[0]->nome);
         $newName = \App\Classes\Helpers::instance()->escapeFilename($request->newTituloFormulario);
-        $filename = ($newName != $oldName) ? $newName : $oldName;
-        $fullFilename = $filename . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova .".". $extensao;
-
-        // Salva nova revisão do formulário (mantém o arquivo original e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
-        \Storage::disk('speed_office')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
         
+        $filename = ($newName != $oldName) ? $newName : $oldName;
+        
+        $extensao = $formulario[0]->extensao;
+        
+        $fullFilename = $filename . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova . "." . $extensao;
+
+        if ($request->file('new_review_form')) {
+            $file = $request->file('new_review_form', 'local');
+            $extensao   = $file->getClientOriginalExtension();
+
+            \Storage::disk('speed_office')->delete('/formularios/' . $formulario[0]->nome_completo_em_revisao);
+
+            $fullFilename = $filename . Constants::$SUFIXO_REVISAO_NOS_TITULO_DOCUMENTOS . $revisaoNova . "." . $extensao;
+            // Salva nova revisão do formulário (mantém o arquivo original e cria uma nova "versão", semelhante à CÓPIA feita nos documentos)
+            \Storage::disk('speed_office')->put('/formularios/' . $fullFilename, file_get_contents($file), 'private');
+        }
+                
         $oldCode = $formulario[0]->codigo;
         $newCode = $request->newCodigoFormulario;
 
@@ -358,7 +386,7 @@ class FormulariosController extends Controller
         $formulario[0]->codigo                   = $newCode;
         $formulario[0]->save();
 
-        if( $oldCode != $newCode ) {
+        if ($oldCode != $newCode) {
             $registerControl = ControleRegistro::where('formulario_id', $idForm)->first();
             $registerControl->codigo = $newCode;
             $registerControl->titulo = $filename;
@@ -387,10 +415,21 @@ class FormulariosController extends Controller
         $elaborador = User::where('id', '=', $formulario[0]->elaborador_id)->select('name')->get();
 
         $icon = "info";
-        $contentF1_P1 = "O formulário "; $codeF1 = $formulario[0]->codigo; $contentF1_P2 = " requer análise.";
-        $labelF2 = "Setor do formulário: "; $valueF2 = $setor[0]->nome;
-        $labelF3 = "Enviado por: "; $valueF3 = $elaborador[0]->name; $label2_F3 = ""; $value2_F3 = "";
-        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação",     $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
+        
+        $contentF1_P1 = "O formulário ";
+        $codeF1 = $formulario[0]->codigo;
+        
+        $contentF1_P2 = " requer análise.";
+        $labelF2 = "Setor do formulário: ";
+        $valueF2 = $setor[0]->nome;
+        
+        $labelF3 = "Enviado por: ";
+        $valueF3 = $elaborador[0]->name;
+
+        $label2_F3 = "";
+        $value2_F3 = "";
+
+        $this->dispatch(new SendEmailsJob($usuariosSetorQualidade, "Novo formulário para aprovação", $icon, $contentF1_P1, $codeF1, $contentF1_P2, $labelF2, $valueF2, $labelF3, $valueF3, $label2_F3, $value2_F3));
 
         // Histórico
         \App\Classes\Helpers::instance()->gravaHistoricoFormulario(Constants::$DESCRICAO_WORKFLOW_REENVIADO_COLABORADOR, $idForm);
@@ -424,9 +463,10 @@ class FormulariosController extends Controller
 
         if ($revisaoAnteriorFormulario->count() > 0) {
             try {
+
                 // Excluindo arquivo anexado durante a revisão
                 if ($formulario[0]->revisao !== '00') {
-                    \Storage::disk('speed_office')->delete('formularios/' . $formulario[0]->nome_completo_em_revisao);
+                    \Storage::disk('speed_office')->delete('/formularios/' . $formulario[0]->nome_completo_em_revisao);
                 }
 
                 // Restaurando versão anterior do form
@@ -873,10 +913,10 @@ class FormulariosController extends Controller
         $filename      = \App\Classes\Helpers::instance()->escapeFilename($formulario->nome);
         
         // Exclui Formulário Antigo
-        \Storage::disk('speed_office')->delete('formularios/' . $formulario->nome . "." . $formulario->extensao);
+        \Storage::disk('speed_office')->delete('/formularios/' . $formulario->nome . "." . $formulario->extensao);
 
         $currentFileExtension = $file->getClientOriginalExtension();
-        \Storage::disk('speed_office')->put('formularios/' . $filename . "." . $currentFileExtension, file_get_contents($file), 'private');
+        \Storage::disk('speed_office')->put('/formularios/' . $filename . "." . $currentFileExtension, file_get_contents($file), 'private');
 
 
         if ($currentFileExtension != $formulario->extensao) {
@@ -902,11 +942,11 @@ class FormulariosController extends Controller
         $filename      = \App\Classes\Helpers::instance()->escapeFilename($formulario->nome); // Teoricamente, isso não seria necessário se garantíssemos que nenhum título de formulário seria salvo sem passar por essa função, mas...
 
         // Exclui Formulário Antigo
-        \Storage::disk('speed_office')->delete('formularios/' . $formulario->nome . "." . $formulario->extensao);
+        \Storage::disk('speed_office')->delete('/formularios/' . $formulario->nome . "." . $formulario->extensao);
 
         // Salva novo formulário com o mesmo nome (mas com a extensão do arquivo enviado, que pode ser diferente da anterior)
         $currentFileExtension = $file->getClientOriginalExtension();
-        \Storage::disk('speed_office')->put('formularios/' . $filename . "." . $currentFileExtension, file_get_contents($file), 'private');
+        \Storage::disk('speed_office')->put('/formularios/' . $filename . "." . $currentFileExtension, file_get_contents($file), 'private');
 
 
         if( $currentFileExtension != $formulario->extensao ) {

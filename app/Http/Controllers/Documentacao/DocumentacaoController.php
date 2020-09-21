@@ -2777,7 +2777,6 @@ class DocumentacaoController extends Controller
             return redirect()->route('documentacao')->with('delete_document_success', 'message');
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th);
             return redirect()->route('documentacao')->with('delete_document_error', 'message');
         }
     }

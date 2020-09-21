@@ -155,7 +155,7 @@
 
                                     {{ Form::open(['route' => 'formularios.resend-form', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
                                         <div class="row">
-                                            <div class="col-md-8">
+                                            <div class="col-md-6">
                                                 <div class="col-md-12">
                                                     <div class="row card">
                                                         <div class="card-body">
@@ -167,7 +167,7 @@
                                                 </div>
                                             </div>
                                         
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="ribbon-wrapper card ">
                                                     <div class="ribbon ribbon-bookmark ribbon-danger">JUSTIFICATIVA DE REJEIÇÃO</div> 
                                                     <p class="ribbon-content"> {{ $justificativaRejeicaoForm }} </p>
@@ -278,7 +278,7 @@
                                         <div class="col-md-12 pull-right">    
                                             {{ Form::hidden('formulario_id', $formulario_id) }}
                                             {{ Form::hidden('etapa_form', $etapa_form) }}
-                                            {!! Form::button('Atualizar formulário', ['type' => 'submit', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
+                                            {!! Form::button('Upload do formulário', ['type' => 'submit', 'class' => 'btn btn-lg btn-success pull-right'] )  !!}
                                         </div>
                                     </div>    
                                 </div>
@@ -565,11 +565,11 @@
 
     // Click no botão para enviar a nova revisão do formulário
     $("#btn-send-new-review").on('click', function() {
-        let valueInputFile = $("#new_review_form").val();
+        /* let valueInputFile = $("#new_review_form").val();
         if( !valueInputFile ) {
             showToast('Opa!', 'Importe o formulário antes de enviar!', 'warning');
             return;
-        }
+        } */
         
         let formId  = $('input[name=formulario_id]').val();
         let newCode = $('#newCodigoFormulario').val();

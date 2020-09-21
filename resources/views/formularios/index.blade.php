@@ -420,11 +420,11 @@
                                                                     @elseif( !$form->obsoleto )
                                                                         <tr>
                                                                             <td class="text-nowrap text-center"> 
-                                                                                @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $form->elaborador_id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM ))
-                                                                                    <a href="{{ route('formularios.edit-info', ['id' => $form->id]) }}"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
-                                                                                @endif
-
                                                                                 @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $form->setor_id == Auth::user()->setor_id && Auth::user()->permissao_elaborador)
+                                                                                {{-- @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || (Auth::user()->id == $form->elaborador_id && $form->etapa_num == Constants::$ETAPA_WORKFLOW_ELABORADOR_NUM )) --}}
+                                                                                    <a href="{{ route('formularios.edit-info', ['id' => $form->id]) }}"> <i class="fa fa-pencil text-success" data-toggle="tooltip" data-original-title="Editar Informações"></i> </a>     
+                                                                                {{-- @endif --}}
+
                                                                                     <a href="javascript:void(0)" class="btn-open-confirm-form-review ml-2" data-id="{{ $form->id }}"> <i class="fa fa-eye text-warning" data-toggle="tooltip" data-original-title="Iniciar Revisão"></i></a> 
                                                                                 @endif
 
