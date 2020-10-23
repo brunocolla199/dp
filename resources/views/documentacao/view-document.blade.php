@@ -420,12 +420,16 @@
                             <div class="row">
                                 <div class="col-md-3" style="border-right: 1px solid black;">
                                     <div class="control-label font-bold text-center">
-                                        <h3>Pré-visualização {{ Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE ? 'e Download' : '' }} do Documento</h3>
+                                        <h3>Pré-visualização {{ Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $aprovador_id == Auth::user()->id || $elaborador_id == Auth::user()->id ? 'e Download' : '' }} do Documento</h3>
                                         <div class="text-center">   
                                             <br>
                                             <a href="{{ asset('plugins/onlyoffice-php/doceditor.php?fileID=').$docPath.'&type=embedded' }}" class="btn btn-lg btn-success" target="_blank"> Visualizar </a>
 
+<<<<<<< HEAD
                                             @if ( Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE )
+=======
+                                            @if (Auth::user()->setor_id == Constants::$ID_SETOR_QUALIDADE || $aprovador_id == Auth::user()->id || $elaborador_id == Auth::user()->id)
+>>>>>>> 98e4692... Jira Chamado 169 - Solicitação do botao de download para os elaboradores tbm
                                                 <br>
                                                 <br>
                                                 <a href="{{ asset('plugins/onlyoffice-php/Storage').'/'. substr($docPath, strrpos($docPath, '/') + 1)  }}" class="btn btn-lg btn-success" target="_blank"> <i class="mdi mdi-cloud-download"></i> Download </a>
